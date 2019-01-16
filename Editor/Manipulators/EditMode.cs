@@ -172,12 +172,12 @@ namespace UnityEditor.Timeline
             TimelineUndo.PushUndo(itemToTrim.parentTrack, "Trim Clip");
         }
 
-        public static void TrimStart(ITimelineItem item, double time)
+        public static void TrimStart(ITimelineItem item, double time, bool affectTimeScale)
         {
             var itemToTrim = item as ITrimmable;
             if (itemToTrim == null) return;
 
-            trimMode.TrimStart(itemToTrim, time);
+            trimMode.TrimStart(itemToTrim, time, affectTimeScale);
         }
 
         public static void TrimEnd(ITimelineItem item, double time, bool affectTimeScale)

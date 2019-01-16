@@ -71,7 +71,7 @@ namespace UnityEditor.Timeline
             m_TrimReplace = false;
         }
 
-        public void TrimStart(ITrimmable item, double time)
+        public void TrimStart(ITrimmable item, double time, bool affectTimeScale)
         {
             time = Math.Min(Math.Max(time, m_Min), m_Max);
 
@@ -83,7 +83,7 @@ namespace UnityEditor.Timeline
 
             time = Math.Max(time, 0.0);
 
-            item.SetStart(time);
+            item.SetStart(time, affectTimeScale);
 
             if (m_ItemToBeReplaced != null && m_TrimReplace)
             {
@@ -107,7 +107,7 @@ namespace UnityEditor.Timeline
             if (m_ItemToBeReplaced != null && m_TrimReplace)
             {
                 var nextStart = Math.Max(item.end, m_ClipOriginalEdgeValue);
-                m_ItemToBeReplaced.SetStart(nextStart);
+                m_ItemToBeReplaced.SetStart(nextStart, false);
             }
         }
 

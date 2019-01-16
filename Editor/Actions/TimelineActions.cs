@@ -662,7 +662,8 @@ namespace UnityEditor.Timeline
             var area = curveEditor.shownAreaInsideMargins;
             area.x += areaOffset;
 
-            FrameRange(area.x, area.x + area.width, state);
+            var curveStart = curveEditorOwner.clipCurveEditor.dataSource.start;
+            FrameRange(curveStart + frameBounds.min.x, curveStart + frameBounds.max.x, state);
         }
     }
 

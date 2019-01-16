@@ -79,9 +79,9 @@ namespace UnityEditor.Timeline
             get { return m_Clip.hasBlendOut ? m_Clip.blendOutDuration : m_Clip.easeOutDuration; }
         }
 
-        public void SetStart(double time)
+        public void SetStart(double time, bool affectTimeScale)
         {
-            ClipModifier.SetStart(m_Clip, time);
+            ClipModifier.SetStart(m_Clip, time, affectTimeScale);
         }
 
         public void SetEnd(double time, bool affectTimeScale)

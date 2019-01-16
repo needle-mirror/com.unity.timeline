@@ -70,10 +70,10 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public void TrimStart(ITrimmable item, double time)
+        public void TrimStart(ITrimmable item, double time, bool affectTimeScale)
         {
             time = Math.Min(Math.Max(time, m_Min), m_Max);
-            item.SetStart(time);
+            item.SetStart(time, affectTimeScale);
         }
 
         public void TrimEnd(ITrimmable item, double time, bool affectTimeScale)

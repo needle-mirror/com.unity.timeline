@@ -25,7 +25,8 @@ namespace UnityEditor.Timeline
                 }
                 else if (manipulateEdges == ManipulateEdges.Left)
                 {
-                    EditMode.TrimStart(clipItem, time);
+                    bool affectTimeScale = Event.current.modifiers == EventModifiers.Shift; // TODO Do not use Event.current from here.
+                    EditMode.TrimStart(clipItem, time, affectTimeScale);
                 }
             }
         }

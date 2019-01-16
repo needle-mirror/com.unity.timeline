@@ -21,7 +21,7 @@ namespace UnityEditor.Timeline
 
     interface ITrimmable : ITimelineItem
     {
-        void SetStart(double time);
+        void SetStart(double time, bool affectTimeScale);
         void SetEnd(double time, bool affectTimeScale);
         void TrimStart(double time);
         void TrimEnd(double time);

@@ -124,7 +124,7 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            m_SourceObject.isExpanded = EditorGUILayout.Foldout(m_SourceObject.isExpanded, Styles.advancedContent);
+            m_SourceObject.isExpanded = EditorGUILayout.Foldout(m_SourceObject.isExpanded, Styles.advancedContent, true);
 
             if (m_SourceObject.isExpanded)
             {

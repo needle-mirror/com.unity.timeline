@@ -51,7 +51,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public void TrimStart(ITrimmable item, double time)
+        public void TrimStart(ITrimmable item, double time, bool affectTimeScale)
         {
             var prevEnd = item.end;
 
@@ -65,7 +65,7 @@ namespace UnityEditor.Timeline
             if (m_BlendDuration > 0.0)
                 time = Math.Min(time, item.end - m_BlendDuration);
 
-            item.SetStart(time);
+            item.SetStart(time, affectTimeScale);
 
             item.start = m_OriginalClipStart;
 

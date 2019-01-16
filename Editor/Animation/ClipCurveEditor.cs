@@ -5,7 +5,6 @@ using UnityEditor.Timeline;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Timeline;
-using Graphics = UnityEditor.Timeline.Graphics;
 
 namespace UnityEditor
 {
@@ -106,17 +105,6 @@ namespace UnityEditor
         {
             m_CurveEditor.InvalidateBounds();
             m_CurveEditor.FrameClip(false, true);
-        }
-
-        public bool HasSelection()
-        {
-            return m_CurveEditor.hasSelection;
-        }
-
-        public Vector2 GetSelectionRange()
-        {
-            Bounds b = m_CurveEditor.selectionBounds;
-            return new Vector2(b.min.x, b.max.x);
         }
 
         public CurveDataSource dataSource
@@ -306,26 +294,18 @@ namespace UnityEditor
             m_CurveEditor.invSnap = state.referenceSequence.frameRate;
         }
 
-        public void DrawCurveEditor(Rect animEditorRect, WindowState state, Vector2 activeRange, bool loop, bool selected)
+        public void DrawCurveEditor(Rect rect, WindowState state, Vector2 clipRange, bool loop, bool selected)
         {
-            var curveStart = state.TimeToPixel(m_DataSource.start);
-            var minCurveStart = animEditorRect.xMax - 1.0f;
-
-            if (curveStart > minCurveStart) // Prevent the curve from drawing inside small rect
-                animEditorRect.xMax += curveStart - minCurveStart;
-
+            var timelineWidth = state.TimeToPixel(Mathf.Max((float)state.editSequence.duration, state.timeAreaShownRange.y));
+            m_CurveEditor.rect = new Rect(-rect.xMin, 0.0f, timelineWidth, rect.height);
             UpdateCurveEditorIfNeeded(state);
 
-            DrawCurveEditorBackground(animEditorRect);
-
-            // adjust the top margin so smaller rectangle have smaller top / bottom margins.
-            m_CurveEditor.topmargin = m_CurveEditor.bottommargin = CalculateTopMargin(animEditorRect.height);
-
-            //align the curve with the clip.
-            var localCurveStart = curveStart - animEditorRect.xMin;
-            m_CurveEditor.leftmargin = 0.0f;
-            m_CurveEditor.rect = new Rect(localCurveStart, 0.0f, animEditorRect.width - localCurveStart, animEditorRect.height);
-            m_CurveEditor.SetShownHRangeInsideMargins(0.0f, (state.PixelToTime(animEditorRect.xMax) - m_DataSource.start) * m_DataSource.timeScale);
+            var curveEndTime = m_DataSource.start + m_DataSource.animationClip.length / m_DataSource.timeScale;
+            var curveRange = new Vector2(state.TimeToPixel(m_DataSource.start), state.TimeToPixel(curveEndTime));
+            m_CurveEditor.leftmargin = curveRange.x;
+            m_CurveEditor.rightmargin = timelineWidth - curveRange.y;
+            m_CurveEditor.topmargin = m_CurveEditor.bottommargin = CalculateTopMargin(rect.height);
+            m_CurveEditor.SetShownHRangeInsideMargins(0.0f, m_DataSource.animationClip.length); //align the curve with the clip.
 
             if (m_LastFrameRate != state.referenceSequence.frameRate)
             {
@@ -333,84 +313,54 @@ namespace UnityEditor
                 m_LastFrameRate = state.referenceSequence.frameRate;
             }
 
-            foreach (CurveWrapper cw in m_CurveEditor.animationCurves)
+            foreach (var cw in m_CurveEditor.animationCurves)
                 cw.renderer.SetWrap(WrapMode.Default, loop ? WrapMode.Loop : WrapMode.Default);
 
-            m_CurveEditor.BeginViewGUI();
-
-            Color oldColor = GUI.color;
-            GUI.color = Color.white;
-
-            GUI.BeginGroup(animEditorRect);
-
-            // Draw a line at 0
-            Graphics.DrawLine(new Vector2(localCurveStart, 0.0f), new Vector2(localCurveStart, animEditorRect.height), new Color(1.0f, 1.0f, 1.0f, 0.5f));
-
-            float rangeStart = activeRange.x - animEditorRect.x;
-            float rangeWidth = activeRange.y - activeRange.x;
-
-            // draw selection outline underneath the curves.
-            if (selected)
+            using (new GUIGroupScope(rect))
             {
-                var selectionRect = new Rect(rangeStart, 0.0f, rangeWidth, animEditorRect.height);
-                DrawOutline(selectionRect);
+                var localRect = new Rect(0.0f, 0.0f, rect.width, rect.height);
+                var localClipRange = new Vector2(Mathf.Floor(clipRange.x - rect.xMin), Mathf.Ceil(clipRange.y - rect.xMin));
+                var localCurveRange = new Vector2(Mathf.Floor(curveRange.x - rect.xMin), Mathf.Ceil(curveRange.y - rect.xMin));
+
+                EditorGUI.DrawRect(new Rect(localCurveRange.x, 0.0f, 1.0f, rect.height), new Color(1.0f, 1.0f, 1.0f, 0.5f));
+                DrawCurveEditorBackground(localRect, localClipRange);
+
+                if (selected)
+                {
+                    var selectionRect = new Rect(localClipRange.x, 0.0f, localClipRange.y - localClipRange.x, localRect.height);
+                    DrawOutline(selectionRect);
+                }
+
+                EditorGUI.BeginChangeCheck();
+                {
+                    var evt = Event.current;
+                    if (evt.type == EventType.Layout || evt.type == EventType.Repaint || selected)
+                        m_CurveEditor.CurveGUI();
+                }
+                if (EditorGUI.EndChangeCheck())
+                    OnCurvesUpdated();
+
+                DrawOverlay(localRect, localClipRange, DirectorStyles.Instance.customSkin.colorInlineCurveOutOfRangeOverlay);
+                DrawGrid(localRect, localCurveRange);
             }
-
-            EditorGUI.BeginChangeCheck();
-
-            Event evt = Event.current;
-            if ((evt.type == EventType.Layout) || (evt.type == EventType.Repaint) || selected)
-                m_CurveEditor.CurveGUI();
-
-            m_CurveEditor.EndViewGUI();
-
-            if (EditorGUI.EndChangeCheck())
-                OnCurvesUpdated();
-
-            // draw overlays on top of curves
-            var overlayColor = DirectorStyles.Instance.customSkin.colorInlineCurveOutOfRangeOverlay;
-
-            var leftSide = new Rect(localCurveStart, 0.0f, rangeStart - localCurveStart, animEditorRect.height);
-            EditorGUI.DrawRect(leftSide, overlayColor);
-
-            var rightSide = new Rect(rangeStart + rangeWidth, 0.0f, animEditorRect.width - rangeStart - rangeWidth, animEditorRect.height);
-            EditorGUI.DrawRect(rightSide, overlayColor);
-
-            GUI.color = oldColor;
-
-            GUI.EndGroup();
-
-            // draw the grid labels last
-            var gridRect = animEditorRect;
-            gridRect.width = s_GridLabelWidth;
-            var offset = localCurveStart - s_GridLabelWidth;
-            if (offset > 0.0f)
-                gridRect.x = animEditorRect.x + offset;
-            m_CurveEditor.rect = new Rect(0.0f, 0.0f, animEditorRect.width, animEditorRect.height);
-
-            GUI.BeginGroup(gridRect);
-            m_CurveEditor.GridGUI();
-            GUI.EndGroup();
         }
 
-        static void DrawCurveEditorBackground(Rect animEditorRect)
+        static void DrawCurveEditorBackground(Rect rect, Vector2 activeRange)
         {
             if (EditorGUIUtility.isProSkin)
                 return;
 
-            var animEditorBackgroundRect = Rect.MinMaxRect(
-                0.0f, animEditorRect.yMin, animEditorRect.xMax, animEditorRect.yMax);
+            var animEditorBackgroundRect = Rect.MinMaxRect(0.0f, rect.yMin, rect.xMax, rect.yMax);
 
             // Curves are not legible in Personal Skin so we need to darken the background a bit.
             EditorGUI.DrawRect(animEditorBackgroundRect, DirectorStyles.Instance.customSkin.colorInlineCurvesBackground);
         }
 
-        float CalculateTopMargin(float height)
+        static float CalculateTopMargin(float height)
         {
             return Mathf.Clamp(0.15f * height, 10.0f, 40.0f);
         }
 
-        // todo move this in a utility class?
         static void DrawOutline(Rect rect, float thickness = 2.0f)
         {
             // Draw top selected lines.
@@ -424,6 +374,27 @@ namespace UnityEditor
 
             // Draw Right Selected Lines
             EditorGUI.DrawRect(new Rect(rect.xMax - thickness, rect.yMin, thickness, rect.height), Color.white);
+        }
+
+        static void DrawOverlay(Rect rect, Vector2 clipRange, Color color)
+        {
+            var leftSide = new Rect(rect.xMin, rect.yMin, clipRange.x - rect.xMin, rect.height);
+            EditorGUI.DrawRect(leftSide, color);
+
+            var rightSide = new Rect(Mathf.Max(0.0f, clipRange.y), rect.yMin, rect.xMax, rect.height);
+            EditorGUI.DrawRect(rightSide, color);
+        }
+
+        void DrawGrid(Rect rect, Vector2 curveRange)
+        {
+            var gridXPos = Mathf.Max(curveRange.x - s_GridLabelWidth, rect.xMin);
+            var gridRect = new Rect(gridXPos, rect.y, s_GridLabelWidth, rect.height);
+            var originalRect = m_CurveEditor.rect;
+
+            m_CurveEditor.rect = new Rect(0.0f, 0.0f, rect.width, rect.height);
+            using (new GUIGroupScope(gridRect))
+                m_CurveEditor.GridGUI();
+            m_CurveEditor.rect = originalRect;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
 
             // Note: We are NOT using edit modes in this case because we want the same result
             // regardless of the selected EditMode: split at cursor and delete left part
-            SetStart(clip, trimTime);
+            SetStart(clip, trimTime, false);
 
             return true;
         }
@@ -126,7 +126,7 @@ namespace UnityEditor.Timeline
 
                 TimelineClip newClip = TimelineHelpers.Clone(clip, director, director, clip.start);
 
-                SetStart(clip, splitTime);
+                SetStart(clip, splitTime, false);
                 SetEnd(newClip, splitTime, false);
 
                 // Sort produced by cloning clips on top of each other is unpredictable (it varies between mono runtimes)
@@ -138,10 +138,11 @@ namespace UnityEditor.Timeline
             return result;
         }
 
-        public static void SetStart(TimelineClip clip, double time)
+        public static void SetStart(TimelineClip clip, double time, bool affectTimeScale)
         {
             var supportsClipIn = clip.SupportsClipIn();
             var supportsPadding = TimelineUtility.IsRecordableAnimationClip(clip);
+            bool calculateTimeScale = (affectTimeScale && clip.SupportsSpeedMultiplier());
 
             // treat empty recordable clips as not supporting clip in (there are no keys to modify)
             if (supportsPadding && (clip.animationClip == null || clip.animationClip.empty))
@@ -149,7 +150,7 @@ namespace UnityEditor.Timeline
                 supportsClipIn = false;
             }
 
-            if (supportsClipIn && !supportsPadding)
+            if (supportsClipIn && !supportsPadding && !calculateTimeScale)
             {
                 var minStart = clip.FromLocalTimeUnbound(0.0);
                 if (time < minStart)
@@ -163,7 +164,14 @@ namespace UnityEditor.Timeline
             var timeOffset = time - clip.start;
             var duration = clip.duration - timeOffset;
 
-            if (supportsClipIn)
+            if (calculateTimeScale)
+            {
+                var f = clip.duration / duration;
+                clip.timeScale *= f;
+            }
+
+
+            if (supportsClipIn && !calculateTimeScale)
             {
                 if (supportsPadding)
                 {
@@ -264,7 +272,7 @@ namespace UnityEditor.Timeline
 
             // In case resetting the start was blocked by edit mode or timeline start, we do the best we can
             clip.clipIn = (clip.start - newStartCandidate) * clip.timeScale;
-            if (TimelineHelpers.HasUsableAssetDuration(clip))
+            if (clip.clipAssetDuration > 0 && TimelineHelpers.HasUsableAssetDuration(clip))
             {
                 var duration = TimelineHelpers.GetLoopDuration(clip);
                 var offset = (clip.clipIn / clip.timeScale) % duration;
@@ -279,7 +287,7 @@ namespace UnityEditor.Timeline
             var clipItem = ItemsUtils.ToItem(clip);
             EditMode.BeginTrim(clipItem, edge);
             if (edge == TrimEdge.Start)
-                EditMode.TrimStart(clipItem, time);
+                EditMode.TrimStart(clipItem, time, false);
             else
                 EditMode.TrimEnd(clipItem, time, false);
             EditMode.FinishTrim();

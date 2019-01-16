@@ -12,7 +12,7 @@ namespace UnityEditor.Timeline
     {
         void OnBeforeTrim(ITrimmable item, TrimEdge trimDirection);
 
-        void TrimStart(ITrimmable item, double time);
+        void TrimStart(ITrimmable item, double time, bool affectTimeScale);
         void TrimEnd(ITrimmable item, double time, bool affectTimeScale);
     }
 

@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.3.0-preview.6] - 2019-12-06
+## [1.3.0-preview.7] - 2019-01-16
 
 ### Added
 - Inline Curve Properties can be removed.
@@ -12,6 +12,18 @@ All notable changes to this package will be documented in this file. The format 
 - Ease-in and ease-out values for clips are no longer restricted to 50% of the clip's duration.
 - The resize handle for inline curves has been moved to the track header area.
 - Reduced the minimum width of the track header area.
+- Trimming the left edge of a clip while pressing the Shift key will change the Speed Multiplier value.
+
+## [1.2.11] - 2020-01-22
+
+### Fixed
+- Fixed Control Track inspector dropdown not opening. ([1208943](https://issuetracker.unity3d.com/product/unity/issues/guid/1208943/))
+- Fixed issue where applying the Match content command on subtimeline clip with a newly created subtimeline with no duration makes the clip disappear. ([1203662](https://issuetracker.unity3d.com/product/unity/issues/guid/1203662/))
+- Fixed issue where the opened timeline is changed to another timeline when switching focus from Unity to a different application. ([1087348](https://issuetracker.unity3d.com/product/unity/issues/guid/1087348/))
+- Fixed issue where the keys in the inline curves view were incorrectly positioned ([1205835](https://issuetracker.unity3d.com/product/unity/issues/guid/1205835/))
+
+### Changed
+- ControlPlayableAsset.searchHierarchy (a.k.a. Control Children) now defaults to false. 
 
 ## [1.2.10] - 2019-12-08
 
