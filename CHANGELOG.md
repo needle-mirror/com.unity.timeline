@@ -1,10 +1,22 @@
 # Changelog
-All notable changes to this package will be documented in this file.
+All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+## [1.2.1] - 2019-08-01
+
+## Fixed
+- Fixed appearance of a selected clip's border. 
+- Fixed non-transform properties from AnimationClips not being correctly put into preview mode when the avatar root does not contain the animator component. ([1162334](https://issuetracker.unity3d.com/product/unity/issues/guid/1162334/))
+- Fixed an issue where the context menu for inline curves keys would not open on MacOS. ([1158584](https://issuetracker.unity3d.com/product/unity/issues/guid/1158584/))
+- Fixed recording state being incorrect after toggling preview mode (1146551)
+- Fixed copying clips without ExposedReferences causing the scene to dirty (1144469)
 
 ## [1.2.0] - 2019-07-16
 *Compatible with Unity 2019.3*
+
+### Added
+- Added ILayerable interface. Implementing this interface on a custom track will enable support for multiple layers, similar to the AnimationTracks override tracks.
+- Added "Pan" autoscrolling option in the Timeline window.
+- Enabled rectangle tool for inline curves.
 
 ### Changed
 - Scrolling horizontally with the mouse wheel or trackpad now pans the timeline view horizontally, instead of zooming.
@@ -54,11 +66,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Fixed Disable the possibility to add Markers to tracks of a Timeline that is ReadOnly (1134463)
 - Fixed wrong context menu being shown when right-clicking a marker (1133592)
 - Fixed creation of override track to work with multiselection (1133592)
-
-### Added
-- Added ILayerable interface. Implementing this interface on a custom track will enable support for multiple layers, similar to the AnimationTracks override tracks.
-- Added "Pan" autoscrolling option in the Timeline window.
-- Enabled rectangle tool for inline curves.
 
 ## [1.1.0] - 2019-02-14
 *Compatible with Unity 2019.2*
@@ -125,7 +132,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Added Signal Receiver Components. Signal Receivers are MonoBehaviour that listen for Signals from Timeline and respond by invoking UnityEvents.
 - Added Signal Tracks. Signal Tracks are Timeline Tracks that are used only for Signal Emitters.
 
-###Fixed
+### Fixed
 - Signal Receiver will no longer throw exceptions when its inspector is locked ([1114526](https://issuetracker.unity3d.com/product/unity/issues/guid/1114526/))
 - Context menu operations will now be applied on all selected tracks (1089820)
 - Clip edit mode clutch keys will not get stuck when holding multiple keys at the same time (1097216)

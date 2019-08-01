@@ -7,6 +7,32 @@ namespace UnityEditor.Timeline
 {
     class Clipboard
     {
+        class ExposedReferenceTable : IExposedPropertyTable
+        {
+            Dictionary<PropertyName, Object> m_ReferenceTable = new Dictionary<PropertyName, Object>();
+            public void SetReferenceValue(PropertyName id, Object value)
+            {
+                m_ReferenceTable[id] = value;
+            }
+
+            public Object GetReferenceValue(PropertyName id, out bool idValid)
+            {
+                Object reference;
+                idValid = m_ReferenceTable.TryGetValue(id, out reference);
+                return reference;
+            }
+
+            public void ClearReferenceValue(PropertyName id)
+            {
+                m_ReferenceTable.Remove(id);
+            }
+
+            public void Clear()
+            {
+                m_ReferenceTable.Clear();
+            }
+        }
+        
         public struct ClipboardTrackEntry
         {
             public TrackAsset item;
@@ -18,6 +44,8 @@ namespace UnityEditor.Timeline
         readonly List<ItemsPerTrack> m_ItemsData = new List<ItemsPerTrack>(kListInitialSize);
         readonly List<ClipboardTrackEntry> m_trackData = new List<ClipboardTrackEntry>(kListInitialSize);
         TimelineAsset rootTimeline;
+        
+        public readonly IExposedPropertyTable exposedPropertyTable = new ExposedReferenceTable();
 
         public Clipboard()
         {
@@ -49,7 +77,7 @@ namespace UnityEditor.Timeline
 
         ClipItem CopyItem(ClipItem clipItem)
         {
-            var newClip = TimelineHelpers.Clone(clipItem.clip, TimelineWindow.instance.state.editSequence.director, rootTimeline);
+            var newClip = TimelineHelpers.Clone(clipItem.clip, TimelineWindow.instance.state.editSequence.director, exposedPropertyTable,rootTimeline);
             return new ClipItem(newClip);
         }
 
@@ -72,8 +100,7 @@ namespace UnityEditor.Timeline
             {
                 foreach (var track in TrackExtensions.FilterTracks(tracks))
                 {
-                    var newTrack = track.Duplicate(TimelineWindow.instance.state.editSequence.director,
-                        rootTimeline);
+                    var newTrack = track.Duplicate(TimelineEditor.inspectedDirector, TimelineEditor.clipboard.exposedPropertyTable, rootTimeline);
                     m_trackData.Add(new ClipboardTrackEntry {item = newTrack, parent = track.parent as TrackAsset});
                 }
             }
@@ -94,6 +121,7 @@ namespace UnityEditor.Timeline
             m_ItemsData.Clear();
             m_trackData.Clear();
             rootTimeline = CreateTimeline();
+            ((ExposedReferenceTable) exposedPropertyTable).Clear();
         }
 
         private void OnPlayModeChanged(PlayModeStateChange state)

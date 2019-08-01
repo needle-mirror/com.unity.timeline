@@ -106,7 +106,7 @@ namespace UnityEditor.Timeline
 
             bool newlySelected = false;
 
-            if (Event.current.type == EventType.MouseDown)
+            if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.ContextClick)
                 newlySelected = MouseOverTrackArea(curveRect, trackRect) || MouseOverHeaderArea(headerRect, trackRect);
 
             // make sure to not use any event before drawing the curve.
@@ -139,7 +139,7 @@ namespace UnityEditor.Timeline
             if (newlySelected && !locked)
             {
                 clipCurveEditorOwner.inlineCurvesSelected = true;
-                Event.current.Use();
+                HandleCurrentEvent();
             }
         }
 
@@ -300,6 +300,15 @@ namespace UnityEditor.Timeline
             vm.inlineCurvesState = curveEditor.bindingHierarchy.treeViewController.state;
             vm.inlineCurvesShownAreaInsideMargins = curveEditor.shownAreaInsideMargins;
             vm.lastInlineCurveDataID = curveEditor.dataSource.id;
+        }
+
+        static void HandleCurrentEvent()
+        {
+#if UNITY_EDITOR_OSX
+            Event.current.type = EventType.Ignore;
+#else
+            Event.current.Use();
+#endif
         }
     }
 }

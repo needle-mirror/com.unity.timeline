@@ -124,7 +124,7 @@ namespace UnityEditor.Timeline
 
                 TimelineUndo.PushUndo(clip.parentTrack, "Split Clip");
 
-                TimelineClip newClip = TimelineHelpers.Clone(clip, director, clip.start);
+                TimelineClip newClip = TimelineHelpers.Clone(clip, director, director, clip.start);
 
                 SetStart(clip, splitTime);
                 SetEnd(newClip, splitTime, false);

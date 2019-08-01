@@ -14,13 +14,10 @@ namespace UnityEngine.Timeline
             public Playable mixer;
             public Playable parentMixer;
             public int port;
-            public bool modulate;
         }
 
         AnimationPlayableOutput m_Output;
         AnimationMotionXToDeltaPlayable m_MotionXPlayable;
-        AnimationLayerMixerPlayable m_PoseMixer;
-        AnimationLayerMixerPlayable m_LayerMixer;
         readonly List<WeightInfo> m_Mixers = new List<WeightInfo>();
 
         public AnimationOutputWeightProcessor(AnimationPlayableOutput output)
@@ -30,65 +27,14 @@ namespace UnityEngine.Timeline
             FindMixers();
         }
 
-        static Playable FindFirstAnimationPlayable(Playable p)
-        {
-            var currentNode = p;
-            while (currentNode.IsValid() && currentNode.GetInputCount() > 0
-                   && !currentNode.IsPlayableOfType<AnimationLayerMixerPlayable>()
-                   && !currentNode.IsPlayableOfType<AnimationMotionXToDeltaPlayable>()
-                   && !currentNode.IsPlayableOfType<AnimationMixerPlayable>())
-                currentNode = currentNode.GetInput(0);
-
-            return currentNode;
-        }
-
         void FindMixers()
         {
-            m_Mixers.Clear();
-            m_PoseMixer = AnimationLayerMixerPlayable.Null;
-            m_LayerMixer = AnimationLayerMixerPlayable.Null;
-            m_MotionXPlayable = AnimationMotionXToDeltaPlayable.Null;
-
             var playable = m_Output.GetSourcePlayable();
             var outputPort = m_Output.GetSourceOutputPort();
-            if (!playable.IsValid() || outputPort < 0 || outputPort >= playable.GetInputCount())
-                return;
 
-            var mixer = FindFirstAnimationPlayable(playable.GetInput(outputPort));
-
-            Playable motionXPlayable = mixer;
-            if (motionXPlayable.IsPlayableOfType<AnimationMotionXToDeltaPlayable>())
-            {
-                m_MotionXPlayable = (AnimationMotionXToDeltaPlayable)motionXPlayable;
-                mixer = m_MotionXPlayable.GetInput(0);
-            }
-
-#if UNITY_EDITOR
-            // Default pose mixer
-            if (!Application.isPlaying)
-            {
-                if (mixer.IsValid() && mixer.IsPlayableOfType<AnimationLayerMixerPlayable>())
-                {
-                    m_PoseMixer = (AnimationLayerMixerPlayable)mixer;
-                    mixer = m_PoseMixer.GetInput(1);
-                }
-            }
-#endif
-
-            // Track mixer
-            if (mixer.IsValid() && mixer.IsPlayableOfType<AnimationLayerMixerPlayable>())
-            {
-                m_LayerMixer = (AnimationLayerMixerPlayable)mixer;
-            }
-
-            if (!m_LayerMixer.IsValid())
-                return;
-
-            var count = m_LayerMixer.GetInputCount();
-            for (var i = 0; i < count; i++)
-            {
-                FindMixers(m_LayerMixer, i, m_LayerMixer.GetInput(i));
-            }
+            m_Mixers.Clear();
+            // only write the final output in playmode. it should always be 1 in editor because we blend to the defaults
+            FindMixers(playable, outputPort, playable.GetInput(outputPort));
         }
 
         // Recursively accumulates mixers.
@@ -114,7 +60,6 @@ namespace UnityEngine.Timeline
                     parentMixer = parent,
                     mixer = node,
                     port = port,
-                    modulate = (type == typeof(AnimationLayerMixerPlayable))
                 };
                 m_Mixers.Add(weightInfo);
             }
@@ -130,45 +75,19 @@ namespace UnityEngine.Timeline
 
         public void Evaluate()
         {
+            float weight = 1;
             m_Output.SetWeight(1);
             for (int i = 0; i < m_Mixers.Count; i++)
             {
                 var mixInfo = m_Mixers[i];
-                float weight = mixInfo.modulate ? mixInfo.parentMixer.GetInputWeight(mixInfo.port) : 1.0f;
-                mixInfo.parentMixer.SetInputWeight(mixInfo.port, weight * WeightUtility.NormalizeMixer(mixInfo.mixer));
+                weight = WeightUtility.NormalizeMixer(mixInfo.mixer);
+                mixInfo.parentMixer.SetInputWeight(mixInfo.port, weight);
             }
-
-            float normalizedWeight = WeightUtility.NormalizeMixer(m_LayerMixer);
-
-            var animator = m_Output.GetTarget();
-            if (animator == null)
-                return;
-
-#if UNITY_EDITOR
-            // AnimationMotionXToDeltaPlayable must blend with default values when previewing tracks with absolute root motion.
-            bool blendMotionX = !Application.isPlaying && m_MotionXPlayable.IsValid() && m_MotionXPlayable.IsAbsoluteMotion();
-
-            if (blendMotionX)
-            {
-                if (!m_PoseMixer.Equals(AnimationLayerMixerPlayable.Null))
-                {
-                    m_PoseMixer.SetInputWeight(0, 1.0f);
-                    m_PoseMixer.SetInputWeight(1, normalizedWeight);
-                }
-            }
-            else
-            {
-                if (!m_PoseMixer.Equals(AnimationLayerMixerPlayable.Null))
-                {
-                    m_PoseMixer.SetInputWeight(0, 1.0f);
-                    m_PoseMixer.SetInputWeight(1, 1.0f);
-                }
-
-                m_Output.SetWeight(normalizedWeight);
-            }
-#else
-            m_Output.SetWeight(normalizedWeight);
-#endif
+            
+            // only write the final weight in player/playmode. In editor, we are blending to the appropriate defaults
+            // the last mixer in the list is the final blend, since the list is composed post-order.
+            if (Application.isPlaying)
+                m_Output.SetWeight(weight);
         }
     }
 }

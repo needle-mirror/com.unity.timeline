@@ -74,8 +74,6 @@ namespace UnityEditor.Timeline
         public EditorCurveBinding[] objectBindings;
         public List<ObjectReferenceKeyframe[]> objectCurves;
 
-        public EditorCurveBinding[] snapshotBindings;
-
         Dictionary<string, CurveBindingGroup> m_groupings;
 
         // to tell whether the cache has changed
@@ -165,8 +163,6 @@ namespace UnityEditor.Timeline
             {
                 objectCurves.Add(AnimationUtility.GetObjectReferenceCurve(clip, objectBindings[i]));
             }
-
-            snapshotBindings = AnimationMode.GetCurveBindings(clip);
 
             m_CurveDirty = false;
             m_KeysDirty = true;

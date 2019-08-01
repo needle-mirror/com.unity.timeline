@@ -474,7 +474,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in TrackExtensions.FilterTracks(tracks))
             {
-                var newTrack = track.Duplicate(state.editSequence.director);
+                var newTrack = track.Duplicate(TimelineEditor.inspectedDirector, TimelineEditor.inspectedDirector);
                 SelectionManager.Add(newTrack);
                 foreach (var childTrack in newTrack.GetFlattenedChildTracks())
                 {

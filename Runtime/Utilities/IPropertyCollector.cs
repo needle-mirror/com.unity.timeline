@@ -98,10 +98,5 @@ namespace UnityEngine.Timeline
         /// <param name="obj">The Object where the properties exist</param>
         /// <param name="clip">The animation clip that contains the properties</param>
         void AddObjectProperties(Object obj, AnimationClip clip);
-
-        /// <summary>
-        /// Create a clip with default pose.
-        /// </summary>
-        AnimationClip CreateDefaultClipFromProperties(GameObject obj);
     }
 }

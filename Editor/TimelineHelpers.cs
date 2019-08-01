@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor.MemoryProfiler;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -14,61 +15,81 @@ namespace UnityEditor.Timeline
     {
         static List<Type> s_SubClassesOfTrackDrawer;
 
-        static ScriptableObject CloneReferencedPlayableAsset(ScriptableObject original, PlayableDirector directorInstance, Object newOwner)
+        // check whether the exposed reference is explicitly named
+        static bool IsExposedReferenceExplicitlyNamed(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+            
+            GUID guid;
+            return !GUID.TryParse(name, out guid);
+        }
+
+        static string GenerateExposedReferenceName()
+        {
+            return UnityEditor.GUID.Generate().ToString();
+        }
+        
+        
+        public static void CloneExposedReferences(ScriptableObject clone, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable)
+        {
+            var cloneObject = new SerializedObject(clone);
+            SerializedProperty prop = cloneObject.GetIterator();
+            while (prop.Next(true))
+            {
+                if (prop.propertyType == SerializedPropertyType.ExposedReference)
+                {
+                    var exposedNameProp = prop.FindPropertyRelative("exposedName");
+                    var sourceKey = exposedNameProp.stringValue;
+                    var destKey = sourceKey;
+
+                    if (!IsExposedReferenceExplicitlyNamed(sourceKey))
+                        destKey = GenerateExposedReferenceName();
+
+                    exposedNameProp.stringValue = destKey;
+
+                    var requiresCopy = sourceTable != destTable || sourceKey != destKey;
+                    if (requiresCopy && sourceTable != null && destTable != null)
+                    {
+                        var valid = false;
+                        var target = sourceTable.GetReferenceValue(sourceKey, out valid);
+                        if (valid && target != null)
+                        {
+                            var existing = destTable.GetReferenceValue(destKey, out valid);
+                            if (!valid || existing != target)
+                            {
+                                var destTableObj = destTable as UnityEngine.Object;
+                                if (destTableObj != null)
+                                    TimelineUndo.PushUndo(destTableObj, "Create Clip");
+                                destTable.SetReferenceValue(destKey, target);
+                            }
+                        }
+                    }
+                }
+            }
+            cloneObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+        
+        
+        public static ScriptableObject CloneReferencedPlayableAsset(ScriptableObject original, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, Object newOwner)
         {
             var clone = Object.Instantiate(original);
             SaveCloneToAsset(clone, newOwner);
-            TimelineUndo.RegisterCreatedObjectUndo(clone, "Create clip");
             if (clone == null || (clone as IPlayableAsset) == null)
             {
                 throw new InvalidCastException("could not cast instantiated object into IPlayableAsset");
             }
-
-            if (directorInstance != null)
-            {
-                // Use serialize object to make a copy
-                var originalObject = new SerializedObject(original);
-                var cloneObject = new SerializedObject(clone);
-                SerializedProperty prop = originalObject.GetIterator();
-                if (prop.Next(true))
-                {
-                    do { cloneObject.CopyFromSerializedProperty(prop); } while (prop.Next(false));
-                }
-                cloneObject.ApplyModifiedProperties();
-
-                // The exposedName of exposed properties needs to be cleared otherwise the clone will act as an instance
-                var exposedRefs = clone.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(ExposedReference<>)).ToList();
-                foreach (FieldInfo fi in exposedRefs)
-                {
-                    var exposedRefInstance = fi.GetValue(clone);
-                    var exposedNameProperty = exposedRefInstance.GetType().GetField("exposedName");
-                    if (exposedNameProperty != null)
-                    {
-                        var exposedNameValue = (PropertyName)exposedNameProperty.GetValue(exposedRefInstance);
-
-                        bool isValid = false;
-                        var originalReference = directorInstance.GetReferenceValue(exposedNameValue, out isValid);
-
-                        if (isValid)
-                        {
-                            // generate new reference in directorInstance
-                            var newPropertyName = new PropertyName(GUID.Generate().ToString());
-                            directorInstance.SetReferenceValue(newPropertyName, originalReference);
-                            exposedNameProperty.SetValue(exposedRefInstance, newPropertyName);
-
-                            if (!EditorApplication.isPlaying)
-                                EditorSceneManager.MarkSceneDirty(directorInstance.gameObject.scene);
-                        }
-                    }
-                    fi.SetValue(clone, exposedRefInstance);
-                }
-            }
-
+            CloneExposedReferences(clone, sourceTable, destTable);
+            TimelineUndo.RegisterCreatedObjectUndo(clone, "Create clip");
+            
             return clone;
         }
 
         static void SaveCloneToAsset(Object clone, Object newOwner)
         {
+            if (newOwner == null)
+                return;
+            
             var containerPath = AssetDatabase.GetAssetPath(newOwner);
             var containerAsset = AssetDatabase.LoadAssetAtPath<Object>(containerPath);
             if (containerAsset != null)
@@ -92,12 +113,12 @@ namespace UnityEditor.Timeline
             return newClip;
         }
 
-        public static TimelineClip Clone(TimelineClip clip, PlayableDirector director, double time, PlayableAsset newOwner = null)
+        public static TimelineClip Clone(TimelineClip clip, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, double time, PlayableAsset newOwner = null)
         {
             if (newOwner == null)
                 newOwner = clip.parentTrack;
 
-            TimelineClip newClip = DuplicateClip(clip, director, newOwner);
+            TimelineClip newClip = DuplicateClip(clip, sourceTable, destTable, newOwner);
             newClip.start = time;
             var track = newClip.parentTrack;
             track.SortClips();
@@ -107,7 +128,7 @@ namespace UnityEditor.Timeline
 
         // Creates a complete clone of a track and returns it.
         // Does not parent, or add the track to the sequence
-        public static TrackAsset Clone(PlayableAsset parent, TrackAsset trackAsset, PlayableDirector director, PlayableAsset assetOwner = null)
+        public static TrackAsset Clone(PlayableAsset parent, TrackAsset trackAsset, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset assetOwner = null)
         {
             if (trackAsset == null)
                 return null;
@@ -135,7 +156,7 @@ namespace UnityEditor.Timeline
 
             foreach (var clip in trackAsset.clips)
             {
-                var newClip = DuplicateClip(clip, director, assetOwner);
+                var newClip = DuplicateClip(clip, sourceTable, destTable, assetOwner);
                 newClip.parentTrack = newTrack;
             }
 
@@ -158,7 +179,7 @@ namespace UnityEditor.Timeline
             return newTrack;
         }
 
-        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, ItemsPerTrack items, TrackAsset targetParent, double candidateTime, string undoOperation)
+        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, ItemsPerTrack items, TrackAsset targetParent, double candidateTime, string undoOperation)
         {
             if (targetParent != null)
             {
@@ -166,37 +187,32 @@ namespace UnityEditor.Timeline
                 if (aTrack != null)
                     aTrack.ConvertToClipMode();
 
-                var duplicatedItems = DuplicateItems(items, targetParent, state, undoOperation);
+                var duplicatedItems = DuplicateItems(items, targetParent, sourceTable, destTable, undoOperation);
                 FinalizeInsertItemsUsingCurrentEditMode(state, new[] {duplicatedItems}, candidateTime);
                 return duplicatedItems.items;
             }
 
             return Enumerable.Empty<ITimelineItem>();
         }
-
-        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, IEnumerable<ItemsPerTrack> items, double candidateTime, string undoOperation)
+        
+        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, IEnumerable<ItemsPerTrack> items, double candidateTime, string undoOperation)
         {
             var duplicatedItemsGroups = new List<ItemsPerTrack>();
             foreach (var i in items)
-                duplicatedItemsGroups.Add(DuplicateItems(i, i.targetTrack, state, undoOperation));
+                duplicatedItemsGroups.Add(DuplicateItems(i, i.targetTrack, sourceTable, destTable, undoOperation));
 
             FinalizeInsertItemsUsingCurrentEditMode(state, duplicatedItemsGroups, candidateTime);
             return duplicatedItemsGroups.SelectMany(i => i.items);
         }
 
-        internal static ItemsPerTrack DuplicateItems(ItemsPerTrack items, TrackAsset target, WindowState state, string undoOperation)
+        internal static ItemsPerTrack DuplicateItems(ItemsPerTrack items, TrackAsset target, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, string undoOperation)
         {
             var duplicatedItems = new List<ITimelineItem>();
-
-            PlayableDirector director = null;
-            if (state != null)
-                director = state.editSequence.director;
-
             var clips = items.clips.ToList();
             if (clips.Any())
             {
                 TimelineUndo.PushUndo(target, undoOperation);
-                duplicatedItems.AddRange(DuplicateClips(clips, director, target).ToItems());
+                duplicatedItems.AddRange(DuplicateClips(clips, sourceTable, destTable, target).ToItems());
                 TimelineUndo.PushUndo(target, undoOperation); // second undo causes reference fixups on redo (case 1063868)
             }
 
@@ -239,7 +255,7 @@ namespace UnityEditor.Timeline
             FrameItems(state, allItems);
         }
 
-        internal static TimelineClip Clone(TimelineClip clip, PlayableDirector director, PlayableAsset newOwner)
+        internal static TimelineClip Clone(TimelineClip clip, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset newOwner)
         {
             var editorClip = EditorClipFactory.GetEditorClip(clip);
             // Workaround for Clips not being unity object, assign it to a editor clip wrapper, clone it, and pull the clip back out
@@ -261,7 +277,7 @@ namespace UnityEditor.Timeline
             ScriptableObject playableAsset = newClip.asset as ScriptableObject;
             if (playableAsset != null && newClip.asset is IPlayableAsset)
             {
-                var clone = CloneReferencedPlayableAsset(playableAsset, director, newOwner);
+                var clone = CloneReferencedPlayableAsset(playableAsset, sourceTable, destTable, newOwner);
                 newClip.asset = clone;
 
                 // special case to make the name match the recordable clips, but only if they match on the original clip
@@ -284,7 +300,7 @@ namespace UnityEditor.Timeline
             return newClip;
         }
 
-        static TimelineClip[] DuplicateClips(IEnumerable<TimelineClip> clips, PlayableDirector playableDirector, PlayableAsset newOwner)
+        static TimelineClip[] DuplicateClips(IEnumerable<TimelineClip> clips, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset newOwner)
         {
             var newClips = new TimelineClip[clips.Count()];
 
@@ -293,7 +309,7 @@ namespace UnityEditor.Timeline
             foreach (var clip in clips)
             {
                 var newParent = newOwner == null ? clip.parentTrack : newOwner;
-                var newClip = DuplicateClip(clip, playableDirector, newParent);
+                var newClip = DuplicateClip(clip, sourceTable, destTable, newParent);
                 newClip.parentTrack = null;
                 newClips[i++] = newClip;
             }
@@ -301,9 +317,9 @@ namespace UnityEditor.Timeline
             return newClips;
         }
 
-        static TimelineClip DuplicateClip(TimelineClip clip, PlayableDirector director, PlayableAsset newOwner)
+        static TimelineClip DuplicateClip(TimelineClip clip, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset newOwner)
         {
-            var newClip = Clone(clip, director, newOwner);
+            var newClip = Clone(clip, sourceTable, destTable, newOwner);
 
             var track = clip.parentTrack;
             if (track != null)

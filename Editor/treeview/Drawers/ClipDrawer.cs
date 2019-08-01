@@ -562,7 +562,16 @@ namespace UnityEditor.Timeline
                 drawData.clipCenterSection.width = k_MinClipWidth;
             }
 
-            DrawClipEdges(drawData.targetRect, drawData.ClipDrawOptions.highlightColor, s_InlineLightColor, s_InlineShadowColor,
+            var overlapRect = drawData.targetRect;
+            if (drawData.previousClip != null && SelectionManager.Contains(drawData.previousClip) &&
+                drawData.clipBlends.inRect.width != 0)
+            {
+                var mixInRect = drawData.clipBlends.inRect;
+                overlapRect.xMin +=  mixInRect.width;
+                Graphics.DrawLineAA(2.0f, new Vector3(mixInRect.xMin, mixInRect.yMin + 1f, 0),
+                    new Vector3(mixInRect.xMax, mixInRect.yMax - 1f, 0), ClipBorder.kSelection.color);
+            }
+            DrawClipEdges(overlapRect, drawData.ClipDrawOptions.highlightColor, s_InlineLightColor, s_InlineShadowColor,
                 drawData.clipBlends.inKind != BlendKind.Mix,
                 drawData.clipBlends.outKind != BlendKind.Mix);
 

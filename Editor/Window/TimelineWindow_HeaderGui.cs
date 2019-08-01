@@ -86,7 +86,10 @@ namespace UnityEditor.Timeline
             {
                 // turn off auto play as well, so it doesn't auto reenable
                 if (!enabled)
+                {
                     state.SetPlaying(false);
+                    state.recording = false;
+                }
 
                 state.previewMode = enabled;
 

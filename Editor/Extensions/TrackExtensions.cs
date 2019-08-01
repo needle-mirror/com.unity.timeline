@@ -114,14 +114,14 @@ namespace UnityEditor.Timeline
             }
         }
 
-        internal static void RecursiveSubtrackClone(TrackAsset source, TrackAsset duplicate, PlayableDirector director, PlayableAsset assetOwner)
+        internal static void RecursiveSubtrackClone(TrackAsset source, TrackAsset duplicate, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset assetOwner)
         {
             var subtracks = source.GetChildTracks();
             foreach (var sub in subtracks)
             {
-                var newSub = TimelineHelpers.Clone(duplicate, sub, director, assetOwner);
+                var newSub = TimelineHelpers.Clone(duplicate, sub, sourceTable, destTable, assetOwner);
                 duplicate.AddChild(newSub);
-                RecursiveSubtrackClone(sub, newSub, director, assetOwner);
+                RecursiveSubtrackClone(sub, newSub, sourceTable, destTable, assetOwner);
 
                 // Call the custom editor on Create
                 var customEditor = CustomTimelineEditorCache.GetTrackEditor(newSub);
@@ -135,12 +135,12 @@ namespace UnityEditor.Timeline
                 }
 
                 // registration has to happen AFTER recursion
-                TimelineUndo.RegisterCreatedObjectUndo(newSub, "Duplicate");
                 TimelineCreateUtilities.SaveAssetIntoObject(newSub, assetOwner);
+                TimelineUndo.RegisterCreatedObjectUndo(newSub, "Duplicate");
             }
         }
 
-        internal static TrackAsset Duplicate(this TrackAsset track, PlayableDirector director,
+        internal static TrackAsset Duplicate(this TrackAsset track, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable,
             TimelineAsset destinationTimeline = null)
         {
             if (track == null)
@@ -170,12 +170,12 @@ namespace UnityEditor.Timeline
 
             // Important to create the new objects before pushing the original undo, or redo breaks the
             //  sequence
-            var newTrack = TimelineHelpers.Clone(finalParent, track, director, finalParent);
+            var newTrack = TimelineHelpers.Clone(finalParent, track, sourceTable, destTable, finalParent);
             newTrack.name = TimelineCreateUtilities.GenerateUniqueActorName(otherTracks, newTrack.name);
 
-            RecursiveSubtrackClone(track, newTrack, director, finalParent);
-            TimelineUndo.RegisterCreatedObjectUndo(newTrack, "Duplicate");
+            RecursiveSubtrackClone(track, newTrack, sourceTable, destTable, finalParent);
             TimelineCreateUtilities.SaveAssetIntoObject(newTrack, finalParent);
+            TimelineUndo.RegisterCreatedObjectUndo(newTrack, "Duplicate");
             TimelineUndo.PushUndo(finalParent, "Duplicate");
 
             if (destinationTimeline != null) // other timeline

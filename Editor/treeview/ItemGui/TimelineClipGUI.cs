@@ -95,7 +95,7 @@ namespace UnityEditor.Timeline
             var blendOutKind = BlendKind.None;
             if (_mixOutRect.width > k_MinMixWidth && clip.hasBlendOut)
                 blendOutKind = BlendKind.Mix;
-            if (_mixOutRect.width > k_MinMixWidth)
+            else if (_mixOutRect.width > k_MinMixWidth)
                 blendOutKind = BlendKind.Ease;
 
             return new ClipBlends(blendInKind, _mixInRect, blendOutKind, _mixOutRect);

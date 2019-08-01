@@ -107,7 +107,7 @@ namespace UnityEditor.Timeline
 
         public ITimelineItem CloneTo(TrackAsset parent, double time)
         {
-            return new ClipItem(TimelineHelpers.Clone(m_Clip, TimelineWindow.instance.state.editSequence.director, time, parent));
+            return new ClipItem(TimelineHelpers.Clone(m_Clip, TimelineEditor.inspectedDirector, TimelineEditor.inspectedDirector, time, parent));
         }
 
         public override string ToString()

@@ -240,6 +240,7 @@ namespace UnityEditor.Timeline
                         OnStopPreview();
 
                         AnimationMode.StopAnimationMode(previewDriver);
+                         
                         AnimationPropertyContextualMenu.Instance.SetResponder(null);
                         previewedDirectors = null;
                     }

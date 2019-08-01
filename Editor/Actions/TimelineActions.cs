@@ -252,13 +252,13 @@ namespace UnityEditor.Timeline
                     target = FindSuitableParentForSingleTrackPasteWithoutMouse(itemsGroup);
 
                 var candidateTime = TimelineHelpers.GetCandidateTime(state, mousePosition, target);
-                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, itemsGroup, target, candidateTime, "Paste Items").ToList();
+                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, itemsGroup, target, candidateTime, "Paste Items").ToList();
             }
             //if copied items were on multiple parents, then the destination parents are the same as the original parents
             else
             {
                 var time = TimelineHelpers.GetCandidateTime(state, mousePosition, copiedItems.Select(c => c.targetTrack).ToArray());
-                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, copiedItems, time, "Paste Items").ToList();
+                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, copiedItems, time, "Paste Items").ToList();
             }
 
             TimelineHelpers.FrameItems(state, newItems);
@@ -310,7 +310,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in trackData)
             {
-                var newTrack = track.item.Duplicate(state.editSequence.director, state.editSequence.asset);
+                var newTrack = track.item.Duplicate(TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, TimelineEditor.inspectedAsset);
                 SelectionManager.Add(newTrack);
                 foreach (var childTrack in newTrack.GetFlattenedChildTracks())
                 {
@@ -340,7 +340,7 @@ namespace UnityEditor.Timeline
             if (selectedItems.Any())
             {
                 var requestedTime = CalculateDuplicateTime(selectedItems, gapBetweenItems);
-                var duplicatedItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, selectedItems, requestedTime, "Duplicate Items");
+                var duplicatedItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.inspectedDirector,TimelineEditor.inspectedDirector, selectedItems, requestedTime, "Duplicate Items");
 
                 TimelineHelpers.FrameItems(state, duplicatedItems);
                 SelectionManager.RemoveTimelineSelection();

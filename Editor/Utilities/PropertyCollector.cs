@@ -10,16 +10,7 @@ namespace UnityEditor.Timeline
 {
     class PropertyCollector : IPropertyCollector
     {
-        class EditorCurveBindingComparer : IEqualityComparer<EditorCurveBinding>
-        {
-            public bool Equals(EditorCurveBinding x, EditorCurveBinding y) { return x.path.Equals(y.path) && x.type == y.type && x.propertyName == y.propertyName; }
-            public int GetHashCode(EditorCurveBinding obj) { return HashUtility.CombineHash(obj.path.GetHashCode(), obj.type.GetHashCode(), obj.propertyName.GetHashCode()); }
-            public static readonly EditorCurveBindingComparer Instance = new EditorCurveBindingComparer();
-        }
-
-        readonly HashSet<EditorCurveBinding> m_CurveBindingSet = new HashSet<EditorCurveBinding>(EditorCurveBindingComparer.Instance);
         readonly Stack<GameObject> m_ObjectStack = new Stack<GameObject>();
-        readonly AnimatorBindingCache m_AnimatorCache = new AnimatorBindingCache();
 
         // Call immediately before use
         public void Reset()
@@ -31,7 +22,7 @@ namespace UnityEditor.Timeline
         public void Clear()
         {
             m_ObjectStack.Clear();
-            m_AnimatorCache.Clear();
+            AnimationPreviewUtilities.ClearCaches();
         }
 
         public void PushActiveGameObject(GameObject gameObject)
@@ -78,61 +69,12 @@ namespace UnityEditor.Timeline
                 AddPropertiesFromClip(obj, clip);
         }
 
-        public void AddFromClips(GameObject obj, IEnumerable<AnimationClip> clips)
+        public void AddFromClips(GameObject animatorRoot, IEnumerable<AnimationClip> clips)
         {
             if (Application.isPlaying)
                 return;
-
-            // Add RootMotion TR property in animation mode snapshot as well if animator bindings didn't do it.
-            var animator = obj.GetComponent<Animator>();
-            bool addRoot = (animator != null && !animator.isHuman && !animator.applyRootMotion);
-
-            m_CurveBindingSet.Clear();
-            foreach (var c in clips)
-            {
-                addRoot |= c.hasRootCurves | c.hasMotionCurves | c.hasRootMotion | c.hasGenericRootTransform;
-
-                m_CurveBindingSet.UnionWith(AnimationClipCurveCache.Instance.GetCurveInfo(c).snapshotBindings);
-            }
-            m_CurveBindingSet.UnionWith(m_AnimatorCache.GetAnimatorBindings(obj));
-            m_CurveBindingSet.UnionWith(AnimationUtility.GetAnimationStreamBindings(animator.gameObject));
-
-            foreach (var binding in m_CurveBindingSet)
-            {
-                if (binding.type != typeof(Animator) && !IsEuler(binding))
-                    AnimationMode.AddEditorCurveBinding(obj, binding);
-            }
-
-            if (addRoot)
-                AnimationMode.AddTransformTR(obj, string.Empty);
-        }
-
-        private static bool IsEuler(EditorCurveBinding binding)
-        {
-            return typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.StartsWith("localEulerAnglesRaw");
-        }
-
-        private static bool IsEulerHint(EditorCurveBinding binding)
-        {
-            return binding.type == typeof(Transform) && binding.propertyName.StartsWith("localEulerAnglesRaw");
-        }
-
-        private static bool IsRootMotion(EditorCurveBinding binding)
-        {
-            // Root Transform TR.
-            if (typeof(Transform).IsAssignableFrom(binding.type) && string.IsNullOrEmpty(binding.path))
-            {
-                return binding.propertyName.StartsWith("m_LocalPosition") || binding.propertyName.StartsWith("m_LocalRotation");
-            }
-
-            // MotionCurves/RootCurves.
-            if (binding.type == typeof(Animator))
-            {
-                return binding.propertyName.StartsWith("MotionT") || binding.propertyName.StartsWith("MotionQ") ||
-                    binding.propertyName.StartsWith("RootT") ||  binding.propertyName.StartsWith("RootQ");
-            }
-
-            return false;
+            
+            AnimationPreviewUtilities.PreviewFromCurves(animatorRoot, AnimationPreviewUtilities.GetBindings(animatorRoot, clips));
         }
 
         public void AddFromName<T>(GameObject obj, string name) where T : Component
@@ -178,9 +120,6 @@ namespace UnityEditor.Timeline
             if (go != null && clip != null)
             {
                 AnimationMode.InitializePropertyModificationForGameObject(go, clip);
-
-                // Add RootMotion TR property in animation mode snapshot as well.
-                AnimationMode.AddTransformTR(go, "");
             }
         }
 
@@ -282,30 +221,6 @@ namespace UnityEditor.Timeline
                 return;
 
             DrivenPropertyManager.RegisterProperty(driver, comp, name);
-        }
-
-        public AnimationClip CreateDefaultClipFromProperties(GameObject obj)
-        {
-            AnimationClip clip = new AnimationClip() { name = "DefaultPose" };
-
-            foreach (var binding in m_CurveBindingSet)
-            {
-                // Not setting curves through AnimationUtility.SetEditorCurve to avoid reentrant
-                // onCurveWasModified calls in timeline.  This means we don't get sprite curves
-                // in the default clip right now.
-                if (IsRootMotion(binding) || IsEulerHint(binding) || binding.isPPtrCurve)
-                    continue;
-
-                float floatValue;
-                AnimationUtility.GetFloatValue(obj, binding, out floatValue);
-
-                var key = new Keyframe(0f, floatValue);
-                var curve = new AnimationCurve(new Keyframe[] {key});
-
-                clip.SetCurve(binding.path, binding.type, binding.propertyName, curve);
-            }
-
-            return clip;
         }
     }
 }

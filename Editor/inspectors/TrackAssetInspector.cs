@@ -78,12 +78,10 @@ namespace UnityEditor.Timeline
         {
             serializedObject.Update();
 
-            Rect textFieldRect = titleRect;
-            textFieldRect.height = 16f;
-
+            var textFieldRect = titleRect;
             using (new GUIMixedValueScope(m_Name.hasMultipleDifferentValues))
             {
-                TimelineWindow seqWindow = TimelineWindow.instance;
+                var seqWindow = TimelineWindow.instance;
 
                 if (IsTrackLocked())
                 {
