@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.2] - 2019-08-20
+
+## Fixed
+- Fixed issue where fields for custom clips were not responding to Add Key commands. (1174416)
+- Fixed issue where a different track's bound GameObject is highlighted when clicking a track's bound GameObject box. (1141836)
+- Fixed issue where a clip locks to the playhead's position when moving it. (1157280)
+
 ## [1.2.1] - 2019-08-01
 
 ## Fixed

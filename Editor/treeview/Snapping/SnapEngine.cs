@@ -82,7 +82,9 @@ namespace UnityEditor.Timeline
             AddMagnet(0.0, true, state);
 
             // Add current Time as Magnet
-            AddMagnet(state.editSequence.time, true, state);
+            // case1157280 only add current time as magnet if visible
+            if (TimelineWindow.instance.currentMode.ShouldShowTimeCursor(m_State))
+                AddMagnet(state.editSequence.time, true, state);
 
             if (state.IsEditingASubTimeline())
             {

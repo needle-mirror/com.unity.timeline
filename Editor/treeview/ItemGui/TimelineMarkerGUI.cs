@@ -93,8 +93,9 @@ namespace UnityEditor.Timeline
                 var style = StyleManager.UssStyleForType(type);
                 style.Draw(drawRect, GUIContent.none, false, false, !isCollapsed, isSelected);
 
+                // case1141836: Use of GUI.Box instead of GUI.Label causes desync in UI controlID
                 if (hasError)
-                    GUI.Box(drawRect, String.Empty, DirectorStyles.Instance.markerWarning);
+                    GUI.Label(drawRect, String.Empty, DirectorStyles.Instance.markerWarning);
 
                 var tooltip = hasError ? options.errorText : options.tooltip;
                 if (!string.IsNullOrEmpty(tooltip) && drawRect.Contains(Event.current.mousePosition))

@@ -236,7 +236,7 @@ namespace UnityEditor.Timeline
                     rect.yMin + (rect.height - icon.fixedHeight) * 0.5f,
                     icon.fixedWidth, icon.fixedHeight);
 
-                GUI.Box(iconRect, GUIContent.none, icon);
+                GUI.Label(iconRect, GUIContent.none, icon);
             }
 
             if (drawClipIn)

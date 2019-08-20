@@ -44,7 +44,7 @@ namespace UnityEditor.Timeline
                 return false;
 
             var curvesOwner = AnimatedParameterUtility.ToCurvesOwner(target, state.editSequence.asset);
-            if (curvesOwner == null || !state.IsTrackRecordable(curvesOwner.targetTrack))
+            if (curvesOwner == null || !curvesOwner.HasAnyAnimatableParameters())
                 return false;
 
             return ProcessPlayableAssetRecording(mod, state, curvesOwner);
