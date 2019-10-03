@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.3] - 2019-10-03
+
+### Fixed
+- Removed unnecessary directories from the package.
+
 ## [1.2.2] - 2019-08-20
 
 ## Fixed
@@ -11,7 +16,7 @@ All notable changes to this package will be documented in this file. The format 
 ## [1.2.1] - 2019-08-01
 
 ## Fixed
-- Fixed appearance of a selected clip's border. 
+- Fixed appearance of a selected clip's border.
 - Fixed non-transform properties from AnimationClips not being correctly put into preview mode when the avatar root does not contain the animator component. ([1162334](https://issuetracker.unity3d.com/product/unity/issues/guid/1162334/))
 - Fixed an issue where the context menu for inline curves keys would not open on MacOS. ([1158584](https://issuetracker.unity3d.com/product/unity/issues/guid/1158584/))
 - Fixed recording state being incorrect after toggling preview mode (1146551)
