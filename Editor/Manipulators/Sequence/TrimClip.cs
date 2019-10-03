@@ -35,6 +35,9 @@ namespace UnityEditor.Timeline
 
         double m_OriginalDuration;
         double m_OriginalTimeScale;
+        double m_OriginalEaseInDuration;
+        double m_OriginalEaseOutDuration;
+
         bool m_UndoSaved;
         SnapEngine m_SnapEngine;
 
@@ -69,6 +72,8 @@ namespace UnityEditor.Timeline
 
             m_OriginalDuration = clip.duration;
             m_OriginalTimeScale = clip.timeScale;
+            m_OriginalEaseInDuration = clip.easeInDuration;
+            m_OriginalEaseOutDuration = clip.easeOutDuration;
 
             RefreshOverlayStrings(m_TrimClipHandler, state);
 
@@ -108,9 +113,9 @@ namespace UnityEditor.Timeline
             if (!m_IsCaptured)
                 return false;
 
+            var uiClip = m_TrimClipHandler.clipGUI;
             if (!m_UndoSaved)
             {
-                var uiClip = m_TrimClipHandler.clipGUI;
                 TimelineUndo.PushUndo(uiClip.clip.parentTrack, "Trim Clip");
                 if (TimelineUtility.IsRecordableAnimationClip(uiClip.clip))
                 {
@@ -119,6 +124,10 @@ namespace UnityEditor.Timeline
 
                 m_UndoSaved = true;
             }
+
+            //Reset to original ease values. The trim operation will calculate the proper blend values.
+            uiClip.clip.easeInDuration = m_OriginalEaseInDuration;
+            uiClip.clip.easeOutDuration = m_OriginalEaseOutDuration;
 
             if (m_SnapEngine != null)
                 m_SnapEngine.Snap(evt.mousePosition, evt.modifiers);

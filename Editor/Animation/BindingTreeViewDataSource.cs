@@ -31,7 +31,7 @@ namespace UnityEditorInternal
             SetExpanded(GroupID, true);
         }
 
-        static string GroupName(EditorCurveBinding binding)
+        public static string GroupName(EditorCurveBinding binding)
         {
             string property = AnimationWindowUtility.NicifyPropertyGroupName(binding.type, binding.propertyName);
             if (!string.IsNullOrEmpty(binding.path))
@@ -59,41 +59,77 @@ namespace UnityEditorInternal
             {
                 parent = key,
                 bindings = g.ToList()
-            }
-            );
+            }).OrderBy(t =>
+                {
+                    //Force transform order first
+                    if (t.parent == "Position") return -3;
+                    if (t.parent == "Rotation") return -2;
+                    if (t.parent == "Scale") return -1;
+                    return 0;
+                }).ThenBy(t => t.parent);
 
             m_RootItem = new CurveTreeViewNode(RootID, null, "root", null)
             {
                 children = new List<TreeViewItem>(1)
             };
 
-            var groupingNode = new CurveTreeViewNode(GroupID, m_RootItem, m_CurveDataSource.groupingName, bindings)
+            if (results.Any())
             {
-                children = new List<TreeViewItem>()
-            };
-
-            m_RootItem.children.Add(groupingNode);
-
-            foreach (var r in results)
-            {
-                var newNode = new CurveTreeViewNode(r.parent.GetHashCode(), groupingNode, r.parent, r.bindings.ToArray());
-                groupingNode.children.Add(newNode);
-                if (r.bindings.Count > 1)
+                var groupingNode = new CurveTreeViewNode(GroupID, m_RootItem, m_CurveDataSource.groupingName, bindings)
                 {
+                    children = new List<TreeViewItem>()
+                };
+
+                m_RootItem.children.Add(groupingNode);
+
+                foreach (var r in results)
+                {
+                    FillMissingTransformCurves(r.parent, r.bindings);
+                    var newNode = new CurveTreeViewNode(r.parent.GetHashCode(), groupingNode, r.parent, r.bindings.ToArray());
+                    groupingNode.children.Add(newNode);
                     for (int b = 0; b < r.bindings.Count; b++)
                     {
                         if (newNode.children == null)
                             newNode.children = new List<TreeViewItem>();
 
                         var binding = r.bindings[b];
-                        var bindingNode = new CurveTreeViewNode(binding.GetHashCode(), newNode, PropertyName(binding), new[] {binding});
+                        string propDisplayName = PropertyName(binding) + (binding.isPhantom ? " (Default Value)" : string.Empty);
+                        var bindingNode = new CurveTreeViewNode(binding.GetHashCode(), newNode, propDisplayName, new[] { binding });
                         newNode.children.Add(bindingNode);
                     }
                 }
+                SetupRootNodeSettings();
             }
 
-            SetupRootNodeSettings();
             m_NeedRefreshRows = true;
+        }
+
+        private void FillMissingTransformCurves(string parent, List<EditorCurveBinding> bindings)
+        {
+            if (!AnimationWindowUtility.IsActualTransformCurve(bindings[0]) || bindings.Count == 3)
+                return;
+
+            string prefixProperyName = bindings.First().propertyName.Split('.').First();
+            if (bindings.FirstOrDefault(p => p.propertyName.EndsWith(".x")) == default)
+            {
+                var b = EditorCurveBinding.FloatCurve(string.Empty, typeof(Transform), prefixProperyName + ".x");
+                b.isPhantom = true;
+                bindings.Insert(0, b);
+            }
+
+            if (bindings.FirstOrDefault(p => p.propertyName.EndsWith(".y")) == default)
+            {
+                var b = EditorCurveBinding.FloatCurve(string.Empty, typeof(Transform), prefixProperyName + ".y");
+                b.isPhantom = true;
+                bindings.Insert(1, b);
+            }
+
+            if (bindings.FirstOrDefault(p => p.propertyName.EndsWith(".z")) == default)
+            {
+                var b = EditorCurveBinding.FloatCurve(string.Empty, typeof(Transform), prefixProperyName + ".z");
+                b.isPhantom = true;
+                bindings.Insert(2, b);
+            }
         }
 
         public void UpdateData()

@@ -15,11 +15,7 @@ namespace UnityEditor.Timeline
         [Serializable]
         public class TimelineWindowPreferences
         {
-            public bool frameSnap = true;
-            public bool edgeSnaps = true;
-            public bool muteAudioScrub = true;
             public bool playRangeLoopMode = true;
-            public PlaybackScrollMode autoScrollMode;
             public EditMode.EditType editType = EditMode.EditType.Mix;
             public TimeReferenceMode timeReferenceMode = TimeReferenceMode.Local;
         }
@@ -318,7 +314,7 @@ namespace UnityEditor.Timeline
                     state.recording = false;
                     state.previewMode = false;
 
-                    if (!locked)
+                    if (!locked && m_LastFrameHadSequence)
                     {
                         // the user may be adding a new PlayableDirector to a selected GameObject, make sure the timeline editor is shows the proper director if none is already showing
                         var selectedGameObject = Selection.activeObject != null ? Selection.activeObject as GameObject : null;
@@ -473,8 +469,7 @@ namespace UnityEditor.Timeline
         {
             public override void Action(int instanceId, string pathName, string resourceFile)
             {
-                var timeline = ScriptableObject.CreateInstance<TimelineAsset>();
-                AssetDatabase.CreateAsset(timeline, pathName);
+                var timeline = TimelineUtility.CreateAndSaveTimelineAsset(pathName);
                 ProjectWindowUtil.ShowCreatedAsset(timeline);
             }
         }

@@ -14,9 +14,9 @@ namespace UnityEditor
     {
         public delegate bool TypeResolver(IEnumerable<Type> types, Action<Type> onComplete, string format);
 
-        private static readonly string k_SelectTrackWithBinding = LocalizationDatabase.GetLocalizedString("Add {0}");
-        private static readonly string k_SelectTrackWithClip = LocalizationDatabase.GetLocalizedString("Add Clip With {0}");
-        private static readonly string k_SelectClip = LocalizationDatabase.GetLocalizedString("Add {0}");
+        private static readonly string k_SelectTrackWithBinding = L10n.Tr("Add {0}");
+        private static readonly string k_SelectTrackWithClip = L10n.Tr("Add Clip With {0}");
+        private static readonly string k_SelectClip = L10n.Tr("Add {0}");
 
 
         const string k_GenericDragId = "TimelineDragging";

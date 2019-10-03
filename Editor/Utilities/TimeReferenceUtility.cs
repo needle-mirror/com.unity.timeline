@@ -23,7 +23,7 @@ namespace UnityEditor.Timeline
             if (state.timeReferenceMode == TimeReferenceMode.Global)
                 time = state.editSequence.ToGlobalTime(time);
 
-            return state.editSequence.viewModel.timeInFrames ?
+            return state.timeInFrames ?
                 TimeUtility.TimeAsFrames(time, state.referenceSequence.frameRate, format) :
                 TimeUtility.TimeAsTimeCode(time, state.referenceSequence.frameRate, format);
         }

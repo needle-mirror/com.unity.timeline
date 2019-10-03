@@ -307,17 +307,10 @@ namespace UnityEditor.Timeline
         // callback when a curve is edited. Force the cache to update next time it's accessed
         void OnCurveWasModified(AnimationClip clip, EditorCurveBinding binding, AnimationUtility.CurveModifiedType modification)
         {
-            if (modification == AnimationUtility.CurveModifiedType.CurveDeleted)
+            AnimationClipCurveInfo data;
+            if (m_ClipCache.TryGetValue(clip, out data))
             {
-                m_ClipCache.Remove(clip);
-            }
-            else
-            {
-                AnimationClipCurveInfo data;
-                if (m_ClipCache.TryGetValue(clip, out data))
-                {
-                    data.dirty = true;
-                }
+                data.dirty = true;
             }
         }
 

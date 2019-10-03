@@ -207,21 +207,22 @@ namespace UnityEditor.Timeline
             var hasUsedShortcut = mousePosition == null;
             var anySourceLocked = itemsGroups.Any(x => x.targetTrack != null && x.targetTrack.lockedInHierarchy);
 
+            var targetTrack = GetPickedTrack();
+            if (targetTrack == null)
+                targetTrack = SelectionManager.SelectedTracks().FirstOrDefault();
+
             //do not paste if the user copied items from another timeline
             //if the copied items comes from > 1 track (since we do not know where to paste the copied items)
             //or if a keyboard shortcut was used (since the user will not see the paste result)
             if (!allItemsCopiedFromCurrentAsset)
             {
-                if (hasItemsCopiedFromMultipleTracks || hasUsedShortcut)
+                var isSelectedTrackInCurrentAsset = targetTrack != null && targetTrack.timelineAsset == state.editSequence.asset;
+                if (hasItemsCopiedFromMultipleTracks || (hasUsedShortcut && !isSelectedTrackInCurrentAsset))
                     return false;
             }
 
             if (hasUsedShortcut)
                 return !anySourceLocked; // copy/paste to same track
-
-            var targetTrack = GetPickedTrack();
-            if (targetTrack == null)
-                targetTrack = SelectionManager.SelectedTracks().FirstOrDefault();
 
             if (hasItemsCopiedFromMultipleTracks)
             {
@@ -340,7 +341,7 @@ namespace UnityEditor.Timeline
             if (selectedItems.Any())
             {
                 var requestedTime = CalculateDuplicateTime(selectedItems, gapBetweenItems);
-                var duplicatedItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.inspectedDirector,TimelineEditor.inspectedDirector, selectedItems, requestedTime, "Duplicate Items");
+                var duplicatedItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.inspectedDirector, TimelineEditor.inspectedDirector, selectedItems, requestedTime, "Duplicate Items");
 
                 TimelineHelpers.FrameItems(state, duplicatedItems);
                 SelectionManager.RemoveTimelineSelection();

@@ -90,13 +90,18 @@ namespace UnityEditor.Timeline
             }
 
             double d = state.PixelDeltaToDeltaTime(evt.delta.x);
+
+            var duration = m_Clip.duration;
+            var easeInDurationLimit = duration - m_Clip.easeOutDuration;
+            var easeOutDurationLimit = duration - m_Clip.easeInDuration;
+
             if (m_Edges == ManipulateEdges.Left)
             {
-                m_Clip.easeInDuration = Math.Max(0, m_Clip.easeInDuration + d);
+                m_Clip.easeInDuration = Math.Min(easeInDurationLimit, Math.Max(0, m_Clip.easeInDuration + d));
             }
             else if (m_Edges == ManipulateEdges.Right)
             {
-                m_Clip.easeOutDuration = Math.Max(0, m_Clip.easeOutDuration - d);
+                m_Clip.easeOutDuration = Math.Min(easeOutDurationLimit, Math.Max(0, m_Clip.easeOutDuration - d));
             }
             RefreshOverlayStrings(m_EaseClipHandler, state);
             return true;

@@ -42,8 +42,9 @@ namespace UnityEditor.Timeline
             if (state.recording && state.IsArmedForRecord(trackAsset))
                 DrawRecordBackground(trackRect);
 
-            GUI.Box(trackRect, GUIContent.none, DirectorStyles.Instance.infiniteTrack);
-            
+            if (m_DataSource.GetKeys() != null && m_DataSource.GetKeys().Length > 0 || state.recording)
+                GUI.Box(trackRect, GUIContent.none, DirectorStyles.Instance.infiniteTrack);
+
             var shadowRect = trackRect;
             shadowRect.yMin = shadowRect.yMax;
             shadowRect.height = 15.0f;

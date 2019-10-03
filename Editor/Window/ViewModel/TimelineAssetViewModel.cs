@@ -62,9 +62,7 @@ namespace UnityEditor.Timeline
         public static readonly Vector2 TimeAreaDefaultRange = new Vector2(-WindowConstants.timeAreaShownRangePadding, 5.0f); // in seconds. Hack: using negative value to force the UI to have a left margin at 0.
         public static readonly Vector2 NoPlayRangeSet = new Vector2(float.MaxValue, float.MaxValue);
 
-        public bool timeInFrames = true;
         public Vector2 timeAreaShownRange = TimeAreaDefaultRange;
-        public bool showAudioWaveform = true;
         public float trackScale = DefaultTrackScale;
         public bool playRangeEnabled;
         public Vector2 timeAreaPlayRange = NoPlayRangeSet;

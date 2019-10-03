@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Timeline;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Timeline;
 using Graphics = UnityEditor.Timeline.Graphics;
@@ -147,7 +148,11 @@ namespace UnityEditor
 
             foreach (CurveWrapper c in curvesToUpdate)
             {
-                AnimationUtility.SetEditorCurve(clip, c.binding, c.curve);
+                if (c.curve.keys.Any())
+                    AnimationUtility.SetEditorCurve(clip, c.binding, c.curve);
+                else
+                    RemovePropertiesByIds(new[] { c.binding.GetHashCode()}, false);
+
                 c.changed = false;
             }
 
@@ -163,12 +168,86 @@ namespace UnityEditor
                 GUILayout.BeginArea(headerRect);
                 m_ScrollPosition = GUILayout.BeginScrollView(m_ScrollPosition, GUIStyle.none, GUI.skin.verticalScrollbar);
                 m_BindingHierarchy.OnGUI(new Rect(0, 0, headerRect.width, headerRect.height));
+                if (m_BindingHierarchy.treeViewController != null)
+                    m_BindingHierarchy.treeViewController.contextClickItemCallback = ContextClickItemCallback;
                 GUILayout.EndScrollView();
                 GUILayout.EndArea();
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
+            }
+        }
+
+        void ContextClickItemCallback(int obj)
+        {
+            GenerateContextMenu(obj);
+        }
+
+        public void GenerateContextMenu(int obj = -1)
+        {
+            if (Event.current.type != EventType.ContextClick)
+                return;
+
+            GenericMenu menu = new GenericMenu();
+            GUIContent removePropertyContent = new GUIContent(EditorGUIUtility.TrTextContent("Remove Properties"));
+            menu.AddItem(removePropertyContent, false, RemoveSelectedProperties);
+            menu.ShowAsContext();
+        }
+
+        internal void RemoveSelectedProperties()
+        {
+            RemovePropertiesByIds(m_BindingHierarchy.treeViewController.GetSelection());
+        }
+
+        internal void RemovePropertiesByIds(IEnumerable<int> ids, bool removeCompleteGroup = true)
+        {
+            List<EditorCurveBinding> bindingsToRemove = new List<EditorCurveBinding>();
+            foreach (int selectedId in ids)
+            {
+                BindingTreeViewDataSource bindingTree = m_BindingHierarchy.treeViewController.data as BindingTreeViewDataSource;
+                CurveTreeViewNode node = bindingTree.FindItem(selectedId) as CurveTreeViewNode;
+                if (node == null)
+                    continue;
+                foreach (EditorCurveBinding editorCurveBinding in node.bindings)
+                {
+                    if (bindingsToRemove.Contains(editorCurveBinding))
+                        continue;
+                    CurveTreeViewNode currentNode = node;
+                    do
+                    {
+                        //check if property is part of a group
+                        bool isRoot = currentNode.depth == 0;
+                        bool isGroup = currentNode.displayName == BindingTreeViewDataSource.GroupName(editorCurveBinding);
+                        if (!isRoot && !isGroup && removeCompleteGroup)
+                            currentNode = currentNode.parent as CurveTreeViewNode;
+                        else
+                        {
+                            if (!AnimationWindowUtility.ForceGrouping(editorCurveBinding))
+                                bindingsToRemove.Add(editorCurveBinding);
+                            else //Group to remove
+                                bindingsToRemove.AddRange(currentNode.bindings);
+                            break;
+                        }
+                    }
+                    while (currentNode != null);
+                }
+            }
+
+            RemoveProperty(bindingsToRemove);
+            m_BindingHierarchy.RefreshTree();
+            TimelineWindow.instance.state.CalculateRowRects();
+        }
+
+        void RemoveProperty(IEnumerable<EditorCurveBinding> bindings)
+        {
+            foreach (EditorCurveBinding binding in bindings)
+            {
+                Undo.RegisterCompleteObjectUndo(m_DataSource.animationClip, "Remove Property");
+                if (binding.isPPtrCurve)
+                    AnimationUtility.SetObjectReferenceCurve(m_DataSource.animationClip, binding, null);
+                else
+                    AnimationUtility.SetEditorCurve(m_DataSource.animationClip, binding, null);
             }
         }
 

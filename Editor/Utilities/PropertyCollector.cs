@@ -73,7 +73,7 @@ namespace UnityEditor.Timeline
         {
             if (Application.isPlaying)
                 return;
-            
+
             AnimationPreviewUtilities.PreviewFromCurves(animatorRoot, AnimationPreviewUtilities.GetBindings(animatorRoot, clips));
         }
 

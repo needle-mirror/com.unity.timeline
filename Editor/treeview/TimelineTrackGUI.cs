@@ -596,6 +596,9 @@ namespace UnityEditor.Timeline
         {
             if (!CanDrawInlineCurve())
             {
+                //Force to close Inline Curve UI if the inline cannot be drawn.
+                if (track.GetShowInlineCurves())
+                    track.SetShowInlineCurves(false);
                 return 0.0f;
             }
 

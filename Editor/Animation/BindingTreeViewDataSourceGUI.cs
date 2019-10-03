@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace UnityEditorInternal
         static readonly float s_ColorIndicatorTopMargin = 3;
         static readonly Color s_KeyColorForNonCurves = new Color(0.7f, 0.7f, 0.7f, 0.5f);
         static readonly Color s_ChildrenCurveLabelColor = new Color(1.0f, 1.0f, 1.0f, 0.7f);
+        static readonly Color s_PhantomPropertyLabelColor = new Color(0.0f, 0.8f, 0.8f, 1f);
 
         public BindingTreeViewGUI(TreeViewController treeView)
             : base(treeView, true)
@@ -20,11 +22,16 @@ namespace UnityEditorInternal
         public override void OnRowGUI(Rect rowRect, TreeViewItem node, int row, bool selected, bool focused)
         {
             Color originalColor = GUI.color;
-            GUI.color = node.parent == null ||
-                node.parent.id == BindingTreeViewDataSource.RootID ||
-                node.parent.id == BindingTreeViewDataSource.GroupID ?
-                Color.white :
-                s_ChildrenCurveLabelColor;
+            bool leafNode = node.parent != null && node.parent.id != BindingTreeViewDataSource.RootID && node.parent.id != BindingTreeViewDataSource.GroupID;
+            GUI.color = Color.white;
+            if (leafNode)
+            {
+                CurveTreeViewNode curveNode = node as CurveTreeViewNode;
+                if (curveNode != null && curveNode.bindings.Any() && curveNode.bindings.First().isPhantom)
+                    GUI.color = s_PhantomPropertyLabelColor;
+                else
+                    GUI.color = s_ChildrenCurveLabelColor;
+            }
 
             base.OnRowGUI(rowRect, node, row, selected, focused);
 

@@ -39,7 +39,7 @@ namespace UnityEditor.Timeline
                 return true;
 
             var animTrack = track as AnimationTrack;
-            if (animTrack != null && animTrack.infiniteClip != null)
+            if (animTrack != null && animTrack.infiniteClip != null && !animTrack.infiniteClip.empty)
                 return true;
 
             for (int i = 0; i < track.clips.Length; i++)
@@ -310,6 +310,14 @@ namespace UnityEditor.Timeline
             return TimelineWindow.instance != null
                 && TimelineWindow.instance.state != null
                 && TimelineWindow.instance.state.editSequence != null;
+        }
+
+        public static TimelineAsset CreateAndSaveTimelineAsset(string path)
+        {
+            var newAsset = ScriptableObject.CreateInstance<TimelineAsset>();
+            newAsset.editorSettings.fps = TimelineProjectSettings.instance.assetDefaultFramerate;
+            AssetDatabase.CreateAsset(newAsset, path);
+            return newAsset;
         }
     }
 }

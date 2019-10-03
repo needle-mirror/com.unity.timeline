@@ -10,8 +10,6 @@ namespace UnityEditor.Timeline.Signals
     class SignalReceiverInspector : Editor
     {
         SignalReceiver m_Target;
-        SerializedProperty m_EventsProperty;
-        SerializedProperty m_SignalNameProperty;
 
         [SerializeField] TreeViewState m_TreeState;
         [SerializeField] MultiColumnHeaderState m_MultiColumnHeaderState;
@@ -25,9 +23,7 @@ namespace UnityEditor.Timeline.Signals
         void OnEnable()
         {
             m_Target = target as SignalReceiver;
-            m_SignalNameProperty = SignalReceiverUtility.FindSignalsProperty(serializedObject);
-            m_EventsProperty = SignalReceiverUtility.FindEventsProperty(serializedObject);
-            InitTreeView(m_SignalNameProperty, m_EventsProperty);
+            InitTreeView(serializedObject);
 
             Undo.undoRedoPerformed += OnUndoRedo;
         }
@@ -45,21 +41,23 @@ namespace UnityEditor.Timeline.Signals
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUI.BeginChangeCheck();
 
-            m_TreeView.RefreshIfDirty();
-            DrawEmitterControls(); // Draws buttons coming from the Context (SignalEmitter)
-
-            EditorGUILayout.Space();
-            m_TreeView.Draw();
-
-            if (signalEmitterContext == null)
-                DrawAddRemoveButtons();
-
-            if (EditorGUI.EndChangeCheck())
+            using (var changeCheck = new EditorGUI.ChangeCheckScope())
             {
-                serializedObject.ApplyModifiedProperties();
-                m_TreeView.dirty = true;
+                m_TreeView.RefreshIfDirty();
+                DrawEmitterControls(); // Draws buttons coming from the Context (SignalEmitter)
+
+                EditorGUILayout.Space();
+                m_TreeView.Draw();
+
+                if (signalEmitterContext == null)
+                    DrawAddRemoveButtons();
+
+                if (changeCheck.changed)
+                {
+                    serializedObject.ApplyModifiedProperties();
+                    m_TreeView.dirty = true;
+                }
             }
         }
 
@@ -100,14 +98,15 @@ namespace UnityEditor.Timeline.Signals
             }
         }
 
-        void InitTreeView(SerializedProperty signals, SerializedProperty events)
+        void InitTreeView(SerializedObject so)
         {
             m_TreeState = SignalListFactory.CreateViewState();
             m_MultiColumnHeaderState = SignalListFactory.CreateHeaderState();
+            var header = SignalListFactory.CreateHeader(m_MultiColumnHeaderState, SignalReceiverUtility.headerHeight);
 
             var context = signalEmitterContext;
-            m_TreeView = SignalListFactory.CreateSignalInspectorList(m_TreeState, m_MultiColumnHeaderState, target as SignalReceiver, SignalReceiverUtility.headerHeight, context != null);
-            m_TreeView.SetSerializedProperties(signals, events);
+            m_TreeView = SignalListFactory.CreateSignalInspectorList(m_TreeState, header, m_Target, so);
+            m_TreeView.readonlySignals = context != null;
 
             if (context != null)
                 m_TreeView.SetSignalContext(context.asset);

@@ -20,7 +20,7 @@ namespace UnityEditor.Timeline
         {
             if (string.IsNullOrEmpty(name))
                 return false;
-            
+
             GUID guid;
             return !GUID.TryParse(name, out guid);
         }
@@ -29,8 +29,7 @@ namespace UnityEditor.Timeline
         {
             return UnityEditor.GUID.Generate().ToString();
         }
-        
-        
+
         public static void CloneExposedReferences(ScriptableObject clone, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable)
         {
             var cloneObject = new SerializedObject(clone);
@@ -69,8 +68,7 @@ namespace UnityEditor.Timeline
             }
             cloneObject.ApplyModifiedPropertiesWithoutUndo();
         }
-        
-        
+
         public static ScriptableObject CloneReferencedPlayableAsset(ScriptableObject original, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, Object newOwner)
         {
             var clone = Object.Instantiate(original);
@@ -81,7 +79,7 @@ namespace UnityEditor.Timeline
             }
             CloneExposedReferences(clone, sourceTable, destTable);
             TimelineUndo.RegisterCreatedObjectUndo(clone, "Create clip");
-            
+
             return clone;
         }
 
@@ -89,7 +87,7 @@ namespace UnityEditor.Timeline
         {
             if (newOwner == null)
                 return;
-            
+
             var containerPath = AssetDatabase.GetAssetPath(newOwner);
             var containerAsset = AssetDatabase.LoadAssetAtPath<Object>(containerPath);
             if (containerAsset != null)
@@ -194,7 +192,7 @@ namespace UnityEditor.Timeline
 
             return Enumerable.Empty<ITimelineItem>();
         }
-        
+
         public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, IEnumerable<ItemsPerTrack> items, double candidateTime, string undoOperation)
         {
             var duplicatedItemsGroups = new List<ItemsPerTrack>();

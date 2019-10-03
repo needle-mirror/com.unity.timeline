@@ -6,7 +6,7 @@ namespace UnityEditor.Timeline.Signals
     [CustomTimelineEditor(typeof(SignalEmitter))]
     class SignalEmitterEditor : MarkerEditor
     {
-        static readonly string MissingAssetError = LocalizationDatabase.GetLocalizedString("No signal assigned");
+        static readonly string MissingAssetError = L10n.Tr("No signal assigned");
 
         public override MarkerDrawOptions GetMarkerOptions(IMarker marker)
         {

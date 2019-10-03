@@ -187,7 +187,7 @@ namespace UnityEditor.Timeline
                     if (groupTracks.Any(x => x.GetType() != typeof(GroupTrack) || x.lockedInHierarchy))
                         groupTracks = null;
 
-                    SequencerContextMenu.ShowNewTracksContextMenu(groupTracks, state);
+                    SequencerContextMenu.ShowNewTracksContextMenu(groupTracks, state, EditorGUILayout.s_LastRect);
                 }
             }
         }
@@ -249,21 +249,22 @@ namespace UnityEditor.Timeline
                 using (var checkScope = new EditorGUI.ChangeCheckScope())
                 {
                     var icon = editType == EditMode.EditType.Mix ? DirectorStyles.mixOn : DirectorStyles.mixOff;
-                    GUILayout.Toggle(editType == EditMode.EditType.Mix, icon, DirectorStyles.Instance.editModeMixBtn);
+                    GUILayout.Toggle(editType == EditMode.EditType.Mix, icon, DirectorStyles.Instance.editModeBtn);
+
                     if (checkScope.changed)
                         EditMode.editType = EditMode.EditType.Mix;
                 }
                 using (var checkScope = new EditorGUI.ChangeCheckScope())
                 {
                     var icon = editType == EditMode.EditType.Ripple ? DirectorStyles.rippleOn : DirectorStyles.rippleOff;
-                    GUILayout.Toggle(editType == EditMode.EditType.Ripple, icon, DirectorStyles.Instance.editModeRippleBtn);
+                    GUILayout.Toggle(editType == EditMode.EditType.Ripple, icon, DirectorStyles.Instance.editModeBtn);
                     if (checkScope.changed)
                         EditMode.editType = EditMode.EditType.Ripple;
                 }
                 using (var checkScope = new EditorGUI.ChangeCheckScope())
                 {
                     var icon = editType == EditMode.EditType.Replace ? DirectorStyles.replaceOn : DirectorStyles.replaceOff;
-                    GUILayout.Toggle(editType == EditMode.EditType.Replace, icon, DirectorStyles.Instance.editModeReplaceBtn);
+                    GUILayout.Toggle(editType == EditMode.EditType.Replace, icon, DirectorStyles.Instance.editModeBtn);
                     if (checkScope.changed)
                         EditMode.editType = EditMode.EditType.Replace;
                 }

@@ -240,7 +240,7 @@ namespace UnityEditor.Timeline
                         OnStopPreview();
 
                         AnimationMode.StopAnimationMode(previewDriver);
-                         
+
                         AnimationPropertyContextualMenu.Instance.SetResponder(null);
                         previewedDirectors = null;
                     }
@@ -265,22 +265,22 @@ namespace UnityEditor.Timeline
 
         public bool frameSnap
         {
-            get { return m_Preferences.frameSnap; }
-            set { m_Preferences.frameSnap = value; }
+            get { return TimelinePreferences.instance.snapToFrame; }
+            set { TimelinePreferences.instance.snapToFrame = value; }
         }
 
         public bool edgeSnaps
         {
-            get { return m_Preferences.edgeSnaps; }
-            set { m_Preferences.edgeSnaps = value; }
+            get { return TimelinePreferences.instance.edgeSnap; }
+            set { TimelinePreferences.instance.edgeSnap = value; }
         }
 
         public bool muteAudioScrubbing
         {
-            get { return m_Preferences.muteAudioScrub; }
+            get { return !TimelinePreferences.instance.audioScrubbing; }
             set
             {
-                m_Preferences.muteAudioScrub = value;
+                TimelinePreferences.instance.audioScrubbing = !value;
                 TimelinePlayable.muteAudioScrubbing = value;
                 RebuildPlayableGraph();
             }
@@ -300,14 +300,14 @@ namespace UnityEditor.Timeline
 
         public bool timeInFrames
         {
-            get { return editSequence.viewModel.timeInFrames; }
-            set { editSequence.viewModel.timeInFrames = value; }
+            get { return TimelinePreferences.instance.timeUnitInFrame; }
+            set { TimelinePreferences.instance.timeUnitInFrame = value; }
         }
 
         public bool showAudioWaveform
         {
-            get { return editSequence.viewModel.showAudioWaveform; }
-            set { editSequence.viewModel.showAudioWaveform = value; }
+            get { return TimelinePreferences.instance.showAudioWaveform; }
+            set { TimelinePreferences.instance.showAudioWaveform = value; }
         }
 
         public Vector2 playRange
@@ -340,8 +340,8 @@ namespace UnityEditor.Timeline
 
         public PlaybackScrollMode autoScrollMode
         {
-            get { return m_Preferences.autoScrollMode; }
-            set { m_Preferences.autoScrollMode = value; }
+            get { return TimelinePreferences.instance.playbackScrollMode; }
+            set { TimelinePreferences.instance.playbackScrollMode = value; }
         }
 
         public bool isClipSnapping { get; set; }
@@ -359,6 +359,7 @@ namespace UnityEditor.Timeline
             if (m_OnEndFrameUpdates != null)
                 m_OnEndFrameUpdates.Clear();
 
+            m_SequenceHierarchy.Clear();
             windowOnGuiStarted = null;
             windowOnGuiFinished = null;
         }

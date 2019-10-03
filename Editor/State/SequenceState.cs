@@ -139,7 +139,7 @@ namespace UnityEditor.Timeline
 
         public string TimeAsString(double timeValue, string format = "F2")
         {
-            if (viewModel.timeInFrames)
+            if (TimelinePreferences.instance.timeUnitInFrame)
                 return TimeUtility.TimeAsFrames(timeValue, frameRate, format);
 
             return TimeUtility.TimeAsTimeCode(timeValue, frameRate, format);

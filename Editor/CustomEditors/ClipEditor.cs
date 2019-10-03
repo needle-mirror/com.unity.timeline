@@ -154,8 +154,8 @@ namespace UnityEditor.Timeline
     /// </summary>
     public class ClipEditor
     {
-        static readonly string k_NoPlayableAssetError = LocalizationDatabase.GetLocalizedString("This clip does not contain a valid playable asset");
-        static readonly string k_ScriptLoadError = LocalizationDatabase.GetLocalizedString("The associated script can not be loaded");
+        static readonly string k_NoPlayableAssetError = L10n.Tr("This clip does not contain a valid playable asset");
+        static readonly string k_ScriptLoadError = L10n.Tr("The associated script can not be loaded");
 
         internal readonly bool supportsSubTimelines;
 

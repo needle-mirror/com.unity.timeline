@@ -176,7 +176,7 @@ namespace UnityEngine.Timeline
             editorSettings.fps = GetValidFramerate(editorSettings.fps);
         }
 
-        static float GetValidFramerate(float framerate)
+        internal static float GetValidFramerate(float framerate)
         {
             return Mathf.Clamp(framerate, EditorSettings.kMinFps, EditorSettings.kMaxFps);
         }

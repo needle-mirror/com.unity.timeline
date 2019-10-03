@@ -278,18 +278,22 @@ namespace UnityEditor.Timeline
             m_PropertiesMap[binding] = prop;
         }
 
-        class RebuildGuard : IDisposable
+        struct RebuildGuard : IDisposable
         {
             CurvesProxy m_Owner;
+            AnimationUtility.OnCurveWasModified m_Callback;
 
             public RebuildGuard(CurvesProxy owner)
             {
+                m_Callback = AnimationUtility.onCurveWasModified;
+                AnimationUtility.onCurveWasModified = null;
                 m_Owner = owner;
                 m_Owner.m_ProxyIsRebuilding++;
             }
 
             public void Dispose()
             {
+                AnimationUtility.onCurveWasModified = m_Callback;
                 m_Owner.m_ProxyIsRebuilding--;
                 m_Owner = null;
             }

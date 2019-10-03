@@ -13,6 +13,12 @@ namespace UnityEditor.Timeline
         Mix
     }
 
+    enum BlendAngle
+    {
+        Descending,
+        Ascending
+    }
+
     struct IconData
     {
         public enum Side { Left = -1, Right = 1 }
@@ -23,16 +29,10 @@ namespace UnityEditor.Timeline
         public float width { get { return 16; } }
         public float height { get { return 16; } }
 
-        public IconData(Texture2D icon, Color tint)
-        {
-            this.icon = icon;
-            this.tint = tint;
-        }
-
         public IconData(Texture2D icon)
         {
             this.icon = icon;
-            this.tint = Color.white;
+            tint = Color.white;
         }
     }
 
@@ -50,8 +50,20 @@ namespace UnityEditor.Timeline
         const float k_ClipSelectionBorder = 1.0f;
         const float k_ClipRecordingBorder = 2.0f;
 
-        public static readonly ClipBorder kSelection = new ClipBorder(Color.white, k_ClipSelectionBorder);
-        public static readonly ClipBorder kRecording = new ClipBorder(DirectorStyles.Instance.customSkin.colorRecordingClipOutline, k_ClipRecordingBorder);
+        public static ClipBorder Recording()
+        {
+            return new ClipBorder(DirectorStyles.Instance.customSkin.colorRecordingClipOutline, k_ClipRecordingBorder);
+        }
+
+        public static ClipBorder Selection()
+        {
+            return new ClipBorder(Color.white, k_ClipSelectionBorder);
+        }
+
+        public static ClipBorder Default()
+        {
+            return new ClipBorder(DirectorStyles.Instance.customSkin.clipBorderColor, k_ClipSelectionBorder);
+        }
     }
 
     struct ClipBlends
@@ -88,6 +100,7 @@ namespace UnityEditor.Timeline
         public IconData[] leftIcons;
         public IconData[] rightIcons;
         public TimelineClip previousClip;
+        public bool previousClipSelected;
         public bool supportsLooping;
         public int minLoopIndex;
         public List<Rect> loopRects;
@@ -101,17 +114,10 @@ namespace UnityEditor.Timeline
         public static class Styles
         {
             public static readonly Texture2D iconWarn = EditorGUIUtility.LoadIconRequired("console.warnicon.inactive.sml");
-            public static readonly GUIContent addClipContent = EditorGUIUtility.TrTextContent("Add From");
-            public static readonly string HoldText = LocalizationDatabase.GetLocalizedString("HOLD");
+            public static readonly string HoldText = L10n.Tr("HOLD");
             public static readonly Texture2D s_IconNoRecord = EditorGUIUtility.LoadIcon("console.erroricon.sml");
             public static readonly GUIContent s_ClipNotRecorable = EditorGUIUtility.TrTextContent("", "This clip is not recordable");
             public static readonly GUIContent s_ClipNoRecordInBlend = EditorGUIUtility.TrTextContent("", "Recording in blends in prohibited");
-
-            public static readonly Texture blendMixInBckg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.blendMixIn);
-            public static readonly Texture blendEaseInBckg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.blendEaseIn);
-            public static readonly Texture blendMixOutBckg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.blendMixOut);
-            public static readonly Texture blendEaseOutBckg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.blendEaseOut);
-            
         }
 
         const float k_ClipSwatchLineThickness = 4.0f;
@@ -121,14 +127,11 @@ namespace UnityEditor.Timeline
         const float k_ClipLabelPadding = 6.0f;
         const float k_ClipLabelMinWidth = 10.0f;
         const float k_IconsPadding = 1.0f;
-        const float k_ClipInlineWidth = 2.0f;
+        const float k_ClipInlineWidth = 1.0f;
 
         static readonly GUIContent s_TitleContent = new GUIContent();
         static readonly IconData[] k_ClipErrorIcons =  { new IconData {icon = Styles.iconWarn, tint = DirectorStyles.kClipErrorColor} };
-        static readonly Color s_InlineLightColor = new Color(1.0f, 1.0f, 1.0f, 0.2f);
-        static readonly Color s_InlineShadowColor = new Color(0.0f, 0.0f, 0.0f, 0.2f);
         static readonly Dictionary<int, string> s_LoopStringCache = new Dictionary<int, string>(100);
-
 
         // caches the loopstring to avoid allocation from string concats
         static string GetLoopString(int loopIndex)
@@ -162,15 +165,18 @@ namespace UnityEditor.Timeline
 
                 if (theRect.width >= 5f)
                 {
-                    GUI.color = new Color(0.0f, 0.0f, 0.0f, 0.2f);
-                    GUI.Label(theRect, GUIContent.none, DirectorStyles.Instance.displayBackground);
-
-                    if (theRect.width > 36.0f)
+                    using (new GUIViewportScope(drawData.clipCenterSection))
                     {
-                        var style = DirectorStyles.Instance.fontClipLoop;
-                        GUI.color = new Color(0.0f, 0.0f, 0.0f, 0.3f);
-                        var loopContent = new GUIContent(drawData.supportsLooping ? GetLoopString(loopIndex) : Styles.HoldText);
-                        GUI.Label(theRect, loopContent, style);
+                        GUI.color = new Color(0.0f, 0.0f, 0.0f, 0.2f);
+                        GUI.Label(theRect, GUIContent.none, DirectorStyles.Instance.displayBackground);
+
+                        if (theRect.width > 36.0f)
+                        {
+                            var style = DirectorStyles.Instance.fontClipLoop;
+                            GUI.color = new Color(0.0f, 0.0f, 0.0f, 0.3f);
+                            var loopContent = new GUIContent(drawData.supportsLooping ? GetLoopString(loopIndex) : Styles.HoldText);
+                            GUI.Label(theRect, loopContent, style);
+                        }
                     }
                 }
 
@@ -185,19 +191,108 @@ namespace UnityEditor.Timeline
 
         static void DrawClipBorder(ClipDrawData drawData)
         {
-            ClipBorder border = null;
             var animTrack = drawData.clip.parentTrack as AnimationTrack;
+            var selectionBorder = ClipBorder.Selection();
+
             if (TimelineWindow.instance.state.recording && animTrack == null && drawData.clip.parentTrack.IsRecordingToClip(drawData.clip))
             {
-                border = ClipBorder.kRecording;
-            }
-            else if (drawData.selected)
-            {
-                border = ClipBorder.kSelection;
+                DrawClipSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends);
+                return;
             }
 
-            if (border != null)
-                DrawBorder(drawData.clipCenterSection, border, drawData.clipBlends, drawData.previousClip);
+            DrawClipDefaultBorder(drawData.clipCenterSection, ClipBorder.Default(), drawData.clipBlends);
+
+            if (drawData.selected)
+                DrawClipSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends);
+
+            if (drawData.previousClip != null && drawData.previousClipSelected)
+                DrawClipBlendSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends);
+        }
+
+        public static void DrawClipSelectionBorder(Rect clipRect, ClipBorder border, ClipBlends blends)
+        {
+            var thickness = border.thickness;
+            var color = border.color;
+            var min = clipRect.min;
+            var max = clipRect.max;
+
+            //Left line
+            if (blends.inKind == BlendKind.None)
+                EditorGUI.DrawRect(new Rect(min.x, min.y, thickness, max.y - min.y), color);
+            else
+                DrawBlendLine(blends.inRect, blends.inKind == BlendKind.Mix ? BlendAngle.Descending : BlendAngle.Ascending, thickness, color);
+
+            //Right line
+            if (blends.outKind == BlendKind.None)
+                EditorGUI.DrawRect(new Rect(max.x - thickness, min.y, thickness, max.y - min.y), color);
+            else
+                DrawBlendLine(blends.outRect, BlendAngle.Descending, thickness, color);
+
+            //Top line
+            var xTop1 = blends.inKind == BlendKind.Mix ? blends.inRect.xMin : min.x;
+            var xTop2 = max.x;
+            EditorGUI.DrawRect(new Rect(xTop1, min.y, xTop2 - xTop1, thickness), color);
+
+            //Bottom line
+            var xBottom1 = blends.inKind == BlendKind.Ease ? blends.inRect.xMin : min.x;
+            var xBottom2 = blends.outKind == BlendKind.None ? max.x : blends.outRect.xMax;
+            EditorGUI.DrawRect(new Rect(xBottom1, max.y - thickness, xBottom2 - xBottom1, thickness), color);
+        }
+
+        static Vector3[] s_BlendLines = new Vector3[4];
+        static void DrawBlendLine(Rect rect, BlendAngle blendAngle, float width, Color color)
+        {
+            var halfWidth = width / 2.0f;
+            Vector2 p0, p1;
+            var inverse = 1.0f;
+            if (blendAngle == BlendAngle.Descending)
+            {
+                p0 = rect.min;
+                p1 = rect.max;
+            }
+            else
+            {
+                p0 = new Vector2(rect.xMax, rect.yMin);
+                p1 = new Vector2(rect.xMin, rect.yMax);
+                inverse = -1.0f;
+            }
+            s_BlendLines[0] = new Vector3(p0.x - halfWidth, p0.y + halfWidth * inverse);
+            s_BlendLines[1] = new Vector3(p1.x - halfWidth, p1.y + halfWidth * inverse);
+            s_BlendLines[2] = new Vector3(p1.x + halfWidth, p1.y - halfWidth * inverse);
+            s_BlendLines[3] = new Vector3(p0.x + halfWidth, p0.y - halfWidth * inverse);
+            Graphics.DrawPolygonAA(color, s_BlendLines);
+        }
+
+        static void DrawClipBlendSelectionBorder(Rect clipRect, ClipBorder border, ClipBlends blends)
+        {
+            var color = border.color;
+            var thickness = border.thickness;
+            if (blends.inKind == BlendKind.Mix)
+            {
+                DrawBlendLine(blends.inRect, BlendAngle.Descending, thickness, color);
+                var xBottom1 = blends.inRect.xMin;
+                var xBottom2 = blends.inRect.xMax;
+                EditorGUI.DrawRect(new Rect(xBottom1, clipRect.max.y - thickness, xBottom2 - xBottom1, thickness), color);
+            }
+        }
+
+        static void DrawClipDefaultBorder(Rect clipRect, ClipBorder border, ClipBlends blends)
+        {
+            var color = border.color;
+            var thickness = border.thickness;
+
+            // Draw vertical lines at the edges of the clip
+            EditorGUI.DrawRect(new Rect(clipRect.xMin, clipRect.y, thickness, clipRect.height), color); //left
+            //only draw the right one when no out mix blend
+            if (blends.outKind != BlendKind.Mix)
+                EditorGUI.DrawRect(new Rect(clipRect.xMax - thickness, clipRect.y, thickness, clipRect.height), color); //right
+            //draw a vertical line for the previous clip
+            if (blends.inKind == BlendKind.Mix)
+                EditorGUI.DrawRect(new Rect(blends.inRect.xMin, blends.inRect.y, thickness, blends.inRect.height), color); //left
+
+            //Draw blend line
+            if (blends.inKind == BlendKind.Mix)
+                DrawBlendLine(blends.inRect, BlendAngle.Descending, thickness, color);
         }
 
         static void DrawClipTimescale(Rect targetRect, double timeScale)
@@ -341,169 +436,75 @@ namespace UnityEditor.Timeline
             GUI.DrawTexture(imageRect, icon, ScaleMode.ScaleAndCrop, true, 0, color, 0, 0);
         }
 
-        static void DrawClipBackground(Rect clipCenterSection, ClipBlends blends, bool selected)
+        static void DrawClipBackground(Rect clipCenterSection, bool selected)
         {
-            var clipStyle = selected ? DirectorStyles.Instance.timelineClipSelected : DirectorStyles.Instance.timelineClip;
+            if (Event.current.type != EventType.Repaint)
+                return;
 
-            var texture = DirectorStyles.GetBackgroundImage(clipStyle);
-            var lineColor = DirectorStyles.Instance.customSkin.colorClipBlendLines;
+            var color = selected ? DirectorStyles.Instance.customSkin.clipSelectedBckg : DirectorStyles.Instance.customSkin.clipBckg;
+            EditorGUI.DrawRect(clipCenterSection, color);
+        }
 
-            // Center body
-            GUI.Label(clipCenterSection, GUIContent.none, clipStyle);
-
-            // Blend/Mix In
-            if (blends.inKind != BlendKind.None)
+        static Vector3[] s_BlendVertices = new Vector3[3];
+        static void DrawClipBlends(ClipBlends blends, Color inColor, Color outColor, Color backgroundColor)
+        {
+            switch (blends.inKind)
             {
-                var mixInRect = blends.inRect;
-
-                if (blends.inKind == BlendKind.Ease)
-                {
-                    ClipRenderer.RenderTexture(mixInRect, texture, Styles.blendMixInBckg , Color.black);
-
-                    if (!selected)
-                        Graphics.DrawLineAA(2.5f, new Vector3(mixInRect.xMin, mixInRect.yMax - 1f, 0), new Vector3(mixInRect.xMax, mixInRect.yMin + 1f, 0), lineColor);
-                }
-                else
-                {
-                    var blendInColor = selected ? Color.black : DirectorStyles.Instance.customSkin.colorClipBlendYin;
-                    ClipRenderer.RenderTexture(mixInRect, texture, Styles.blendEaseInBckg, blendInColor);
-
-                    if (!selected)
-                        Graphics.DrawLineAA(2.0f, new Vector3(mixInRect.xMin, mixInRect.yMin + 1f, 0), new Vector3(mixInRect.xMax, mixInRect.yMax - 1f, 0), lineColor);
-                }
-
-                Graphics.DrawLineAA(2.0f, mixInRect.max, new Vector2(mixInRect.xMax, mixInRect.yMin), lineColor);
+                case BlendKind.Ease:
+                    //     2
+                    //   / |
+                    //  /  |
+                    // 0---1
+                    EditorGUI.DrawRect(blends.inRect, backgroundColor);
+                    s_BlendVertices[0] = new Vector3(blends.inRect.xMin, blends.inRect.yMax);
+                    s_BlendVertices[1] = new Vector3(blends.inRect.xMax, blends.inRect.yMax);
+                    s_BlendVertices[2] = new Vector3(blends.inRect.xMax, blends.inRect.yMin);
+                    Graphics.DrawPolygonAA(inColor, s_BlendVertices);
+                    break;
+                case BlendKind.Mix:
+                    // 0---2
+                    //  \  |
+                    //   \ |
+                    //     1
+                    s_BlendVertices[0] = new Vector3(blends.inRect.xMin, blends.inRect.yMin);
+                    s_BlendVertices[1] = new Vector3(blends.inRect.xMax, blends.inRect.yMax);
+                    s_BlendVertices[2] = new Vector3(blends.inRect.xMax, blends.inRect.yMin);
+                    Graphics.DrawPolygonAA(inColor, s_BlendVertices);
+                    break;
             }
 
-            // Blend/Mix Out
             if (blends.outKind != BlendKind.None)
             {
-                var mixOutRect = blends.outRect;
-
                 if (blends.outKind == BlendKind.Ease)
-                {
-                    ClipRenderer.RenderTexture(mixOutRect, texture, Styles.blendMixOutBckg, Color.black);
-
-                    if (!selected)
-                        Graphics.DrawLineAA(2.5f, new Vector3(mixOutRect.xMin, mixOutRect.yMin + 1f, 0), new Vector3(mixOutRect.xMax, mixOutRect.yMax - 1f, 0), lineColor);
-                }
-                else
-                {
-                    var blendOutColor = selected ? Color.black : DirectorStyles.Instance.customSkin.colorClipBlendYang;
-                    ClipRenderer.RenderTexture(mixOutRect, texture, Styles.blendEaseOutBckg, blendOutColor);
-
-                    if (!selected)
-                        Graphics.DrawLineAA(2.0f, new Vector3(mixOutRect.xMin, mixOutRect.yMin + 1f, 0), new Vector3(mixOutRect.xMax, mixOutRect.yMax - 1f, 0), lineColor);
-                }
-
-                Graphics.DrawLineAA(2.0f, mixOutRect.min, new Vector2(mixOutRect.xMin, mixOutRect.yMax), lineColor);
+                    EditorGUI.DrawRect(blends.outRect, backgroundColor);
+                // 0
+                // | \
+                // |  \
+                // 1---2
+                s_BlendVertices[0] = new Vector3(blends.outRect.xMin, blends.outRect.yMin);
+                s_BlendVertices[1] = new Vector3(blends.outRect.xMin, blends.outRect.yMax);
+                s_BlendVertices[2] = new Vector3(blends.outRect.xMax, blends.outRect.yMax);
+                Graphics.DrawPolygonAA(outColor, s_BlendVertices);
             }
         }
 
-        static void DrawClipEdges(Rect targetRect, Color swatchColor, Color lightColor, Color shadowColor, bool drawLeftEdge, bool drawRightEdge)
+        static void DrawClipSwatch(Rect targetRect, Color swatchColor)
         {
             // Draw Colored Line at the bottom.
             var colorRect = targetRect;
             colorRect.yMin = colorRect.yMax - k_ClipSwatchLineThickness;
-
             EditorGUI.DrawRect(colorRect, swatchColor);
-
-            // Draw Highlighted line at the top
-            EditorGUI.DrawRect(
-                new Rect(targetRect.xMin, targetRect.yMin, targetRect.width - k_ClipInlineWidth, k_ClipInlineWidth),
-                lightColor);
-
-            if (drawLeftEdge)
-            {
-                // Draw Highlighted line at the left
-                EditorGUI.DrawRect(
-                    new Rect(targetRect.xMin, targetRect.yMin + k_ClipInlineWidth, k_ClipInlineWidth,
-                        targetRect.height),
-                    lightColor);
-            }
-
-            if (drawRightEdge)
-            {
-                // Draw darker vertical line at the right of the clip
-                EditorGUI.DrawRect(
-                    new Rect(targetRect.xMax - k_ClipInlineWidth, targetRect.yMin, k_ClipInlineWidth,
-                        targetRect.height),
-                    shadowColor);
-            }
-
-            // Draw darker vertical line at the bottom of the clip
-            EditorGUI.DrawRect(
-                new Rect(targetRect.xMin, targetRect.yMax - k_ClipInlineWidth, targetRect.width, k_ClipInlineWidth),
-                shadowColor);
         }
 
-        public static void DrawBorder(Rect centerRect, ClipBorder border, ClipBlends blends, TimelineClip prevClip = null)
-        {
-            var thickness = border.thickness;
-            var color = border.color;
-
-            // Draw top selected lines.
-            EditorGUI.DrawRect(new Rect(centerRect.xMin, centerRect.yMin, centerRect.width, thickness), color);
-
-            // Draw bottom selected lines.
-            EditorGUI.DrawRect(new Rect(centerRect.xMin, centerRect.yMax - thickness, centerRect.width, thickness), color);
-
-            // Draw Left Selected Lines
-            if (blends.inKind == BlendKind.None)
-            {
-                EditorGUI.DrawRect(new Rect(centerRect.xMin, centerRect.yMin, thickness, centerRect.height), color);
-            }
-            else
-            {
-                var mixInRect = blends.inRect;
-
-                if (blends.inKind == BlendKind.Ease)
-                {
-                    EditorGUI.DrawRect(new Rect(mixInRect.xMin, mixInRect.yMax - thickness, mixInRect.width, thickness), color);
-
-                    EditorGUI.DrawRect(new Rect(mixInRect.xMin, mixInRect.yMin, thickness, mixInRect.height), color);
-
-                    Graphics.DrawLineAA(2.0f * thickness, new Vector3(mixInRect.xMin, mixInRect.yMax - 1f, 0), new Vector3(mixInRect.xMax, mixInRect.yMin + 1f, 0), color);
-                }
-                else if (blends.inKind == BlendKind.Mix)
-                {
-                    EditorGUI.DrawRect(new Rect(mixInRect.xMin, mixInRect.yMin, mixInRect.width, thickness), color);
-
-                    // If there's another clip in the left, draw the blend.
-                    if (prevClip != null && SelectionManager.Contains(prevClip))
-                        EditorGUI.DrawRect(new Rect(mixInRect.xMin, mixInRect.yMax - thickness, mixInRect.width, thickness), color); //  Bottom
-
-                    Graphics.DrawLineAA(2.0f * thickness, new Vector3(mixInRect.xMin, mixInRect.yMin + 1f, 0), new Vector3(mixInRect.xMax, mixInRect.yMax - 1f, 0), color);
-                }
-            }
-
-            // Draw Right Selected Lines
-            if (blends.outKind == BlendKind.None)
-            {
-                EditorGUI.DrawRect(new Rect(centerRect.xMax - thickness, centerRect.yMin, thickness, centerRect.height), color);
-            }
-            else
-            {
-                var mixOutRect = blends.outRect;
-                EditorGUI.DrawRect(new Rect(mixOutRect.xMin, mixOutRect.yMax - thickness, mixOutRect.width, thickness), color);
-
-                if (blends.outKind == BlendKind.Ease)
-                    EditorGUI.DrawRect(new Rect(mixOutRect.xMax - thickness, mixOutRect.yMin, thickness, mixOutRect.height), color);
-
-                Graphics.DrawLineAA(2.0f * thickness, new Vector3(mixOutRect.xMin, mixOutRect.yMin + 1f, 0), new Vector3(mixOutRect.xMax, mixOutRect.yMax - 1f, 0), color);
-            }
-        }
-
-        public static void DrawSimpleClip(TimelineClip clip, Rect targetRect, ClipBorder border, Color overlay, ClipDrawOptions drawOptions, ClipBlends blends)
+        public static void DrawSimpleClip(TimelineClip clip, Rect targetRect, ClipBorder border, Color overlay, ClipDrawOptions drawOptions)
         {
             GUI.BeginClip(targetRect);
-
             var clipRect = new Rect(0.0f, 0.0f, targetRect.width, targetRect.height);
 
             var orgColor = GUI.color;
             GUI.color = overlay;
 
-            DrawClipBackground(clipRect, ClipBlends.kNone, false);
+            DrawClipBackground(clipRect, false);
             GUI.color = orgColor;
 
             if (clipRect.width <= k_MinClipWidth)
@@ -511,10 +512,7 @@ namespace UnityEditor.Timeline
                 clipRect.width = k_MinClipWidth;
             }
 
-            DrawClipEdges(clipRect, drawOptions.highlightColor * overlay, s_InlineLightColor * overlay, s_InlineShadowColor * overlay,
-                blends.inKind != BlendKind.Mix, blends.outKind != BlendKind.Mix);
-
-            DrawClipTimescale(clipRect, clip.timeScale);
+            DrawClipSwatch(targetRect, drawOptions.highlightColor * overlay);
 
             if (targetRect.width >= k_ClipInOutMinWidth)
                 DrawClipInOut(clipRect, clip);
@@ -528,52 +526,30 @@ namespace UnityEditor.Timeline
                 DrawClipLabel(clip.displayName, textRect, Color.white, drawOptions.errorText);
 
             if (border != null)
-                DrawBorder(clipRect, border, ClipBlends.kNone);
+                DrawClipSelectionBorder(clipRect, border, ClipBlends.kNone);
 
             GUI.EndClip();
         }
 
         public static void DrawDefaultClip(ClipDrawData drawData)
         {
-            DrawClipBackground(drawData.clipCenterSection, drawData.clipBlends, drawData.selected);
+            var customSkin = DirectorStyles.Instance.customSkin;
+            var blendInColor = drawData.selected ? customSkin.clipBlendInSelected : customSkin.clipBlendIn;
+            var blendOutColor = drawData.selected ? customSkin.clipBlendOutSelected : customSkin.clipBlendOut;
+            var easeBackgroundColor = customSkin.clipEaseBckgColor;
+
+            DrawClipBlends(drawData.clipBlends, blendInColor, blendOutColor, easeBackgroundColor);
+            DrawClipBackground(drawData.clipCenterSection, drawData.selected);
 
             if (drawData.targetRect.width > k_MinClipWidth)
             {
-                var isRepaint = (Event.current.type == EventType.Repaint);
-                if (isRepaint && drawData.clipEditor != null)
-                {
-                    var customBodyRect = drawData.clippedRect;
-                    customBodyRect.yMin += k_ClipInlineWidth;
-                    customBodyRect.yMax -= k_ClipSwatchLineThickness;
-                    var region = new ClipBackgroundRegion(customBodyRect, drawData.localVisibleStartTime, drawData.localVisibleEndTime);
-                    try
-                    {
-                        drawData.clipEditor.DrawBackground(drawData.clip, region);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-                }
+                DrawClipEditorBackground(drawData);
             }
             else
             {
                 drawData.targetRect.width = k_MinClipWidth;
                 drawData.clipCenterSection.width = k_MinClipWidth;
             }
-
-            var overlapRect = drawData.targetRect;
-            if (drawData.previousClip != null && SelectionManager.Contains(drawData.previousClip) &&
-                drawData.clipBlends.inRect.width != 0)
-            {
-                var mixInRect = drawData.clipBlends.inRect;
-                overlapRect.xMin +=  mixInRect.width;
-                Graphics.DrawLineAA(2.0f, new Vector3(mixInRect.xMin, mixInRect.yMin + 1f, 0),
-                    new Vector3(mixInRect.xMax, mixInRect.yMax - 1f, 0), ClipBorder.kSelection.color);
-            }
-            DrawClipEdges(overlapRect, drawData.ClipDrawOptions.highlightColor, s_InlineLightColor, s_InlineShadowColor,
-                drawData.clipBlends.inKind != BlendKind.Mix,
-                drawData.clipBlends.outKind != BlendKind.Mix);
 
             DrawClipTimescale(drawData.targetRect, drawData.clip.timeScale);
 
@@ -606,7 +582,28 @@ namespace UnityEditor.Timeline
                 DrawClipLabel(drawData, labelRect, Color.white);
             }
 
+            DrawClipSwatch(drawData.targetRect, drawData.ClipDrawOptions.highlightColor);
             DrawClipBorder(drawData);
+        }
+
+        static void DrawClipEditorBackground(ClipDrawData drawData)
+        {
+            var isRepaint = (Event.current.type == EventType.Repaint);
+            if (isRepaint && drawData.clipEditor != null)
+            {
+                var customBodyRect = drawData.clippedRect;
+                customBodyRect.yMin += k_ClipInlineWidth;
+                customBodyRect.yMax -= k_ClipSwatchLineThickness;
+                var region = new ClipBackgroundRegion(customBodyRect, drawData.localVisibleStartTime, drawData.localVisibleEndTime);
+                try
+                {
+                    drawData.clipEditor.DrawBackground(drawData.clip, region);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
         }
 
         public static void DrawAnimationRecordBorder(ClipDrawData drawData)
@@ -614,11 +611,11 @@ namespace UnityEditor.Timeline
             if (!drawData.clip.parentTrack.IsRecordingToClip(drawData.clip))
                 return;
 
-            double time = TimelineWindow.instance.state.editSequence.time;
+            var time = TimelineWindow.instance.state.editSequence.time;
             if (time < drawData.clip.start + drawData.clip.mixInDuration || time > drawData.clip.end - drawData.clip.mixOutDuration)
                 return;
 
-            ClipDrawer.DrawBorder(drawData.clipCenterSection, ClipBorder.kRecording, ClipBlends.kNone);
+            DrawClipSelectionBorder(drawData.clipCenterSection, ClipBorder.Recording(), ClipBlends.kNone);
         }
 
         public static void DrawRecordProhibited(ClipDrawData drawData)

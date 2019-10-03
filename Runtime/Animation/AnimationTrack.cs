@@ -587,10 +587,10 @@ namespace UnityEngine.Timeline
             }
 
             bool requiresMotionXPlayable = RequiresMotionXPlayable(mode, go);
-            
+
             Playable mixer = layerMixer;
-           mixer = CreateDefaultBlend(graph, go, mixer, requiresMotionXPlayable);
-            
+            mixer = CreateDefaultBlend(graph, go, mixer, requiresMotionXPlayable);
+
             // motionX playable not required in scene offset mode, or root transform mode
             if (requiresMotionXPlayable)
             {
@@ -601,8 +601,7 @@ namespace UnityEngine.Timeline
                 motionXToDelta.SetAbsoluteMotion(UsesAbsoluteMotion(mode));
                 mixer = (Playable)motionXToDelta;
             }
-            
-            
+
 
 #if UNITY_EDITOR
             if (!Application.isPlaying)
@@ -627,8 +626,6 @@ namespace UnityEngine.Timeline
 
             return mixer;
         }
-        
-        
 
         // Creates a layer mixer containing default blends
         // the base layer is a default clip of all driven properties
@@ -644,13 +641,13 @@ namespace UnityEngine.Timeline
             int inputs = 1 + ((m_CachedPropertiesClip != null) ? 1 : 0) + ((m_DefaultPoseClip != null) ? 1 : 0);
             if (inputs == 1)
                 return mixer;
-            
+
             var defaultPoseMixer = AnimationLayerMixerPlayable.Create(graph, inputs);
 
             int mixerInput = 0;
             if (m_CachedPropertiesClip)
             {
-                var defaults = (Playable) AnimationClipPlayable.Create(graph, m_CachedPropertiesClip);
+                var defaults = (Playable)AnimationClipPlayable.Create(graph, m_CachedPropertiesClip);
                 if (requireOffset)
                     defaults = AttachOffsetPlayable(graph, defaults, m_SceneOffsetPosition, Quaternion.Euler(m_SceneOffsetRotation));
                 graph.Connect(defaults, 0, defaultPoseMixer, mixerInput);
@@ -660,26 +657,24 @@ namespace UnityEngine.Timeline
 
             if (m_DefaultPoseClip)
             {
-                var blendDefault = (Playable) AnimationClipPlayable.Create(graph, m_DefaultPoseClip);
+                var blendDefault = (Playable)AnimationClipPlayable.Create(graph, m_DefaultPoseClip);
                 if (requireOffset)
                     blendDefault = AttachOffsetPlayable(graph, blendDefault, m_SceneOffsetPosition, Quaternion.Euler(m_SceneOffsetRotation));
-                
+
                 graph.Connect(blendDefault, 0, defaultPoseMixer, mixerInput);
                 defaultPoseMixer.SetInputWeight(mixerInput, 1.0f);
                 mixerInput++;
             }
-            
-            
+
+
             graph.Connect(mixer, 0, defaultPoseMixer, mixerInput);
             defaultPoseMixer.SetInputWeight(mixerInput, 1.0f);
-            
+
             return defaultPoseMixer;
-#else 
+#else
             return mixer;
-#endif 
-
+#endif
         }
-
 
         private Playable AttachOffsetPlayable(PlayableGraph graph, Playable playable, Vector3 pos, Quaternion rot)
         {
@@ -689,15 +684,15 @@ namespace UnityEngine.Timeline
             return offsetPlayable;
         }
 
-#if UNITY_EDITOR 
-        private static string k_DefaultHumanoidClipPath = "Editors/TimelineWindow/HumanoidDefault.anim";
+#if UNITY_EDITOR
+        private static string k_DefaultHumanoidClipPath = "Packages/com.unity.timeline/Editor/StyleSheets/res/HumanoidDefault.anim";
         private static AnimationClip s_DefaultHumanoidClip = null;
 
         AnimationClip GetDefaultHumanoidClip()
         {
             if (s_DefaultHumanoidClip == null)
             {
-                s_DefaultHumanoidClip = UnityEditor.EditorGUIUtility.LoadRequired(k_DefaultHumanoidClipPath) as AnimationClip;
+                s_DefaultHumanoidClip = EditorGUIUtility.LoadRequired(k_DefaultHumanoidClipPath) as AnimationClip;
                 if (s_DefaultHumanoidClip == null)
                     Debug.LogError("Could not load default humanoid animation clip for Timeline");
             }
@@ -894,13 +889,13 @@ namespace UnityEngine.Timeline
 
             m_SceneOffsetPosition = animator.transform.localPosition;
             m_SceneOffsetRotation = animator.transform.localEulerAngles;
-            
+
             // Create default pose clip from collected properties
             if (hasHumanMotion)
                 animClips.Add(GetDefaultHumanoidClip());
 
             var bindings = AnimationPreviewUtilities.GetBindings(animator.gameObject, animClips);
-            
+
             m_CachedPropertiesClip = AnimationPreviewUtilities.CreateDefaultClip(animator.gameObject, bindings);
             AnimationPreviewUtilities.PreviewFromCurves(animator.gameObject, bindings); // faster to preview from curves then an animation clip
             m_DefaultPoseClip = hasHumanMotion ? GetDefaultHumanoidClip() : null;

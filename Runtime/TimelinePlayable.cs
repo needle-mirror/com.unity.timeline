@@ -263,25 +263,27 @@ namespace UnityEngine.Timeline
             foreach (var c in m_CurrentListOfActiveClips)
             {
                 c.intervalBit = m_ActiveBit;
+                if (frameData.timeLooped)
+                    c.Reset();
             }
-
 
             // all previously active clips having a different intervalBit flag are not
             // in the current intersection, therefore are considered becoming disabled at this frame
-            for (int a = 0; a < m_ActiveClips.Count; a++)
+            var timelineEnd = playable.GetDuration();
+            foreach (var c in m_ActiveClips)
             {
-                var c = m_ActiveClips[a];
                 if (c.intervalBit != m_ActiveBit)
                 {
-                    // Set time to the latest timeline time before disabling the clip.
-                    c.EvaluateAt(localTime, frameData);
+                    var clipEnd = (double)DiscreteTime.FromTicks(c.intervalEnd);
+                    var time = frameData.timeLooped ? Math.Min(clipEnd, timelineEnd) : Math.Min(localTime, clipEnd);
+                    c.EvaluateAt(time, frameData);
                     c.enable = false;
                 }
             }
 
             m_ActiveClips.Clear();
             // case 998642 - don't use m_ActiveClips.AddRange, as in 4.6 .Net scripting it causes GC allocs
-            for (int a = 0; a < m_CurrentListOfActiveClips.Count; a++)
+            for (var a = 0; a < m_CurrentListOfActiveClips.Count; a++)
             {
                 m_CurrentListOfActiveClips[a].EvaluateAt(localTime, frameData);
                 m_ActiveClips.Add(m_CurrentListOfActiveClips[a]);

@@ -9,11 +9,11 @@ namespace UnityEditor.Timeline
     {
         const string k_Elipsis = "…";
         const string k_ImagePath = "Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/{0}.png";
+        public const string resourcesPath = "Packages/com.unity.timeline/Editor/StyleSheets/res/";
 
         //Timeline resources
         public static readonly GUIContent referenceTrackLabel = TrTextContent("R", "This track references an external asset");
         public static readonly GUIContent recordingLabel = TrTextContent("Recording...");
-        public static readonly GUIContent sequenceSelectorIcon = IconContent("TimelineSelector");
         public static readonly GUIContent noTimelineAssetSelected = TrTextContent("To start creating a timeline, select a GameObject");
         public static readonly GUIContent createTimelineOnSelection = TrTextContent("To begin a new timeline with {0}, create {1}");
         public static readonly GUIContent noTimelinesInScene = TrTextContent("No timeline found in the scene");
@@ -43,6 +43,7 @@ namespace UnityEditor.Timeline
         public static readonly GUIContent animationTrackIcon = EditorGUIUtility.IconContent("AnimationClip Icon");
         public static readonly GUIContent audioTrackIcon = EditorGUIUtility.IconContent("AudioSource Icon");
         public static readonly GUIContent playableTrackIcon = EditorGUIUtility.IconContent("cs Script Icon");
+        public static readonly GUIContent popupArrow = EditorGUIUtility.IconContent("icon dropdown");
 
         public GUIContent playrangeContent;
 
@@ -86,15 +87,9 @@ namespace UnityEditor.Timeline
         public GUIStyle extrapolationContinue;
         public GUIStyle collapseMarkers;
         public GUIStyle markerMultiOverlay;
-        public GUIStyle timelineClip;
-        public GUIStyle timelineClipSelected;
         public GUIStyle bottomShadow;
         public GUIStyle trackOptions;
         public GUIStyle infiniteTrack;
-        public GUIStyle blendMixIn;
-        public GUIStyle blendMixOut;
-        public GUIStyle blendEaseIn;
-        public GUIStyle blendEaseOut;
         public GUIStyle clipOut;
         public GUIStyle clipIn;
         public GUIStyle curves;
@@ -105,10 +100,9 @@ namespace UnityEditor.Timeline
         public GUIStyle avatarMaskOn;
         public GUIStyle avatarMaskOff;
         public GUIStyle markerWarning;
-        public GUIStyle editModeMixBtn;
-        public GUIStyle editModeRippleBtn;
-        public GUIStyle editModeReplaceBtn;
+        public GUIStyle editModeBtn;
         public GUIStyle showMarkersBtn;
+        public GUIStyle sequenceSwitcher;
 
         static internal DirectorStyles s_Instance;
 
@@ -116,8 +110,8 @@ namespace UnityEditor.Timeline
         DirectorNamedColor m_LightSkinColors;
         DirectorNamedColor m_DefaultSkinColors;
 
-        static readonly string s_DarkSkinPath = "Editors/TimelineWindow/Timeline_DarkSkin.txt";
-        static readonly string s_LightSkinPath = "Editors/TimelineWindow/Timeline_LightSkin.txt";
+        const string k_DarkSkinPath = resourcesPath + "Timeline_DarkSkin.txt";
+        const string k_LightSkinPath = resourcesPath + "Timeline_LightSkin.txt";
 
         static readonly GUIContent s_TempContent = new GUIContent();
 
@@ -184,29 +178,29 @@ namespace UnityEditor.Timeline
         public void ExportSkinToFile()
         {
             if (customSkin == m_DarkSkinColors)
-                customSkin.ToText(s_DarkSkinPath);
+                customSkin.ToText(k_DarkSkinPath);
 
             if (customSkin == m_LightSkinColors)
-                customSkin.ToText(s_LightSkinPath);
+                customSkin.ToText(k_LightSkinPath);
         }
 
         public void ReloadSkin()
         {
             if (customSkin == m_DarkSkinColors)
             {
-                m_DarkSkinColors = LoadColorSkin(s_DarkSkinPath);
+                m_DarkSkinColors = LoadColorSkin(k_DarkSkinPath);
             }
             else if (customSkin == m_LightSkinColors)
             {
-                m_LightSkinColors = LoadColorSkin(s_LightSkinPath);
+                m_LightSkinColors = LoadColorSkin(k_LightSkinPath);
             }
         }
 
         public void Initialize()
         {
             m_DefaultSkinColors = CreateDefaultSkin();
-            m_DarkSkinColors = LoadColorSkin(s_DarkSkinPath);
-            m_LightSkinColors = LoadColorSkin(s_LightSkinPath);
+            m_DarkSkinColors = LoadColorSkin(k_DarkSkinPath);
+            m_LightSkinColors = LoadColorSkin(k_LightSkinPath);
 
             // add the built in colors (control track uses attribute)
             TrackResourceCache.ClearTrackColorCache();
@@ -263,15 +257,9 @@ namespace UnityEditor.Timeline
             extrapolationLoop = GetGUIStyle("Icon-ExtrapolationLoop");
             extrapolationPingPong = GetGUIStyle("Icon-ExtrapolationPingPong");
             extrapolationContinue = GetGUIStyle("Icon-ExtrapolationContinue");
-            timelineClip = GetGUIStyle("Icon-Clip");
-            timelineClipSelected = GetGUIStyle("Icon-ClipSelected");
             bottomShadow = GetGUIStyle("Icon-Shadow");
             trackOptions = GetGUIStyle("Icon-TrackOptions");
             infiniteTrack = GetGUIStyle("Icon-InfiniteTrack");
-            blendMixIn = GetGUIStyle("Icon-BlendMixIn");
-            blendMixOut = GetGUIStyle("Icon-BlendMixOut");
-            blendEaseIn = GetGUIStyle("Icon-BlendEaseIn");
-            blendEaseOut = GetGUIStyle("Icon-BlendEaseOut");
             clipOut = GetGUIStyle("Icon-ClipOut");
             clipIn = GetGUIStyle("Icon-ClipIn");
             curves = GetGUIStyle("Icon-Curves");
@@ -283,11 +271,10 @@ namespace UnityEditor.Timeline
             avatarMaskOff = GetGUIStyle("Icon-AvatarMaskOff");
             collapseMarkers = GetGUIStyle("TrackCollapseMarkerButton");
             markerMultiOverlay = GetGUIStyle("MarkerMultiOverlay");
-            editModeMixBtn = GetGUIStyle("editModeMixBtn");
-            editModeRippleBtn = GetGUIStyle("editModeRippleBtn");
-            editModeReplaceBtn = GetGUIStyle("editModeReplaceBtn");
+            editModeBtn = GetGUIStyle("editModeBtn");
             showMarkersBtn = GetGUIStyle("showMarkerBtn");
             markerWarning = GetGUIStyle("markerWarningOverlay");
+            sequenceSwitcher = GetGUIStyle("sequenceSwitcher");
 
             playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = "Toggle play range markers." };
 

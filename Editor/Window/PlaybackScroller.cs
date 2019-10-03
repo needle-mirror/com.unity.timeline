@@ -2,10 +2,23 @@ using UnityEngine;
 
 namespace UnityEditor.Timeline
 {
-    enum PlaybackScrollMode
+    /// <summary>
+    /// Scrolling mode during playback for the timeline window.
+    /// </summary>
+    public enum PlaybackScrollMode
     {
+        /// <summary>
+        /// Timeline window doesn't change while the playhead is leaving the window.
+        /// </summary>
         None,
+        /// <summary>
+        /// Timeline window pans its content when the playhead arrive at the right of the window (like a paging scrolling).
+        /// </summary>
         Pan,
+        /// <summary>
+        /// Timeline window move the content as the playhead moves.
+        /// When the playhead reach the middle of the window, it stays there and the content scroll behind it.
+        /// </summary>
         Smooth
     }
 

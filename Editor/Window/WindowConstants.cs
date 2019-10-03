@@ -28,7 +28,7 @@ namespace UnityEditor.Timeline
         public const float createButtonWidth = 70.0f;
         public const float refTimeWidth = 50.0f;
 
-        public const float selectorWidth = 32.0f;
+        public const float selectorWidth = 23.0f;
         public const float cogButtonWidth = 32.0f;
         public const float cogButtonPadding = 16.0f;
 

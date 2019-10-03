@@ -15,6 +15,7 @@ namespace UnityEditor.Timeline
         public bool hasMultipleStartValues, hasMultipleEndValues, hasMultipleDurationValues;
         public bool supportsExtrapolation, supportsClipIn, supportsSpeedMultiplier, supportsBlending;
         public bool hasBlendIn, hasBlendOut;
+        public double maxMixIn, maxMixOut;
         public bool selectedAssetTypesAreHomogeneous;
         public bool containsAtLeastTwoClipsOnTheSameTrack;
 
@@ -25,6 +26,7 @@ namespace UnityEditor.Timeline
         {
             supportsBlending = supportsClipIn = supportsExtrapolation = supportsSpeedMultiplier = true;
             hasBlendIn = hasBlendOut = true;
+            maxMixIn = maxMixOut = TimelineClip.kMaxTimeValue;
             selectedAssetTypesAreHomogeneous = true;
             smallestDuration = TimelineClip.kMaxTimeValue;
             start = end = duration = 0;
@@ -58,6 +60,7 @@ namespace UnityEditor.Timeline
 
                 UpdateClipCaps(clip);
                 UpdateBlends(clip);
+                UpdateMixMaximums(clip);
                 UpdateSmallestDuration(clip);
                 UpdateMultipleValues(clip);
                 UpdateMultipleValues(clip);
@@ -71,6 +74,7 @@ namespace UnityEditor.Timeline
             if (firstSelectedClip == null) return;
 
             hasBlendIn = hasBlendOut = true;
+            maxMixIn = maxMixOut = TimelineClip.kMaxTimeValue;
             hasMultipleStartValues = hasMultipleDurationValues = hasMultipleEndValues = false;
             smallestDuration = TimelineClip.kMaxTimeValue;
             InitSelectionBounds(firstSelectedClip);
@@ -81,6 +85,7 @@ namespace UnityEditor.Timeline
                 if (clip == null) continue;
 
                 UpdateBlends(clip);
+                UpdateMixMaximums(clip);
                 UpdateSmallestDuration(clip);
                 UpdateMultipleValues(clip);
             }
@@ -127,6 +132,15 @@ namespace UnityEditor.Timeline
         {
             hasBlendIn &= clip.hasBlendIn;
             hasBlendOut &= clip.hasBlendOut;
+        }
+
+        void UpdateMixMaximums(TimelineClip clip)
+        {
+            var clipMaxMixIn = Math.Max(0.0, clip.duration - clip.mixOutDuration);
+            var clipMaxMixOut = Math.Max(0.0, clip.duration - clip.mixInDuration);
+
+            maxMixIn = Math.Min(maxMixIn, clipMaxMixIn);
+            maxMixOut = Math.Min(maxMixOut, clipMaxMixOut);
         }
     }
 }

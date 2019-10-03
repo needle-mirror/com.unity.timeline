@@ -9,10 +9,10 @@ namespace UnityEditor.Timeline
     [CustomTimelineEditor(typeof(ActivationTrack))]
     class ActivationTrackEditor : TrackEditor
     {
-        static readonly string ClipText = LocalizationDatabase.GetLocalizedString("Active");
+        static readonly string ClipText = L10n.Tr("Active");
 
-        static readonly string k_ErrorParentString = LocalizationDatabase.GetLocalizedString("The bound GameObject is a parent of the PlayableDirector.");
-        static readonly string k_ErrorString = LocalizationDatabase.GetLocalizedString("The bound GameObject contains the PlayableDirector.");
+        static readonly string k_ErrorParentString = L10n.Tr("The bound GameObject is a parent of the PlayableDirector.");
+        static readonly string k_ErrorString = L10n.Tr("The bound GameObject contains the PlayableDirector.");
 
         public override TrackDrawOptions GetTrackOptions(TrackAsset track, Object binding)
         {

@@ -4,17 +4,6 @@ namespace UnityEditor.Timeline
 {
     static class Graphics
     {
-        public static bool ShadowedButton(Rect rect, string text, GUIStyle style, Color shadowColor)
-        {
-            var shadowRect = rect;
-            shadowRect.xMin += 2.0f;
-            shadowRect.yMin += 2.0f;
-            style.normal.textColor = shadowColor;
-            GUI.Label(shadowRect, text, style);
-
-            return GUI.Button(rect, text, style);
-        }
-
         public static void ShadowLabel(Rect rect, string text, GUIStyle style, Color textColor, Color shadowColor)
         {
             ShadowLabel(rect, GUIContent.Temp(text), style, textColor, shadowColor);
@@ -32,14 +21,6 @@ namespace UnityEditor.Timeline
             GUI.Label(rect, content, style);
         }
 
-        public static void DrawOutlineRect(Rect rect, Color color)
-        {
-            DrawLine(new Vector3(rect.x, rect.y, 0.0f), new Vector3(rect.x + rect.width, rect.y, 0.0f), color);
-            DrawLine(new Vector3(rect.x + rect.width, rect.y, 0.0f), new Vector3(rect.x + rect.width, rect.y + rect.height, 0.0f), color);
-            DrawLine(new Vector3(rect.x, rect.y, 0.0f), new Vector3(rect.x, rect.y + rect.height, 0.0f), color);
-            DrawLine(new Vector3(rect.x, rect.y + rect.height, 0.0f), new Vector3(rect.x + rect.width, rect.y + rect.height, 0.0f), color);
-        }
-
         public static void DrawLine(Vector3 p1, Vector3 p2, Color color)
         {
             var c = Handles.color;
@@ -48,28 +29,11 @@ namespace UnityEditor.Timeline
             Handles.color = c;
         }
 
-        public static void DrawLineAA(Vector3 p1, Vector3 p2, Color col)
+        public static void DrawPolygonAA(Color color, Vector3[] vertices)
         {
-            var handleColor = Handles.color;
-            Handles.color = col;
-            Handles.DrawAAPolyLine(1.0f, p1, p2);
-            Handles.color = handleColor;
-        }
-
-        public static void DrawLineAA(float width, Vector3 p1, Vector3 p2, Color color)
-        {
-            DrawAAPolyLine(width, p1, p2, color);
-        }
-
-        private static readonly Vector3[] s_AAPoints = new Vector3[2];
-        public static void DrawAAPolyLine(float width, Vector3 p0, Vector3 p1, Color color)
-        {
-            s_AAPoints[0] = p0;
-            s_AAPoints[1] = p1;
-
             var prevColor = Handles.color;
             Handles.color = color;
-            Handles.DrawAAPolyLine(width, s_AAPoints);
+            Handles.DrawAAConvexPolygon(vertices);
             Handles.color = prevColor;
         }
 
@@ -119,6 +83,7 @@ namespace UnityEditor.Timeline
                     GUI.DrawTexture(new Rect(x * texture.width, y * texture.height, texture.width, texture.height), texture);
                 }
             }
+
             GUI.EndClip();
         }
 

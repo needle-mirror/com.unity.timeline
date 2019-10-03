@@ -9,7 +9,7 @@ namespace UnityEditor.Timeline
     [CustomTimelineEditor(typeof(AudioPlayableAsset)), UsedImplicitly]
     class AudioPlayableAssetEditor : ClipEditor
     {
-        readonly string k_NoClipAssignedError = LocalizationDatabase.GetLocalizedString("No audio clip assigned");
+        readonly string k_NoClipAssignedError = L10n.Tr("No audio clip assigned");
         readonly Dictionary<TimelineClip, WaveformPreview> m_PersistentPreviews = new Dictionary<TimelineClip, WaveformPreview>();
         ColorSpace m_ColorSpace = ColorSpace.Uninitialized;
 

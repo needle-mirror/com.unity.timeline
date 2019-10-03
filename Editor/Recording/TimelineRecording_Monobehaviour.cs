@@ -502,9 +502,15 @@ namespace UnityEditor.Timeline
             return -1;
         }
 
-        static bool DoesPropertyPathMatch(string a, string b)
+        static bool IsRotationCurve(string propertyName)
         {
-            return AnimationWindowUtility.GetPropertyGroupName(a).Equals(AnimationWindowUtility.GetPropertyGroupName(a));
+            string groupName = AnimationWindowUtility.GetPropertyGroupName(propertyName);
+            return groupName == kLocalRotation || groupName == kLocalEulerHint;
+        }
+
+        public static bool DoesPropertyPathMatch(string a, string b)
+        {
+            return AnimationWindowUtility.GetPropertyGroupName(a).Equals(AnimationWindowUtility.GetPropertyGroupName(b)) || IsRotationCurve(a) && IsRotationCurve(b);
         }
 
         internal static void GetPreviousPositionAndRotation(UndoPropertyModification[] mods, ref Vector3 position, ref Quaternion rotation)

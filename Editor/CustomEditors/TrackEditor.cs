@@ -122,11 +122,11 @@ namespace UnityEditor.Timeline
     /// </summary>
     public class TrackEditor
     {
-        static readonly string k_BoundGameObjectDisabled = LocalizationDatabase.GetLocalizedString("The bound GameObject is disabled.");
-        static readonly string k_NoValidComponent = LocalizationDatabase.GetLocalizedString("Could not find appropriate component on this gameObject");
-        static readonly string k_RequiredComponentIsDisabled = LocalizationDatabase.GetLocalizedString("The component is disabled");
-        static readonly string k_InvalidBinding = LocalizationDatabase.GetLocalizedString("The bound object is not the correct type.");
-        static readonly string k_PrefabBound = LocalizationDatabase.GetLocalizedString("The bound object is a Prefab");
+        static readonly string k_BoundGameObjectDisabled = L10n.Tr("The bound GameObject is disabled.");
+        static readonly string k_NoValidComponent = L10n.Tr("Could not find appropriate component on this gameObject");
+        static readonly string k_RequiredComponentIsDisabled = L10n.Tr("The component is disabled");
+        static readonly string k_InvalidBinding = L10n.Tr("The bound object is not the correct type.");
+        static readonly string k_PrefabBound = L10n.Tr("The bound object is a Prefab");
 
         readonly Dictionary<TrackAsset, System.Type> m_BindingCache = new Dictionary<TrackAsset, System.Type>();
 

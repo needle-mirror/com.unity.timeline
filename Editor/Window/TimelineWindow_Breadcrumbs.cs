@@ -98,7 +98,7 @@ namespace UnityEditor.Timeline
         {
             using (new EditorGUI.DisabledScope(currentMode.headerState.sequenceSelector == TimelineModeGUIState.Disabled))
             {
-                if (GUILayout.Button(DirectorStyles.sequenceSelectorIcon, EditorStyles.toolbarPopup, GUILayout.Width(WindowConstants.selectorWidth)))
+                if (EditorGUILayout.DropdownButton(DirectorStyles.popupArrow, FocusType.Passive, DirectorStyles.Instance.sequenceSwitcher, GUILayout.Width(WindowConstants.selectorWidth)))
                 {
                     var allDirectors = TimelineUtility.GetDirectorsInSceneUsingAsset(null);
 
@@ -126,10 +126,8 @@ namespace UnityEditor.Timeline
                     if (allDirectors.Length == 0)
                         sequenceMenu.AddDisabledItem(DirectorStyles.noTimelinesInScene);
 
-                    sequenceMenu.ShowAsContext();
+                    sequenceMenu.DropDown(EditorGUILayout.s_LastRect);
                 }
-
-                GUILayout.Space(10f);
             }
         }
     }

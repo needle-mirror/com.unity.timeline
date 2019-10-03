@@ -3,7 +3,7 @@ using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
-    // The RuntimeClip wraps a single clip in an instanciated sequence.
+    // The RuntimeClip wraps a single clip in an instantiated sequence.
     // It supports the IInterval interface so that it can be stored in the interval tree
     // It is this class that is returned by an interval tree query.
     class RuntimeClip : RuntimeClipBase
@@ -57,6 +57,7 @@ namespace UnityEngine.Timeline
                 if (value && m_Playable.GetPlayState() != PlayState.Playing)
                 {
                     m_Playable.Play();
+                    SetTime(m_Clip.clipIn);
                 }
                 else if (!value && m_Playable.GetPlayState() != PlayState.Paused)
                 {
@@ -99,6 +100,11 @@ namespace UnityEngine.Timeline
                 SetTime(clipTime);
             }
             SetDuration(clip.extrapolatedDuration);
+        }
+
+        public override void Reset()
+        {
+            SetTime(m_Clip.clipIn);
         }
     }
 }

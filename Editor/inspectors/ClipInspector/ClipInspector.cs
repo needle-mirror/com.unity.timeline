@@ -16,8 +16,10 @@ namespace UnityEditor.Timeline
             public static readonly GUIContent StartName = EditorGUIUtility.TrTextContent("Start", "The start time of the clip");
             public static readonly GUIContent DurationName = EditorGUIUtility.TrTextContent("Duration", "The length of the clip");
             public static readonly GUIContent EndName = EditorGUIUtility.TrTextContent("End", "The end time of the clip");
-            public static readonly GUIContent EaseInDurationName = EditorGUIUtility.TrTextContent("Ease In Duration", "The length of the blend in");
-            public static readonly GUIContent EaseOutDurationName = EditorGUIUtility.TrTextContent("Ease Out Duration", "The length of the blend out");
+            public static readonly GUIContent EaseInDurationName = EditorGUIUtility.TrTextContent("Ease In Duration", "The length of the ease in");
+            public static readonly GUIContent BlendInDurationName = EditorGUIUtility.TrTextContent("Blend In Duration", "The length of the blend in");
+            public static readonly GUIContent EaseOutDurationName = EditorGUIUtility.TrTextContent("Ease Out Duration", "The length of the ease out");
+            public static readonly GUIContent BlendOutDurationName = EditorGUIUtility.TrTextContent("Blend Out Duration", "The length of the blend out");
             public static readonly GUIContent ClipInName = EditorGUIUtility.TrTextContent("Clip In", "Start the clip at this local time");
             public static readonly GUIContent TimeScaleName = EditorGUIUtility.TrTextContent("Speed Multiplier", "Time scale of the playback speed");
             public static readonly GUIContent PreExtrapolateLabel = EditorGUIUtility.TrTextContent("Pre-Extrapolate", "Extrapolation used prior to the first clip");
@@ -725,20 +727,25 @@ namespace UnityEditor.Timeline
 
         void DrawBlendingProperties()
         {
+            const double mixMinimum = 0.0;
             var useBlendIn = m_SelectionInfo.hasBlendIn;
-            var maxBlendDuration = m_SelectionInfo.smallestDuration * 0.49;
-            var blendMax = useBlendIn ? TimelineClip.kMaxTimeValue : maxBlendDuration;
+            var useBlendOut = m_SelectionInfo.hasBlendOut;
+
+            var currentMixInProperty = useBlendIn ? m_BlendInDurationProperty : m_EaseInDurationProperty;
+            var currentMixOutProperty = useBlendOut ? m_BlendOutDurationProperty : m_EaseOutDurationProperty;
+
+            var maxEaseIn = Math.Max(mixMinimum, m_SelectionInfo.maxMixIn);
+            var maxEaseOut = Math.Max(mixMinimum, m_SelectionInfo.maxMixOut);
+
             var inputEvent = InputEvent.None;
 
-            TimelineInspectorUtility.TimeField(useBlendIn
-                ? m_BlendInDurationProperty
-                : m_EaseInDurationProperty, Styles.EaseInDurationName, useBlendIn, currentFrameRate, 0, blendMax, ref inputEvent);
+            var blendMax = useBlendIn ? TimelineClip.kMaxTimeValue : maxEaseIn;
+            var label = useBlendIn ? Styles.BlendInDurationName : Styles.EaseInDurationName;
+            TimelineInspectorUtility.TimeField(currentMixInProperty, label, useBlendIn, currentFrameRate, mixMinimum, blendMax, ref inputEvent);
 
-            var useBlendOut = m_SelectionInfo.hasBlendOut;
-            blendMax = useBlendOut ? TimelineClip.kMaxTimeValue : maxBlendDuration;
-            TimelineInspectorUtility.TimeField(useBlendOut
-                ? m_BlendOutDurationProperty
-                : m_EaseOutDurationProperty, Styles.EaseOutDurationName, useBlendOut, currentFrameRate, 0, blendMax, ref inputEvent);
+            blendMax = useBlendOut ? TimelineClip.kMaxTimeValue : maxEaseOut;
+            label = useBlendOut ? Styles.BlendOutDurationName : Styles.EaseOutDurationName;
+            TimelineInspectorUtility.TimeField(currentMixOutProperty, label, useBlendOut, currentFrameRate, mixMinimum, blendMax, ref inputEvent);
         }
 
         void DrawClipInProperty()

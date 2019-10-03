@@ -320,8 +320,8 @@ namespace UnityEngine.Timeline
         /// </summary>
         public double easeInDuration
         {
-            get { return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseInDuration, 0), duration * 0.49) : 0; }
-            set { m_EaseInDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseInDuration), duration * 0.49)) : 0; }
+            get { return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseInDuration, 0), duration) : 0; }
+            set { m_EaseInDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseInDuration), duration)) : 0; }
         }
 
         /// <summary>
@@ -329,8 +329,8 @@ namespace UnityEngine.Timeline
         /// </summary>
         public double easeOutDuration
         {
-            get { return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseOutDuration, 0), duration * 0.49) : 0; }
-            set { m_EaseOutDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseOutDuration), duration * 0.49)) : 0; }
+            get { return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseOutDuration, 0), duration) : 0; }
+            set { m_EaseOutDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseOutDuration), duration)) : 0; }
         }
 
         [Obsolete("Use easeOutTime instead (UnityUpgradable) -> easeOutTime", true)]
@@ -799,6 +799,36 @@ namespace UnityEngine.Timeline
         public override string ToString()
         {
             return UnityString.Format("{0} ({1:F2}, {2:F2}):{3:F2} | {4}", displayName, start, end, clipIn, parentTrack);
+        }
+
+        /// <summary>
+        /// Use this method to adjust ease in and ease out values to avoid overlapping.
+        /// </summary>
+        /// <remarks>
+        /// Ease values will be adjusted to respect the ratio between ease in and ease out.
+        /// </remarks>
+        public void ConformEaseValues()
+        {
+            if (m_EaseInDuration + m_EaseOutDuration > duration)
+            {
+                var ratio = CalculateEasingRatio(m_EaseInDuration, m_EaseOutDuration);
+                m_EaseInDuration = duration * ratio;
+                m_EaseOutDuration = duration * (1.0 - ratio);
+            }
+        }
+
+        static double CalculateEasingRatio(double easeIn, double easeOut)
+        {
+            if (Math.Abs(easeIn - easeOut) < TimeUtility.kTimeEpsilon)
+                return 0.5;
+
+            if (easeIn == 0.0)
+                return 0.0;
+
+            if (easeOut == 0.0)
+                return 1.0;
+
+            return easeIn / (easeIn + easeOut);
         }
 
 #if UNITY_EDITOR

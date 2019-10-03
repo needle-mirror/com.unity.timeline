@@ -6,12 +6,16 @@ namespace UnityEditor.Timeline.Signals
 {
     static class SignalListFactory
     {
-        public static SignalReceiverTreeView CreateSignalInspectorList(TreeViewState state, MultiColumnHeaderState columnState, SignalReceiver target, int columnHeight, bool readonlySignal)
+        public static SignalReceiverTreeView CreateSignalInspectorList(TreeViewState state, SignalReceiverHeader header, SignalReceiver target, SerializedObject so)
         {
-            var header = new SignalReceiverHeader(columnState) { height = columnHeight };
-            header.ResizeToFit();
+            return new SignalReceiverTreeView(state, header, target, so);
+        }
 
-            return new SignalReceiverTreeView(state, header, target, readonlySignal);
+        public static  SignalReceiverHeader CreateHeader(MultiColumnHeaderState state, int columnHeight)
+        {
+            var header = new SignalReceiverHeader(state) { height = columnHeight };
+            header.ResizeToFit();
+            return header;
         }
 
         public static MultiColumnHeaderState CreateHeaderState()

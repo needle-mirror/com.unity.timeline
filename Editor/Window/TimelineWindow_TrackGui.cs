@@ -83,8 +83,7 @@ namespace UnityEditor.Timeline
                     string newSequencePath = EditorUtility.SaveFilePanelInProject(DirectorStyles.createNewTimelineText.text, currentlySelectedGo.name + "Timeline", "playable", message, ProjectWindowUtil.GetActiveFolderPath());
                     if (!string.IsNullOrEmpty(newSequencePath))
                     {
-                        var newAsset = CreateInstance<TimelineAsset>();
-                        AssetDatabase.CreateAsset(newAsset, newSequencePath);
+                        var newAsset = TimelineUtility.CreateAndSaveTimelineAsset(newSequencePath);
 
                         Undo.IncrementCurrentGroup();
 
@@ -95,10 +94,7 @@ namespace UnityEditor.Timeline
 
                         existingDirector.playableAsset = newAsset;
                         SetCurrentTimeline(existingDirector);
-                        var newTrack = TimelineHelpers.CreateTrack<AnimationTrack>();
-
                         windowState.previewMode = false;
-                        TimelineUtility.SetSceneGameObject(windowState.editSequence.director, newTrack, currentlySelectedGo);
                     }
 
                     // If we reach this point, the state of the pannel has changed; skip the rest of this GUI phase

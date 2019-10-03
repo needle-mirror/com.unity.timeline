@@ -18,19 +18,17 @@ namespace UnityEditor.Timeline.Signals
         const float k_VerticalPadding = 5;
         const float k_HorizontalPadding = 5;
 
-        public SignalReceiverTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, SignalReceiver receiver, bool readonlySignal) : base(state, multiColumnHeader)
+        public SignalReceiverTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, SignalReceiver receiver, SerializedObject serializedObject)
+            : base(state, multiColumnHeader)
         {
             m_Target = receiver;
-            var receiverSO = new SerializedObject(receiver);
-            signals = SignalReceiverUtility.FindSignalsProperty(receiverSO);
-            events = SignalReceiverUtility.FindEventsProperty(receiverSO);
-            readonlySignals = readonlySignal;
             useScrollView = true;
+            SetSerializedProperties(serializedObject);
             getNewSelectionOverride = (item, selection, shift) => new List<int>(); // Disable Selection
         }
 
         SignalAsset signalAssetContext { get; set; }
-        bool readonlySignals { get; }
+        public bool readonlySignals { get; set; }
 
         public void SetSignalContext(SignalAsset assetContext = null)
         {
@@ -38,11 +36,10 @@ namespace UnityEditor.Timeline.Signals
             dirty = true;
         }
 
-        public void SetSerializedProperties(SerializedProperty signalsProperty, SerializedProperty eventsProperty)
+        void SetSerializedProperties(SerializedObject serializedObject)
         {
-            signals = signalsProperty;
-            events = eventsProperty;
-
+            signals = SignalReceiverUtility.FindSignalsProperty(serializedObject);
+            events = SignalReceiverUtility.FindEventsProperty(serializedObject);
             Reload();
         }
 
@@ -54,7 +51,8 @@ namespace UnityEditor.Timeline.Signals
 
         public void RefreshIfDirty()
         {
-            if (dirty)
+            var signalsListSizeHasChanged = signals.arraySize != GetRows().Count;
+            if (dirty || signalsListSizeHasChanged)
                 Reload();
             dirty = false;
         }
@@ -151,7 +149,6 @@ namespace UnityEditor.Timeline.Signals
                 if (signalReferenceValue != null && signalReferenceValue == signalToFindRefValue)
                     return i;
             }
-
             return -1;
         }
     }

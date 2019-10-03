@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.0-preview.2] - 2019-10-03
+
+### Added
+- Inline Curve Properties can be removed.
+
+### Changed
+- Creating a new Timeline will no longer automatically add an Animation Track and an Animator to the target GameObject.
+- Ease-in and ease-out values for clips are no longer restricted to 50% of the clip's duration.
+
+## [1.2.4] - 2019-10-03
+
+### Fixed
+- Adding a PlayableDirector with no Playable Asset will no longer trigger a repaint of the Timeline Window on each frame. ([1172707](https://issuetracker.unity3d.com/product/unity/issues/guid/1172707/))
+- Fixed issue where a clip's blend selection border was not drawn correctly when there was a previous clip. (1178173)
+- Fixed issue where Animation Events were fired twice when the Playable Director Wrap mode is set to Loop. ([1173281](https://issuetracker.unity3d.com/product/unity/issues/guid/1173281/))
+- Fixed issue where double-clicking on a Timeline Asset would not open it in the Timeline window. ([1182159](https://issuetracker.unity3d.com/product/unity/issues/guid/1182159))
+- Fixed issue where the paste shortcut would not work when copying and pasting between two different timelines. (1184967)
+- Fixed audio stutter when going into playmode. ([1167289](https://issuetracker.unity3d.com/product/unity/issues/guid/1167289/))
+- Fixed PreviousFrame and NextFrame controls in subtimelines with large offsets. (1175320)
+- Fixed issue where exceptions were thrown when resetting a Signal Receiver component. ([1158227](https://issuetracker.unity3d.com/product/unity/issues/guid/1158227/))
+- Increased font size of clip labels (1179642)
+
+### Changed
+- Properties in the Inline Curve editor will now be listed in the same order as the Animation window. (1184058)
+- Updated the appearance of the Timeline window to conform to the [editor's UX redesign](https://blogs.unity3d.com/2019/08/29/evolving-the-unity-editor-ux/)
+- Improved the appearance of clip blends.
+
 ## [1.2.3] - 2019-10-03
 
 ### Fixed
@@ -8,14 +35,14 @@ All notable changes to this package will be documented in this file. The format 
 
 ## [1.2.2] - 2019-08-20
 
-## Fixed
+### Fixed
 - Fixed issue where fields for custom clips were not responding to Add Key commands. (1174416)
 - Fixed issue where a different track's bound GameObject is highlighted when clicking a track's bound GameObject box. (1141836)
 - Fixed issue where a clip locks to the playhead's position when moving it. (1157280)
 
 ## [1.2.1] - 2019-08-01
 
-## Fixed
+### Fixed
 - Fixed appearance of a selected clip's border.
 - Fixed non-transform properties from AnimationClips not being correctly put into preview mode when the avatar root does not contain the animator component. ([1162334](https://issuetracker.unity3d.com/product/unity/issues/guid/1162334/))
 - Fixed an issue where the context menu for inline curves keys would not open on MacOS. ([1158584](https://issuetracker.unity3d.com/product/unity/issues/guid/1158584/))

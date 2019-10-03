@@ -395,6 +395,9 @@ namespace UnityEditor.Timeline
                 {
                     GenericMenu menu = new GenericMenu();
 
+                    menu.AddItem(EditorGUIUtility.TrTextContent("Preferences Page..."), false, () => SettingsWindow.Show(SettingsScope.User, "Preferences/Timeline"));
+                    menu.AddSeparator("");
+
                     menu.AddItem(EditorGUIUtility.TrTextContent("Seconds"), !state.timeInFrames, ChangeTimeCode, "seconds");
                     menu.AddItem(EditorGUIUtility.TrTextContent("Frames"), state.timeInFrames, ChangeTimeCode, "frames");
                     menu.AddSeparator("");
@@ -404,12 +407,10 @@ namespace UnityEditor.Timeline
                     menu.AddSeparator("");
 
                     bool standardFrameRate = false;
-                    standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/Film (24)", 24.0f);
-                    standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/PAL (25)", 25.0f);
-                    standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/NTSC (29.97)", 29.97f);
-                    standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/30", 30.0f);
-                    standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/50", 50.0f);
-                    standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/60", 60.0f);
+                    for (int i = 0; i < TimelineProjectSettings.framerateValues.Length; i++)
+                    {
+                        standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/" + TimelineProjectSettings.framerateLabels[i], TimelineProjectSettings.framerateValues[i]);
+                    }
 
                     if (standardFrameRate)
                         menu.AddDisabledItem(EditorGUIUtility.TrTextContent("Frame Rate/Custom"));
@@ -426,22 +427,10 @@ namespace UnityEditor.Timeline
                     {
                         menu.AddDisabledItem(EditorGUIUtility.TrTextContent("Play Range Mode"));
                     }
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Playback Scrolling mode/None"), state.autoScrollMode == PlaybackScrollMode.None, () => state.autoScrollMode = PlaybackScrollMode.None);
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Playback Scrolling mode/Smooth"), state.autoScrollMode == PlaybackScrollMode.Smooth, () => state.autoScrollMode = PlaybackScrollMode.Smooth);
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Playback Scrolling mode/Pan"), state.autoScrollMode == PlaybackScrollMode.Pan, () => state.autoScrollMode = PlaybackScrollMode.Pan);
-                    menu.AddSeparator("");
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Show Audio Waveforms"), state.showAudioWaveform, () =>
-                    {
-                        state.showAudioWaveform = !state.showAudioWaveform;
-                    });
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Enable Audio Scrubbing"), !state.muteAudioScrubbing, () => state.muteAudioScrubbing = !state.muteAudioScrubbing);
-
-                    menu.AddSeparator("");
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Snap to Frame"), state.frameSnap, () => state.frameSnap = !state.frameSnap);
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Edge Snap"), state.edgeSnaps, () => state.edgeSnaps = !state.edgeSnaps);
 
                     if (Unsupported.IsDeveloperMode())
                     {
+                        menu.AddSeparator("");
                         menu.AddItem(EditorGUIUtility.TrTextContent("Show Snapping Debug"), SnapEngine.displayDebugLayout,
                             () => SnapEngine.displayDebugLayout = !SnapEngine.displayDebugLayout);
 

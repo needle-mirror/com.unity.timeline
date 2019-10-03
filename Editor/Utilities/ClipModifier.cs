@@ -195,6 +195,7 @@ namespace UnityEditor.Timeline
 
             clip.start = time;
             clip.duration = duration;
+            clip.ConformEaseValues();
         }
 
         public static void SetEnd(TimelineClip clip, double time, bool affectTimeScale)
@@ -208,6 +209,7 @@ namespace UnityEditor.Timeline
             }
 
             clip.duration = duration;
+            clip.ConformEaseValues();
         }
 
         public static bool ResetEditing(TimelineClip[] clips)

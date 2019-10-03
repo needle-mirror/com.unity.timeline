@@ -83,7 +83,7 @@ namespace UnityEngine.Timeline
                 weight = WeightUtility.NormalizeMixer(mixInfo.mixer);
                 mixInfo.parentMixer.SetInputWeight(mixInfo.port, weight);
             }
-            
+
             // only write the final weight in player/playmode. In editor, we are blending to the appropriate defaults
             // the last mixer in the list is the final blend, since the list is composed post-order.
             if (Application.isPlaying)

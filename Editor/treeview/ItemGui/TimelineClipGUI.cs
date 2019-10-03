@@ -66,8 +66,10 @@ namespace UnityEditor.Timeline
         {
             get
             {
-                float percent = clip.mixOutPercentage;
-                m_MixOutRect.Set(treeViewRect.width * (1 - percent), 0.0f, treeViewRect.width * percent, treeViewRect.height);
+                var percent = clip.mixOutPercentage;
+                var x = Mathf.Round(treeViewRect.width * (1 - percent));
+                var width = Mathf.Round(treeViewRect.width * percent);
+                m_MixOutRect.Set(x, 0.0f, width, treeViewRect.height);
                 return m_MixOutRect;
             }
         }
@@ -76,7 +78,8 @@ namespace UnityEditor.Timeline
         {
             get
             {
-                m_MixInRect.Set(0.0f, 0.0f, treeViewRect.width * clip.mixInPercentage, treeViewRect.height);
+                var width = Mathf.Round(treeViewRect.width * clip.mixInPercentage);
+                m_MixInRect.Set(0.0f, 0.0f, width, treeViewRect.height);
                 return m_MixInRect;
             }
         }
@@ -217,7 +220,7 @@ namespace UnityEditor.Timeline
         }
 
         // Draw the actual clip. Defers to the track drawer for customization
-        void UpdateDrawData(WindowState state, Rect drawRect, string title, bool selected, float rectXOffset)
+        void UpdateDrawData(WindowState state, Rect drawRect, string title, bool selected, bool previousClipSelected, float rectXOffset)
         {
             m_ClipDrawData.clip = clip;
             m_ClipDrawData.targetRect = drawRect;
@@ -227,6 +230,7 @@ namespace UnityEditor.Timeline
             m_ClipDrawData.selected = selected;
             m_ClipDrawData.inlineCurvesSelected = inlineCurvesSelected;
             m_ClipDrawData.previousClip = previousClip != null ? previousClip.clip : null;
+            m_ClipDrawData.previousClipSelected = previousClipSelected;
 
             Vector3 shownAreaTime = state.timeAreaShownRange;
             m_ClipDrawData.localVisibleStartTime = clip.ToLocalTimeUnbound(Math.Max(clip.start, shownAreaTime.x));
@@ -311,19 +315,18 @@ namespace UnityEditor.Timeline
 
         public void DrawGhostClip(Rect targetRect)
         {
-            DrawSimpleClip(targetRect, ClipBorder.kSelection, new Color(1.0f, 1.0f, 1.0f, 0.5f));
+            DrawSimpleClip(targetRect, ClipBorder.Selection(), new Color(1.0f, 1.0f, 1.0f, 0.5f));
         }
 
         public void DrawInvalidClip(Rect targetRect)
         {
-            DrawSimpleClip(targetRect, ClipBorder.kSelection, DirectorStyles.Instance.customSkin.colorInvalidClipOverlay);
+            DrawSimpleClip(targetRect, ClipBorder.Selection(), DirectorStyles.Instance.customSkin.colorInvalidClipOverlay);
         }
 
         void DrawSimpleClip(Rect targetRect, ClipBorder border, Color overlay)
         {
             var drawOptions = UpdateClipDrawOptions(CustomTimelineEditorCache.GetClipEditor(clip), clip);
-            var blends = GetClipBlends();
-            ClipDrawer.DrawSimpleClip(clip, targetRect, border, overlay, drawOptions, blends);
+            ClipDrawer.DrawSimpleClip(clip, targetRect, border, overlay, drawOptions);
         }
 
         void DrawInto(Rect drawRect, WindowState state)
@@ -347,12 +350,13 @@ namespace UnityEditor.Timeline
 
             var originRect = new Rect(0.0f, 0.0f, drawRect.width, drawRect.height);
             string clipLabel = name;
-            bool selected = SelectionManager.Contains(clip);
+            var selected = SelectionManager.Contains(clip);
+            var previousClipSelected = previousClip != null && SelectionManager.Contains(previousClip.clip);
 
             if (selected && 1.0 != clip.timeScale)
                 clipLabel += " " + clip.timeScale.ToString("F2") + "x";
 
-            UpdateDrawData(state, originRect, clipLabel, selected, drawRect.x);
+            UpdateDrawData(state, originRect, clipLabel, selected, previousClipSelected, drawRect.x);
             DrawClip(m_ClipDrawData);
 
             GUI.EndClip();
@@ -409,11 +413,9 @@ namespace UnityEditor.Timeline
             m_ClipCenterSection.x = 0;
             m_ClipCenterSection.y = 0;
 
-            m_ClipCenterSection.xMin = treeViewRect.width * clip.mixInPercentage;
-
-            m_ClipCenterSection.width = treeViewRect.width;
-            m_ClipCenterSection.xMax -= mixOutRect.width;
-            m_ClipCenterSection.xMax -= (treeViewRect.width * clip.mixInPercentage);
+            m_ClipCenterSection.xMin = Mathf.Round(treeViewRect.width * clip.mixInPercentage);
+            m_ClipCenterSection.width = Mathf.Round(treeViewRect.width);
+            m_ClipCenterSection.xMax -= Mathf.Round(mixOutRect.width + treeViewRect.width * clip.mixInPercentage);
         }
 
         // Entry point to the Clip Drawing...

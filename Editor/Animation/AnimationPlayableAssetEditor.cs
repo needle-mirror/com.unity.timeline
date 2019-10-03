@@ -8,10 +8,10 @@ namespace UnityEditor.Timeline
     [CustomTimelineEditor(typeof(AnimationPlayableAsset)), UsedImplicitly]
     class AnimationPlayableAssetEditor : ClipEditor
     {
-        public static readonly string k_NoClipAssignedError = LocalizationDatabase.GetLocalizedString("No animation clip assigned");
-        public static readonly string k_LegacyClipError = LocalizationDatabase.GetLocalizedString("Legacy animation clips are not supported");
-        static readonly string k_MotionCurveError = LocalizationDatabase.GetLocalizedString("You are using motion curves without applyRootMotion enabled on the Animator. The root transform will not be animated");
-        static readonly string k_RootCurveError = LocalizationDatabase.GetLocalizedString("You are using root curves without applyRootMotion enabled on the Animator. The root transform will not be animated");
+        public static readonly string k_NoClipAssignedError = L10n.Tr("No animation clip assigned");
+        public static readonly string k_LegacyClipError = L10n.Tr("Legacy animation clips are not supported");
+        static readonly string k_MotionCurveError = L10n.Tr("You are using motion curves without applyRootMotion enabled on the Animator. The root transform will not be animated");
+        static readonly string k_RootCurveError = L10n.Tr("You are using root curves without applyRootMotion enabled on the Animator. The root transform will not be animated");
 
         /// <inheritdoc/>
         public override ClipDrawOptions GetClipOptions(TimelineClip clip)
