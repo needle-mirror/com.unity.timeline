@@ -318,7 +318,7 @@ namespace UnityEditor.Timeline
                     state.recording = false;
                     state.previewMode = false;
 
-                    if (!locked)
+                    if (!locked && m_LastFrameHadSequence)
                     {
                         // the user may be adding a new PlayableDirector to a selected GameObject, make sure the timeline editor is shows the proper director if none is already showing
                         var selectedGameObject = Selection.activeObject != null ? Selection.activeObject as GameObject : null;

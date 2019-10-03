@@ -107,7 +107,7 @@ namespace UnityEditor.Timeline
                     SelectionManager.Add(track);
                 }
 
-                SequencerContextMenu.ShowNewTracksContextMenu(SelectionManager.SelectedTracks().ToArray(), TimelineWindow.state);
+                SequencerContextMenu.ShowNewTracksContextMenu(SelectionManager.SelectedTracks().ToArray(), TimelineWindow.state, buttonRect);
             }
             buttonRect.x -= buttonSize;
 

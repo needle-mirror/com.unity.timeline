@@ -6,12 +6,11 @@ using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
 
-
 namespace UnityEditor.Timeline
 {
     static class SequencerContextMenu
     {
-        private static readonly TimelineAction[] MarkerHeaderCommonOperations =
+        static readonly TimelineAction[] MarkerHeaderCommonOperations =
         {
             new PasteAction()
         };
@@ -51,6 +50,15 @@ namespace UnityEditor.Timeline
             BuildNewTracksContextMenu(items, tracks, state);
             MenuItemActionBase.BuildMenu(menu, items);
             menu.ShowAsContext();
+        }
+
+        public static void ShowNewTracksContextMenu(ICollection<TrackAsset> tracks, WindowState state, Rect rect)
+        {
+            var menu = new GenericMenu();
+            List<MenuActionItem> items = new List<MenuActionItem>(100);
+            BuildNewTracksContextMenu(items, tracks, state);
+            MenuItemActionBase.BuildMenu(menu, items);
+            menu.DropDown(rect);
         }
 
         public static void ShowTrackContextMenu(TrackAsset[] tracks, Vector2? mousePosition)

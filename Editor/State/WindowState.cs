@@ -240,7 +240,7 @@ namespace UnityEditor.Timeline
                         OnStopPreview();
 
                         AnimationMode.StopAnimationMode(previewDriver);
-                         
+
                         AnimationPropertyContextualMenu.Instance.SetResponder(null);
                         previewedDirectors = null;
                     }
@@ -359,6 +359,7 @@ namespace UnityEditor.Timeline
             if (m_OnEndFrameUpdates != null)
                 m_OnEndFrameUpdates.Clear();
 
+            m_SequenceHierarchy.Clear();
             windowOnGuiStarted = null;
             windowOnGuiFinished = null;
         }

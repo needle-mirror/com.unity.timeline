@@ -46,7 +46,7 @@ namespace UnityEditor.Timeline
                 {
                     // draw little connector widget
                     var localRect = clip.treeViewRect;
-                    localRect.x -= k_ConnectorIcon.fixedWidth / 2.0f;
+                    localRect.x -= Mathf.Floor(k_ConnectorIcon.fixedWidth / 2.0f);
                     localRect.width = k_ConnectorIcon.fixedWidth;
                     localRect.height = k_ConnectorIcon.fixedHeight;
                     GUI.Label(localRect, GUIContent.none, k_ConnectorIcon);

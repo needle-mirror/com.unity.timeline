@@ -49,11 +49,8 @@
     /* GUIStyle.clipping */
     -unity-clipping: clip;
 
-    /* GUIStyle.font */
-    font-size: --unity-font-size;
-
     /* GUIStyle.fontSize */
-    font-size: --unity-font-size-tiny;
+    font-size: --unity-font-size-small;
 
     /* GUIStyle.imagePosition */
     -unity-image-position: text-only;
@@ -210,172 +207,6 @@
     -unity-stretch-width: false;
 }
 
-.Icon-BlendEaseIn {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
-    -unity-clipping: clip;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-above;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.BlendEaseIn";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-
-    /* GUIStyle.wordWrap */
-    -unity-word-wrap: true;
-
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/Timeline-Clip-EaseIn.png");
-}
-
-/* GUIStyle.active */
-.Icon-BlendEaseIn:hover:active {
-    /* GUIState.textColor */
-    color: rgba(0, 0, 0, 0.96);
-}
-
-.Icon-BlendEaseOut {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
-    -unity-clipping: clip;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-above;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.BlendEaseOut";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-
-    /* GUIStyle.wordWrap */
-    -unity-word-wrap: true;
-
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/Timeline-Clip-EaseOut.png");
-}
-
-/* GUIStyle.active */
-.Icon-BlendEaseOut:hover:active {
-    /* GUIState.textColor */
-    color: rgba(0, 0, 0, 0.96);
-}
-
-.Icon-BlendMixIn {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
-    -unity-clipping: clip;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-above;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.BlendMixIn";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-
-    /* GUIStyle.wordWrap */
-    -unity-word-wrap: true;
-
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/Timeline-Clip-MixIn.png");
-}
-
-/* GUIStyle.active */
-.Icon-BlendMixIn:hover:active {
-    /* GUIState.textColor */
-    color: rgba(0, 0, 0, 0.96);
-}
-
-.Icon-BlendMixOut {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
-    -unity-clipping: clip;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-above;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.BlendMixOut";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-
-    /* GUIStyle.wordWrap */
-    -unity-word-wrap: true;
-
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/Timeline-Clip-MixOut.png");
-}
-
-/* GUIStyle.active */
-.Icon-BlendMixOut:hover:active {
-    /* GUIState.textColor */
-    color: rgba(0, 0, 0, 0.96);
-}
-
-.Icon-Clip {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
-    -unity-clipping: clip;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-above;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.Clip";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-
-    /* GUIStyle.wordWrap */
-    -unity-word-wrap: true;
-}
-
 .Icon-ClipIn {
     /* GUIStyle.alignment */
     -unity-text-align: middle-center;
@@ -432,32 +263,6 @@
 
     /* GUIStyle.stretchWidth */
     -unity-stretch-width: false;
-}
-
-.Icon-ClipSelected {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
-    -unity-clipping: clip;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-above;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.ClipSelected";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-
-    /* GUIStyle.wordWrap */
-    -unity-word-wrap: true;
 }
 
 .Icon-Connector {
@@ -1257,7 +1062,7 @@
     color: rgb(115, 151, 236);
 
     /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/TimelineDisplay.psd");
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/TimelineDisplay.png");
 }
 
 /* GUIStyle.active */
@@ -1306,9 +1111,6 @@
     color: rgb(153, 153, 153);
 }
 
-sequenceTrackGroupAddButton {
-}
-
 .tinyFont {
     /* GUIStyle.alignment */
     -unity-text-align: middle-left;
@@ -1329,40 +1131,34 @@ sequenceTrackGroupAddButton {
     color: rgba(255, 255, 255, 0.75);
 }
 
-.editModeMixBtn {
-    margin: 1px 0px 0px 0px;
+.editModeBtn {
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 4px;
-    padding-bottom: 4px;
-    -unity-extend: ".ButtonLeft";
-}
-
-.editModeRippleBtn {
-    margin: 1px 0px 0px 0px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    -unity-extend: ".ButtonMid";
-}
-
-.editModeReplaceBtn {
-    margin: 1px 0px 0px 0px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    -unity-extend: ".ButtonRight";
+    padding-bottom: 3px;
+    -unity-extend: ".ToolbarPopup";
+    background-image: resource("");
 }
 
 .showMarkerBtn{
-    margin: 1px 0px 0px 6px;
-    padding-left: 10px;
-    padding-right: 10px;
+    margin: 0px 0px 6px 6px;
+    padding-left: 12px;
+    padding-right: 12px;
     padding-top: 4px;
     padding-bottom: 3px;
-    -unity-extend: ".Button";
+    -unity-extend: ".ToolbarPopup";
+    background-image: resource("");
+}
+
+.sequenceSwitcher{
+    margin: 0px 5px 0px 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    -unity-extend: ".ToolbarPopup";
+    background-image: resource("");
+    -unity-text-align: middle-center;
 }
 
 .markerWarningOverlay{

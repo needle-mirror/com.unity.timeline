@@ -36,29 +36,6 @@
     background-image: resource("Builtin Skins/DarkSkin/Images/AvatarMaskEnabled.png");
 }
 
-.Icon-Clip {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineClipGradient.png");
-
-    /* GUIStyle.border */
-    -unity-slice-left: 4;
-    -unity-slice-right: 4;
-    -unity-slice-top: 4;
-    -unity-slice-bottom: 4;
-
-    /* GUIState.textColor */
-    color: rgb(200, 200, 200);
-}
-
-/* GUIStyle.active */
-.Icon-Clip:hover:active {
-    /* GUIState.textColor */
-    color: rgba(101, 193, 244, 0.96);
-
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineClipGradientSelected.png");
-}
-
 .Icon-ClipIn {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineIconClipIn.png");
@@ -302,14 +279,7 @@
     color: rgb(204, 204, 204);
 }
 
-/* GUIStyle.focused */
-.Icon-Clip:focus {
-    /* GUIState.textColor */
-    color: rgb(255, 255, 255);
-}
 
-/* GUIStyle.onFocused */
-.Icon-Clip:hover:focus:checked {
-    /* GUIState.textColor */
-    color: rgb(15, 139, 255);
+.sequenceSwitcher{
+    background-color: rgb(51, 51, 51);
 }

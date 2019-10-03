@@ -350,7 +350,7 @@ namespace UnityEditor.Timeline.Signals
 
             var width = EditorGUIUtility.currentViewWidth;
             var position = new Rect(0, y, width + 1, 1);
-            
+
             if (EditorStyles.inspectorTitlebar != null)
                 EditorStyles.inspectorTitlebar.Draw(position, false, false, false, false);
         }

@@ -5,9 +5,7 @@ namespace UnityEditor.Timeline.Signals
 {
     class SignalReceiverHeader : MultiColumnHeader
     {
-        public SignalReceiverHeader(MultiColumnHeaderState state) : base(state)
-        {
-        }
+        public SignalReceiverHeader(MultiColumnHeaderState state) : base(state) {}
 
         protected override void AddColumnHeaderContextMenuItems(GenericMenu menu)
         {

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
 
@@ -34,6 +34,7 @@ namespace UnityEngine.Timeline
             {
                 return obj.propertyName.GetHashCode() ^ obj.path.GetHashCode();
             }
+
             public static readonly EditorCurveBindingComparer Instance = new EditorCurveBindingComparer();
         }
 
@@ -46,7 +47,7 @@ namespace UnityEngine.Timeline
             s_BindingCache.Clear();
             s_CurveSet.Clear();
         }
-        
+
         public static EditorCurveBinding[] GetBindings(GameObject animatorRoot, IEnumerable<AnimationClip> clips)
         {
             s_CurveSet.Clear();
@@ -57,8 +58,8 @@ namespace UnityEngine.Timeline
 
             // if we have a transform binding, bind the entire skeleton
             if (NeedsSkeletonBindings(s_CurveSet.Keys))
-                AddBindings(s_BindingCache.GetAnimatorBindings(animatorRoot)); 
- 
+                AddBindings(s_BindingCache.GetAnimatorBindings(animatorRoot));
+
             var bindings = new EditorCurveBinding[s_CurveSet.Keys.Count];
             s_CurveSet.Keys.CopyTo(bindings, 0);
             return bindings;
@@ -68,7 +69,7 @@ namespace UnityEngine.Timeline
         {
             if (!AnimationMode.InAnimationMode())
                 return;
-            
+
             var avatarRoot = GetAvatarRoot(animatorRoot);
             foreach (var binding in keys)
             {
@@ -80,20 +81,19 @@ namespace UnityEngine.Timeline
                     AddTRBinding(animatorRoot, binding);
                 else if (isTransform && binding.propertyName == AnimatorBindingCache.ScalePlaceholder)
                     AddScaleBinding(animatorRoot, binding);
-                else 
+                else
                     AnimationMode.AddEditorCurveBinding(avatarRoot, binding);
             }
-            
         }
-        
+
         public static AnimationClip CreateDefaultClip(GameObject animatorRoot, IEnumerable<EditorCurveBinding> keys)
         {
             AnimationClip animClip = new AnimationClip() { name = "DefaultPose" };
-            var keyFrames = new [] {new Keyframe(0, 0)};
+            var keyFrames = new[] {new Keyframe(0, 0)};
             var curve = new AnimationCurve(keyFrames);
             bool rootMotion = false;
             var avatarRoot = GetAvatarRoot(animatorRoot);
-            
+
             foreach (var binding in keys)
             {
                 if (IsRootMotion(binding))
@@ -139,15 +139,15 @@ namespace UnityEngine.Timeline
 
                     continue;
                 }
-                
+
                 // Not setting curves through AnimationUtility.SetEditorCurve to avoid reentrant
                 // onCurveWasModified calls in timeline.  This means we don't get sprite curves
                 // in the default clip right now.
                 if (IsAvatarBinding(binding) || IsEulerHint(binding) || binding.isPPtrCurve)
                     continue;
-     
+
                 float floatValue;
-                AnimationUtility.GetFloatValue(avatarRoot, binding, out floatValue);    
+                AnimationUtility.GetFloatValue(avatarRoot, binding, out floatValue);
                 animClip.SetCurve(binding.path, binding.type, binding.propertyName, SetZeroKey(curve, keyFrames, floatValue));
             }
 
@@ -156,18 +156,18 @@ namespace UnityEngine.Timeline
             {
                 var pos = Vector3.zero;           // the appropriate root motion offsets are applied by timeline
                 var rot = Quaternion.identity;
-                animClip.SetCurve(string.Empty, typeof(Transform), k_PosX, SetZeroKey(curve, keyFrames, pos.x) );
-                animClip.SetCurve(string.Empty, typeof(Transform), k_PosY, SetZeroKey(curve, keyFrames, pos.y) );
-                animClip.SetCurve(string.Empty, typeof(Transform), k_PosZ, SetZeroKey(curve, keyFrames, pos.z) );
-                animClip.SetCurve(string.Empty, typeof(Transform), k_RotX, SetZeroKey(curve, keyFrames, rot.x) );
-                animClip.SetCurve(string.Empty, typeof(Transform), k_RotY, SetZeroKey(curve, keyFrames, rot.y) );
-                animClip.SetCurve(string.Empty, typeof(Transform), k_RotZ, SetZeroKey(curve, keyFrames, rot.z) );
-                animClip.SetCurve(string.Empty, typeof(Transform), k_RotW, SetZeroKey(curve, keyFrames, rot.w) );
+                animClip.SetCurve(string.Empty, typeof(Transform), k_PosX, SetZeroKey(curve, keyFrames, pos.x));
+                animClip.SetCurve(string.Empty, typeof(Transform), k_PosY, SetZeroKey(curve, keyFrames, pos.y));
+                animClip.SetCurve(string.Empty, typeof(Transform), k_PosZ, SetZeroKey(curve, keyFrames, pos.z));
+                animClip.SetCurve(string.Empty, typeof(Transform), k_RotX, SetZeroKey(curve, keyFrames, rot.x));
+                animClip.SetCurve(string.Empty, typeof(Transform), k_RotY, SetZeroKey(curve, keyFrames, rot.y));
+                animClip.SetCurve(string.Empty, typeof(Transform), k_RotZ, SetZeroKey(curve, keyFrames, rot.z));
+                animClip.SetCurve(string.Empty, typeof(Transform), k_RotW, SetZeroKey(curve, keyFrames, rot.w));
             }
 
             return animClip;
         }
-        
+
         public static bool IsRootMotion(EditorCurveBinding binding)
         {
             // Root Transform TR.
@@ -180,7 +180,7 @@ namespace UnityEngine.Timeline
             if (binding.type == typeof(Animator))
             {
                 return binding.propertyName.StartsWith(k_MotionT) || binding.propertyName.StartsWith(k_MotionQ) ||
-                       binding.propertyName.StartsWith(k_RootT) ||  binding.propertyName.StartsWith(k_RootQ);
+                    binding.propertyName.StartsWith(k_RootT) ||  binding.propertyName.StartsWith(k_RootQ);
             }
 
             return false;
@@ -196,20 +196,19 @@ namespace UnityEngine.Timeline
 
             return false;
         }
-        
-        
+
         private static void AddBindings(IEnumerable<EditorCurveBinding> bindings)
         {
             foreach (var b in bindings)
             {
-                if (!s_CurveSet.ContainsKey(b)) 
+                if (!s_CurveSet.ContainsKey(b))
                     s_CurveSet[b] = 1;
             }
         }
-        
+
         private static void AddTRBinding(GameObject root, EditorCurveBinding binding)
         {
-            // This is faster than AnimationMode.AddTransformTR 
+            // This is faster than AnimationMode.AddTransformTR
             binding.propertyName = k_PosX; AnimationMode.AddEditorCurveBinding(root, binding);
             binding.propertyName = k_PosY; AnimationMode.AddEditorCurveBinding(root, binding);
             binding.propertyName = k_PosZ; AnimationMode.AddEditorCurveBinding(root, binding);
@@ -218,7 +217,7 @@ namespace UnityEngine.Timeline
             binding.propertyName = k_RotZ; AnimationMode.AddEditorCurveBinding(root, binding);
             binding.propertyName = k_RotW; AnimationMode.AddEditorCurveBinding(root, binding);
         }
-        
+
         private static void AddScaleBinding(GameObject root, EditorCurveBinding binding)
         {
             // AnimationMode.AddTransformTRS is slow
@@ -226,7 +225,7 @@ namespace UnityEngine.Timeline
             binding.propertyName = k_ScaleY; AnimationMode.AddEditorCurveBinding(root, binding);
             binding.propertyName = k_ScaleZ; AnimationMode.AddEditorCurveBinding(root, binding);
         }
-       
+
         private static bool IsEuler(EditorCurveBinding binding)
         {
             return typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.StartsWith(k_EulerAnglesRaw);
@@ -242,20 +241,19 @@ namespace UnityEngine.Timeline
             // skin mesh incorporates blend shapes
             return typeof(Transform).IsAssignableFrom(binding.type) || typeof(SkinnedMeshRenderer).IsAssignableFrom(binding.type);
         }
-        
+
         private static AnimationCurve SetZeroKey(AnimationCurve curve, Keyframe[] keys, float val)
         {
             keys[0].value = val;
             curve.keys = keys;
             return curve;
         }
-        
+
         private static bool IsEulerHint(EditorCurveBinding binding)
         {
             return typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.StartsWith(k_EulerHint);
         }
 
- 
         private static GameObject GetAvatarRoot(GameObject animatorRoot)
         {
             var animator = animatorRoot.GetComponent<Animator>();

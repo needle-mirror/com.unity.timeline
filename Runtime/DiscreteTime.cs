@@ -56,6 +56,11 @@ namespace UnityEngine.Timeline
             return m_DiscreteTime;
         }
 
+        public static DiscreteTime FromTicks(Int64 ticks)
+        {
+            return new DiscreteTime(ticks);
+        }
+
         public int CompareTo(object obj)
         {
             if (obj is DiscreteTime)

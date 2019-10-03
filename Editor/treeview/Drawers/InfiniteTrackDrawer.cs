@@ -43,7 +43,7 @@ namespace UnityEditor.Timeline
                 DrawRecordBackground(trackRect);
 
             GUI.Box(trackRect, GUIContent.none, DirectorStyles.Instance.infiniteTrack);
-            
+
             var shadowRect = trackRect;
             shadowRect.yMin = shadowRect.yMax;
             shadowRect.height = 15.0f;

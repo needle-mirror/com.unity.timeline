@@ -127,6 +127,7 @@ namespace UnityEngine.Timeline
             if (UnityEditor.PrefabUtility.GetRootGameObject(director) == go)
                 director.RebuildGraph();
         }
+
 #endif
 
         void SyncSpeed(double speed)

@@ -31,20 +31,6 @@
     background-image: resource("Builtin Skins/LightSkin/Images/AvatarMaskEnabled.png");
 }
 
-.Icon-Clip {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineClipGradient.png");
-}
-
-/* GUIStyle.active */
-.Icon-Clip:hover:active {
-    /* GUIState.textColor */
-    color: rgba(0, 0, 0, 0.96);
-
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineClipGradientSelected.png");
-}
-
 .Icon-ClipIn {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineIconClipIn.png");
@@ -283,4 +269,13 @@
 .sequenceGroupFont {
     /* GUIState.textColor */
     color: rgb(255, 255, 255);
+}
+
+.Font-Clip {
+    /* GUIStyleState.textColor */
+    color: rgb(0, 0, 0);
+}
+
+.sequenceSwitcher{
+    background-color: rgb(208, 208, 208);
 }

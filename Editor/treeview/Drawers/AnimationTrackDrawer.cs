@@ -79,8 +79,8 @@ namespace UnityEditor.Timeline
             float xMin = state.TimeToPixel(startGap);
             float xMax = state.TimeToPixel(endGap);
 
-            Rect r = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
-            ClipDrawer.DrawBorder(r, ClipBorder.kRecording, ClipBlends.kNone);
+            var r = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
+            ClipDrawer.DrawClipSelectionBorder(r, ClipBorder.Recording(), ClipBlends.kNone);
         }
     }
 }

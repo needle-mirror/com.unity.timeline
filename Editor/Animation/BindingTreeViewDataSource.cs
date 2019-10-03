@@ -59,8 +59,14 @@ namespace UnityEditorInternal
             {
                 parent = key,
                 bindings = g.ToList()
-            }
-            );
+            }).OrderBy(t =>
+                {
+                    //Force transform order first
+                    if (t.parent == "Position") return -3;
+                    if (t.parent == "Rotation") return -2;
+                    if (t.parent == "Scale") return -1;
+                    return 0;
+                }).ThenBy(t => t.parent);
 
             m_RootItem = new CurveTreeViewNode(RootID, null, "root", null)
             {

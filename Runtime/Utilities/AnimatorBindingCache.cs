@@ -14,7 +14,7 @@ namespace UnityEngine.Timeline
     {
         public const string TRPlaceHolder = "TransformTR";
         public const string ScalePlaceholder = "TransformScale";
-        
+
         struct AnimatorEntry
         {
             public int animatorID;
@@ -34,12 +34,12 @@ namespace UnityEngine.Timeline
 
         private static readonly EditorCurveBinding[] kEmptyArray = new EditorCurveBinding[0];
         private static readonly List<EditorCurveBinding> s_BindingScratchPad = new List<EditorCurveBinding>(1000);
-         
+
         public AnimatorBindingCache()
         {
             AnimationUtility.onCurveWasModified += OnCurveWasModified;
         }
-        
+
         public EditorCurveBinding[] GetAnimatorBindings(GameObject gameObject)
         {
             if (gameObject == null)
@@ -59,7 +59,7 @@ namespace UnityEngine.Timeline
             EditorCurveBinding[] result = null;
             if (m_AnimatorCache.TryGetValue(entry, out result))
                 return result;
-          
+
             s_BindingScratchPad.Clear();
 
             // Replacement for AnimationMode.GetAnimatorBinding - this is faster and allocates kB instead of MB
@@ -67,7 +67,7 @@ namespace UnityEngine.Timeline
             foreach (var t in transforms)
             {
                 if (animator.IsBoneTransform(t))
-                    s_BindingScratchPad.Add(EditorCurveBinding.FloatCurve(AnimationUtility.CalculateTransformPath(t,animator.transform), typeof(Transform), TRPlaceHolder));
+                    s_BindingScratchPad.Add(EditorCurveBinding.FloatCurve(AnimationUtility.CalculateTransformPath(t, animator.transform), typeof(Transform), TRPlaceHolder));
             }
 
             var streamBindings = AnimationUtility.GetAnimationStreamBindings(animator.gameObject);
@@ -94,7 +94,6 @@ namespace UnityEngine.Timeline
             }
 
             return result;
-
         }
 
         private static void UpdateTransformBindings(EditorCurveBinding[] bindings)
@@ -107,9 +106,9 @@ namespace UnityEngine.Timeline
                     binding.type = typeof(Transform);
                     binding.propertyName = TRPlaceHolder;
                 }
-                else if (typeof(Transform).IsAssignableFrom(binding.type) && (binding.propertyName.StartsWith("m_LocalRotation.") ||binding.propertyName.StartsWith("m_LocalPosition.")))
+                else if (typeof(Transform).IsAssignableFrom(binding.type) && (binding.propertyName.StartsWith("m_LocalRotation.") || binding.propertyName.StartsWith("m_LocalPosition.")))
                 {
-                    binding.propertyName = TRPlaceHolder; 
+                    binding.propertyName = TRPlaceHolder;
                 }
                 else if (typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.StartsWith("m_LocalScale."))
                 {
@@ -129,7 +128,6 @@ namespace UnityEngine.Timeline
         {
             m_ClipCache.Remove(clip);
         }
-
     }
 }
 #endif

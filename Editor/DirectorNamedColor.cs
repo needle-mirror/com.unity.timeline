@@ -51,15 +51,6 @@ namespace UnityEngine.Timeline
         public Color colorInvalidClipOverlay;
 
         [SerializeField]
-        public Color colorClipBlendYin;
-
-        [SerializeField]
-        public Color colorClipBlendYang;
-
-        [SerializeField]
-        public Color colorClipBlendLines;
-
-        [SerializeField]
         public Color colorTrackBackground;
 
         [SerializeField]
@@ -152,6 +143,30 @@ namespace UnityEngine.Timeline
         [SerializeField]
         public Color colorSubSequenceDurationLine = new Color(0.0f, 1.0f, 0.88f, 0.46f);
 
+        [SerializeField]
+        public Color clipBckg = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+
+        [SerializeField]
+        public Color clipSelectedBckg = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+
+        [SerializeField]
+        public Color clipBorderColor = new Color(0.4f, 0.4f, 0.4f, 1.0f);
+
+        [SerializeField]
+        public Color clipEaseBckgColor = new Color(0.4f, 0.4f, 0.4f, 1.0f);
+
+        [SerializeField]
+        public Color clipBlendIn;
+
+        [SerializeField]
+        public Color clipBlendInSelected;
+
+        [SerializeField]
+        public Color clipBlendOut;
+
+        [SerializeField]
+        public Color clipBlendOutSelected;
+
         public void SetDefault()
         {
             colorPlayhead = DirectorStyles.Instance.timeCursor.normal.textColor;
@@ -212,11 +227,10 @@ namespace UnityEngine.Timeline
                     continue;
 
                 Color c = (Color)f.GetValue(this);
-                builder.AppendLine(f.Name + "," + c);
+                builder.Append(f.Name + "," + c);
+                builder.Append("\n");
             }
-
-            string filePath = Application.dataPath + "/Editor Default Resources/" + path;
-            File.WriteAllText(filePath, builder.ToString());
+            File.WriteAllText(path, builder.ToString());
         }
 
         public void FromText(string text)
