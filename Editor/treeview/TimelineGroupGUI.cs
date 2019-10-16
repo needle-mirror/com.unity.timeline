@@ -91,7 +91,7 @@ namespace UnityEditor.Timeline
             return width > 0 ? width + WindowConstants.trackHeaderButtonSpacing : 0;
         }
 
-        private void DrawTrackButtons(Rect headerRect, WindowState state)
+        void DrawTrackButtons(Rect headerRect, WindowState state)
         {
             const float buttonSize = WindowConstants.trackHeaderButtonSize;
             const float padding = WindowConstants.trackHeaderButtonPadding;
@@ -106,11 +106,9 @@ namespace UnityEditor.Timeline
                     SelectionManager.Clear();
                     SelectionManager.Add(track);
                 }
-
                 SequencerContextMenu.ShowNewTracksContextMenu(SelectionManager.SelectedTracks().ToArray(), TimelineWindow.state, buttonRect);
             }
             buttonRect.x -= buttonSize;
-
             buttonRect.x -= Spaced(DrawMuteButton(buttonRect, state));
             buttonRect.x -= Spaced(DrawLockButton(buttonRect, state));
         }
@@ -128,10 +126,7 @@ namespace UnityEditor.Timeline
 
         public override void Draw(Rect headerRect, Rect contentRect, WindowState state)
         {
-            if (track == null)
-                return;
-
-            if (m_IsRoot)
+            if (track == null || m_IsRoot)
                 return;
 
             if (m_MustRecomputeUnions)
@@ -166,9 +161,11 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            // Draw Rounded Rectangle of the group...
-            using (new GUIColorOverride(col))
-                GUI.Box(background, GUIContent.none, m_Styles.groupBackground);
+            if (background.width > 0)
+            {
+                using (new GUIColorOverride(col))
+                    GUI.Box(background, GUIContent.none, m_Styles.groupBackground);
+            }
 
             var trackRectBackground = headerRect;
             trackRectBackground.xMin += background.width;
@@ -195,8 +192,38 @@ namespace UnityEditor.Timeline
                     u.Draw(collapsedTrackRect, state);
             }
 
-            // Draw the name of the Group...
-            var labelRect = headerRect;
+            using (new GUIGroupScope(headerRect))
+            {
+                var groupRect = new Rect(0, 0, headerRect.width, headerRect.height);
+                DrawName(groupRect, isSelected);
+                DrawTrackButtons(groupRect, state);
+            }
+
+            if (IsTrackRecording(state))
+            {
+                using (new GUIColorOverride(DirectorStyles.Instance.customSkin.colorTrackBackgroundRecording))
+                    GUI.Label(background, GUIContent.none, m_Styles.displayBackground);
+            }
+
+            // is this a referenced track?
+            if (m_IsReferencedTrack)
+            {
+                var refRect = contentRect;
+                refRect.x = state.timeAreaRect.xMax - 20.0f;
+                refRect.y += 5.0f;
+                refRect.width = 30.0f;
+                GUI.Label(refRect, DirectorStyles.referenceTrackLabel, EditorStyles.label);
+            }
+
+            var bgRect = contentRect;
+            if (track as GroupTrack != null || AllChildrenMuted(this))
+                bgRect.height = expandedRect.height;
+            DrawTrackState(contentRect, bgRect, track);
+        }
+
+        void DrawName(Rect rect, bool isSelected)
+        {
+            var labelRect = rect;
             labelRect.xMin += 20;
             var actorName = track != null ? track.name : "missing";
             labelRect.width = m_Styles.groupFont.CalcSize(new GUIContent(actorName)).x;
@@ -225,29 +252,6 @@ namespace UnityEditor.Timeline
                     displayName = track.name;
                 }
             }
-
-            DrawTrackButtons(headerRect, state);
-
-            if (IsTrackRecording(state))
-            {
-                using (new GUIColorOverride(DirectorStyles.Instance.customSkin.colorTrackBackgroundRecording))
-                    GUI.Label(background, GUIContent.none, m_Styles.displayBackground);
-            }
-
-            // is this a referenced track?
-            if (m_IsReferencedTrack)
-            {
-                var refRect = contentRect;
-                refRect.x = state.timeAreaRect.xMax - 20.0f;
-                refRect.y += 5.0f;
-                refRect.width = 30.0f;
-                GUI.Label(refRect, DirectorStyles.referenceTrackLabel, EditorStyles.label);
-            }
-
-            Rect bgRect = contentRect;
-            if (track as GroupTrack != null || AllChildrenMuted(this))
-                bgRect.height = expandedRect.height;
-            DrawTrackState(contentRect, bgRect, track);
         }
 
         protected bool IsSubTrack()
@@ -294,7 +298,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        bool AllChildrenMuted(TimelineGroupGUI groupGui)
+        static bool AllChildrenMuted(TimelineGroupGUI groupGui)
         {
             if (!groupGui.track.muted)
                 return false;

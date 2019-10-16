@@ -1,7 +1,24 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.5] - 2019-10-16
+
+### Changed
+- Added tooltips that were missing for Timeline selector and settings buttons. ([1152790](https://issuetracker.unity3d.com/product/unity/issues/guid/1152790/))
+- Removed Undo menu entry that was added when clicking on the Inline curves button. ([1187402](https://issuetracker.unity3d.com/product/unity/issues/guid/1187402/))
+
+### Fixed
+- Fixed issue where recording couldn't be turned off when an object is deactivated. (1187174)
+- Timelines listed in the Timeline selector will now be sorted alphabetically. (1190514)
+- Fixed Insert Frames options from Trackhead context menu not applying to markers. (1187895)
+- Fixed incorrect display when a large number of nested group tracks was added to a Timeline. (1157367)
+
 ## [1.2.4] - 2019-10-03
+
+### Changed
+- Properties in the Inline Curve editor will now be listed in the same order as the Animation window. (1184058)
+- Updated the appearance of the Timeline window to conform to the [editor's UX redesign](https://blogs.unity3d.com/2019/08/29/evolving-the-unity-editor-ux/)
+- Improved the appearance of clip blends.
 
 ### Fixed
 - Adding a PlayableDirector with no Playable Asset will no longer trigger a repaint of the Timeline Window on each frame. ([1172707](https://issuetracker.unity3d.com/product/unity/issues/guid/1172707/))
@@ -13,11 +30,6 @@ All notable changes to this package will be documented in this file. The format 
 - Fixed PreviousFrame and NextFrame controls in subtimelines with large offsets. (1175320)
 - Fixed issue where exceptions were thrown when resetting a Signal Receiver component. ([1158227](https://issuetracker.unity3d.com/product/unity/issues/guid/1158227/))
 - Increased font size of clip labels (1179642)
-
-### Changed
-- Properties in the Inline Curve editor will now be listed in the same order as the Animation window. (1184058)
-- Updated the appearance of the Timeline window to conform to the [editor's UX redesign](https://blogs.unity3d.com/2019/08/29/evolving-the-unity-editor-ux/)
-- Improved the appearance of clip blends.
 
 ## [1.2.3] - 2019-10-03
 

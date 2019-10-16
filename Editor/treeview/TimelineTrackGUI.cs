@@ -501,6 +501,8 @@ namespace UnityEditor.Timeline
             if (track != null && track.isSubTrack)
                 return;
 
+            if (rect.width <= 0) return;
+
             using (new GUIColorOverride(m_TrackDrawOptions.trackColor))
             {
                 rect.width = m_Styles.trackSwatchStyle.fixedWidth;
@@ -607,8 +609,6 @@ namespace UnityEditor.Timeline
 
             if (newValue != track.GetShowInlineCurves())
             {
-                if (!state.editSequence.isReadOnly)
-                    TimelineUndo.PushUndo(track, newValue ? "Show Inline Curves" : "Hide Inline Curves");
                 track.SetShowInlineCurves(newValue);
                 state.GetWindow().treeView.CalculateRowRects();
             }
@@ -621,7 +621,18 @@ namespace UnityEditor.Timeline
             if (m_TrackDrawData.m_AllowsRecording)
             {
                 bool isPlayerDisabled = state.editSequence.director != null && !state.editSequence.director.isActiveAndEnabled;
-                using (new EditorGUI.DisabledScope(track.lockedInHierarchy || isPlayerDisabled || !string.IsNullOrEmpty(m_TrackDrawOptions.errorText)))
+
+                GameObject goBinding = m_TrackDrawData.m_TrackBinding as GameObject;
+                if (goBinding == null)
+                {
+                    Component c = m_TrackDrawData.m_TrackBinding as Component;
+                    if (c != null)
+                        goBinding = c.gameObject;
+                }
+                bool isTrackBindingValid = goBinding != null;
+                bool trackErrorDisableButton = !string.IsNullOrEmpty(m_TrackDrawOptions.errorText) && isTrackBindingValid && goBinding.activeInHierarchy;
+                bool disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid;
+                using (new EditorGUI.DisabledScope(disableButton))
                 {
                     if (IsRecording(state))
                     {
@@ -633,7 +644,7 @@ namespace UnityEditor.Timeline
                         {
                             animatedContent = GUIContent.none;
                         }
-                        if (GUI.Button(rect, animatedContent, GUIStyle.none) || isPlayerDisabled)
+                        if (GUI.Button(rect, animatedContent, GUIStyle.none) || isPlayerDisabled || !isTrackBindingValid)
                         {
                             state.UnarmForRecord(track);
                         }

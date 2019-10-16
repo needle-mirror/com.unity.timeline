@@ -22,7 +22,7 @@ namespace UnityEngine.Timeline
             ValidateFrameRate(frameRate);
             time = Math.Min(Math.Max(time, -k_MaxTimelineDurationInSeconds), k_MaxTimelineDurationInSeconds);
             // this matches OnFrameBoundary
-            double tolerance = Math.Max(Math.Abs(time), 1) * frameRate * kTimeEpsilon / 2.0f;
+            double tolerance = GetEpsilon(time, frameRate) / 2.0;
             if (time < 0)
             {
                 return (int)Math.Ceiling(time * frameRate - tolerance);
@@ -50,7 +50,12 @@ namespace UnityEngine.Timeline
 
         public static bool OnFrameBoundary(double time, double frameRate)
         {
-            return OnFrameBoundary(time, frameRate, Math.Max(Math.Abs(time), 1) * frameRate * kTimeEpsilon);
+            return OnFrameBoundary(time, frameRate, GetEpsilon(time, frameRate));
+        }
+
+        public static double GetEpsilon(double time, double frameRate)
+        {
+            return Math.Max(Math.Abs(time), 1) * frameRate * kTimeEpsilon;
         }
 
         public static bool OnFrameBoundary(double time, double frameRate, double epsilon)

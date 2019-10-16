@@ -204,9 +204,9 @@ namespace UnityEditor.Timeline
             }
         }
 
-        private void DrawFoldout(TreeViewItem item, Rect foldoutRect, float indent)
+        void DrawFoldout(TreeViewItem item, Rect foldoutRect, float indent)
         {
-            bool showFoldout = m_TreeView.data.IsExpandable(item);
+            var showFoldout = m_TreeView.data.IsExpandable(item);
             if (showFoldout)
             {
                 foldoutRect.x = indent - kFoldOutOffset;
@@ -215,6 +215,9 @@ namespace UnityEditor.Timeline
                 float foldoutIconHeight = DirectorStyles.Instance.foldout.fixedHeight;
                 foldoutRect.y += foldoutIconHeight / 2.0f;
                 foldoutRect.height = foldoutIconHeight;
+
+                if (foldoutRect.xMax > m_State.sequencerHeaderWidth)
+                    return;
 
                 //Override Disable state for TrakGroup toggle button to expand/collapse group.
                 bool previousEnableState = GUI.enabled;

@@ -18,7 +18,7 @@ The Timeline Manual can be found [here](http://docs.hq.unity3d.com/2018.1/Docume
 
 This version of Timeline is compatible with the following versions of the Unity Editor:
 
-* 2019.1 and later (recommended)
+* 2019.3 and later (recommended)
 
 # How to format your code for the repo
 

@@ -391,7 +391,7 @@ namespace UnityEditor.Timeline
             using (new EditorGUI.DisabledScope(currentMode.headerState.options == TimelineModeGUIState.Disabled))
             {
                 GUILayout.FlexibleSpace();
-                if (EditorGUILayout.DropdownButton(DirectorStyles.cogIcon, FocusType.Keyboard, EditorStyles.toolbarButton))
+                if (EditorGUILayout.DropdownButton(DirectorStyles.optionsCogIcon, FocusType.Keyboard, EditorStyles.toolbarButton))
                 {
                     GenericMenu menu = new GenericMenu();
 

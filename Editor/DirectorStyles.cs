@@ -39,11 +39,11 @@ namespace UnityEditor.Timeline
         public static readonly GUIContent nextFrameContent = EditorGUIUtility.TrIconContent("Animation.NextKey", "Go to the next frame");
         public static readonly GUIContent previousFrameContent = EditorGUIUtility.TrIconContent("Animation.PrevKey", "Go to the previous frame");
         public static readonly GUIContent newContent = EditorGUIUtility.IconContent("CreateAddNew", "Add new tracks.");
-        public static readonly GUIContent cogIcon = EditorGUIUtility.IconContent("_Popup");
+        public static readonly GUIContent optionsCogIcon = EditorGUIUtility.TrIconContent("_Popup", "Options");
         public static readonly GUIContent animationTrackIcon = EditorGUIUtility.IconContent("AnimationClip Icon");
         public static readonly GUIContent audioTrackIcon = EditorGUIUtility.IconContent("AudioSource Icon");
         public static readonly GUIContent playableTrackIcon = EditorGUIUtility.IconContent("cs Script Icon");
-        public static readonly GUIContent popupArrow = EditorGUIUtility.IconContent("icon dropdown");
+        public static readonly GUIContent timelineSelectorArrow = EditorGUIUtility.TrIconContent("icon dropdown", "Timeline Selector");
 
         public GUIContent playrangeContent;
 

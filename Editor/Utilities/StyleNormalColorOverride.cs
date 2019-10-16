@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityEditor.Timeline
 {
-    class StyleNormalColorOverride : IDisposable
+    struct StyleNormalColorOverride : IDisposable
     {
         readonly GUIStyle m_Style;
         readonly Color m_OldColor;

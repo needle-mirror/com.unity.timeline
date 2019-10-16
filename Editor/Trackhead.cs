@@ -7,26 +7,46 @@ namespace UnityEditor.Timeline
 {
     static class Gaps
     {
-        public static void Insert(TimelineAsset asset, double at, double amount, float tolerance)
+        static readonly string kInsertTime = "Insert Time";
+
+        public static void Insert(TimelineAsset asset, double at, double amount, double tolerance)
         {
             // gather all clips
-            var clips = asset.flattenedTracks.SelectMany(x => x.clips).Where(x => (x.start - at) >= -tolerance);
+            var clips = asset.flattenedTracks.SelectMany(x => x.clips).Where(x => (x.start - at) >= -tolerance).ToList();
+            var markers = asset.flattenedTracks.SelectMany(x => x.GetMarkers()).Where(x => (x.time - at) >= -tolerance).ToList();
 
+            if (!clips.Any() && !markers.Any())
+                return;
+
+            // push undo on the tracks for the clips that are being modified
             foreach (var t in clips.Select(x => x.parentTrack).Distinct())
             {
-                TimelineUndo.PushUndo(t, "Insert Time");
+                TimelineUndo.PushUndo(t, kInsertTime);
             }
 
+            // push the clips
             foreach (var clip in clips)
             {
                 clip.start += amount;
             }
+
+            // push undos and move the markers
+            foreach (var marker in markers)
+            {
+                var obj = marker as UnityEngine.Object;
+                if (obj != null)
+                    TimelineUndo.PushUndo(obj, kInsertTime);
+                marker.time += amount;
+            }
+
+            TimelineEditor.Refresh(RefreshReason.ContentsModified);
         }
     }
 
     class PlayheadContextMenu : Manipulator
     {
         readonly TimeAreaItem m_TimeAreaItem;
+        static readonly int[] kFrameInsertionValues = {5, 10, 25, 100};
 
         public PlayheadContextMenu(TimeAreaItem timeAreaItem)
         {
@@ -38,28 +58,20 @@ namespace UnityEditor.Timeline
             if (!m_TimeAreaItem.bounds.Contains(evt.mousePosition))
                 return false;
 
-            var tolerance = 0.25f / state.referenceSequence.frameRate;
+            var tolerance = TimeUtility.GetEpsilon(state.editSequence.time, state.referenceSequence.frameRate);
             var menu = new GenericMenu();
 
             if (!TimelineWindow.instance.state.editSequence.isReadOnly)
             {
                 menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Frame/Single"), false, () =>
-                {
-                    Gaps.Insert(state.editSequence.asset, state.editSequence.time, 1.0f / state.referenceSequence.frameRate, tolerance);
-                    state.Refresh();
-                }
+                    Gaps.Insert(state.editSequence.asset, state.editSequence.time, 1.0 / state.referenceSequence.frameRate, tolerance)
                 );
 
-                int[] values = {5, 10, 25, 100};
-
-                for (var i = 0; i != values.Length; ++i)
+                for (var i = 0; i != kFrameInsertionValues.Length; ++i)
                 {
-                    float f = values[i];
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Frame/" + values[i] + " Frames"), false, () =>
-                    {
-                        Gaps.Insert(state.editSequence.asset, state.editSequence.time, f / state.referenceSequence.frameRate, tolerance);
-                        state.Refresh();
-                    }
+                    double f = kFrameInsertionValues[i];
+                    menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Frame/" + kFrameInsertionValues[i] + " Frames"), false, () =>
+                        Gaps.Insert(state.editSequence.asset, state.editSequence.time, f / state.referenceSequence.frameRate, tolerance)
                     );
                 }
 
@@ -67,10 +79,7 @@ namespace UnityEditor.Timeline
                 if (playRangeTime.y > playRangeTime.x)
                 {
                     menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Selected Time"), false, () =>
-                    {
-                        Gaps.Insert(state.editSequence.asset, playRangeTime.x, playRangeTime.y - playRangeTime.x, tolerance);
-                        state.Refresh();
-                    }
+                        Gaps.Insert(state.editSequence.asset, playRangeTime.x, playRangeTime.y - playRangeTime.x, TimeUtility.GetEpsilon(playRangeTime.x, state.referenceSequence.frameRate))
                     );
                 }
             }
@@ -82,6 +91,7 @@ namespace UnityEditor.Timeline
             menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Intersecting"), false, () => SelectMenuCallback(x => x.start <= state.editSequence.time && state.editSequence.time <= x.end, state));
             menu.AddItem(EditorGUIUtility.TrTextContent("Select/Blends Intersecting"), false, () => SelectMenuCallback(x => SelectBlendingIntersecting(x, state.editSequence.time), state));
             menu.ShowAsContext();
+
             return true;
         }
 
