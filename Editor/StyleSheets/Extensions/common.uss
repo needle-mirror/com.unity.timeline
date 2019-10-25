@@ -66,34 +66,19 @@
 }
 
 .groupBackground {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-left;
 
-    /* GUIStyle.border */
     -unity-slice-left: 5;
-    -unity-slice-right: 5;
     -unity-slice-top: 5;
     -unity-slice-bottom: 5;
 
-    /* GUIStyle.clipping */
     -unity-clipping: clip;
-
-    /* GUIStyle.imagePosition */
     -unity-image-position: text-only;
 
     padding-top: 2;
     padding-bottom: 2;
 
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchHeight */
     -unity-stretch-height: true;
-
-    /* GUIState.textColor */
     color: rgb(115, 151, 236);
-
-    /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/TimelineGroupBackground.png");
 }
 

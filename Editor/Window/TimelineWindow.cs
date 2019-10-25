@@ -200,7 +200,6 @@ namespace UnityEditor.Timeline
             state.ProcessStartFramePendingUpdates();
 
             var clipRect = new Rect(0.0f, 0.0f, position.width, position.height);
-            clipRect.xMin += state.sequencerHeaderWidth;
 
             using (new GUIViewportScope(clipRect))
                 state.InvokeWindowOnGuiStarted(Event.current);
@@ -243,7 +242,11 @@ namespace UnityEditor.Timeline
             }
 
             if (state.showQuadTree)
-                state.spacePartitioner.DebugDraw();
+            {
+                var fillColor = new Color(1.0f, 1.0f, 1.0f, 0.1f);
+                state.spacePartitioner.DebugDraw(fillColor, Color.yellow);
+                state.headerSpacePartitioner.DebugDraw(fillColor, Color.green);
+            }
 
             // attempt another rebuild -- this will avoid 1 frame flashes
             if (Event.current.type == EventType.Repaint)

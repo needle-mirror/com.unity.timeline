@@ -20,6 +20,7 @@ namespace UnityEditor.Timeline
         public int lastInlineCurveDataID = -1;
         public TreeViewState inlineCurvesState = null;
         public Rect inlineCurvesShownAreaInsideMargins = new Rect(1, 1, 1, 1);
+        public int trackHeightExtension;
 
         public Dictionary<int, long> markerTimeStamps = new Dictionary<int, long>();
         [SerializeField] List<int> m_MarkerTimeStampsKeys;

@@ -19,8 +19,11 @@ namespace UnityEditor.Timeline
 
         readonly TimelineWindow m_Window;
         bool m_Recording;
+
         readonly SpacePartitioner m_SpacePartitioner = new SpacePartitioner();
+        readonly SpacePartitioner m_HeaderSpacePartitioner = new SpacePartitioner();
         readonly List<Manipulator> m_CaptureSession = new List<Manipulator>();
+
         int m_DirtyStamp;
         float m_SequencerHeaderWidth = WindowConstants.defaultHeaderWidth;
         float m_BindingAreaWidth = WindowConstants.defaultBindingAreaWidth;
@@ -119,6 +122,11 @@ namespace UnityEditor.Timeline
         public SpacePartitioner spacePartitioner
         {
             get { return m_SpacePartitioner; }
+        }
+
+        public SpacePartitioner headerSpacePartitioner
+        {
+            get { return m_HeaderSpacePartitioner; }
         }
 
         public List<Manipulator> captured

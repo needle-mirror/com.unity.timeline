@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Timeline;
 using UnityEngine.Playables;
 
 namespace UnityEditor.Timeline
@@ -15,6 +14,7 @@ namespace UnityEditor.Timeline
         {
             if (Event.current.type == EventType.Repaint && treeView != null)
             {
+                state.headerSpacePartitioner.Clear();
                 state.spacePartitioner.Clear();
             }
 

@@ -39,6 +39,8 @@ namespace UnityEditor.Timeline
         public const float trackHeaderMaxButtonsWidth = 5 * (trackHeaderButtonSize + trackHeaderButtonPadding);
 
         public const float trackInsertionMarkerHeight = 1f;
+        public const float trackResizeHandleHeight = 7f;
+        public const float inlineCurveContentPadding = 2.0f;
 
         public const int autoPanPaddingInPixels = 50;
     }

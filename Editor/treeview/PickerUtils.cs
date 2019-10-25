@@ -10,7 +10,11 @@ namespace UnityEditor.Timeline
 
         public static void DoPick(WindowState state, Vector2 mousePosition)
         {
-            if (state.GetWindow().sequenceContentRect.Contains(mousePosition))
+            if (state.GetWindow().sequenceHeaderRect.Contains(mousePosition))
+            {
+                pickedElements = state.headerSpacePartitioner.GetItemsAtPosition<object>(mousePosition).ToList();
+            }
+            else if (state.GetWindow().sequenceContentRect.Contains(mousePosition))
             {
                 pickedElements = state.spacePartitioner.GetItemsAtPosition<object>(mousePosition).ToList();
             }
@@ -28,14 +32,9 @@ namespace UnityEditor.Timeline
             return pickedElements.OfType<ILayerable>().OrderBy(x => x.zOrder).LastOrDefault() as T;
         }
 
-        public static InlineCurveResizeHandle PickedInlineCurveResizer()
+        public static T FirstPickedElementOfType<T>() where T : class, IBounds
         {
-            return pickedElements.FirstOrDefault(e => e is InlineCurveResizeHandle) as InlineCurveResizeHandle;
-        }
-
-        public static TimelineTrackBaseGUI PickedTrackBaseGUI()
-        {
-            return pickedElements.FirstOrDefault(e => e is TimelineTrackBaseGUI) as TimelineTrackBaseGUI;
+            return pickedElements.FirstOrDefault(e => e is T) as T;
         }
     }
 }

@@ -109,18 +109,15 @@ namespace UnityEditor.Timeline
             return list;
         }
 
-        public void DebugDraw()
+        public void DebugDraw(Color fillColor, Color outlineColor)
         {
-            var kFillColor = new Color(1.0f, 1.0f, 1.0f, 0.1f);
-            var kOutlineColor = Color.yellow;
-
             m_CacheList.Clear();
             m_Tree.IntersectsWithRange(long.MinValue, long.MaxValue, m_CacheList);
             HandleUtility.ApplyWireMaterial();
 
             foreach (var item in m_CacheList)
             {
-                Handles.DrawSolidRectangleWithOutline(item.bounds, kFillColor, kOutlineColor);
+                Handles.DrawSolidRectangleWithOutline(item.bounds, fillColor, outlineColor);
             }
         }
     }

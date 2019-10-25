@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -7,35 +9,7 @@ namespace UnityEditor.Timeline
 {
     partial class TimelineWindow
     {
-        private List<BreadCrumbTitle> m_BreadCrumbLabels = new List<BreadCrumbTitle>(100);
-
-        // Class used for uniquely format names used in the GenericMenu. We can't add duplicate MenuItem in GenericMenu
-        // so that's why we need to keep informations about the text we want to uniquely format.
-        class SequenceMenuNameFormater
-        {
-            Dictionary<int, int> m_UniqueItem = new Dictionary<int, int>();
-
-            public string Format(string text)
-            {
-                int key = text.GetHashCode();
-                int index = 0;
-
-                if (m_UniqueItem.ContainsKey(key))
-                {
-                    index = m_UniqueItem[key];
-                    index++;
-                    m_UniqueItem[key] = index;
-                }
-                else
-                {
-                    m_UniqueItem.Add(key, index);
-                    return text;
-                }
-
-                return string.Format("{0}{1}", text, index);
-            }
-        }
-
+        List<BreadCrumbTitle> m_BreadCrumbLabels = new List<BreadCrumbTitle>(100);
 
         static TitleMode GetTitleMode(ISequenceState sequence)
         {
@@ -98,36 +72,46 @@ namespace UnityEditor.Timeline
         {
             using (new EditorGUI.DisabledScope(currentMode.headerState.sequenceSelector == TimelineModeGUIState.Disabled))
             {
-                if (EditorGUILayout.DropdownButton(DirectorStyles.popupArrow, FocusType.Passive, DirectorStyles.Instance.sequenceSwitcher, GUILayout.Width(WindowConstants.selectorWidth)))
+                if (EditorGUILayout.DropdownButton(DirectorStyles.timelineSelectorArrow, FocusType.Passive, DirectorStyles.Instance.sequenceSwitcher, GUILayout.Width(WindowConstants.selectorWidth)))
+                    ShowSequenceSelector();
+            }
+        }
+
+        void ShowSequenceSelector()
+        {
+            var allDirectors = TimelineUtility.GetDirectorsInSceneUsingAsset(null);
+
+            var formatter = new SequenceMenuNameFormater();
+            var namesAndDirectors = new List<ValueTuple<string, PlayableDirector>>();
+            foreach (var d in allDirectors)
+            {
+                if (d.playableAsset is TimelineAsset)
                 {
-                    var allDirectors = TimelineUtility.GetDirectorsInSceneUsingAsset(null);
-
-                    GenericMenu sequenceMenu = new GenericMenu();
-                    SequenceMenuNameFormater formater = new SequenceMenuNameFormater();
-
-                    foreach (var d in allDirectors)
-                    {
-                        if (d.playableAsset is TimelineAsset)
-                        {
-                            string text = formater.Format(DisplayNameHelper.GetDisplayName(d));
-                            bool isCurrent = state.masterSequence.director == d;
-                            sequenceMenu.AddItem(new GUIContent(text), isCurrent, arg =>
-                            {
-                                var directorToBindTo = (PlayableDirector)arg;
-                                if (directorToBindTo)
-                                {
-                                    // don't just select the object, it may already be selected.
-                                    SetCurrentTimeline(directorToBindTo);
-                                }
-                            }, d);
-                        }
-                    }
-
-                    if (allDirectors.Length == 0)
-                        sequenceMenu.AddDisabledItem(DirectorStyles.noTimelinesInScene);
-
-                    sequenceMenu.DropDown(EditorGUILayout.s_LastRect);
+                    var text = formatter.Format(DisplayNameHelper.GetDisplayName(d));
+                    namesAndDirectors.Add(new ValueTuple<string, PlayableDirector>(text, d));
                 }
+            }
+
+            var sequenceMenu = new GenericMenu();
+            foreach (var(timelineName, playableDirector) in namesAndDirectors.OrderBy(i => i.Item1))
+            {
+                var isCurrent = state.masterSequence.director == playableDirector;
+                sequenceMenu.AddItem(new GUIContent(timelineName), isCurrent, OnSequenceSelected, playableDirector);
+            }
+
+            if (allDirectors.Length == 0)
+                sequenceMenu.AddDisabledItem(DirectorStyles.noTimelinesInScene);
+
+            sequenceMenu.DropDown(EditorGUILayout.s_LastRect);
+        }
+
+        void OnSequenceSelected(object arg)
+        {
+            var directorToBindTo = (PlayableDirector)arg;
+            if (directorToBindTo)
+            {
+                // don't just select the object, it may already be selected.
+                SetCurrentTimeline(directorToBindTo);
             }
         }
     }

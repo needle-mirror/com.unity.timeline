@@ -168,5 +168,19 @@ namespace UnityEditor.Timeline
             if (asset != null)
                 GetTrackViewModelData(asset).inlineAnimationCurveHeight = height;
         }
+
+        public static int GetTrackHeightExtension(TrackAsset asset)
+        {
+            if (asset == null)
+                return 0;
+
+            return GetTrackViewModelData(asset).trackHeightExtension;
+        }
+
+        public static void SetTrackHeightExtension(TrackAsset asset, int height)
+        {
+            if (asset != null)
+                GetTrackViewModelData(asset).trackHeightExtension = height;
+        }
     }
 }

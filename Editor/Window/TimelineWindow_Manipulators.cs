@@ -16,6 +16,7 @@ namespace UnityEditor.Timeline
 
             // Manipulators that needs to be processed BEFORE the treeView (mainly anything clip related)
             m_PreTreeViewControl.AddManipulator(new TimelinePanManipulator());
+            m_PreTreeViewControl.AddManipulator(new TrackResize());
             m_PreTreeViewControl.AddManipulator(new InlineCurveResize());
             m_PreTreeViewControl.AddManipulator(new TrackZoom());
             m_PreTreeViewControl.AddManipulator(new Jog());

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -15,7 +16,7 @@ namespace UnityEditor.Timeline
 
         protected override bool MouseDown(Event evt, WindowState state)
         {
-            m_Target = PickerUtils.PickedInlineCurveResizer();
+            m_Target = PickerUtils.FirstPickedElementOfType<InlineCurveResizeHandle>();
             if (m_Target == null)
                 return false;
 
@@ -54,6 +55,86 @@ namespace UnityEditor.Timeline
 
             return true;
         }
+
+        public override void Overlay(Event evt, WindowState state)
+        {
+            var rect = state.GetWindow().sequenceRect;
+            EditorGUIUtility.AddCursorRect(rect, MouseCursor.SplitResizeUpDown);
+        }
+    }
+
+    class TrackResize : Manipulator
+    {
+        bool m_Captured;
+        int m_NumberOfContributingTracks;
+
+        TrackResizeHandle m_Target;
+        List<TimelineTrackGUI> m_TracksToResize;
+
+        protected override bool MouseDown(Event evt, WindowState state)
+        {
+            m_Target = PickerUtils.FirstPickedElementOfType<TrackResizeHandle>();
+            if (m_Target == null)
+                return false;
+
+            m_NumberOfContributingTracks = 1;
+            var selectedTracks = SelectionManager.SelectedTrackGUI().ToList();
+
+            if (selectedTracks.Any() && selectedTracks.Contains(m_Target.trackGUI)) //resize all selected tracks
+            {
+                var allTrackGui = state.GetWindow().treeView.allTrackGuis;
+                m_TracksToResize = allTrackGui.OfType<TimelineTrackGUI>().Where(i => SelectionManager.Contains(i.track)).ToList();
+                m_NumberOfContributingTracks += m_TracksToResize.IndexOf(m_Target.trackGUI);
+            }
+            else
+                m_TracksToResize = new List<TimelineTrackGUI> { m_Target.trackGUI };
+
+            m_Captured = true;
+            state.AddCaptured(this);
+
+            return true;
+        }
+
+        protected override bool MouseDrag(Event evt, WindowState state)
+        {
+            if (!m_Captured || m_Target == null)
+                return false;
+
+            var delta = evt.mousePosition.y - m_Target.boundingRect.center.y;
+            var extension = Mathf.RoundToInt(delta / m_NumberOfContributingTracks / state.trackScale);
+            foreach (var track in m_TracksToResize)
+                track.heightExtension += extension;
+
+            state.GetWindow().treeView.CalculateRowRects();
+            return true;
+        }
+
+        protected override bool MouseUp(Event evt, WindowState state)
+        {
+            if (!m_Captured)
+                return false;
+
+            foreach (var track in m_TracksToResize)
+                CommitExtension(track);
+
+            state.GetWindow().treeView.CalculateRowRects();
+            state.RemoveCaptured(this);
+            m_Captured = false;
+
+            return true;
+        }
+
+        public override void Overlay(Event evt, WindowState state)
+        {
+            var rect = state.GetWindow().sequenceRect;
+            EditorGUIUtility.AddCursorRect(rect, MouseCursor.SplitResizeUpDown);
+        }
+
+        static void CommitExtension(TimelineTrackGUI trackGUI)
+        {
+            if (trackGUI != null)
+                TimelineWindowViewPrefs.SetTrackHeightExtension(trackGUI.track, trackGUI.heightExtension);
+        }
     }
 
     class TrackDoubleClick : Manipulator
@@ -63,7 +144,7 @@ namespace UnityEditor.Timeline
             if (evt.button != 0)
                 return false;
 
-            var trackGUI = PickerUtils.PickedTrackBaseGUI();
+            var trackGUI = PickerUtils.FirstPickedElementOfType<TimelineTrackBaseGUI>();
 
             if (trackGUI == null)
                 return false;
