@@ -38,12 +38,25 @@ namespace UnityEditorInternal
             {
                 property = binding.path + " : " + property;
             }
+
+            int lastArrayIdx = property.LastIndexOf("Array.");
+            if (lastArrayIdx != -1)
+            {
+                property = property.Substring(0, lastArrayIdx - 1);
+            }
             return property;
         }
 
-        static string PropertyName(EditorCurveBinding binding)
+        static string PropertyName(EditorCurveBinding binding, string arrayPrefixToRemove = "")
         {
-            return AnimationWindowUtility.GetPropertyDisplayName(binding.propertyName);
+            string propertyName = AnimationWindowUtility.GetPropertyDisplayName(binding.propertyName);
+            if (propertyName.Contains("Array"))
+            {
+                propertyName = propertyName.Replace("Array.", "");
+                propertyName = propertyName.Replace(arrayPrefixToRemove, "");
+                propertyName = propertyName.TrimStart('.');
+            }
+            return propertyName;
         }
 
         public override void FetchData()
@@ -92,7 +105,7 @@ namespace UnityEditorInternal
                             newNode.children = new List<TreeViewItem>();
 
                         var binding = r.bindings[b];
-                        var bindingNode = new CurveTreeViewNode(binding.GetHashCode(), newNode, PropertyName(binding), new[] {binding});
+                        var bindingNode = new CurveTreeViewNode(binding.GetHashCode(), newNode, PropertyName(binding, newNode.displayName), new[] {binding});
                         newNode.children.Add(bindingNode);
                     }
                 }

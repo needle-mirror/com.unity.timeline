@@ -169,6 +169,8 @@ namespace UnityEditor.Timeline
             }
 
             m_TrackDrawOptions.errorText = null; // explicitly setting to null for an uninitialized state
+
+            RebuildGUICacheIfNecessary();
         }
 
         public override float GetVerticalSpacingBetweenTracks()

@@ -7,6 +7,7 @@ namespace UnityEngine.Timeline
     /// <summary>
     /// A PlayableAsset that represents a timeline.
     /// </summary>
+    [ExcludeFromPreset]
     [Serializable]
     public partial class TimelineAsset : PlayableAsset, ISerializationCallbackReceiver, ITimelineClipAsset, IPropertyPreview
     {

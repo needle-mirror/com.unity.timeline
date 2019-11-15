@@ -120,6 +120,7 @@ namespace UnityEngine.Timeline
     [Serializable]
     [TrackClipType(typeof(AnimationPlayableAsset), false)]
     [TrackBindingType(typeof(Animator))]
+    [ExcludeFromPreset]
     public partial class AnimationTrack : TrackAsset, ILayerable
     {
         const string k_DefaultInfiniteClipName = "Recorded";

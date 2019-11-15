@@ -105,8 +105,8 @@ namespace UnityEditor.Timeline
             var newClip = Object.Instantiate(clip);
             newClip.name = AnimationTrackRecorder.GetUniqueRecordedClipName(owner, clip.name);
 
-            TimelineUndo.RegisterCreatedObjectUndo(newClip, "Create clip");
             SaveAnimClipIntoObject(newClip, owner);
+            TimelineUndo.RegisterCreatedObjectUndo(newClip, "Create clip");
 
             return newClip;
         }

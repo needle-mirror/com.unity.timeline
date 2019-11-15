@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.7] - 2019-11-15
+
+### Fixed
+- Fixed inline curves to display PlayableBehaviour array properties. (1178251)
+- Fixed clip selection from playhead. (1187495)
+- Fixed recorded clips dirtying the scene on copy/paste. (1181492)
+
 ## [1.2.6] - 2019-10-25
 
 ### Added
