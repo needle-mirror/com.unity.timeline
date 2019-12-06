@@ -13,7 +13,7 @@ namespace UnityEditor.Timeline
 
         static TitleMode GetTitleMode(ISequenceState sequence)
         {
-            var prefabStage = Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+            var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
             // Top level
             if (sequence.hostClip == null)
             {

@@ -105,8 +105,12 @@ namespace UnityEditor.Timeline
 
             GUI.Box(headerRect, headerString, m_LabelStyle);
 
-            m_CurveEditor.rect = curveRect;
-            m_CurveEditor.shownAreaInsideMargins = new Rect(0, 0, 1, 1);
+            //Case 1201474 : Force to update only when Repaint event is called as the new rect provided on other event create a wrong curve editor computation.
+            if (Event.current.type == EventType.Repaint)
+            {
+                m_CurveEditor.rect = curveRect;
+                m_CurveEditor.shownAreaInsideMargins = new Rect(0, 0, 1, 1);
+            }
             m_CurveEditor.animationCurves = m_CurveWrappers;
             UpdateSelectionColors();
 

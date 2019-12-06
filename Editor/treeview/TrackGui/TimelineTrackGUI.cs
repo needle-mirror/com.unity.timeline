@@ -725,13 +725,15 @@ namespace UnityEditor.Timeline
                 typeof(GameObject).IsAssignableFrom(binding.outputTargetType) ||
                 typeof(Component).IsAssignableFrom(binding.outputTargetType);
 
-            EditorGUI.BeginChangeCheck();
-            // FocusType.Passive so it never gets focused when pressing tab
-            int controlId = GUIUtility.GetControlID("s_ObjectFieldHash".GetHashCode(), FocusType.Passive, position);
-            var newObject = EditorGUI.DoObjectField(EditorGUI.IndentedRect(position), EditorGUI.IndentedRect(position), controlId, obj, binding.outputTargetType, null, null, allowScene, EditorStyles.objectField);
-            if (EditorGUI.EndChangeCheck())
+            using (var check = new EditorGUI.ChangeCheckScope())
             {
-                BindingUtility.Bind(TimelineEditor.inspectedDirector, binding.sourceObject as TrackAsset, newObject);
+                // FocusType.Passive so it never gets focused when pressing tab
+                int controlId = GUIUtility.GetControlID("s_ObjectFieldHash".GetHashCode(), FocusType.Passive, position);
+                var newObject = UnityEditorInternals.DoObjectField(EditorGUI.IndentedRect(position), obj, binding.outputTargetType, controlId, allowScene);
+                if (check.changed)
+                {
+                    BindingUtility.Bind(TimelineEditor.inspectedDirector, binding.sourceObject as TrackAsset, newObject);
+                }
             }
         }
 
