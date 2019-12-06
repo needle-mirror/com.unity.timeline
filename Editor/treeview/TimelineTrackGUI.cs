@@ -631,6 +631,12 @@ namespace UnityEditor.Timeline
                     if (c != null)
                         goBinding = c.gameObject;
                 }
+
+                if (goBinding == null && m_TrackDrawData.m_IsSubTrack)
+                {
+                    goBinding = ParentTrack().GetGameObjectBinding(state.editSequence.director);
+                }
+
                 bool isTrackBindingValid = goBinding != null;
                 bool trackErrorDisableButton = !string.IsNullOrEmpty(m_TrackDrawOptions.errorText) && isTrackBindingValid && goBinding.activeInHierarchy;
                 bool disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid;

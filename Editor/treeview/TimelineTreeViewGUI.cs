@@ -80,7 +80,7 @@ namespace UnityEditor.Timeline
             {
                 Rect r = m_TreeView.GetTotalRect();
                 Vector2 visibleContent = m_TreeView.GetContentSize();
-                m_TreeView.state.scrollPos = new Vector2(value.x, Mathf.Min(Mathf.Clamp(value.y, 0.0f, visibleContent.y - r.height)));
+                m_TreeView.state.scrollPos = new Vector2(value.x, Mathf.Clamp(value.y, 0, Mathf.Max(0, visibleContent.y - r.height)));
             }
         }
 

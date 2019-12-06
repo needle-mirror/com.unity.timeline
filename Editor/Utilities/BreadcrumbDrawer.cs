@@ -214,7 +214,7 @@ namespace UnityEditor.Timeline
                                 var assetPath = AssetDatabase.GetAssetPath(gameObject);
                                 if (!string.IsNullOrEmpty(assetPath))
                                 {
-                                    var stage = Experimental.SceneManagement.PrefabStageUtility.OpenPrefab(assetPath);
+                                    var stage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.OpenPrefab(assetPath);
                                     if (stage != null)
                                         ping = false;
                                 }

@@ -637,8 +637,6 @@ namespace UnityEngine.Timeline
             if (Application.isPlaying)
                 return mixer;
 
-            var animator = GetBinding(go != null ? go.GetComponent<PlayableDirector>() : null);
-
             int inputs = 1 + ((m_CachedPropertiesClip != null) ? 1 : 0) + ((m_DefaultPoseClip != null) ? 1 : 0);
             if (inputs == 1)
                 return mixer;
@@ -648,7 +646,9 @@ namespace UnityEngine.Timeline
             int mixerInput = 0;
             if (m_CachedPropertiesClip)
             {
-                var defaults = (Playable)AnimationClipPlayable.Create(graph, m_CachedPropertiesClip);
+                var cachedPropertiesClip = AnimationClipPlayable.Create(graph, m_CachedPropertiesClip);
+                cachedPropertiesClip.SetApplyFootIK(false);
+                var defaults = (Playable) cachedPropertiesClip;
                 if (requireOffset)
                     defaults = AttachOffsetPlayable(graph, defaults, m_SceneOffsetPosition, Quaternion.Euler(m_SceneOffsetRotation));
                 graph.Connect(defaults, 0, defaultPoseMixer, mixerInput);
@@ -658,7 +658,9 @@ namespace UnityEngine.Timeline
 
             if (m_DefaultPoseClip)
             {
-                var blendDefault = (Playable)AnimationClipPlayable.Create(graph, m_DefaultPoseClip);
+                var defaultPose = AnimationClipPlayable.Create(graph, m_DefaultPoseClip);
+                defaultPose.SetApplyFootIK(false);
+                var blendDefault = (Playable) defaultPose;
                 if (requireOffset)
                     blendDefault = AttachOffsetPlayable(graph, blendDefault, m_SceneOffsetPosition, Quaternion.Euler(m_SceneOffsetRotation));
 

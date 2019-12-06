@@ -12,18 +12,13 @@
 }
 
 .Icon-AutoKey {
-    /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineAutokey.png");
-
-    -unity-scaled-backgrounds: resource("Builtin Skins/DarkSkin/Images/TimelineAutokey@2x.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineAutokey@2x.png");
 }
 
-/* GUIStyle.active */
 .Icon-AutoKey:active {
-    /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineAutokey_active.png");
-
-    -unity-scaled-backgrounds: resource("Builtin Skins/DarkSkin/Images/TimelineAutokey_active@2x.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineAutokey_active@2x.png");
 }
 
 .Icon-AvatarMaskOff {
@@ -190,36 +185,42 @@
 .Icon-Locked {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton@2x.png");
 }
 
 /* GUIStyle.active */
 .Icon-Locked:hover:active {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton@2x.png");
 }
 
 /* GUIStyle.focused */
 .Icon-Locked:focus {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton@2x.png");
 }
 
 /* GUIStyle.hover */
 .Icon-Locked:hover {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton@2x.png");
 }
 
 /* GUIStyle.onActive */
 .Icon-Locked:hover:active:checked {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton@2x.png");
 }
 
 /* GUIStyle.onNormal */
 .Icon-Locked:checked {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineLockButton@2x.png");
 }
 
 .Icon-LockedBG {
@@ -228,8 +229,8 @@
 }
 
 .Icon-Mute {
-    /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineEye.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/DarkSkin/TimelineEye@2x.png");
 }
 
 .Icon-Options {
