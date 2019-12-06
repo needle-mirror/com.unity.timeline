@@ -41,7 +41,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        void TimelineGUI()
+        void DrawTimelineRuler()
         {
             if (!currentMode.ShouldShowTimeArea(state))
                 return;

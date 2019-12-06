@@ -14,32 +14,6 @@ namespace UnityEditor.Timeline
 
         TimelineMarkerHeaderGUI m_MarkerHeaderGUI;
 
-        void SequencerHeaderGUI()
-        {
-            using (new EditorGUI.DisabledScope(state.editSequence.asset == null))
-            {
-                GUILayout.BeginVertical();
-                {
-                    TransportToolbarGUI();
-
-                    GUILayout.BeginHorizontal(GUILayout.Width(sequenceHeaderRect.width));
-                    {
-                        if (state.editSequence.asset != null)
-                        {
-                            GUILayout.Space(DirectorStyles.kBaseIndent);
-                            AddButtonGUI();
-                            GUILayout.FlexibleSpace();
-                            EditModeToolbarGUI(currentMode);
-                            ShowMarkersButton();
-                            EditorGUILayout.Space();
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndVertical();
-            }
-        }
-
         void MarkerHeaderGUI()
         {
             var timelineAsset = state.editSequence.asset;
@@ -51,30 +25,24 @@ namespace UnityEditor.Timeline
             m_MarkerHeaderGUI.Draw(markerHeaderRect, markerContentRect, state);
         }
 
-        void TransportToolbarGUI()
+        void DrawTransportToolbar()
         {
-            GUILayout.BeginHorizontal(EditorStyles.toolbar, GUILayout.Width(sequenceHeaderRect.width));
+            using (new EditorGUI.DisabledScope(currentMode.PreviewState(state) == TimelineModeGUIState.Disabled))
             {
-                using (new EditorGUI.DisabledScope(currentMode.PreviewState(state) == TimelineModeGUIState.Disabled))
-                {
-                    PreviewModeButtonGUI();
-                }
-
-                using (new EditorGUI.DisabledScope(currentMode.ToolbarState(state) == TimelineModeGUIState.Disabled))
-                {
-                    GotoBeginingSequenceGUI();
-                    PreviousEventButtonGUI();
-                    PlayButtonGUI();
-                    NextEventButtonGUI();
-                    GotoEndSequenceGUI();
-                    GUILayout.Space(10.0f);
-                    PlayRangeButtonGUI();
-                    GUILayout.FlexibleSpace();
-                    TimeCodeGUI();
-                    ReferenceTimeGUI();
-                }
+                PreviewModeButtonGUI();
             }
-            GUILayout.EndHorizontal();
+
+            using (new EditorGUI.DisabledScope(currentMode.ToolbarState(state) == TimelineModeGUIState.Disabled))
+            {
+                GotoBeginingSequenceGUI();
+                PreviousEventButtonGUI();
+                PlayButtonGUI();
+                NextEventButtonGUI();
+                GotoEndSequenceGUI();
+                PlayRangeButtonGUI();
+                TimeCodeGUI();
+                ReferenceTimeGUI();
+            }
         }
 
         void PreviewModeButtonGUI()
@@ -277,7 +245,7 @@ namespace UnityEditor.Timeline
             EditorGUI.BeginChangeCheck();
 
             var currentTime = state.editSequence.asset != null ? TimeReferenceUtility.ToTimeString(state.editSequence.time, "F1") : "0";
-            var r = EditorGUILayout.GetControlRect(false, EditorGUI.kSingleLineHeight, EditorStyles.toolbarTextField, GUILayout.MinWidth(WindowConstants.minTimeCodeWidth));
+            var r = EditorGUILayout.GetControlRect(false, EditorGUI.kSingleLineHeight, EditorStyles.toolbarTextField, GUILayout.Width(WindowConstants.timeCodeWidth));
             var id = GUIUtility.GetControlID("RenameFieldTextField".GetHashCode(), FocusType.Passive, r);
             var newCurrentTime = EditorGUI.DelayedTextFieldInternal(r, id, GUIContent.none, currentTime, null, EditorStyles.toolbarTextField);
 
@@ -291,10 +259,7 @@ namespace UnityEditor.Timeline
                 return;
 
             EditorGUI.BeginChangeCheck();
-
-            var rect = EditorGUILayout.GetControlRect(false, EditorGUI.kSingleLineHeight, EditorStyles.toolbarButton, GUILayout.Width(WindowConstants.refTimeWidth));
-            state.timeReferenceMode = (TimeReferenceMode)EditorGUI.CycleButton(rect, (int)state.timeReferenceMode, k_TimeReferenceGUIContents, EditorStyles.toolbarButtonRight);
-
+            state.timeReferenceMode = (TimeReferenceMode)EditorGUILayout.CycleButton((int)state.timeReferenceMode, k_TimeReferenceGUIContents, DirectorStyles.Instance.timeReferenceButton);
             if (EditorGUI.EndChangeCheck())
                 OnTimeReferenceModeChanged();
         }
@@ -308,6 +273,22 @@ namespace UnityEditor.Timeline
             foreach (var inspector in InspectorWindow.GetAllInspectorWindows())
             {
                 inspector.Repaint();
+            }
+        }
+
+        void DrawHeaderEditButtons()
+        {
+            if (state.editSequence.asset == null)
+                return;
+
+            using (new GUILayout.HorizontalScope(EditorStyles.toolbar, GUILayout.Width(sequenceHeaderRect.width)))
+            {
+                GUILayout.Space(DirectorStyles.kBaseIndent);
+                AddButtonGUI();
+                GUILayout.FlexibleSpace();
+                EditModeToolbarGUI(currentMode);
+                ShowMarkersButton();
+                EditorGUILayout.Space();
             }
         }
     }

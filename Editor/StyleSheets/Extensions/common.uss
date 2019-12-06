@@ -1151,3 +1151,13 @@
     width: 14px;
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/Timeline-Marker-Warning-Overlay.png");
 }
+
+.timeReferenceButton {
+    -unity-extend: ".toolbarbutton";
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    -unity-text-align: middle-center;
+    font-size: --unity-font-size-small;
+}

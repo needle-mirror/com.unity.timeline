@@ -13,6 +13,7 @@ namespace UnityEngine.Timeline
     /// <seealso cref="UnityEngine.Timeline.SignalReceiver"/>
     [Serializable]
     [CustomStyle("SignalEmitter")]
+    [ExcludeFromPreset]
     public class SignalEmitter : Marker, INotification, INotificationOptionProvider
     {
         [SerializeField] bool m_Retroactive;

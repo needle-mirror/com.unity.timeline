@@ -104,6 +104,7 @@ namespace UnityEditor.Timeline
         public GUIStyle showMarkersBtn;
         public GUIStyle sequenceSwitcher;
         public GUIStyle inlineCurveHandle;
+        public GUIStyle timeReferenceButton;
 
         static internal DirectorStyles s_Instance;
 
@@ -277,6 +278,7 @@ namespace UnityEditor.Timeline
             markerWarning = GetGUIStyle("markerWarningOverlay");
             sequenceSwitcher = GetGUIStyle("sequenceSwitcher");
             inlineCurveHandle = GetGUIStyle("RL DragHandle");
+            timeReferenceButton = GetGUIStyle("timeReferenceButton");
 
             playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = "Toggle play range markers." };
 

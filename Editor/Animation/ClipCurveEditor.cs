@@ -318,16 +318,13 @@ namespace UnityEditor
 
             DrawCurveEditorBackground(animEditorRect);
 
-            float localCurveStart = curveStart - animEditorRect.xMin;
-
             // adjust the top margin so smaller rectangle have smaller top / bottom margins.
             m_CurveEditor.topmargin = m_CurveEditor.bottommargin = CalculateTopMargin(animEditorRect.height);
-            // calculate the margin needed to align the curve with the clip.
-            m_CurveEditor.rightmargin = 0.0f;
-            m_CurveEditor.leftmargin = localCurveStart;
 
-            m_CurveEditor.rect = new Rect(0.0f, 0.0f, animEditorRect.width, animEditorRect.height);
-
+            //align the curve with the clip.
+            var localCurveStart = curveStart - animEditorRect.xMin;
+            m_CurveEditor.leftmargin = 0.0f;
+            m_CurveEditor.rect = new Rect(localCurveStart, 0.0f, animEditorRect.width - localCurveStart, animEditorRect.height);
             m_CurveEditor.SetShownHRangeInsideMargins(0.0f, (state.PixelToTime(animEditorRect.xMax) - m_DataSource.start) * m_DataSource.timeScale);
 
             if (m_LastFrameRate != state.referenceSequence.frameRate)
@@ -384,16 +381,15 @@ namespace UnityEditor
             GUI.EndGroup();
 
             // draw the grid labels last
-            Rect gridRect = animEditorRect;
+            var gridRect = animEditorRect;
             gridRect.width = s_GridLabelWidth;
-            float offset = localCurveStart - s_GridLabelWidth;
+            var offset = localCurveStart - s_GridLabelWidth;
             if (offset > 0.0f)
                 gridRect.x = animEditorRect.x + offset;
+            m_CurveEditor.rect = new Rect(0.0f, 0.0f, animEditorRect.width, animEditorRect.height);
 
             GUI.BeginGroup(gridRect);
-
             m_CurveEditor.GridGUI();
-
             GUI.EndGroup();
         }
 

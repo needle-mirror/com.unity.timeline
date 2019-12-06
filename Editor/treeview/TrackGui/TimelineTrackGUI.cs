@@ -181,6 +181,8 @@ namespace UnityEditor.Timeline
             m_TrackDrawOptions.errorText = null; // explicitly setting to null for an uninitialized state
             m_ResizeHandle = new TrackResizeHandle(this);
             heightExtension = TimelineWindowViewPrefs.GetTrackHeightExtension(track);
+
+            RebuildGUICacheIfNecessary();
         }
 
         public override float GetVerticalSpacingBetweenTracks()
@@ -640,6 +642,12 @@ namespace UnityEditor.Timeline
                     if (c != null)
                         goBinding = c.gameObject;
                 }
+
+                if (goBinding == null && m_TrackDrawData.m_IsSubTrack)
+                {
+                    goBinding = ParentTrack().GetGameObjectBinding(state.editSequence.director);
+                }
+
                 bool isTrackBindingValid = goBinding != null;
                 bool trackErrorDisableButton = !string.IsNullOrEmpty(m_TrackDrawOptions.errorText) && isTrackBindingValid && goBinding.activeInHierarchy;
                 bool disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid;

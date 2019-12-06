@@ -3,6 +3,7 @@ using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
+    [ExcludeFromPreset]
     class EditorClip : ScriptableObject
     {
         [SerializeField] TimelineClip m_Clip;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
@@ -40,15 +39,15 @@ namespace UnityEditor.Timeline
 
         static BreadcrumbDrawer()
         {
-            k_BreadCrumbLeft = new GUIStyle("GUIEditor.BreadcrumbLeft");
-            k_BreadCrumbMid = new GUIStyle("GUIEditor.BreadcrumbMid");
-            k_BreadCrumbLeftBg = new GUIStyle("GUIEditor.BreadcrumbLeftBackground");
-            k_BreadCrumbMidBg = new GUIStyle("GUIEditor.BreadcrumbMidBackground");
+            k_BreadCrumbLeft = "GUIEditor.BreadcrumbLeft";
+            k_BreadCrumbMid = "GUIEditor.BreadcrumbMid";
+            k_BreadCrumbLeftBg = "GUIEditor.BreadcrumbLeftBackground";
+            k_BreadCrumbMidBg = "GUIEditor.BreadcrumbMidBackground";
 
-            k_BreadCrumbMidSelected = new GUIStyle(k_BreadCrumbMid);
+            k_BreadCrumbMidSelected = k_BreadCrumbMid;
             k_BreadCrumbMidSelected.normal = k_BreadCrumbMidSelected.onNormal;
 
-            k_BreadCrumbMidBgSelected = new GUIStyle(k_BreadCrumbMidBg);
+            k_BreadCrumbMidBgSelected = k_BreadCrumbMidBg;
             k_BreadCrumbMidBgSelected.normal = k_BreadCrumbMidBgSelected.onNormal;
             k_TimelineIcon = EditorGUIUtility.IconContent("TimelineAsset Icon").image;
         }
@@ -78,7 +77,7 @@ namespace UnityEditor.Timeline
 
         public static void Draw(float breadcrumbAreaWidth, List<BreadCrumbTitle> labels, Action<int> navigateToBreadcrumbIndex)
         {
-            GUILayout.BeginHorizontal(GUILayout.Width(breadcrumbAreaWidth));
+            GUILayout.BeginHorizontal();
             {
                 var labelWidth = (int)(breadcrumbAreaWidth / labels.Count);
 
@@ -91,20 +90,14 @@ namespace UnityEditor.Timeline
 
                     if (i == labels.Count - 1)
                     {
-                        if (i > 0)
-                        {
-                            // Only tint last breadcrumb if we are dug-in
+                        if (i > 0) // Only tint last breadcrumb if we are dug-in
                             DrawBreadcrumbAsSelectedSubSequence(labelWidth, label, k_BreadCrumbMidSelected, k_BreadCrumbMidBgSelected);
-                        }
                         else
-                        {
                             DrawActiveBreadcrumb(labelWidth, label, style, backgroundStyle);
-                        }
                     }
                     else
                     {
                         var previousContentColor = GUI.contentColor;
-
                         GUI.contentColor = new Color(previousContentColor.r,
                             previousContentColor.g,
                             previousContentColor.b,
@@ -113,14 +106,10 @@ namespace UnityEditor.Timeline
                         var rect = GetBreadcrumbLayoutRect(content, style);
 
                         if (Event.current.type == EventType.Repaint)
-                        {
                             backgroundStyle.Draw(rect, GUIContent.none, 0);
-                        }
 
                         if (GUI.Button(rect, content, style))
-                        {
                             navigateToBreadcrumbIndex.Invoke(i);
-                        }
                         GUI.contentColor = previousContentColor;
                     }
                 }
@@ -214,7 +203,7 @@ namespace UnityEditor.Timeline
                                 var assetPath = AssetDatabase.GetAssetPath(gameObject);
                                 if (!string.IsNullOrEmpty(assetPath))
                                 {
-                                    var stage = Experimental.SceneManagement.PrefabStageUtility.OpenPrefab(assetPath);
+                                    var stage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.OpenPrefab(assetPath);
                                     if (stage != null)
                                         ping = false;
                                 }

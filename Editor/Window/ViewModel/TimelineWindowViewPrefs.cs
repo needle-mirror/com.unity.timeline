@@ -86,11 +86,9 @@ namespace UnityEditor.Timeline
 
         public static TrackViewModelData GetTrackViewModelData(TrackAsset track)
         {
-            Debug.Assert(track != null);
             if (track == null)
                 return new TrackViewModelData();
 
-            Debug.Assert(track.timelineAsset != null);
             if (track.timelineAsset == null)
                 return new TrackViewModelData();
 

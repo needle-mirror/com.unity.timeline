@@ -13,7 +13,7 @@ namespace UnityEditor.Timeline
 
         static TitleMode GetTitleMode(ISequenceState sequence)
         {
-            var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+            var prefabStage = Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
             // Top level
             if (sequence.hostClip == null)
             {
@@ -35,14 +35,14 @@ namespace UnityEditor.Timeline
             return TitleMode.None;
         }
 
-        void DoBreadcrumbGUI()
+        void DrawBreadcrumbs()
         {
             if (state == null)
                 return;
-            int count = 0;
+            var count = 0;
             foreach (var sequence in state.GetAllSequences())
             {
-                BreadCrumbTitle title = new BreadCrumbTitle()
+                var title = new BreadCrumbTitle
                 {
                     name = DisplayNameHelper.GetDisplayName(sequence),
                     mode = GetTitleMode(sequence)
@@ -59,7 +59,8 @@ namespace UnityEditor.Timeline
 
             using (new EditorGUI.DisabledScope(currentMode.headerState.breadCrumb == TimelineModeGUIState.Disabled))
             {
-                BreadcrumbDrawer.Draw(breadCrumbAreaWidth, m_BreadCrumbLabels, NavigateToBreadcrumbIndex);
+                var width = position.width - WindowConstants.playControlsWidth - WindowConstants.cogButtonWidth;
+                BreadcrumbDrawer.Draw(width, m_BreadCrumbLabels, NavigateToBreadcrumbIndex);
             }
         }
 
@@ -68,7 +69,7 @@ namespace UnityEditor.Timeline
             state.PopSequencesUntilCount(index + 1);
         }
 
-        void DoSequenceSelectorGUI()
+        void DrawSequenceSelector()
         {
             using (new EditorGUI.DisabledScope(currentMode.headerState.sequenceSelector == TimelineModeGUIState.Disabled))
             {

@@ -205,6 +205,13 @@ namespace UnityEditor.Timeline
                     return false;
                 }
 
+                if (type.IsArray)
+                {
+                    if (segment != "Array")
+                        type = type.GetElementType();
+                    continue;
+                }
+
                 var fieldInfo = type.GetField(segment, bindingFlags);
 
                 if (fieldInfo == null ||

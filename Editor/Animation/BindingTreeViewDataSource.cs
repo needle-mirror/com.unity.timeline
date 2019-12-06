@@ -38,12 +38,25 @@ namespace UnityEditorInternal
             {
                 property = binding.path + " : " + property;
             }
+
+            int lastArrayIdx = property.LastIndexOf("Array.");
+            if (lastArrayIdx != -1)
+            {
+                property = property.Substring(0, lastArrayIdx - 1);
+            }
             return property;
         }
 
-        static string PropertyName(EditorCurveBinding binding)
+        static string PropertyName(EditorCurveBinding binding, string arrayPrefixToRemove = "")
         {
-            return AnimationWindowUtility.GetPropertyDisplayName(binding.propertyName);
+            string propertyName = AnimationWindowUtility.GetPropertyDisplayName(binding.propertyName);
+            if (propertyName.Contains("Array"))
+            {
+                propertyName = propertyName.Replace("Array.", "");
+                propertyName = propertyName.Replace(arrayPrefixToRemove, "");
+                propertyName = propertyName.TrimStart('.');
+            }
+            return propertyName;
         }
 
         public override void FetchData()

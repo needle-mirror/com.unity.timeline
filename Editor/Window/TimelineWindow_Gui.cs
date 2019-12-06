@@ -101,14 +101,6 @@ namespace UnityEditor.Timeline
             get { return m_HorizontalScrollBarSize; }
         }
 
-        float breadCrumbAreaWidth
-        {
-            get
-            {
-                return state.timeAreaRect.width - WindowConstants.selectorWidth - WindowConstants.cogButtonWidth - WindowConstants.cogButtonPadding;
-            }
-        }
-
         internal TimelineMode currentMode
         {
             get
@@ -165,28 +157,11 @@ namespace UnityEditor.Timeline
             m_RectangleZoom.OnGUI(state, rawType, mousePosition);
         }
 
-        void TimelineSectionGUI()
-        {
-            GUILayout.BeginVertical();
-            {
-                GUILayout.BeginHorizontal(EditorStyles.toolbar, GUILayout.Width(position.width - state.sequencerHeaderWidth));
-                {
-                    DoSequenceSelectorGUI();
-                    DoBreadcrumbGUI();
-                    OptionsGUI();
-                }
-                GUILayout.EndHorizontal();
-
-                TimelineGUI();
-            }
-            GUILayout.EndVertical();
-        }
-
         void SplitterGUI()
         {
             if (!state.IsEditingAnEmptyTimeline())
             {
-                var splitterLineRect = new Rect(state.sequencerHeaderWidth - 1.0f, 0.0f, 2.0f, clientArea.height);
+                var splitterLineRect = new Rect(state.sequencerHeaderWidth - 1.0f, WindowConstants.timeAreaYPosition + 2.0f, 2.0f, clientArea.height);
                 EditorGUI.DrawRect(splitterLineRect, DirectorStyles.Instance.customSkin.colorTopOutline3);
             }
         }
@@ -285,12 +260,7 @@ namespace UnityEditor.Timeline
             DrawHeaderBackground();
             DurationGUI(TimelineItemArea.Header, duration);
 
-            GUILayout.BeginHorizontal();
-            {
-                SequencerHeaderGUI();
-                TimelineSectionGUI();
-            }
-            GUILayout.EndHorizontal();
+            DrawToolbar();
 
             TrackViewsGUI();
             MarkerHeaderGUI();
@@ -309,6 +279,32 @@ namespace UnityEditor.Timeline
             SplitterGUI();
         }
 
+        void DrawToolbar()
+        {
+            DrawOptions();
+            using (new GUILayout.VerticalScope())
+            {
+                using (new GUILayout.HorizontalScope(EditorStyles.toolbar))
+                {
+                    using (new GUILayout.HorizontalScope())
+                    {
+                        DrawTransportToolbar();
+                    }
+
+                    DrawSequenceSelector();
+                    DrawBreadcrumbs();
+                    GUILayout.FlexibleSpace();
+                    DrawOptions();
+                }
+
+                using (new GUILayout.HorizontalScope())
+                {
+                    DrawHeaderEditButtons();
+                    DrawTimelineRuler();
+                }
+            }
+        }
+
         void SubTimelineRangeGUI()
         {
             if (!state.IsEditingASubTimeline() || state.IsEditingAnEmptyTimeline()) return;
@@ -319,7 +315,7 @@ namespace UnityEditor.Timeline
             var area = new Vector2(state.TimeToPixel(range.start), state.TimeToPixel(range.end));
 
             var fullRect = sequenceContentRect;
-            fullRect.yMin -= state.timeAreaRect.height;
+            fullRect.yMin = WindowConstants.timeAreaYPosition + 1.0f;
 
             if (fullRect.xMin < area.x)
             {
@@ -383,15 +379,15 @@ namespace UnityEditor.Timeline
             }
         }
 
-        void OptionsGUI()
+        void DrawOptions()
         {
             if (currentMode.headerState.options == TimelineModeGUIState.Hidden || state.editSequence.asset == null)
                 return;
 
             using (new EditorGUI.DisabledScope(currentMode.headerState.options == TimelineModeGUIState.Disabled))
             {
-                GUILayout.FlexibleSpace();
-                if (EditorGUILayout.DropdownButton(DirectorStyles.optionsCogIcon, FocusType.Keyboard, EditorStyles.toolbarButton))
+                var rect = new Rect(position.width - WindowConstants.cogButtonWidth, 0, WindowConstants.cogButtonWidth, WindowConstants.timeAreaYPosition);
+                if (EditorGUI.DropdownButton(rect, DirectorStyles.optionsCogIcon, FocusType.Keyboard, EditorStyles.toolbarButton))
                 {
                     GenericMenu menu = new GenericMenu();
 
@@ -444,7 +440,7 @@ namespace UnityEditor.Timeline
                             () => state.showQuadTree = !state.showQuadTree);
                     }
 
-                    menu.ShowAsContext();
+                    menu.DropDown(rect);
                 }
             }
         }

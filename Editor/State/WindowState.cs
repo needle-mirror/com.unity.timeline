@@ -25,7 +25,6 @@ namespace UnityEditor.Timeline
         readonly List<Manipulator> m_CaptureSession = new List<Manipulator>();
 
         int m_DirtyStamp;
-        float m_SequencerHeaderWidth = WindowConstants.defaultHeaderWidth;
         float m_BindingAreaWidth = WindowConstants.defaultBindingAreaWidth;
 
         bool m_MustRebuildGraph;
@@ -157,10 +156,10 @@ namespace UnityEditor.Timeline
 
         public float sequencerHeaderWidth
         {
-            get { return m_SequencerHeaderWidth; }
+            get { return editSequence.viewModel.sequencerHeaderWidth; }
             set
             {
-                m_SequencerHeaderWidth = Mathf.Clamp(value, WindowConstants.minHeaderWidth, WindowConstants.maxHeaderWidth);
+                editSequence.viewModel.sequencerHeaderWidth = Mathf.Clamp(value, WindowConstants.minHeaderWidth, WindowConstants.maxHeaderWidth);
             }
         }
 
