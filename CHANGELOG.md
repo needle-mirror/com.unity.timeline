@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.10] - 2019-12-08
+
+### Fixed
+- Fixed issue where object selectors on tracks did not show bound objects. (1202853)
+- Fixing inspector blend graph display for animation clips. (1201474)
+- Fixed Timeline Window lock state when restarting Unity and no timeline are selected. ([1201405](https://issuetracker.unity3d.com/product/unity/issues/guid/1201405/))
+
 ## [1.2.9] - 2019-12-06
 
 ### Fixed
@@ -9,10 +16,10 @@ All notable changes to this package will be documented in this file. The format 
 ## [1.2.8] - 2019-11-21
 
 ### Fixed
-- Fixed issue where recording couldn't be turned on for override tracks (1199389)
+- Fixed issue where recording couldn't be turned on for override tracks. (1199389)
 - Fixed overlay bug when panning. (1198348)
-- Fixed Foot IK being applied in Editor when option is disabled ([1197426](https://issuetracker.unity3d.com/product/unity/issues/guid/1197426/))
-- Fixed issue where the Animation Track's inline curves were not properly aligned when panning the timeline (1198364).
+- Fixed Foot IK being applied in Editor when option is disabled. ([1197426](https://issuetracker.unity3d.com/product/unity/issues/guid/1197426/))
+- Fixed issue where the Animation Track's inline curves were not properly aligned when panning the timeline. (1198364)
 
 ## [1.2.7] - 2019-11-15
 

@@ -318,6 +318,10 @@ namespace UnityEditor.Timeline
                     state.recording = false;
                     state.previewMode = false;
 
+                    //Case 1201405 : Check if the lock state is valid with the lock tracker state
+                    if (locked != m_LockTracker.isLocked)
+                        m_LockTracker.isLocked = locked;
+
                     if (!locked && m_LastFrameHadSequence)
                     {
                         // the user may be adding a new PlayableDirector to a selected GameObject, make sure the timeline editor is shows the proper director if none is already showing
