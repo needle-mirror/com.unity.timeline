@@ -78,7 +78,7 @@ namespace UnityEngine.Timeline
         [HideInInspector, SerializeField] double m_FixedDuration; // only applied if duration mode is Fixed
         [HideInInspector, NonSerialized] TrackAsset[] m_CacheOutputTracks;
         [HideInInspector, NonSerialized] List<TrackAsset> m_CacheRootTracks;
-        [HideInInspector, NonSerialized] List<TrackAsset> m_CacheFlattenedTracks;
+        [HideInInspector, NonSerialized] TrackAsset[] m_CacheFlattenedTracks;
         [HideInInspector, SerializeField] EditorSettings m_EditorSettings = new EditorSettings();
         [SerializeField] DurationMode m_DurationMode;
 
@@ -299,20 +299,22 @@ namespace UnityEngine.Timeline
             }
         }
 
-        internal IEnumerable<TrackAsset> flattenedTracks
+        internal TrackAsset[] flattenedTracks
         {
             get
             {
                 if (m_CacheFlattenedTracks == null)
                 {
-                    m_CacheFlattenedTracks = new List<TrackAsset>(m_Tracks.Count * 2);
+                    var list =  new List<TrackAsset>(m_Tracks.Count * 2);
                     UpdateRootTrackCache();
 
-                    m_CacheFlattenedTracks.AddRange(m_CacheRootTracks);
+                    list.AddRange(m_CacheRootTracks);
                     for (int i = 0; i < m_CacheRootTracks.Count; i++)
                     {
-                        AddSubTracksRecursive(m_CacheRootTracks[i], ref m_CacheFlattenedTracks);
+                        AddSubTracksRecursive(m_CacheRootTracks[i], ref list);
                     }
+
+                    m_CacheFlattenedTracks = list.ToArray();
                 }
                 return m_CacheFlattenedTracks;
             }

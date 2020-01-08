@@ -70,10 +70,10 @@ namespace UnityEditor.Timeline
         public void UpdateMove(IEnumerable<ItemsPerTrack> itemsGroups)
         {
             //Compute Blends before updating ease values.
-            foreach(var t in itemsGroups.Select(i=>i.targetTrack).Where(t => t != null))
+            foreach (var t in itemsGroups.Select(i => i.targetTrack).Where(t => t != null))
                 t.ComputeBlendsFromOverlaps();
             //Reset to original ease values. The trim operation will calculate the proper blend values.
-            foreach(var clip in m_ClipsMoved)
+            foreach (var clip in m_ClipsMoved)
             {
                 clip.easeInDuration = m_OriginalEaseInDuration[clip];
                 clip.easeOutDuration = m_OriginalEaseOutDuration[clip];
@@ -83,8 +83,8 @@ namespace UnityEditor.Timeline
 
         public void FinishMove(IEnumerable<ItemsPerTrack> itemsGroups)
         {
-            var allClips = itemsGroups.Select(i=>i.targetTrack)
-                .Where(t=>t != null).SelectMany(t => t.clips);
+            var allClips = itemsGroups.Select(i => i.targetTrack)
+                .Where(t => t != null).SelectMany(t => t.clips);
             // update easeIn easeOut durations to apply any modifications caused by blends created or modified by clip move.
             foreach (var clip in allClips)
             {

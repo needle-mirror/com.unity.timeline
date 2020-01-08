@@ -118,6 +118,16 @@ namespace UnityEditor.Timeline
         public string errorText { get; set; }
 
         /// <summary>
+        /// Controls the display of the clip scale indicator.
+        /// </summary>
+        /// <remarks>
+        /// Set to true to hide the clip scale indicator.
+        /// This is useful if the scale indicator is interfering with your custom clip rendering, or if the scale indicator
+        /// is not useful for your clip.
+        /// </remarks>
+        public bool hideScaleIndicator { get; set; }
+
+        /// <summary>
         /// The tooltip to show for the clip.
         /// </summary>
         public string tooltip { get; set; }

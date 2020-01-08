@@ -29,7 +29,7 @@ namespace UnityEditor.Timeline
             //adjust zOrder based on current clip selection
             foreach (var clipGUI in items)
             {
-                if(clipGUI.IsSelected())
+                if (clipGUI.IsSelected())
                     clipGUI.MoveToTop();
             }
         }

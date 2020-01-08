@@ -560,7 +560,8 @@ namespace UnityEditor.Timeline
                 drawData.clipCenterSection.width = k_MinClipWidth;
             }
 
-            DrawClipTimescale(drawData.targetRect, drawData.clippedRect, drawData.clip.timeScale);
+            if (!drawData.ClipDrawOptions.hideScaleIndicator)
+                DrawClipTimescale(drawData.targetRect, drawData.clippedRect, drawData.clip.timeScale);
 
             if (drawData.targetRect.width >= k_ClipInOutMinWidth)
                 DrawClipInOut(drawData.targetRect, drawData.clip);

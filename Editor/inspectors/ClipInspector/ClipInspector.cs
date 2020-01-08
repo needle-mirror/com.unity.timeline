@@ -756,7 +756,7 @@ namespace UnityEditor.Timeline
                 blendMax = TimelineClip.kMaxTimeValue;
                 label = Styles.BlendInDurationName;
             }
-            if(blendMax > TimeUtility.kTimeEpsilon)
+            if (blendMax > TimeUtility.kTimeEpsilon)
                 TimelineInspectorUtility.TimeField(currentMixInProperty, label, useBlendIn, currentFrameRate, mixMinimum,
                     blendMax, ref inputEvent);
 
@@ -779,7 +779,6 @@ namespace UnityEditor.Timeline
             if (blendMax > TimeUtility.kTimeEpsilon)
                 TimelineInspectorUtility.TimeField(currentMixOutProperty, label, useBlendOut, currentFrameRate,
                     mixMinimum, blendMax, ref inputEvent);
-
         }
 
         void DrawClipInProperty()
