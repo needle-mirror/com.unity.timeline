@@ -5,8 +5,8 @@ namespace UnityEditor.Timeline
 {
     readonly struct OverlayDrawer
     {
-       enum OverlayType
-       {
+        enum OverlayType
+        {
             BackgroundColor,
             BackgroundTexture,
             TextBox

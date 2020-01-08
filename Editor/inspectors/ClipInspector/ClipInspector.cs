@@ -737,24 +737,49 @@ namespace UnityEditor.Timeline
         void DrawBlendingProperties()
         {
             const double mixMinimum = 0.0;
-            var useBlendIn = m_SelectionInfo.hasBlendIn;
-            var useBlendOut = m_SelectionInfo.hasBlendOut;
-
-            var currentMixInProperty = useBlendIn ? m_BlendInDurationProperty : m_EaseInDurationProperty;
-            var currentMixOutProperty = useBlendOut ? m_BlendOutDurationProperty : m_EaseOutDurationProperty;
-
-            var maxEaseIn = Math.Max(mixMinimum, m_SelectionInfo.maxMixIn);
-            var maxEaseOut = Math.Max(mixMinimum, m_SelectionInfo.maxMixOut);
-
             var inputEvent = InputEvent.None;
+            double blendMax;
+            GUIContent label;
 
-            var blendMax = useBlendIn ? TimelineClip.kMaxTimeValue : maxEaseIn;
-            var label = useBlendIn ? Styles.BlendInDurationName : Styles.EaseInDurationName;
-            TimelineInspectorUtility.TimeField(currentMixInProperty, label, useBlendIn, currentFrameRate, mixMinimum, blendMax, ref inputEvent);
+            var useBlendIn = m_SelectionInfo.hasBlendIn;
+            SerializedProperty currentMixInProperty;
+            if (!useBlendIn)
+            {
+                currentMixInProperty = m_EaseInDurationProperty;
+                var blendOutStart = m_SelectionInfo.duration - m_BlendOutDurationProperty.doubleValue;
+                blendMax = Math.Min(Math.Max(mixMinimum, m_SelectionInfo.maxMixIn), blendOutStart);
+                label = Styles.EaseInDurationName;
+            }
+            else
+            {
+                currentMixInProperty = m_BlendInDurationProperty;
+                blendMax = TimelineClip.kMaxTimeValue;
+                label = Styles.BlendInDurationName;
+            }
+            if(blendMax > TimeUtility.kTimeEpsilon)
+                TimelineInspectorUtility.TimeField(currentMixInProperty, label, useBlendIn, currentFrameRate, mixMinimum,
+                    blendMax, ref inputEvent);
 
-            blendMax = useBlendOut ? TimelineClip.kMaxTimeValue : maxEaseOut;
-            label = useBlendOut ? Styles.BlendOutDurationName : Styles.EaseOutDurationName;
-            TimelineInspectorUtility.TimeField(currentMixOutProperty, label, useBlendOut, currentFrameRate, mixMinimum, blendMax, ref inputEvent);
+
+            var useBlendOut = m_SelectionInfo.hasBlendOut;
+            SerializedProperty currentMixOutProperty;
+            if (!useBlendOut)
+            {
+                currentMixOutProperty = m_EaseOutDurationProperty;
+                var blendInEnd = m_SelectionInfo.duration - m_BlendInDurationProperty.doubleValue;
+                blendMax = Math.Min(Math.Max(mixMinimum, m_SelectionInfo.maxMixOut), blendInEnd);
+                label = Styles.EaseOutDurationName;
+            }
+            else
+            {
+                currentMixOutProperty = m_BlendOutDurationProperty;
+                blendMax = TimelineClip.kMaxTimeValue;
+                label = Styles.BlendOutDurationName;
+            }
+            if (blendMax > TimeUtility.kTimeEpsilon)
+                TimelineInspectorUtility.TimeField(currentMixOutProperty, label, useBlendOut, currentFrameRate,
+                    mixMinimum, blendMax, ref inputEvent);
+
         }
 
         void DrawClipInProperty()

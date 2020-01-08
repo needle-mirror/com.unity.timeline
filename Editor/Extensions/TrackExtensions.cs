@@ -106,13 +106,20 @@ namespace UnityEditor.Timeline
                 clip.blendOutDuration = -1;
             }
 
-            foreach (var clip in clips)
+            Array.Sort(clips, (c1, c2) =>
+                Math.Abs(c1.start - c2.start) < TimeUtility.kTimeEpsilon ? c1.duration.CompareTo(c2.duration) : c1.start.CompareTo(c2.start));
+
+            for (var i = 0; i < clips.Length; i++)
             {
+                var clip = clips[i];
+                if (!clip.SupportsBlending())
+                    continue;
                 var blendIn = clip;
-                var blendOut = clips
-                    .Where(c => Overlaps(c, blendIn))
-                    .OrderBy(c => c.start)
-                    .FirstOrDefault();
+                TimelineClip blendOut = null;
+
+                var blendOutCandidate = clips[Math.Max(i - 1, 0)];
+                if (Overlaps(blendOutCandidate, blendIn))
+                    blendOut = blendOutCandidate;
 
                 if (blendOut != null)
                 {
@@ -126,7 +133,7 @@ namespace UnityEditor.Timeline
             if (!blendOutClip.SupportsBlending() || !blendInClip.SupportsBlending())
                 return;
 
-            if (blendInClip.end < blendOutClip.end)
+            if (blendInClip.start - blendOutClip.start < blendOutClip.duration - blendInClip.duration)
                 return;
 
             double duration = Math.Max(0, blendOutClip.start + blendOutClip.duration - blendInClip.start);

@@ -69,6 +69,7 @@ namespace UnityEditor.Timeline
 
         public LayerZOrder Next()
         {
+            m_NeedSort = true;
             return m_LastZOrder++;
         }
 

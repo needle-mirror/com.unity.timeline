@@ -339,8 +339,16 @@ namespace UnityEngine.Timeline
         /// </summary>
         public double easeInDuration
         {
-            get { return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseInDuration, 0), duration) : 0; }
-            set { m_EaseInDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseInDuration), duration)) : 0; }
+            get
+            {
+                var availableDuration = hasBlendOut ? duration - m_BlendOutDuration : duration;
+                return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseInDuration, 0), availableDuration) : 0;
+            }
+            set
+            {
+                var availableDuration = hasBlendOut ? duration - m_BlendOutDuration : duration;
+                m_EaseInDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseInDuration), availableDuration)) : 0;
+            }
         }
 
         /// <summary>
@@ -348,8 +356,16 @@ namespace UnityEngine.Timeline
         /// </summary>
         public double easeOutDuration
         {
-            get { return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseOutDuration, 0), duration) : 0; }
-            set { m_EaseOutDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseOutDuration), duration)) : 0; }
+            get
+            {
+                var availableDuration = hasBlendIn ? duration - m_BlendInDuration : duration;
+                return clipCaps.HasAny(ClipCaps.Blending) ? Math.Min(Math.Max(m_EaseOutDuration, 0), availableDuration) : 0;
+            }
+            set
+            {
+                var availableDuration = hasBlendIn ? duration - m_BlendInDuration : duration;
+                m_EaseOutDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseOutDuration), availableDuration)) : 0;
+            }
         }
 
         /// <summary>
@@ -807,13 +823,17 @@ namespace UnityEngine.Timeline
             m_AnimationCurves = TimelineCreateUtilities.CreateAnimationClipForTrack(string.IsNullOrEmpty(curvesClipName) ? kDefaultCurvesName : curvesClipName, GetParentTrack(), true);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called before Unity serializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called after Unity deserializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_Version < k_LatestVersion)

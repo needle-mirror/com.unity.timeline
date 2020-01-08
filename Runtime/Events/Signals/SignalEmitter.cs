@@ -4,13 +4,13 @@ using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
-    /// <inheritdoc cref="UnityEngine.Timeline.IMarker"/>
     /// <summary>
     /// Marker that emits a signal to a SignalReceiver.
     /// </summary>
     /// A SignalEmitter emits a notification through the playable system. A SignalEmitter is used with a SignalReceiver and a SignalAsset.
     /// <seealso cref="UnityEngine.Timeline.SignalAsset"/>
     /// <seealso cref="UnityEngine.Timeline.SignalReceiver"/>
+    /// <seealso cref="UnityEngine.Timeline.Marker"/>
     [Serializable]
     [CustomStyle("SignalEmitter")]
     [ExcludeFromPreset]

@@ -84,7 +84,13 @@ namespace UnityEditor.Timeline
                         ? currentlySelectedGo.name
                         : currentlySelectedGo.name + DirectorStyles.newTimelineDefaultNameSuffix;
 
-                    string newSequencePath = EditorUtility.SaveFilePanelInProject(DirectorStyles.createNewTimelineText.text, defaultName, "playable", message, ProjectWindowUtil.GetActiveFolderPath());
+                    // Use the project window path by default only if it's under the asset folder.
+                    // Otherwise the saveFilePanel will reject the save (case 1289923)
+                    var defaultPath = ProjectWindowUtil.GetActiveFolderPath();
+                    if (!defaultPath.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase))
+                        defaultPath = "Assets";
+
+                    string newSequencePath = EditorUtility.SaveFilePanelInProject(DirectorStyles.createNewTimelineText.text, defaultName, "playable", message, defaultPath);
                     if (!string.IsNullOrEmpty(newSequencePath))
                     {
                         var newAsset = TimelineUtility.CreateAndSaveTimelineAsset(newSequencePath);

@@ -25,6 +25,13 @@ namespace UnityEditor.Timeline
                 AddItem(currentClipGUI);
                 previousClipGUI = currentClipGUI;
             }
+
+            //adjust zOrder based on current clip selection
+            foreach (var clipGUI in items)
+            {
+                if(clipGUI.IsSelected())
+                    clipGUI.MoveToTop();
+            }
         }
 
         public override void Draw(Rect rect, WindowState state)

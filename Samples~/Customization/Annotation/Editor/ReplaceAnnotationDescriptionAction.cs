@@ -41,7 +41,7 @@ namespace Timeline.Samples
 
             foreach (AnnotationMarker annotation in markers.Cast<AnnotationMarker>())
             {
-                    annotation.description = clipboardTextContent;
+                annotation.description = clipboardTextContent;
             }
 
             return true;

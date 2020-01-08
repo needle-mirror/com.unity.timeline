@@ -11,7 +11,7 @@ namespace UnityEngine.Timeline
         // based off of ObjectNames.GetUniqueName, but can exist in runtime
         public static string GenerateUniqueActorName(List<ScriptableObject> tracks, string name)
         {
-            if (!tracks.Exists(x => ((object) x) != null && x.name == name))
+            if (!tracks.Exists(x => ((object)x) != null && x.name == name))
                 return name;
 
             int numberInParentheses = 0;
@@ -38,7 +38,7 @@ namespace UnityEngine.Timeline
                 if (i > 0)
                 {
                     string result = string.Format("{0} ({1})", baseName, i);
-                    if (!tracks.Exists(x => ((object) x) != null && x.name == result))
+                    if (!tracks.Exists(x => ((object)x) != null && x.name == result))
                         return result;
                 }
             }

@@ -101,7 +101,13 @@ namespace UnityEngine.Timeline
             {
                 // @todo cache this value when rebuilt
                 if (m_DurationMode == DurationMode.BasedOnClips)
-                    return CalculateDuration();
+                {
+                    //avoid having no clip evaluated at the end by removing a tick from the total duration
+                    var discreteDuration = CalculateItemsDuration();
+                    if (discreteDuration <= 0)
+                        return 0.0;
+                    return (double)discreteDuration.OneTickBefore();
+                }
 
                 return m_FixedDuration;
             }
@@ -368,13 +374,17 @@ namespace UnityEngine.Timeline
             return timeline.IsValid() ? timeline : Playable.Null;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called before Unity serializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called after Unity deserializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             // resets cache on an Undo
@@ -457,7 +467,12 @@ namespace UnityEngine.Timeline
             m_CacheFlattenedTracks = null;
         }
 
-        double CalculateDuration()
+        internal void UpdateFixedDurationWithItemsDuration()
+        {
+            m_FixedDuration = (double)CalculateItemsDuration();
+        }
+
+        DiscreteTime CalculateItemsDuration()
         {
             var discreteDuration = new DiscreteTime(0);
             foreach (var track in flattenedTracks)
@@ -469,10 +484,9 @@ namespace UnityEngine.Timeline
             }
 
             if (discreteDuration <= 0)
-                return 0.0;
+                return new DiscreteTime(0);
 
-            //avoid having no clip evaluated at the end by removing a tick from the total duration
-            return (double)discreteDuration.OneTickBefore();
+            return discreteDuration;
         }
 
         static void AddSubTracksRecursive(TrackAsset track, ref List<TrackAsset> allTracks)

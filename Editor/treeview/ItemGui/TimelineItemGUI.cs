@@ -54,7 +54,7 @@ namespace UnityEditor.Timeline
         public virtual void Select() {}
         public virtual bool IsSelected() { return false; }
         public virtual void Deselect() {}
-        public virtual bool CanSelect() { return true; }
+        public virtual bool CanSelect(Event evt) { return true; }
 
         public virtual void StartDrag() {}
         public virtual void StopDrag() {}

@@ -2,88 +2,7 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.5.1-pre.3] - 2020-11-23
-
-### Fixed
-
-- Fixed case where an animation event at time 0 would not fire on a timeline loop. ([1184106](https://issuetracker.unity3d.com/product/unity/issues/guid/1184106))
-- Fixed issue where Timeline objects (ie. TrackAsset, ControlTrack, SignalAsset, etc.) would have incorrect links to the documentation pages (available starting from Unity 2021.1). ([1082941](https://issuetracker.unity3d.com/product/unity/issues/guid/1082941))
-
-## [1.5.1-pre.2] - 2020-11-09
-
-### Added
-
-- Added _Gameplay sequence_ sample.
-  - This sample demonstrates how Timeline can be used to create a small in-game moment, using built-in tracks.
-- Added _Customization_ sample.
-  - This sample demonstrates how to create custom tracks, clips, markers and actions.
-- Added API to improve how to get/set a `TimelineClip`'s parent track:
-  - `TimelineClip.GetParentTrack` (replaces obsolete property getter)
-  - `ItemsUtils.SetParentTrack` (extension method thar replaces obsolete property setter)
-- Added a new `Seconds` time display mode and renamed previous Seconds mode to Timecode.
-  - `TimelinePreferences.timeFormat` field,
-  - `UnityEditor.Timeline.TimeFormat` enum.
-- Added API for the user to clip to the track area:
-  - API: Relevant member to `MarkerOverlayRegion`,
-  - API: `MarkerOverlayRegion.trackRegion`,
-  - API: `MarkerOverlayRegion` constructor.
-
-### Changed
-
-- `TimelineClip` property `parentTrack` is now obsolete.
-- `TimelinePreferences.timeUnitInFrames` is now obsolete.
-
-### Fixed
-
-- Fixed issue where the mouse cursor would stay stuck to a resize icon when resizing the track header. ([1076031](https://issuetracker.unity3d.com/product/unity/issues/guid/1076031/))
-
-## [1.5.1-pre.1] - 2020-10-16
-
-### Fixed
-- Updated minor version number to avoid problems with the package manager window.
-
-## [1.5.0-pre.2] - 2020-10-05
-
-### Changed
-- Updated promotion job to add promotion context.
-
-## [1.5.0-pre.1] - 2020-09-25
-
-### Changed
-- Changed version number to fit with Package Lifecycle V2.
-
-## [1.5.0-preview.5] - 2020-08-26
-
-### Fixed
-- Fixed issue where `KeyAllAnimated` was available when right-clicking on markers and tracks that were not in record mode. (1270304)
-
-### Changed
-- Timeline marker track is now selectable.
-
-### Added
- - The Timeline window will automatically rebuild the graph when a notifications's properties are changed.
- - The Timeline window will be automatically refreshed when a marker's properties are changed.
- - Added `TimelineEditor.GetInspectedTimeFromMasterTime` and `TimelineEditor.GetMasterTimeFromInspectedTime` to convert time from master to inspected timeline and vice versa when using sub-timelines.
-
-## [1.5.0-preview.4] - 2020-08-04
-
-### Added
-- Added Japanese translation.
-
-## [1.5.0-preview.3] - 2020-07-17
-
-### Fixed
-- Fixed a bug affecting the conversion between seconds and frames in the inspector.
-
-## [1.5.0-preview.2] - 2020-06-15
-
-### Added
-- Added two methods in `TrackEditor` to control how an object is bound to a track: `IsBindingAssignableFrom` and `GetBindingFrom`.
-
-### Changed
-- The binding field on a track header will change its background color when dragging a valid object on it.
-
-## [1.5.0-preview.1] - 2020-06-12
+## [1.5.2] - 2020-01-08
 
 ### Added
 
@@ -96,6 +15,51 @@ All notable changes to this package will be documented in this file. The format 
 - `TimelineEditorWindow.lock` to lock or unlock the Timeline window.
 - `TrackExtensions.GetCollapsed`, `TrackExtensions.SetCollapsed`, `TrackExtensions.IsVisibleRecursive` to get and change the visibility state of a track.
 - `AnimationTrackExtensions.IsRecording`, `AnimationTrackExtensions.SetRecording`, `AnimationTrackExtensions.SupportsRecording` to get or change the recording state of an Animation track.
+- Added two methods in `TrackEditor` to control how an object is bound to a track: `IsBindingAssignableFrom` and `GetBindingFrom`.
+- Added Japanese translation.
+- The Timeline window will automatically rebuild the graph when a notifications's properties are changed.
+- The Timeline window will be automatically refreshed when a marker's properties are changed.
+- Added `TimelineEditor.GetInspectedTimeFromMasterTime` and `TimelineEditor.GetMasterTimeFromInspectedTime` to convert time from master to inspected timeline and vice versa when using sub-timelines.
+- Added API to improve how to get/set a `TimelineClip`'s parent track:
+  - `TimelineClip.GetParentTrack` (replaces obsolete property getter)
+  - `ItemsUtils.SetParentTrack` (extension method thar replaces obsolete property setter)
+- Added a new `Seconds` time display mode and renamed previous Seconds mode to Timecode.
+  - `TimelinePreferences.timeFormat` field,
+  - `UnityEditor.Timeline.TimeFormat` enum.
+- Added API for the user to clip to the track area:
+  - API: Relevant member to `MarkerOverlayRegion`,
+  - API: `MarkerOverlayRegion.trackRegion`,
+  - API: `MarkerOverlayRegion` constructor.
+- Added _Gameplay sequence_ sample.
+  - This sample demonstrates how Timeline can be used to create a small in-game moment, using built-in tracks.
+- Added _Customization_ sample.
+  - This sample demonstrates how to create custom tracks, clips, markers and actions.
+
+### Changed
+
+- The binding field on a track header will change its background color when dragging a valid object on it.
+- Timeline marker track is now selectable.
+- `TimelineClip` property `parentTrack` is now obsolete.
+- `TimelinePreferences.timeUnitInFrames` is now obsolete.
+
+### Fixed
+
+- Fixed a bug affecting the conversion between seconds and frames in the inspector.
+- Fixed issue where `KeyAllAnimated` was available when right-clicking on markers and tracks that were not in record mode. (1270304)
+- Fixed issue where the mouse cursor would stay stuck to a resize icon when resizing the track header. ([1076031](https://issuetracker.unity3d.com/product/unity/issues/guid/1076031/))
+- Fixed case where an animation event at time 0 would not fire on a timeline loop. ([1184106](https://issuetracker.unity3d.com/product/unity/issues/guid/1184106))
+- Fixed issue where Timeline objects (ie. `TrackAsset`, `ControlTrack`, `SignalAsset`, etc.) would have incorrect links to the documentation pages. *Available starting from Unity 2021.1*. ([1082941](https://issuetracker.unity3d.com/product/unity/issues/guid/1082941))
+- Fixed multiple issues related to blends
+  - Fix display of blends when clips have ease-in/ease-out ([1178066](https://issuetracker.unity3d.com/product/unity/issues/guid/1178066))
+  - Fix clip disappearing when dragging it from left to right completely inside another clip.
+  - Fix select and drag clip discarding foreground display rule of selected clip after releasing the drag.
+  - Fix fully blended clips selection not available. ([1289912](https://issuetracker.unity3d.com/product/unity/issues/guid/1289912))
+- Fixed issue where the clip display would flicker when moving two clips that are completely overlapped. ([1085679](https://issuetracker.unity3d.com/product/unity/issues/guid/1085679))
+- The Timeline window will no longer revert to editing only the asset if the user uses the Timeline selector to pick a game object and switches focus. ([1291455](https://issuetracker.unity3d.com/product/unity/issues/guid/1291455))
+- Create button on timeline panel no longer defaults to an invalid path. ([1289923](https://issuetracker.unity3d.com/product/unity/issues/guid/1289923))
+- Fixed issue where Timeline's bindings field would loses names and bindings when selecting clips. ([1293941](https://issuetracker.unity3d.com/product/unity/issues/guid/1293941))
+- Make Timeline's duration result displayed in the Inspector, when switching from duration mode: Based On Clips to Fixed Length, closer to the actual duration. ([1156920](https://issuetracker.unity3d.com/product/unity/issues/guid/1156920))
+- Copy/Paste of clips in the Timeline Window will no longer paste clips at an invalid time in mix-mode. ([1289925](https://issuetracker.unity3d.com/product/unity/issues/guid/1289925))
 
 ## [1.4.5] - 2020-11-19
 

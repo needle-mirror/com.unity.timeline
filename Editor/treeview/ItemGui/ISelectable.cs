@@ -7,6 +7,6 @@ namespace UnityEditor.Timeline
         void Select();
         bool IsSelected();
         void Deselect();
-        bool CanSelect();
+        bool CanSelect(UnityEngine.Event evt);
     }
 }

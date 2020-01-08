@@ -11,4 +11,4 @@ This type of track can be used to display different messages to the screen using
 
 ## Usage
 
-To use this custom track, drag a TextMeshPro Text Component into the hierarchy view of the Timeline. A TextTrack will be created, and use the track context menu to create clips. Clip properties such as Message, FontSize and Color can be modified in the inspector by selecting the clip. Clips can be overlapped to create transitions. 
+To use this custom track, drag a TextMeshPro Text Component into the hierarchy view of the Timeline. A TextTrack will be created, and use the track context menu to create clips. Clip properties such as Message, FontSize and Color can be modified in the inspector by selecting the clip. Clips can be overlapped to create transitions.

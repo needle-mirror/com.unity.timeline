@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -52,7 +51,7 @@ namespace UnityEditor.Timeline
 
         public static ISelectable HandleSingleSelection(Event evt)
         {
-            var item = PickerUtils.TopmostPickedItemOfType<ISelectable>(i => i.CanSelect());
+            var item = PickerUtils.TopmostPickedItemOfType<ISelectable>(i => i.CanSelect(evt));
 
             if (item != null)
             {

@@ -15,8 +15,8 @@ namespace UnityEditor.Timeline
         readonly List<Rect> m_LoopRects = new List<Rect>();
 
         ClipDrawData m_ClipDrawData;
-        Rect m_MixOutRect = new Rect();
-        Rect m_MixInRect = new Rect();
+        Rect m_MixOutRect;
+        Rect m_MixInRect;
         int m_MinLoopIndex = 1;
 
         // clip dirty detection
@@ -134,7 +134,7 @@ namespace UnityEditor.Timeline
 
         public override void Select()
         {
-            zOrder = zOrderProvider.Next();
+            MoveToTop();
             SelectionManager.Add(clip);
             if (clipCurveEditor != null && SelectionManager.Count() == 1)
                 SelectionManager.SelectInlineCurveEditor(this);
@@ -152,25 +152,28 @@ namespace UnityEditor.Timeline
                 SelectionManager.SelectInlineCurveEditor(null);
         }
 
-        public override bool CanSelect()
+        public override bool CanSelect(Event evt)
         {
             ClipBlends clipBlends = GetClipBlends();
-
-            //clips that do not overlap are always selectable
-            if (clipBlends.inKind != BlendKind.Mix && clipBlends.outKind != BlendKind.Mix)
-                return true;
-
-            Vector2 mousePos = Event.current.mousePosition - rect.position;
+            Vector2 mousePos = evt.mousePosition - rect.position;
             return m_ClipCenterSection.Contains(mousePos) || IsPointLocatedInClipBlend(mousePos, clipBlends);
         }
 
         static bool IsPointLocatedInClipBlend(Vector2 pt, ClipBlends blends)
         {
             if (blends.inRect.Contains(pt))
-                return Sign(pt, blends.inRect.min, blends.inRect.max) < 0;
+            {
+                if (blends.inKind == BlendKind.Mix)
+                    return Sign(pt, blends.inRect.min, blends.inRect.max) < 0;
+                return true;
+            }
 
             if (blends.outRect.Contains(pt))
-                return Sign(pt, blends.outRect.min, blends.outRect.max) >= 0;
+            {
+                if (blends.outKind == BlendKind.Mix)
+                    return Sign(pt, blends.outRect.min, blends.outRect.max) >= 0;
+                return true;
+            }
 
             return false;
         }
@@ -429,9 +432,9 @@ namespace UnityEditor.Timeline
             m_ClipCenterSection.x = 0;
             m_ClipCenterSection.y = 0;
 
-            m_ClipCenterSection.xMin = Mathf.Round(treeViewRect.width * clip.mixInPercentage);
-            m_ClipCenterSection.width = Mathf.Round(treeViewRect.width);
-            m_ClipCenterSection.xMax -= Mathf.Round(mixOutRect.width + treeViewRect.width * clip.mixInPercentage);
+            m_ClipCenterSection.xMin = mixInRect.xMax;
+            m_ClipCenterSection.width = Mathf.Round(treeViewRect.width - mixInRect.width - mixOutRect.width);
+            m_ClipCenterSection.xMax = m_ClipCenterSection.xMin + m_ClipCenterSection.width;
         }
 
         // Entry point to the Clip Drawing...
@@ -485,6 +488,11 @@ namespace UnityEditor.Timeline
         {
             if (Event.current.type == EventType.Repaint)
                 m_ClipViewDirty = false;
+        }
+
+        internal void MoveToTop()
+        {
+            zOrder = zOrderProvider.Next();
         }
 
         GUIStyle GetExtrapolationIcon(TimelineClip.ClipExtrapolation mode)

@@ -40,71 +40,68 @@ namespace UnityEditor.Timeline
         // Display Time related properties in frames and seconds
         public static void TimeField(Rect rect, SerializedProperty property, GUIContent label, bool readOnly, double frameRate, double minValue, double maxValue, ref InputEvent inputEvent)
         {
-            GUIContent title = EditorGUI.BeginProperty(rect, label, property);
-            rect = EditorGUI.PrefixLabel(rect, title);
-
-            int indentLevel = EditorGUI.indentLevel;
-            float labelWidth = EditorGUIUtility.labelWidth;
-            EditorGUI.indentLevel = 0;
-            EditorGUIUtility.labelWidth = (int)EditorGUI.kMiniLabelW;
-            using (new GUIMixedValueScope(property.hasMultipleDifferentValues))
+            using (var propertyScope = new PropertyScope(rect, label, property))
             {
-                var secondsRect = new Rect(rect.xMin, rect.yMin, rect.width / 2 - EditorGUI.kSpacingSubLabel, rect.height);
-                var framesRect = new Rect(rect.xMin + rect.width / 2, rect.yMin, rect.width / 2, rect.height);
+                GUIContent title = propertyScope.content;
+                rect = EditorGUI.PrefixLabel(rect, title);
 
-                if (readOnly)
+                using (new IndentLevelScope(0))
+                using (new LabelWidthScope((int)EditorGUI.kMiniLabelW))
+                using (new GUIMixedValueScope(property.hasMultipleDifferentValues))
                 {
-                    EditorGUI.FloatField(secondsRect, Styles.SecondsPrefix, (float)property.doubleValue, EditorStyles.label);
-                }
-                else
-                {
-                    EditorGUI.BeginChangeCheck();
-                    DelayedAndDraggableDoubleField(secondsRect, Styles.SecondsPrefix, property, ref inputEvent);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        property.doubleValue = Clamp(property.doubleValue, minValue, maxValue);
-                    }
-                }
-
-                if (frameRate > TimeUtility.kTimeEpsilon)
-                {
-                    EditorGUI.BeginChangeCheck();
-
-                    double time = property.doubleValue;
-                    int frames = TimeUtility.ToFrames(time, frameRate);
-                    double exactFrames = TimeUtility.ToExactFrames(time, frameRate);
-                    bool useIntField = TimeUtility.OnFrameBoundary(time, frameRate);
+                    var secondsRect = new Rect(rect.xMin, rect.yMin, rect.width / 2 - EditorGUI.kSpacingSubLabel, rect.height);
+                    var framesRect = new Rect(rect.xMin + rect.width / 2, rect.yMin, rect.width / 2, rect.height);
 
                     if (readOnly)
                     {
-                        if (useIntField)
-                            EditorGUI.IntField(framesRect, Styles.FramesPrefix, frames, EditorStyles.label);
-                        else
-                            EditorGUI.DoubleField(framesRect, Styles.FramesPrefix, exactFrames, EditorStyles.label);
+                        EditorGUI.FloatField(secondsRect, Styles.SecondsPrefix, (float)property.doubleValue, EditorStyles.label);
                     }
                     else
                     {
-                        if (useIntField)
+                        EditorGUI.BeginChangeCheck();
+                        DelayedAndDraggableDoubleField(secondsRect, Styles.SecondsPrefix, property, ref inputEvent);
+                        if (EditorGUI.EndChangeCheck())
                         {
-                            int newFrames = DelayedAndDraggableIntField(framesRect, Styles.FramesPrefix, frames, ref inputEvent);
-                            time = Math.Max(0, TimeUtility.FromFrames(newFrames, frameRate));
+                            property.doubleValue = Clamp(property.doubleValue, minValue, maxValue);
+                        }
+                    }
+
+                    if (frameRate > TimeUtility.kTimeEpsilon)
+                    {
+                        EditorGUI.BeginChangeCheck();
+
+                        double time = property.doubleValue;
+                        int frames = TimeUtility.ToFrames(time, frameRate);
+                        double exactFrames = TimeUtility.ToExactFrames(time, frameRate);
+                        bool useIntField = TimeUtility.OnFrameBoundary(time, frameRate);
+
+                        if (readOnly)
+                        {
+                            if (useIntField)
+                                EditorGUI.IntField(framesRect, Styles.FramesPrefix, frames, EditorStyles.label);
+                            else
+                                EditorGUI.DoubleField(framesRect, Styles.FramesPrefix, exactFrames, EditorStyles.label);
                         }
                         else
                         {
-                            double newExactFrames = DelayedAndDraggableDoubleField(framesRect, Styles.FramesPrefix, exactFrames, ref inputEvent);
-                            time = Math.Max(0, TimeUtility.FromFrames((int)Math.Floor(newExactFrames), frameRate));
+                            if (useIntField)
+                            {
+                                int newFrames = DelayedAndDraggableIntField(framesRect, Styles.FramesPrefix, frames, ref inputEvent);
+                                time = Math.Max(0, TimeUtility.FromFrames(newFrames, frameRate));
+                            }
+                            else
+                            {
+                                double newExactFrames = DelayedAndDraggableDoubleField(framesRect, Styles.FramesPrefix, exactFrames, ref inputEvent);
+                                time = Math.Max(0, TimeUtility.FromFrames((int)Math.Floor(newExactFrames), frameRate));
+                            }
+                        }
+
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            property.doubleValue = Clamp(time, minValue, maxValue);
                         }
                     }
-
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        property.doubleValue = Clamp(time, minValue, maxValue);
-                    }
                 }
-
-                EditorGUI.indentLevel = indentLevel;
-                EditorGUIUtility.labelWidth = labelWidth;
-                EditorGUI.EndProperty();
             }
         }
 
@@ -156,64 +153,60 @@ namespace UnityEditor.Timeline
 
         public static double TimeField(Rect rect, GUIContent label, double time, bool readOnly, bool showMixed, double frameRate, double minValue, double maxValue, ref InputEvent inputEvent)
         {
-            EditorGUILayout.BeginHorizontal(label, GUIStyle.none);
-            rect = EditorGUI.PrefixLabel(rect, label);
-
-            int indentLevel = EditorGUI.indentLevel;
-            float labelWidth = EditorGUIUtility.labelWidth;
-            EditorGUI.indentLevel = 0;
-            EditorGUIUtility.labelWidth = (int)EditorGUI.kMiniLabelW;
-            using (new GUIMixedValueScope(showMixed))
+            using (new HorizontalScope(label, GUIStyle.none))
             {
-                var secondsRect = new Rect(rect.xMin, rect.yMin, rect.width / 2 - EditorGUI.kSpacingSubLabel, rect.height);
-                var framesRect = new Rect(rect.xMin + rect.width / 2, rect.yMin, rect.width / 2, rect.height);
+                rect = EditorGUI.PrefixLabel(rect, label);
 
-                if (readOnly)
+                using (new IndentLevelScope(0))
+                using (new LabelWidthScope((int)EditorGUI.kMiniLabelW))
+                using (new GUIMixedValueScope(showMixed))
                 {
-                    EditorGUI.FloatField(secondsRect, Styles.SecondsPrefix, (float)time, EditorStyles.label);
-                }
-                else
-                {
-                    time = DelayedAndDraggableDoubleField(secondsRect, Styles.SecondsPrefix, time, ref inputEvent);
-                }
+                    var secondsRect = new Rect(rect.xMin, rect.yMin, rect.width / 2 - EditorGUI.kSpacingSubLabel, rect.height);
+                    var framesRect = new Rect(rect.xMin + rect.width / 2, rect.yMin, rect.width / 2, rect.height);
 
-                if (frameRate > TimeUtility.kTimeEpsilon)
-                {
-                    int frames = TimeUtility.ToFrames(time, frameRate);
-                    double exactFrames = TimeUtility.ToExactFrames(time, frameRate);
-                    bool useIntField = TimeUtility.OnFrameBoundary(time, frameRate);
                     if (readOnly)
                     {
-                        if (useIntField)
-                            EditorGUI.IntField(framesRect, Styles.FramesPrefix, frames, EditorStyles.label);
-                        else
-                            EditorGUI.FloatField(framesRect, Styles.FramesPrefix, (float)exactFrames, EditorStyles.label);
+                        EditorGUI.FloatField(secondsRect, Styles.SecondsPrefix, (float)time, EditorStyles.label);
                     }
                     else
                     {
-                        double newTime;
-                        EditorGUI.BeginChangeCheck();
-                        if (useIntField)
+                        time = DelayedAndDraggableDoubleField(secondsRect, Styles.SecondsPrefix, time, ref inputEvent);
+                    }
+
+                    if (frameRate > TimeUtility.kTimeEpsilon)
+                    {
+                        int frames = TimeUtility.ToFrames(time, frameRate);
+                        double exactFrames = TimeUtility.ToExactFrames(time, frameRate);
+                        bool useIntField = TimeUtility.OnFrameBoundary(time, frameRate);
+                        if (readOnly)
                         {
-                            int newFrames = DelayedAndDraggableIntField(framesRect, Styles.FramesPrefix, frames, ref inputEvent);
-                            newTime = Math.Max(0, TimeUtility.FromFrames(newFrames, frameRate));
+                            if (useIntField)
+                                EditorGUI.IntField(framesRect, Styles.FramesPrefix, frames, EditorStyles.label);
+                            else
+                                EditorGUI.FloatField(framesRect, Styles.FramesPrefix, (float)exactFrames, EditorStyles.label);
                         }
                         else
                         {
-                            double newExactFrames = DelayedAndDraggableDoubleField(framesRect, Styles.FramesPrefix, exactFrames, ref inputEvent);
-                            newTime = Math.Max(0, TimeUtility.FromFrames((int)Math.Floor(newExactFrames), frameRate));
-                        }
+                            double newTime;
+                            EditorGUI.BeginChangeCheck();
+                            if (useIntField)
+                            {
+                                int newFrames = DelayedAndDraggableIntField(framesRect, Styles.FramesPrefix, frames, ref inputEvent);
+                                newTime = Math.Max(0, TimeUtility.FromFrames(newFrames, frameRate));
+                            }
+                            else
+                            {
+                                double newExactFrames = DelayedAndDraggableDoubleField(framesRect, Styles.FramesPrefix, exactFrames, ref inputEvent);
+                                newTime = Math.Max(0, TimeUtility.FromFrames((int)Math.Floor(newExactFrames), frameRate));
+                            }
 
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            time = newTime;
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                time = newTime;
+                            }
                         }
                     }
                 }
-
-                EditorGUILayout.EndHorizontal();
-                EditorGUI.indentLevel = indentLevel;
-                EditorGUIUtility.labelWidth = labelWidth;
             }
 
             return Clamp(time, minValue, maxValue);

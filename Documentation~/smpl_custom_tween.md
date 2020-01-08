@@ -92,10 +92,10 @@ public class TweenClip : PlayableAsset
 
 A custom track is created by defining a [TrackAsset](xref:UnityEngine.Timeline.TrackAsset) subclass. The following attributes can be added to a `TrackAsset`:
 
-* [TrackBindingType](xref:UnityEngine.Timeline.TrackBindingTypeAttribute): defines which type of object should be bound to a track; 
+* [TrackBindingType](xref:UnityEngine.Timeline.TrackBindingTypeAttribute): defines which type of object should be bound to a track;
 * [TrackClipType](xref:UnityEngine.Timeline.TrackClipTypeAttribute): defines which type of clip should be associated to a track.
 
-For this example, the track needs a `Transform` object binding and can only accepts clips of type `TweenClip` [which was previously defined](#1.-Custom-clip)):
+For this example, the track needs a `Transform` object binding and can only accepts clips of type `TweenClip`, which was previously defined in step 1:
 
 ``` c#
 [TrackBindingType(typeof(Transform))]

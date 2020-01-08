@@ -160,17 +160,6 @@ namespace UnityEditor.Timeline
             Repaint();
         }
 
-        void OnFocus()
-        {
-            if (state == null) return;
-
-            if (lastSelectedGO != Selection.activeObject)
-            {
-                // selection may have changed while Timeline Editor was looking away
-                RefreshSelection(false);
-            }
-        }
-
         void OnHierarchyChange()
         {
             hierarchyChangedThisFrame = true;

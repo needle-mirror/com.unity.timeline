@@ -102,7 +102,7 @@ namespace UnityEngine.Timeline
 
             // localTime of the sequence to localtime of the clip
             double clipTime = clip.ToLocalTime(localTime);
-            if (clipTime >= -DiscreteTime.tickValue/2 )
+            if (clipTime >= -DiscreteTime.tickValue / 2)
             {
                 SetTime(clipTime);
             }
@@ -112,14 +112,14 @@ namespace UnityEngine.Timeline
 
         public override void DisableAt(double localTime, double rootDuration, FrameData frameData)
         {
-            var time = Math.Min(localTime, (double) DiscreteTime.FromTicks(intervalEnd));
+            var time = Math.Min(localTime, (double)DiscreteTime.FromTicks(intervalEnd));
             if (frameData.timeLooped)
                 time = Math.Min(time, rootDuration);
 
             var clipTime = clip.ToLocalTime(time);
             if (clipTime > -DiscreteTime.tickValue / 2)
             {
-                 SetTime(clipTime);
+                SetTime(clipTime);
             }
             enable = false;
         }

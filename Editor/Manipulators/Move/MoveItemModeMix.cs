@@ -7,6 +7,10 @@ namespace UnityEditor.Timeline
 {
     class MoveItemModeMix : IMoveItemMode, IMoveItemDrawer
     {
+        TimelineClip[] m_ClipsMoved;
+        Dictionary<TimelineClip, double> m_OriginalEaseInDuration = new Dictionary<TimelineClip, double>();
+        Dictionary<TimelineClip, double> m_OriginalEaseOutDuration = new Dictionary<TimelineClip, double>();
+
         public void OnTrackDetach(IEnumerable<ItemsPerTrack> itemsGroups)
         {
             // Nothing
@@ -55,17 +59,38 @@ namespace UnityEditor.Timeline
 
         public void BeginMove(IEnumerable<ItemsPerTrack> itemsGroups)
         {
-            // Nothing
+            m_ClipsMoved = itemsGroups.SelectMany(i => i.clips).ToArray();
+            foreach (var clip in m_ClipsMoved)
+            {
+                m_OriginalEaseInDuration[clip] = clip.easeInDuration;
+                m_OriginalEaseOutDuration[clip] = clip.easeOutDuration;
+            }
         }
 
         public void UpdateMove(IEnumerable<ItemsPerTrack> itemsGroups)
         {
-            // Nothing
+            //Compute Blends before updating ease values.
+            foreach(var t in itemsGroups.Select(i=>i.targetTrack).Where(t => t != null))
+                t.ComputeBlendsFromOverlaps();
+            //Reset to original ease values. The trim operation will calculate the proper blend values.
+            foreach(var clip in m_ClipsMoved)
+            {
+                clip.easeInDuration = m_OriginalEaseInDuration[clip];
+                clip.easeOutDuration = m_OriginalEaseOutDuration[clip];
+                EditorUtility.SetDirty(clip.asset);
+            }
         }
 
         public void FinishMove(IEnumerable<ItemsPerTrack> itemsGroups)
         {
-            // Nothing
+            var allClips = itemsGroups.Select(i=>i.targetTrack)
+                .Where(t=>t != null).SelectMany(t => t.clips);
+            // update easeIn easeOut durations to apply any modifications caused by blends created or modified by clip move.
+            foreach (var clip in allClips)
+            {
+                clip.easeInDuration = clip.easeInDuration;
+                clip.easeOutDuration = clip.easeOutDuration;
+            }
         }
 
         public bool ValidateMove(ItemsPerTrack itemsGroup)

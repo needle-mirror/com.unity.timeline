@@ -148,12 +148,12 @@ namespace UnityEditor.Timeline
             Rect textRect = Graphics.CalculateTextBoxSize(trackRect, styles.fontClip, content, WindowConstants.overlayTextPadding);
 
             TimelineWindow.instance.OverlayDrawData.Add(
-                 OverlayDrawer.CreateTextBoxOverlay(
-                     GUIClip.Unclip(textRect),
-                     content.text, styles.fontClip,
-                     Color.white,
-                     styles.customSkin.colorLockTextBG,
-                     styles.displayBackground));
+                OverlayDrawer.CreateTextBoxOverlay(
+                    GUIClip.Unclip(textRect),
+                    content.text, styles.fontClip,
+                    Color.white,
+                    styles.customSkin.colorLockTextBG,
+                    styles.displayBackground));
         }
 
         protected void DrawMuteButton(Rect rect, WindowState state)
