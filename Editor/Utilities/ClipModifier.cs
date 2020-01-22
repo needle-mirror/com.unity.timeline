@@ -262,7 +262,7 @@ namespace UnityEditor.Timeline
 
             // In case resetting the start was blocked by edit mode or timeline start, we do the best we can
             clip.clipIn = (clip.start - newStartCandidate) * clip.timeScale;
-            if (TimelineHelpers.HasUsableAssetDuration(clip))
+            if (clip.clipAssetDuration > 0 && TimelineHelpers.HasUsableAssetDuration(clip))
             {
                 var duration = TimelineHelpers.GetLoopDuration(clip);
                 var offset = (clip.clipIn / clip.timeScale) % duration;

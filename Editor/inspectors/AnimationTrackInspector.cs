@@ -253,7 +253,7 @@ namespace UnityEditor.Timeline
             if (!AnimatesRootTransform())
                 return;
 
-            m_MatchFieldsProperty.isExpanded = EditorGUILayout.Foldout(m_MatchFieldsProperty.isExpanded, Styles.MatchTargetFieldsTitle);
+            m_MatchFieldsProperty.isExpanded = EditorGUILayout.Foldout(m_MatchFieldsProperty.isExpanded, Styles.MatchTargetFieldsTitle, true);
             if (m_MatchFieldsProperty.isExpanded)
             {
                 EditorGUI.indentLevel++;

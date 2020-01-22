@@ -8,6 +8,7 @@ namespace UnityEditor.Timeline
     {
         [SerializeField]
         SequencePath m_SequencePath;
+        private Object lastSelectedGO { get; set; }
 
         void OnSelectionChange()
         {
@@ -61,6 +62,7 @@ namespace UnityEditor.Timeline
             {
                 PlayableDirector director = TimelineUtility.GetDirectorComponentForGameObject(selectedGameObject);
                 SetCurrentTimeline(director);
+                lastSelectedGO = selectedGameObject;
             }
             else
             {
@@ -68,6 +70,7 @@ namespace UnityEditor.Timeline
                 if (selectedSequenceAsset != null)
                 {
                     SetCurrentTimeline(selectedSequenceAsset);
+                    lastSelectedGO = selectedGameObject;
                 }
             }
 

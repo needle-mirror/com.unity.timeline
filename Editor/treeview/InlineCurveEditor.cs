@@ -118,23 +118,7 @@ namespace UnityEditor.Timeline
             bool displayAsSelected = !locked && (clipCurveEditorOwner.inlineCurvesSelected || newlySelected);
 
             using (new EditorGUI.DisabledScope(locked))
-            {
-                using (new GUIViewportScope(trackRect))
-                {
-                    Rect animEditorRect = curveRect;
-                    animEditorRect.y = trackRect.y;
-                    animEditorRect.height = trackRect.height;
-
-                    // clamp the curve editor to the track. this allows the menu to scroll properly
-                    animEditorRect.xMin = Mathf.Max(animEditorRect.xMin, trackRect.xMin);
-                    animEditorRect.xMax = trackRect.xMax;
-
-                    if (activeRange == Vector2.zero)
-                        activeRange = new Vector2(animEditorRect.xMin, animEditorRect.xMax);
-
-                    clipCurveEditor.DrawCurveEditor(animEditorRect, state, activeRange, clipCurveEditorOwner.showLoops, displayAsSelected);
-                }
-            }
+                clipCurveEditor.DrawCurveEditor(trackRect, state, activeRange, clipCurveEditorOwner.showLoops, displayAsSelected);
 
             if (newlySelected && !locked)
             {
@@ -208,7 +192,8 @@ namespace UnityEditor.Timeline
             if (m_TrackGUI.clipCurveEditor == null)
                 return;
 
-            DrawCurveEditor(m_TrackGUI, state, headerRect, trackRect, Vector2.zero, m_TrackGUI.locked);
+            var activeRange = new Vector2(state.TimeToPixel(0.0d), state.TimeToPixel(state.editSequence.duration));
+            DrawCurveEditor(m_TrackGUI, state, headerRect, trackRect, activeRange, m_TrackGUI.locked);
             m_LastSelectionWasClip = false;
         }
 
@@ -241,8 +226,8 @@ namespace UnityEditor.Timeline
             if (m_LastSelectedClipGUI == null || m_LastSelectedClipGUI.clipCurveEditor == null || m_LastSelectedClipGUI.isInvalid)
                 return;
 
-            var inlineCurveActiveArea = new Vector2(state.TimeToPixel(m_LastSelectedClipGUI.clip.start), state.TimeToPixel(m_LastSelectedClipGUI.clip.end));
-            DrawCurveEditor(m_LastSelectedClipGUI, state, headerRect, trackRect, inlineCurveActiveArea, m_TrackGUI.locked);
+            var activeRange = new Vector2(state.TimeToPixel(m_LastSelectedClipGUI.clip.start), state.TimeToPixel(m_LastSelectedClipGUI.clip.end));
+            DrawCurveEditor(m_LastSelectedClipGUI, state, headerRect, trackRect, activeRange, m_TrackGUI.locked);
             m_LastSelectionWasClip = true;
         }
 
