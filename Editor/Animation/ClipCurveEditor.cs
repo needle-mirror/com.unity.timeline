@@ -10,7 +10,18 @@ namespace UnityEditor
     class ClipCurveEditor
     {
         internal readonly CurveEditor m_CurveEditor;
-        static readonly CurveEditorSettings s_CurveEditorSettings = new CurveEditorSettings();
+        static readonly CurveEditorSettings s_CurveEditorSettings = new CurveEditorSettings
+        {
+            hSlider = false,
+            vSlider = false,
+            hRangeLocked = false,
+            vRangeLocked = false,
+            scaleWithWindow = true,
+            hRangeMin = 0.0f,
+            showAxisLabels = true,
+            allowDeleteLastKeyInCurve = true,
+            rectangleToolFlags = CurveEditorSettings.RectangleToolFlags.MiniRectangleTool
+        };
 
         static readonly float s_GridLabelWidth = 40.0f;
 
@@ -33,6 +44,7 @@ namespace UnityEditor
         int m_LastClipVersion = -1;
         int m_LastCurveCount = -1;
         TrackViewModelData m_ViewModel;
+        bool m_ShouldRestoreShownArea;
 
         bool isNewSelection
         {
@@ -56,16 +68,6 @@ namespace UnityEditor
 
             m_CurveEditor = new CurveEditor(new Rect(0, 0, 1000, 100), new CurveWrapper[0], false);
 
-            s_CurveEditorSettings.hSlider = false;
-            s_CurveEditorSettings.vSlider = false;
-            s_CurveEditorSettings.hRangeLocked = false;
-            s_CurveEditorSettings.vRangeLocked = false;
-            s_CurveEditorSettings.scaleWithWindow = true;
-            s_CurveEditorSettings.hRangeMin = 0.0f;
-            s_CurveEditorSettings.showAxisLabels = true;
-            s_CurveEditorSettings.allowDeleteLastKeyInCurve = true;
-            s_CurveEditorSettings.rectangleToolFlags = CurveEditorSettings.RectangleToolFlags.MiniRectangleTool;
-
             s_CurveEditorSettings.vTickStyle = new TickStyle
             {
                 tickColor = { color = DirectorStyles.Instance.customSkin.colorInlineCurveVerticalLines },
@@ -84,11 +86,7 @@ namespace UnityEditor
 
             m_ViewModel = TimelineWindowViewPrefs.GetTrackViewModelData(hostTrack);
 
-            if (isNewSelection)
-                m_CurveEditor.shownArea = new Rect(1, 1, 1, 1);
-            else
-                m_CurveEditor.shownAreaInsideMargins = m_ViewModel.inlineCurvesShownAreaInsideMargins;
-
+            m_ShouldRestoreShownArea = true;
             m_CurveEditor.ignoreScrollWheelUntilClicked = true;
             m_CurveEditor.curvesUpdated = OnCurvesUpdated;
 
@@ -200,10 +198,6 @@ namespace UnityEditor
                     // update just the curves
                     m_BindingHierarchy.RefreshCurves();
                 }
-
-                if (isNewSelection)
-                    FrameClip();
-
                 m_LastClipVersion = version;
             }
 
@@ -217,15 +211,14 @@ namespace UnityEditor
 
         public void DrawCurveEditor(Rect rect, WindowState state, Vector2 clipRange, bool loop, bool selected)
         {
-            var timelineWidth = state.TimeToPixel(Mathf.Max((float)state.editSequence.duration, state.timeAreaShownRange.y));
-            m_CurveEditor.rect = new Rect(-rect.xMin, 0.0f, timelineWidth, rect.height);
-            UpdateCurveEditorIfNeeded(state);
-
             var curveEndTime = m_DataSource.start + m_DataSource.animationClip.length / m_DataSource.timeScale;
             var curveRange = new Vector2(state.TimeToPixel(m_DataSource.start), state.TimeToPixel(curveEndTime));
-            m_CurveEditor.leftmargin = curveRange.x;
-            m_CurveEditor.rightmargin = timelineWidth - curveRange.y;
-            m_CurveEditor.topmargin = m_CurveEditor.bottommargin = CalculateTopMargin(rect.height);
+
+            SetupMarginsAndRect(rect, curveRange, state);
+            UpdateCurveEditorIfNeeded(state);
+
+            if (m_ShouldRestoreShownArea)
+                RestoreShownArea();
             m_CurveEditor.SetShownHRangeInsideMargins(0.0f, m_DataSource.animationClip.length); //align the curve with the clip.
 
             if (m_LastFrameRate != state.referenceSequence.frameRate)
@@ -264,6 +257,24 @@ namespace UnityEditor
                 DrawOverlay(localRect, localClipRange, DirectorStyles.Instance.customSkin.colorInlineCurveOutOfRangeOverlay);
                 DrawGrid(localRect, localCurveRange);
             }
+        }
+
+        void SetupMarginsAndRect(Rect rect, Vector2 curveRange, WindowState state)
+        {
+            var timelineWidth = state.TimeToPixel(Mathf.Max((float)state.editSequence.duration, state.timeAreaShownRange.y));
+            m_CurveEditor.rect = new Rect(-rect.xMin, 0.0f, timelineWidth, rect.height);
+            m_CurveEditor.leftmargin = curveRange.x;
+            m_CurveEditor.rightmargin = timelineWidth - curveRange.y;
+            m_CurveEditor.topmargin = m_CurveEditor.bottommargin = CalculateTopMargin(rect.height);
+        }
+
+        void RestoreShownArea()
+        {
+            if (isNewSelection)
+                FrameClip();
+            else
+                m_CurveEditor.shownAreaInsideMargins = m_ViewModel.inlineCurvesShownAreaInsideMargins;
+            m_ShouldRestoreShownArea = false;
         }
 
         static void DrawCurveEditorBackground(Rect rect, Vector2 activeRange)

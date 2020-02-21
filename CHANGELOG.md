@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.12] - 2020-02-21
+
+### Fixed
+- Fixed issue where the curves view would change its framing when moving a clip. ([1217353](https://issuetracker.unity3d.com/product/unity/issues/guid/1217353/))
+
 ## [1.2.11] - 2020-01-22
 
 ### Fixed
@@ -10,7 +15,7 @@ All notable changes to this package will be documented in this file. The format 
 - Fixed issue where the keys in the inline curves view were incorrectly positioned ([1205835](https://issuetracker.unity3d.com/product/unity/issues/guid/1205835/))
 
 ### Changed
-- ControlPlayableAsset.searchHierarchy (a.k.a. Control Children) now defaults to false. 
+- ControlPlayableAsset.searchHierarchy (a.k.a. Control Children) now defaults to false.
 
 ## [1.2.10] - 2019-12-08
 
