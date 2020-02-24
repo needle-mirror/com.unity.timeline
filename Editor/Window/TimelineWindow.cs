@@ -150,6 +150,7 @@ namespace UnityEditor.Timeline
             }
             m_HasBeenInitialized = false;
             RemoveEditorCallbacks();
+            AnimationClipCurveCache.Instance.Clear();
             TimelineAnimationUtilities.UnlinkAnimationWindow();
         }
 

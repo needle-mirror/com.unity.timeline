@@ -58,6 +58,9 @@ namespace UnityEditor.Timeline
 
             foreach (var subTimeline in asset.GetComponent<PlayableDirector>(go))
             {
+                if (subTimeline == director || subTimeline == TimelineEditor.masterDirector || subTimeline == TimelineEditor.inspectedDirector)
+                    continue;
+
                 if (subTimeline.playableAsset is TimelineAsset)
                     subTimelines.Add(subTimeline);
             }

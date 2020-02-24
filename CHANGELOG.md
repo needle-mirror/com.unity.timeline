@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.13] - 2020-02-24
+
+### Fixed
+- Fixed Performance issue where Control Tracks would resimulate during the tail of a non-looping particle clip. ([1216702](https://issuetracker.unity3d.com/product/unity/issues/guid/1216702/))
+- Fixed adjacent recording clips highlighting the wrong clip. ([1210312](https://issuetracker.unity3d.com/product/unity/issues/guid/1210312/))
+- Fixed timescale drawing to only draw visible lines which avoids a hang with very large clips. ([1213189](https://issuetracker.unity3d.com/product/unity/issues/guid/1213189/))
+- Fixed `SignalReceiver.ChangeSignalAtIndex` incorrectly throwing exception when multiple entries are set to null. ([1210877](https://issuetracker.unity3d.com/product/unity/issues/guid/1210877/))
+- Fixed a memory leak with Animation Clips in Edit mode.
+- Fixed issue where changes to a Signal Receiver component in a prefab were reverted. ([1210883](https://issuetracker.unity3d.com/product/unity/issues/guid/1210883/))
+- Fixed avatar mask reassignment not causing immediate re-evaluation. ([1219326](https://issuetracker.unity3d.com/product/unity/issues/guid/1219326/))
+- Fixed issues related to recursive control tracks. (1178423)
+- Fixed issue where using the `HideInMenu` attribute in combination with a class inheriting from `Marker` would not hide the marker from the Timeline context menus. ([1221054](https://issuetracker.unity3d.com/product/unity/issues/guid/1221054/))
+
 ## [1.2.12] - 2020-02-21
 
 ### Fixed

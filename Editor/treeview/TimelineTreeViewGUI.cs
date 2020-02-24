@@ -141,6 +141,8 @@ namespace UnityEditor.Timeline
 
         public void Reload()
         {
+            AnimationClipCurveCache.Instance.ClearCachedProxyClips();
+
             m_TreeView.ReloadData();
             m_DataSource.ExpandItems(m_DataSource.root);
             m_TimelineTreeView.CalculateRowRects();

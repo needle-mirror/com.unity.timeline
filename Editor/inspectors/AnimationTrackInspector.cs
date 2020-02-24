@@ -88,11 +88,7 @@ namespace UnityEditor.Timeline
 
         void RebuildGraph()
         {
-            if (timelineWindow.state != null)
-            {
-                timelineWindow.state.rebuildGraph = true;
-                timelineWindow.Repaint();
-            }
+            TimelineEditor.Refresh(RefreshReason.ContentsModified);
         }
 
         public override void OnInspectorGUI()
@@ -105,10 +101,10 @@ namespace UnityEditor.Timeline
 
                 EditorGUI.BeginChangeCheck();
                 DrawRecordedOffsetProperties();
+                DrawAvatarProperties();
                 if (EditorGUI.EndChangeCheck())
                     RebuildGraph();
 
-                DrawAvatarProperties();
                 DrawMatchFieldsGUI();
 
                 serializedObject.ApplyModifiedProperties();

@@ -70,8 +70,11 @@ namespace UnityEditor.Timeline
             object previousMasterSequence = m_PreviousMasterSequence;
             bool isDeleted = previousMasterSequence != null && m_PreviousMasterSequence == null;
             bool hasChanged = m_PreviousMasterSequence != null && m_PreviousMasterSequence != state.masterSequence.asset;
-            if (isDeleted  || hasChanged)
+            if (isDeleted || hasChanged)
+            {
+                AnimationClipCurveCache.Instance.Clear();
                 TimelineAnimationUtilities.UnlinkAnimationWindow();
+            }
         }
     }
 }

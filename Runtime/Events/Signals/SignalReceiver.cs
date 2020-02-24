@@ -129,7 +129,7 @@ namespace UnityEngine.Timeline
             if (newKey == null || m_Events.signals[idx]  == null || !alreadyUsed)
                 m_Events.signals[idx] = newKey;
 
-            if (alreadyUsed)
+            if (newKey != null && alreadyUsed)
                 throw new ArgumentException("SignalAsset already used.");
         }
 

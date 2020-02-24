@@ -42,8 +42,9 @@ namespace UnityEditor.Timeline.Signals
             get { return m_CurrentReceiver.GetSignalAssetAtIndex(m_CurrentRowIdx); }
             set
             {
-                Undo.RegisterCompleteObjectUndo(m_CurrentReceiver, Styles.UndoCreateSignalAsset);
+                Undo.RecordObject(m_CurrentReceiver, Styles.UndoCreateSignalAsset);
                 m_CurrentReceiver.ChangeSignalAtIndex(m_CurrentRowIdx, value);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(m_CurrentReceiver);
             }
         }
 
@@ -137,18 +138,21 @@ namespace UnityEditor.Timeline.Signals
                 var menu = new GenericMenu();
                 menu.AddItem(new GUIContent(Styles.SignalListDuplicateOption), false, () =>
                 {
-                    Undo.RegisterCompleteObjectUndo(target, "Duplicate Row");
+                    Undo.RecordObject(target, Styles.UndoDuplicateRow);
                     var evtCloner = ScriptableObject.CreateInstance<UnityEventCloner>();
                     evtCloner.evt = target.GetReactionAtIndex(rowIdx);
                     var clone = Object.Instantiate(evtCloner);
                     target.AddEmptyReaction(clone.evt);
                     m_TreeView.dirty = true;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+
                 });
                 menu.AddItem(new GUIContent(Styles.SignalListDeleteOption), false, () =>
                 {
-                    Undo.RegisterCompleteObjectUndo(target, "Delete Row");
+                    Undo.RecordObject(target, Styles.UndoDeleteRow);
                     target.RemoveAtIndex(rowIdx);
                     m_TreeView.dirty = true;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(target);
                 });
                 menu.ShowAsContext();
             }
@@ -163,7 +167,9 @@ namespace UnityEditor.Timeline.Signals
         void ISignalAssetProvider.CreateNewSignalAsset(string path)
         {
             var newSignalAsset = SignalManager.CreateSignalAssetInstance(path);
+            Undo.RecordObject(m_CurrentReceiver, Styles.UndoCreateSignalAsset);
             m_CurrentReceiver.ChangeSignalAtIndex(m_CurrentRowIdx, newSignalAsset);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(m_CurrentReceiver);
         }
 
         class UnityEventCloner : ScriptableObject

@@ -90,6 +90,8 @@ namespace UnityEditor.Timeline
                 return false;
             }
 
+            var discreteTime = new DiscreteTime(time);
+
             // only animation tracks require the recordable flag as they are recording
             //  to an animation clip
             bool requiresRecordable = (track as AnimationTrack) != null;
@@ -101,7 +103,7 @@ namespace UnityEditor.Timeline
                 for (i = 0; i < sortedByStartTime.Length; i++)
                 {
                     var clip = sortedByStartTime[i];
-                    if (clip.start <= time && clip.end >= time)
+                    if (new DiscreteTime(clip.start) <= discreteTime && new DiscreteTime(clip.end) > discreteTime)
                     {
                         target = clip;
                         // not recordable
@@ -115,7 +117,7 @@ namespace UnityEditor.Timeline
                         return true;
                     }
 
-                    if (clip.start > time)
+                    if (new DiscreteTime(clip.start) > discreteTime)
                     {
                         break;
                     }

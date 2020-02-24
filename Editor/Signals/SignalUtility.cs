@@ -70,13 +70,13 @@ namespace UnityEditor.Timeline.Signals
         {
             if (signalAsset != null && receiver != null)
             {
-                Undo.RegisterCompleteObjectUndo(receiver, Styles.UndoAddReaction);
-
+                Undo.RecordObject(receiver, Styles.UndoAddReaction);
                 var newEvent = new UnityEvent();
                 newEvent.AddPersistentListener();
                 var evtIndex = newEvent.GetPersistentEventCount() - 1;
                 newEvent.RegisterVoidPersistentListenerWithoutValidation(evtIndex, receiver.gameObject, string.Empty);
                 receiver.AddReaction(signalAsset, newEvent);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(receiver);
             }
         }
 
