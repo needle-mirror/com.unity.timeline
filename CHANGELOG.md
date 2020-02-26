@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.3.0-preview.7] - 2019-01-16
+## [1.3.0] - 2020-02-26
 
 ### Added
 - Inline Curve Properties can be removed.
@@ -14,6 +14,29 @@ All notable changes to this package will be documented in this file. The format 
 - Reduced the minimum width of the track header area.
 - Trimming the left edge of a clip while pressing the Shift key will change the Speed Multiplier value.
 
+### Fixed
+- Fixed humanoid characters going to default pose during initial root motion recording. (1174752)
+- Fixed Override Tracks not masking RootTransform when an AvatarMask without the Root Node is applied. ([1190600](https://issuetracker.unity3d.com/product/unity/issues/guid/1190600/))
+- Fixed preview of Avatar Masks on base level Animation Tracks. ([1190600](https://issuetracker.unity3d.com/product/unity/issues/guid/1190600/))
+
+## [1.2.13] - 2020-02-24
+
+### Fixed
+- Fixed Performance issue where Control Tracks would resimulate during the tail of a non-looping particle clip. ([1216702](https://issuetracker.unity3d.com/product/unity/issues/guid/1216702/))
+- Fixed adjacent recording clips highlighting the wrong clip. ([1210312](https://issuetracker.unity3d.com/product/unity/issues/guid/1210312/))
+- Fixed timescale drawing to only draw visible lines which avoids a hang with very large clips. ([1213189](https://issuetracker.unity3d.com/product/unity/issues/guid/1213189/))
+- Fixed `SignalReceiver.ChangeSignalAtIndex` incorrectly throwing exception when multiple entries are set to null. ([1210877](https://issuetracker.unity3d.com/product/unity/issues/guid/1210877/))
+- Fixed a memory leak with Animation Clips in Edit mode.
+- Fixed issue where changes to a Signal Receiver component in a prefab were reverted. ([1210883](https://issuetracker.unity3d.com/product/unity/issues/guid/1210883/))
+- Fixed avatar mask reassignment not causing immediate re-evaluation. ([1219326](https://issuetracker.unity3d.com/product/unity/issues/guid/1219326/))
+- Fixed issues related to recursive control tracks. (1178423)
+- Fixed issue where using the `HideInMenu` attribute in combination with a class inheriting from `Marker` would not hide the marker from the Timeline context menus. ([1221054](https://issuetracker.unity3d.com/product/unity/issues/guid/1221054/))
+
+## [1.2.12] - 2020-02-21
+
+### Fixed
+- Fixed issue where the curves view would change its framing when moving a clip. ([1217353](https://issuetracker.unity3d.com/product/unity/issues/guid/1217353/))
+
 ## [1.2.11] - 2020-01-22
 
 ### Fixed
@@ -23,7 +46,7 @@ All notable changes to this package will be documented in this file. The format 
 - Fixed issue where the keys in the inline curves view were incorrectly positioned ([1205835](https://issuetracker.unity3d.com/product/unity/issues/guid/1205835/))
 
 ### Changed
-- ControlPlayableAsset.searchHierarchy (a.k.a. Control Children) now defaults to false. 
+- ControlPlayableAsset.searchHierarchy (a.k.a. Control Children) now defaults to false.
 
 ## [1.2.10] - 2019-12-08
 

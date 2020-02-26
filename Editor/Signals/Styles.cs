@@ -25,6 +25,8 @@ namespace UnityEditor.Timeline.Signals
         public static readonly string MultiEditNotSupportedOnDifferentSignals = L10n.Tr("Multi-edit not supported for SignalReceivers when SignalEmitters use different Signals.");
 
         public static readonly string UndoCreateSignalAsset = L10n.Tr("Create New Signal Asset");
+        public static readonly string UndoDuplicateRow = L10n.Tr("Duplicate Row");
+        public static readonly string UndoDeleteRow = L10n.Tr("Delete Row");
         public static readonly string UndoAddReaction = L10n.Tr("Add Signal Receiver Reaction");
         public static readonly string NoReaction = L10n.Tr("No reaction for {0} has been defined in this receiver");
         public static readonly string NoSignalReceiverComponent = L10n.Tr("There is no Signal Receiver component on {0}");

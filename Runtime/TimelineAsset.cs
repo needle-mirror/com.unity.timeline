@@ -390,7 +390,8 @@ namespace UnityEngine.Timeline
             var outputTracks = GetOutputTracks();
             foreach (var track in outputTracks)
             {
-                track.GatherProperties(director, driver);
+                if (!track.mutedInHierarchy)
+                    track.GatherProperties(director, driver);
             }
         }
 

@@ -118,6 +118,11 @@ namespace UnityEngine.Timeline
                 // The particle system time does not include the start delay so we need to remove this for our own system time.
                 float expectedSystemTime = simTime > particleSystemDurationLoop0 ? m_SystemTime : m_SystemTime - startDelay;
 
+                // if it's not looping, then the system time won't advance past the end of the duration
+                if (!particleSystem.main.loop)
+                    expectedSystemTime = Math.Min(expectedSystemTime, particleSystem.main.duration);
+
+
                 // conditions for restart
                 bool restart = (simTime < m_LastTime) || // time went backwards
                     (simTime < epsilon) || // time is set to 0

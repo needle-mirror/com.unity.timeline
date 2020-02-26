@@ -559,40 +559,55 @@ namespace UnityEngine.Timeline
             if (CanCompileClips())
                 flattenTracks.Add(this);
 
-
-            bool animatesRootTransform = AnimatesRootTransform();
+            var genericRoot = GetGenericRootNode(go);
+            var animatesRootTransformNoMask = AnimatesRootTransform();
+            var animatesRootTransform = animatesRootTransformNoMask || !IsRootTransformDisabledByMask(go, genericRoot);
             foreach (var subTrack in GetChildTracks())
             {
                 var child = subTrack as AnimationTrack;
                 if (child != null && child.CanCompileClips())
                 {
-                    animatesRootTransform |= child.AnimatesRootTransform();
+                    var childAnimatesRoot = child.AnimatesRootTransform();
+                    animatesRootTransformNoMask |= child.AnimatesRootTransform();
+                    animatesRootTransform |= (childAnimatesRoot && !child.IsRootTransformDisabledByMask(go, genericRoot));
                     flattenTracks.Add(child);
                 }
             }
 
             // figure out which mode to apply
             AppliedOffsetMode mode = GetOffsetMode(go, animatesRootTransform);
-            var layerMixer = CreateGroupMixer(graph, go, flattenTracks.Count);
+            int defaultBlendCount = GetDefaultBlendCount();
+            var layerMixer = CreateGroupMixer(graph, go, flattenTracks.Count + defaultBlendCount);
             for (int c = 0; c < flattenTracks.Count; c++)
             {
+                int blendIndex = c + defaultBlendCount;
+                // if the child is masking the root transform, compile it as if we are non-root mode
+                var childMode = mode;
+                if (mode != AppliedOffsetMode.NoRootTransform && flattenTracks[c].IsRootTransformDisabledByMask(go, genericRoot))
+                    childMode = AppliedOffsetMode.NoRootTransform;
+
                 var compiledTrackPlayable = flattenTracks[c].inClipMode ?
-                    CompileTrackPlayable(graph, flattenTracks[c], go, tree, mode) :
-                    flattenTracks[c].CreateInfiniteTrackPlayable(graph, go, tree, mode);
-                graph.Connect(compiledTrackPlayable, 0, layerMixer, c);
-                layerMixer.SetInputWeight(c, flattenTracks[c].inClipMode ? 0 : 1);
+                    CompileTrackPlayable(graph, flattenTracks[c], go, tree, childMode) :
+                    flattenTracks[c].CreateInfiniteTrackPlayable(graph, go, tree, childMode);
+                graph.Connect(compiledTrackPlayable, 0, layerMixer, blendIndex);
+                layerMixer.SetInputWeight(blendIndex, flattenTracks[c].inClipMode ? 0 : 1);
                 if (flattenTracks[c].applyAvatarMask && flattenTracks[c].avatarMask != null)
                 {
-                    layerMixer.SetLayerMaskFromAvatarMask((uint)c, flattenTracks[c].avatarMask);
+                    layerMixer.SetLayerMaskFromAvatarMask((uint)blendIndex, flattenTracks[c].avatarMask);
                 }
             }
 
-            bool requiresMotionXPlayable = RequiresMotionXPlayable(mode, go);
+            var requiresMotionXPlayable = RequiresMotionXPlayable(mode, go);
 
-            Playable mixer = layerMixer;
-            mixer = CreateDefaultBlend(graph, go, mixer, requiresMotionXPlayable);
+            // In the editor, we may require the motion X playable if we are animating the root transform but it is masked out, because the default poses
+            //  need to properly update root motion
+            requiresMotionXPlayable |= (defaultBlendCount > 0 && RequiresMotionXPlayable(GetOffsetMode(go, animatesRootTransformNoMask), go));
+
+            // Attach the default poses
+            AttachDefaultBlend(graph, layerMixer, requiresMotionXPlayable);
 
             // motionX playable not required in scene offset mode, or root transform mode
+            Playable mixer = layerMixer;
             if (requiresMotionXPlayable)
             {
                 // If we are animating a root transform, add the motionX to delta playable as the root node
@@ -628,20 +643,27 @@ namespace UnityEngine.Timeline
             return mixer;
         }
 
-        // Creates a layer mixer containing default blends
-        // the base layer is a default clip of all driven properties
-        // the next layer is optionally the desired default pose (in the case of humanoid, the tpose
-        private Playable CreateDefaultBlend(PlayableGraph graph, GameObject go, Playable mixer, bool requireOffset)
+
+        private int GetDefaultBlendCount()
         {
 #if  UNITY_EDITOR
             if (Application.isPlaying)
-                return mixer;
+                return 0;
 
-            int inputs = 1 + ((m_CachedPropertiesClip != null) ? 1 : 0) + ((m_DefaultPoseClip != null) ? 1 : 0);
-            if (inputs == 1)
-                return mixer;
+            return ((m_CachedPropertiesClip != null) ? 1 : 0) + ((m_DefaultPoseClip != null) ? 1 : 0);
+#else
+            return 0;
+#endif
+        }
 
-            var defaultPoseMixer = AnimationLayerMixerPlayable.Create(graph, inputs);
+        // Attaches the default blends to the layer mixer
+        // the base layer is a default clip of all driven properties
+        // the next layer is optionally the desired default pose (in the case of humanoid, the TPose)
+        private void AttachDefaultBlend(PlayableGraph graph, AnimationLayerMixerPlayable mixer, bool requireOffset)
+        {
+#if  UNITY_EDITOR
+            if (Application.isPlaying)
+                return;
 
             int mixerInput = 0;
             if (m_CachedPropertiesClip)
@@ -651,8 +673,8 @@ namespace UnityEngine.Timeline
                 var defaults = (Playable)cachedPropertiesClip;
                 if (requireOffset)
                     defaults = AttachOffsetPlayable(graph, defaults, m_SceneOffsetPosition, Quaternion.Euler(m_SceneOffsetRotation));
-                graph.Connect(defaults, 0, defaultPoseMixer, mixerInput);
-                defaultPoseMixer.SetInputWeight(mixerInput, 1.0f);
+                graph.Connect(defaults, 0, mixer, mixerInput);
+                mixer.SetInputWeight(mixerInput, 1.0f);
                 mixerInput++;
             }
 
@@ -663,19 +685,9 @@ namespace UnityEngine.Timeline
                 var blendDefault = (Playable)defaultPose;
                 if (requireOffset)
                     blendDefault = AttachOffsetPlayable(graph, blendDefault, m_SceneOffsetPosition, Quaternion.Euler(m_SceneOffsetRotation));
-
-                graph.Connect(blendDefault, 0, defaultPoseMixer, mixerInput);
-                defaultPoseMixer.SetInputWeight(mixerInput, 1.0f);
-                mixerInput++;
+                graph.Connect(blendDefault, 0, mixer, mixerInput);
+                mixer.SetInputWeight(mixerInput, 1.0f);
             }
-
-
-            graph.Connect(mixer, 0, defaultPoseMixer, mixerInput);
-            defaultPoseMixer.SetInputWeight(mixerInput, 1.0f);
-
-            return defaultPoseMixer;
-#else
-            return mixer;
 #endif
         }
 
@@ -889,6 +901,11 @@ namespace UnityEngine.Timeline
             GetAnimationClips(animClips);
 
             var hasHumanMotion = animClips.Exists(clip => clip.humanMotion);
+            // case 1174752 - recording root transform on humanoid clips clips cause invalid pose. This will apply the default T-Pose, only if it not already driven by another track
+            if (!hasHumanMotion && animator.isHuman && AnimatesRootTransform() &&
+                !DrivenPropertyManagerInternal.IsDriven(animator.transform, "m_LocalPosition.x") &&
+                !DrivenPropertyManagerInternal.IsDriven(animator.transform, "m_LocalRotation.x"))
+                hasHumanMotion = true;
 
             m_SceneOffsetPosition = animator.transform.localPosition;
             m_SceneOffsetRotation = animator.transform.localEulerAngles;
@@ -951,6 +968,58 @@ namespace UnityEngine.Timeline
             return AppliedOffsetMode.TransformOffsetLegacy;
         }
 
+        private bool IsRootTransformDisabledByMask(GameObject gameObject, Transform genericRootNode)
+        {
+            if (avatarMask == null || !applyAvatarMask)
+                return false;
+
+            var animator = GetBinding(gameObject != null ? gameObject.GetComponent<PlayableDirector>() : null);
+            if (animator == null)
+                return false;
+
+            if (animator.isHuman)
+                return !avatarMask.GetHumanoidBodyPartActive(AvatarMaskBodyPart.Root);
+
+            if (avatarMask.transformCount == 0)
+                return false;
+
+            // no special root supplied
+            if (genericRootNode == null)
+                return string.IsNullOrEmpty(avatarMask.GetTransformPath(0)) && !avatarMask.GetTransformActive(0);
+
+            // walk the avatar list to find the matching transform
+            for (int i = 0; i < avatarMask.transformCount; i++)
+            {
+                if (genericRootNode == animator.transform.Find(avatarMask.GetTransformPath(i)))
+                    return !avatarMask.GetTransformActive(i);
+            }
+
+            return false;
+        }
+
+        // Returns the generic root transform node. Returns null if it is the root node, OR if it not a generic node
+        private Transform GetGenericRootNode(GameObject gameObject)
+        {
+            var animator = GetBinding(gameObject != null ? gameObject.GetComponent<PlayableDirector>() : null);
+            if (animator == null)
+                return null;
+
+            if (animator.isHuman)
+                return null;
+
+            if (animator.avatar == null)
+                return null;
+
+            // this returns the bone name, but not the full path
+            var rootName = animator.avatar.humanDescription.m_RootMotionBoneName;
+            if (rootName == animator.name || string.IsNullOrEmpty(rootName))
+                return null;
+
+            // walk the hierarchy to find the first bone with this name
+            return FindInHierarchyBreadthFirst(animator.transform, rootName);
+        }
+
+
         internal bool AnimatesRootTransform()
         {
             // infinite mode
@@ -966,6 +1035,23 @@ namespace UnityEngine.Timeline
             }
 
             return false;
+        }
+
+        private static readonly Queue<Transform> s_CachedQueue = new Queue<Transform>(100);
+        private static Transform FindInHierarchyBreadthFirst(Transform t, string name)
+        {
+            s_CachedQueue.Clear();
+            s_CachedQueue.Enqueue(t);
+            while (s_CachedQueue.Count > 0)
+            {
+                var r = s_CachedQueue.Dequeue();
+                if (r.name == name)
+                    return r;
+                for (int i = 0; i < r.childCount; i++)
+                    s_CachedQueue.Enqueue(r.GetChild(i));
+            }
+
+            return null;
         }
     }
 }

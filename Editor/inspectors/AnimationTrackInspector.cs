@@ -32,6 +32,8 @@ namespace UnityEditor.Timeline
             public static readonly string InheritedFromParent = L10n.Tr("Inherited");
             public static readonly string InheritedToolTip = L10n.Tr("This value is inherited from it's parent track.");
 
+            public static readonly string AvatarMaskWarning = L10n.Tr("Applying an Avatar Mask to the base track may not properly mask Root Motion or Humanoid bones from an Animator Controller or other Timeline track.");
+
             public static readonly GUIContent RecordingOffsets = EditorGUIUtility.TrTextContent("Recorded Offsets", "Offsets applied to recorded position and rotation keys");
 
             public static readonly GUIContent[] OffsetContents;
@@ -88,11 +90,7 @@ namespace UnityEditor.Timeline
 
         void RebuildGraph()
         {
-            if (timelineWindow.state != null)
-            {
-                timelineWindow.state.rebuildGraph = true;
-                timelineWindow.Repaint();
-            }
+            TimelineEditor.Refresh(RefreshReason.ContentsModified);
         }
 
         public override void OnInspectorGUI()
@@ -105,10 +103,10 @@ namespace UnityEditor.Timeline
 
                 EditorGUI.BeginChangeCheck();
                 DrawRecordedOffsetProperties();
+                DrawAvatarProperties();
                 if (EditorGUI.EndChangeCheck())
                     RebuildGraph();
 
-                DrawAvatarProperties();
                 DrawMatchFieldsGUI();
 
                 serializedObject.ApplyModifiedProperties();
@@ -323,6 +321,10 @@ namespace UnityEditor.Timeline
                 EditorGUILayout.PropertyField(m_AvatarMaskProperty);
                 EditorGUI.indentLevel--;
             }
+
+            if (targets.OfType<AnimationTrack>().Any(x => !x.isSubTrack))
+                EditorGUILayout.HelpBox(Styles.AvatarMaskWarning, MessageType.Warning);
+
             EditorGUILayout.Space();
         }
 

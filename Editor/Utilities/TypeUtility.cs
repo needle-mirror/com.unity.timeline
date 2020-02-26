@@ -269,7 +269,7 @@ namespace UnityEditor.Timeline
 
         public static IEnumerable<Type> GetUserMarkerTypes()
         {
-            return GetAllMarkerTypes().Where(x => !TypeUtility.IsBuiltIn(x));
+            return GetAllMarkerTypes().Where(x => !IsBuiltIn(x) && !IsHiddenInMenu(x));
         }
 
         public static IEnumerable<Type> GetBuiltInMarkerTypes()

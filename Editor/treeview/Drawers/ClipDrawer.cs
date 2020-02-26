@@ -295,15 +295,20 @@ namespace UnityEditor.Timeline
                 DrawBlendLine(blends.inRect, BlendAngle.Descending, thickness, color);
         }
 
-        static void DrawClipTimescale(Rect targetRect, double timeScale)
+        static void DrawClipTimescale(Rect targetRect, Rect clippedRect, double timeScale)
         {
             if (timeScale != 1.0)
             {
                 const float xOffset = 4.0f;
                 const float yOffset = 6.0f;
                 var segmentLength = timeScale > 1.0f ? 5.0f : 15.0f;
-                var start = new Vector3(targetRect.min.x + xOffset, targetRect.min.y + yOffset, 0.0f);
-                var end = new Vector3(targetRect.max.x - xOffset, targetRect.min.y + yOffset, 0.0f);
+
+                // clamp to the visible region to reduce the line count (case 1213189), but adject the start segment to match the visuals of drawing targetRect
+                var startX = clippedRect.min.x - ((clippedRect.min.x - targetRect.min.x) % (segmentLength * 2));
+                var endX = clippedRect.max.x;
+
+                var start = new Vector3(startX + xOffset, targetRect.min.y + yOffset, 0.0f);
+                var end = new Vector3(endX - xOffset, targetRect.min.y + yOffset, 0.0f);
 
                 Graphics.DrawDottedLine(start, end, segmentLength, DirectorStyles.Instance.customSkin.colorClipFont);
                 Graphics.DrawDottedLine(start + new Vector3(0.0f, 1.0f, 0.0f), end + new Vector3(0.0f, 1.0f, 0.0f), segmentLength, DirectorStyles.Instance.customSkin.colorClipFont);
@@ -551,7 +556,7 @@ namespace UnityEditor.Timeline
                 drawData.clipCenterSection.width = k_MinClipWidth;
             }
 
-            DrawClipTimescale(drawData.targetRect, drawData.clip.timeScale);
+            DrawClipTimescale(drawData.targetRect, drawData.clippedRect, drawData.clip.timeScale);
 
             if (drawData.targetRect.width >= k_ClipInOutMinWidth)
                 DrawClipInOut(drawData.targetRect, drawData.clip);
@@ -611,8 +616,11 @@ namespace UnityEditor.Timeline
             if (!drawData.clip.parentTrack.IsRecordingToClip(drawData.clip))
                 return;
 
-            var time = TimelineWindow.instance.state.editSequence.time;
-            if (time < drawData.clip.start + drawData.clip.mixInDuration || time > drawData.clip.end - drawData.clip.mixOutDuration)
+            var time = new DiscreteTime(TimelineWindow.instance.state.editSequence.time);
+            var start = new DiscreteTime(drawData.clip.start + drawData.clip.mixInDuration);
+            var end = new DiscreteTime(drawData.clip.end - drawData.clip.mixOutDuration);
+
+            if (time < start || time >= end)
                 return;
 
             DrawClipSelectionBorder(drawData.clipCenterSection, ClipBorder.Recording(), ClipBlends.kNone);

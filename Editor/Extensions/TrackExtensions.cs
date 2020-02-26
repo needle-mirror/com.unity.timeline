@@ -424,6 +424,8 @@ namespace UnityEditor.Timeline
                 return false;
             }
 
+            var discreteTime = new DiscreteTime(time);
+
             track.SortClips();
             var sortedByStartTime = track.clips;
             for (int i = 0; i < sortedByStartTime.Length; i++)
@@ -431,7 +433,7 @@ namespace UnityEditor.Timeline
                 var clip = sortedByStartTime[i];
 
                 // intersection
-                if (time >= clip.start && time <= clip.end)
+                if (discreteTime >= new DiscreteTime(clip.start) && discreteTime < new DiscreteTime(clip.end))
                 {
                     endGap = time;
                     startGap = time;
