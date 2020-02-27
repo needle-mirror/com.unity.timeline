@@ -331,6 +331,29 @@ namespace UnityEditor.Timeline
             }
             return data;
         }
+
+        public void ClearCachedProxyClips()
+        {
+            var toRemove = new List<AnimationClip>();
+            foreach (var entry in m_ClipCache)
+            {
+                var clip = entry.Key;
+                if (clip != null && (clip.hideFlags & HideFlags.HideAndDontSave) == HideFlags.HideAndDontSave)
+                    toRemove.Add(clip);
+            }
+
+            foreach (var clip in toRemove)
+            {
+                m_ClipCache.Remove(clip);
+                Object.DestroyImmediate(clip, true);
+            }
+        }
+
+        public void Clear()
+        {
+            ClearCachedProxyClips();
+            m_ClipCache.Clear();
+        }
     }
 
     static class EditorCurveBindingExtension

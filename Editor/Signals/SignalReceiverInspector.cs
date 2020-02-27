@@ -91,8 +91,9 @@ namespace UnityEditor.Timeline.Signals
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(Styles.AddReactionButton))
                 {
-                    Undo.RegisterCompleteObjectUndo(m_Target, Styles.UndoAddReaction);
+                    Undo.RecordObject(m_Target, Styles.UndoAddReaction);
                     m_Target.AddEmptyReaction(new UnityEvent());
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(m_Target);
                 }
                 GUILayout.Space(18.0f);
             }

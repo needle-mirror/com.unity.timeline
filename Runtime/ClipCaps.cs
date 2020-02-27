@@ -40,9 +40,15 @@ namespace UnityEngine.Timeline
         Blending        = 1 << 4,
 
         /// <summary>
-        /// All features are supported.
+        /// The clip supports time scaling, and sets the default trim mode in the editor to scale the clip
+        /// (speed multiplier) when the start/end of the clip is trimmed.
         /// </summary>
-        All = ~None
+        AutoScale       = 1 << 5 | SpeedMultiplier,
+
+        /// <summary>
+        /// All features, except ClipCaps.AutoScale, are supported.
+        /// </summary>
+        All = ~(None | (ClipCaps.AutoScale & ~ClipCaps.SpeedMultiplier))
     }
 
     static class TimelineClipCapsExtensions

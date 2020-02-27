@@ -20,14 +20,24 @@ namespace UnityEditor.Timeline
                 var clipItem = ItemsUtils.ToItem(clipGUI.clip);
                 if (manipulateEdges == ManipulateEdges.Right)
                 {
-                    bool affectTimeScale = Event.current.modifiers == EventModifiers.Shift; // TODO Do not use Event.current from here.
+                    bool affectTimeScale = IsAffectingTimeScale(clipGUI.clip);
                     EditMode.TrimEnd(clipItem, time, affectTimeScale);
                 }
                 else if (manipulateEdges == ManipulateEdges.Left)
                 {
-                    bool affectTimeScale = Event.current.modifiers == EventModifiers.Shift; // TODO Do not use Event.current from here.
+                    bool affectTimeScale = IsAffectingTimeScale(clipGUI.clip);
                     EditMode.TrimStart(clipItem, time, affectTimeScale);
                 }
+            }
+
+            private bool IsAffectingTimeScale(TimelineClip clip)
+            {
+                bool autoScale = (clip.clipCaps & ClipCaps.AutoScale) == ClipCaps.AutoScale;
+
+                // TODO Do not use Event.current from here.
+                bool affectTimeScale = ( autoScale && (Event.current.modifiers != EventModifiers.Shift))
+                                    || (!autoScale && (Event.current.modifiers == EventModifiers.Shift));
+                return affectTimeScale;
             }
         }
 
