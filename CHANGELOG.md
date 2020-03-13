@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.1] - 2020-03-13
+
+### Fixed
+- Fixed issue where the curves view would flicker when editing multiple keys. ([1217326](https://issuetracker.unity3d.com/product/unity/issues/guid/1217326/))
+- Fixed issue where adding a keyframe in the curves view at the end of a clip would not place the keyframe at the correct position. ([1221337](https://issuetracker.unity3d.com/product/unity/issues/guid/1221337/))
+
 ## [1.3.0] - 2020-02-26
 
 ### Added
