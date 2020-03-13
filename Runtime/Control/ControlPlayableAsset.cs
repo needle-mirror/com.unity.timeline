@@ -269,7 +269,7 @@ namespace UnityEngine.Timeline
             return components;
         }
 
-        static IEnumerable<MonoBehaviour> GetControlableScripts(GameObject root)
+        internal static IEnumerable<MonoBehaviour> GetControlableScripts(GameObject root)
         {
             if (root == null)
                 yield break;
@@ -347,6 +347,7 @@ namespace UnityEngine.Timeline
         /// <inheritdoc/>
         public void GatherProperties(PlayableDirector director, IPropertyCollector driver)
         {
+            // This method is no longer called by Control Tracks.
             if (director == null)
                 return;
 
@@ -358,49 +359,61 @@ namespace UnityEngine.Timeline
             var gameObject = sourceGameObject.Resolve(director);
             if (gameObject != null)
             {
-                if (updateParticle)
-                {
-                    // case 1076850 -- drive all emitters, not just roots.
-                    foreach (var ps in gameObject.GetComponentsInChildren<ParticleSystem>(true))
-                    {
-                        driver.AddFromName<ParticleSystem>(ps.gameObject, "randomSeed");
-                        driver.AddFromName<ParticleSystem>(ps.gameObject, "autoRandomSeed");
-                    }
-                }
+                if (updateParticle)// case 1076850 -- drive all emitters, not just roots.
+                    PreviewParticles(driver, gameObject.GetComponentsInChildren<ParticleSystem>(true));
 
                 if (active)
-                {
-                    driver.AddFromName(gameObject, "m_IsActive");
-                }
+                    PreviewActivation(driver, new[] { gameObject });
 
                 if (updateITimeControl)
-                {
-                    foreach (var script in GetControlableScripts(gameObject))
-                    {
-                        var propertyPreview = script as IPropertyPreview;
-                        if (propertyPreview != null)
-                            propertyPreview.GatherProperties(director, driver);
-                        else
-                            driver.AddFromComponent(script.gameObject, script);
-                    }
-                }
+                    PreviewTimeControl(driver, director, GetControlableScripts(gameObject));
 
                 if (updateDirector)
-                {
-                    foreach (var childDirector in GetComponent<PlayableDirector>(gameObject))
-                    {
-                        if (childDirector == null)
-                            continue;
-
-                        var timeline = childDirector.playableAsset as TimelineAsset;
-                        if (timeline == null)
-                            continue;
-
-                        timeline.GatherProperties(childDirector, driver);
-                    }
-                }
+                    PreviewDirectors(driver, GetComponent<PlayableDirector>(gameObject));
             }
             s_ProcessedDirectors.Remove(director);
+        }
+
+        internal static void PreviewParticles(IPropertyCollector driver, IEnumerable<ParticleSystem> particles)
+        {
+            foreach (var ps in particles)
+            {
+                driver.AddFromName<ParticleSystem>(ps.gameObject, "randomSeed");
+                driver.AddFromName<ParticleSystem>(ps.gameObject, "autoRandomSeed");
+            }
+        }
+
+        internal static void PreviewActivation(IPropertyCollector driver, IEnumerable<GameObject> objects)
+        {
+            foreach (var gameObject in objects)
+                driver.AddFromName(gameObject, "m_IsActive");
+        }
+
+        internal static void PreviewTimeControl(IPropertyCollector driver, PlayableDirector director, IEnumerable<MonoBehaviour> scripts)
+        {
+            foreach (var script in scripts)
+            {
+                var propertyPreview = script as IPropertyPreview;
+                if (propertyPreview != null)
+                    propertyPreview.GatherProperties(director, driver);
+                else
+                    driver.AddFromComponent(script.gameObject, script);
+            }
+        }
+
+        internal static void PreviewDirectors(IPropertyCollector driver, IEnumerable<PlayableDirector> directors)
+        {
+            foreach (var childDirector in directors)
+            {
+                if (childDirector == null)
+                    continue;
+
+                var timeline = childDirector.playableAsset as TimelineAsset;
+                if (timeline == null)
+                    continue;
+
+                timeline.GatherProperties(childDirector, driver);
+            }
         }
     }
 }

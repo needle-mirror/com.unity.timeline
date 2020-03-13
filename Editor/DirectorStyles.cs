@@ -25,11 +25,10 @@ namespace UnityEditor.Timeline
         public static readonly GUIContent rippleOn = TrIconContent("TimelineEditModeRippleON", "Ripple Mode (2)");
         public static readonly GUIContent replaceOff = TrIconContent("TimelineEditModeReplaceOFF", "Replace Mode (3)");
         public static readonly GUIContent replaceOn = TrIconContent("TimelineEditModeReplaceON", "Replace Mode (3)");
-        public static readonly GUIContent showMarkersOn = TrIconContent("TimelineMarkerAreaButtonEnabled", "Show / Hide Timeline Markers");
-        public static readonly GUIContent showMarkersOff = TrIconContent("TimelineMarkerAreaButtonDisabled", "Show / Hide Timeline Markers");
+        public static readonly GUIContent showMarkersOn = TrIconContent("TimelineCollapseMarkerButtonEnabled", "Show / Hide Timeline Markers");
+        public static readonly GUIContent showMarkersOff = TrIconContent("TimelineCollapseMarkerButtonDisabled", "Show / Hide Timeline Markers");
         public static readonly GUIContent showMarkersOnTimeline = TrTextContent("Show markers");
         public static readonly GUIContent timelineMarkerTrackHeader = TrTextContentWithIcon("Markers", string.Empty, "TimelineHeaderMarkerIcon");
-        public static readonly GUIContent markerCollapseButton = TrTextContent(string.Empty, "Expand / Collapse Track Markers");
         public static readonly GUIContent signalTrackIcon = IconContent("TimelineSignal");
 
         //Unity Default Resources
@@ -71,9 +70,9 @@ namespace UnityEditor.Timeline
         public GUIStyle endmarker;
         public GUIStyle tinyFont;
         public GUIStyle foldout;
-        public GUIStyle mute;
-        public GUIStyle locked;
-        public GUIStyle autoKey;
+        public GUIStyle trackMuteButton;
+        public GUIStyle trackLockButton;
+        public GUIStyle trackRecordButton;
         public GUIStyle playTimeRangeStart;
         public GUIStyle playTimeRangeEnd;
         public GUIStyle selectedStyle;
@@ -85,26 +84,26 @@ namespace UnityEditor.Timeline
         public GUIStyle extrapolationLoop;
         public GUIStyle extrapolationPingPong;
         public GUIStyle extrapolationContinue;
-        public GUIStyle collapseMarkers;
+        public GUIStyle trackMarkerButton;
         public GUIStyle markerMultiOverlay;
         public GUIStyle bottomShadow;
         public GUIStyle trackOptions;
         public GUIStyle infiniteTrack;
         public GUIStyle clipOut;
         public GUIStyle clipIn;
-        public GUIStyle curves;
-        public GUIStyle lockedBG;
+        public GUIStyle trackCurvesButton;
+        public GUIStyle trackLockOverlay;
         public GUIStyle activation;
         public GUIStyle playrange;
-        public GUIStyle lockButton;
-        public GUIStyle avatarMaskOn;
-        public GUIStyle avatarMaskOff;
+        public GUIStyle timelineLockButton;
+        public GUIStyle trackAvatarMaskButton;
         public GUIStyle markerWarning;
         public GUIStyle editModeBtn;
         public GUIStyle showMarkersBtn;
         public GUIStyle sequenceSwitcher;
         public GUIStyle inlineCurveHandle;
         public GUIStyle timeReferenceButton;
+        public GUIStyle trackButtonSuite;
 
         static internal DirectorStyles s_Instance;
 
@@ -245,9 +244,9 @@ namespace UnityEditor.Timeline
             timeCursor = GetGUIStyle("Icon-TimeCursor");
             tinyFont = GetGUIStyle("tinyFont");
             foldout = GetGUIStyle("Icon-Foldout");
-            mute = GetGUIStyle("Icon-Mute");
-            locked = GetGUIStyle("Icon-Locked");
-            autoKey = GetGUIStyle("Icon-AutoKey");
+            trackMuteButton = GetGUIStyle("trackMuteButton");
+            trackLockButton = GetGUIStyle("trackLockButton");
+            trackRecordButton = GetGUIStyle("trackRecordButton");
             playTimeRangeStart = GetGUIStyle("Icon-PlayAreaStart");
             playTimeRangeEnd = GetGUIStyle("Icon-PlayAreaEnd");
             selectedStyle = GetGUIStyle("Color-Selected");
@@ -264,14 +263,13 @@ namespace UnityEditor.Timeline
             infiniteTrack = GetGUIStyle("Icon-InfiniteTrack");
             clipOut = GetGUIStyle("Icon-ClipOut");
             clipIn = GetGUIStyle("Icon-ClipIn");
-            curves = GetGUIStyle("Icon-Curves");
-            lockedBG = GetGUIStyle("Icon-LockedBG");
+            trackCurvesButton = GetGUIStyle("trackCurvesButton");
+            trackLockOverlay = GetGUIStyle("trackLockOverlay");
             activation = GetGUIStyle("Icon-Activation");
             playrange = GetGUIStyle("Icon-Playrange");
-            lockButton = GetGUIStyle("IN LockButton");
-            avatarMaskOn = GetGUIStyle("Icon-AvatarMaskOn");
-            avatarMaskOff = GetGUIStyle("Icon-AvatarMaskOff");
-            collapseMarkers = GetGUIStyle("TrackCollapseMarkerButton");
+            timelineLockButton = GetGUIStyle("IN LockButton");
+            trackAvatarMaskButton = GetGUIStyle("trackAvatarMaskButton");
+            trackMarkerButton = GetGUIStyle("trackCollapseMarkerButton");
             markerMultiOverlay = GetGUIStyle("MarkerMultiOverlay");
             editModeBtn = GetGUIStyle("editModeBtn");
             showMarkersBtn = GetGUIStyle("showMarkerBtn");
@@ -279,6 +277,7 @@ namespace UnityEditor.Timeline
             sequenceSwitcher = GetGUIStyle("sequenceSwitcher");
             inlineCurveHandle = GetGUIStyle("RL DragHandle");
             timeReferenceButton = GetGUIStyle("timeReferenceButton");
+            trackButtonSuite = GetGUIStyle("trackButtonSuite");
 
             playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = "Toggle play range markers." };
 

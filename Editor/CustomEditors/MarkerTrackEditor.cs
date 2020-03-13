@@ -6,7 +6,7 @@ namespace UnityEditor.Timeline
     [CustomTimelineEditor(typeof(MarkerTrack))]
     class MarkerTrackEditor : TrackEditor
     {
-        public static readonly float DefaultMarkerTrackHeight = 20;
+        public static readonly float DefaultMarkerTrackHeight = 24;
 
         public override TrackDrawOptions GetTrackOptions(TrackAsset track, Object binding)
         {

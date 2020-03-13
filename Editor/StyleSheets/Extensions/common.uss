@@ -114,81 +114,23 @@
     color: rgba(0, 0, 0, 0.75);
 }
 
-.Icon-AutoKey {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-left;
-
-    /* GUIStyle.fixedHeight */
-    height: 15;
-
-    /* GUIStyle.fixedWidth */
-    width: 15;
-
-    /* GUIStyle.fontSize */
+.trackRecordButton {
+    height: 16;
+    width: 16;
+    -unity-text-align: middle-center;
     font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
     -unity-image-position: image-only;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.AutoKey";
-
-    /* GUIStyle.richText */
     -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
     -unity-stretch-width: false;
 }
 
-.Icon-AvatarMaskOff {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-left;
-
-    /* GUIStyle.fixedHeight */
-    height: 15;
-
-    /* GUIStyle.fixedWidth */
-    width: 15;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
+.trackAvatarMaskButton {
+    height: 16;
+    width: 16;
+    -unity-text-align: middle-center;
+    font-size: --unity-font-size
     -unity-image-position: image-only;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.AvatarMaskOff";
-
-    /* GUIStyle.richText */
     -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-}
-
-.Icon-AvatarMaskOn {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-left;
-
-    /* GUIStyle.fixedHeight */
-    height: 15;
-
-    /* GUIStyle.fixedWidth */
-    width: 15;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-only;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.AvatarMaskOn";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
     -unity-stretch-width: false;
 }
 
@@ -282,29 +224,13 @@
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Shared/TimelineConnector.png");
 }
 
-.Icon-Curves {
-    /* GUIStyle.alignment */
+.trackCurvesButton {
     -unity-text-align: middle-center;
-
-    /* GUIStyle.clipping */
     -unity-clipping: clip;
-
-    /* GUIStyle.fixedHeight */
-    height: 15;
-
-    /* GUIStyle.fixedWidth */
-    width: 15;
-
-    /* GUIStyle.fontSize */
+    height: 16;
+    width: 16;
     font-size: 72;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.Curves";
-
-    /* GUIStyle.richText */
     -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
     -unity-stretch-width: false;
 }
 
@@ -378,17 +304,10 @@
     -unity-image-position: image-only;
 }
 
-.TrackCollapseMarkerButton {
-    /* GUIStyle.alignment */
+.trackCollapseMarkerButton {
     -unity-text-align: middle-center;
-
-    /* GUIStyle.fixedHeight */
     height: 16;
-
-    /* GUIStyle.fixedWidth */
     width: 16;
-
-    /* GUIStyle.imagePosition */
     -unity-image-position: image-only;
 }
 
@@ -614,78 +533,32 @@
     -unity-stretch-width: false;
 }
 
-.Icon-Locked {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-left;
-
-    /* GUIStyle.fixedHeight */
-    height: 16;
-
-    /* GUIStyle.fixedWidth */
-    width: 16;
-
-    /* GUIStyle.fontSize */
-    font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
-    -unity-image-position: image-only;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.Locked";
-
-    /* GUIStyle.richText */
-    -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
-    -unity-stretch-width: false;
-}
-
-.Icon-LockedBG {
-    /* GUIStyle.alignment */
+.trackLockOverlay {
     -unity-text-align: middle-center;
-
-    /* GUIStyle.fontSize */
     font-size: 72;
-
-    /* GUIStyle.imagePosition */
     -unity-image-position: text-only;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.LockedBG";
-
-    /* GUIStyle.richText */
     -unity-rich-text: false;
-
-    /* GUIStyle.stretchWidth */
     -unity-stretch-width: false;
-
-    /* GUIState.textColor */
     color: rgb(37, 45, 50);
 }
 
-.Icon-Mute {
-    /* GUIStyle.alignment */
-    -unity-text-align: middle-left;
-
-    /* GUIStyle.fixedHeight */
+.trackMuteButton {
+    -unity-text-align: middle-center;
     height: 16;
-
-    /* GUIStyle.fixedWidth */
     width: 16;
-
-    /* GUIStyle.fontSize */
     font-size: --unity-font-size;
-
-    /* GUIStyle.imagePosition */
     -unity-image-position: image-only;
-
-    /* GUIStyle.name */
-    -unity-name: "Icon.Mute";
-
-    /* GUIStyle.richText */
     -unity-rich-text: false;
+    -unity-stretch-width: false;
+}
 
-    /* GUIStyle.stretchWidth */
+.trackLockButton {
+    -unity-text-align: middle-center;
+    height: 16;
+    width: 16;
+    font-size: --unity-font-size;
+    -unity-image-position: image-only;
+    -unity-rich-text: false;
     -unity-stretch-width: false;
 }
 
@@ -1160,4 +1033,14 @@
     padding-bottom: 0px;
     -unity-text-align: middle-center;
     font-size: --unity-font-size-small;
+}
+
+.trackButtonSuite {
+    height: 22px;
+    border-radius: 3px;
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-top: -3px;
+    padding-left: 3px;
+    padding-right: 4px;
 }

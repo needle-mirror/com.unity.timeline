@@ -176,20 +176,19 @@ namespace UnityEditor.Timeline
 
         static void DrawLockButton(Rect rect, WindowState state)
         {
-            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.locked))
+            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.trackLockButton))
                 TimelineAction.Invoke<ToggleShowMarkersOnTimeline>(state);
         }
 
         static void DrawTrackDropDownMenu(Rect rect, WindowState state)
         {
-            rect.y += WindowConstants.trackOptionButtonVerticalPadding;
             if (GUI.Button(rect, GUIContent.none, DirectorStyles.Instance.trackOptions))
                 SequencerContextMenu.ShowMarkerHeaderContextMenu(null, state);
         }
 
         static void DrawMuteButton(Rect rect, WindowState state)
         {
-            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.mute))
+            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.trackMuteButton))
                 TimelineAction.Invoke<ToggleMuteMarkersOnTimeline>(state);
         }
 

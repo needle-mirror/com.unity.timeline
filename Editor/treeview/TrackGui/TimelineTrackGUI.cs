@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
-using UnityEditor.StyleSheets;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.Playables;
@@ -21,11 +20,20 @@ namespace UnityEditor.Timeline
             public PlayableBinding      m_Binding;
             public Object               m_TrackBinding;
             public Texture              m_TrackIcon;
+            public bool                 m_HasMarkers;
         }
 
         static class Styles
         {
-            public static readonly string kArmForRecordDisabled = L10n.Tr("Recording is not permitted when Track Offsets are set to Auto. Track Offset settings can be changed in the track menu of the base track.");
+            public static readonly GUIContent trackCurvesBtnOnTooltip = DirectorStyles.TrTextContent(string.Empty, "Hide curves view");
+            public static readonly GUIContent trackCurvesBtnOffTooltip = DirectorStyles.TrTextContent(string.Empty, "Show curves view");
+            public static readonly GUIContent trackMarkerBtnOnTooltip = DirectorStyles.TrTextContent(string.Empty, "Collapse Track Markers");
+            public static readonly GUIContent trackMarkerBtnOffTooltip = DirectorStyles.TrTextContent(string.Empty, "Expand Track Markers");
+
+            public static readonly GUIContent kActiveRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty, "End recording");
+            public static readonly GUIContent kInactiveRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty, "Start recording");
+            public static readonly GUIContent kDisabledRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty,
+                "Recording is not permitted when Track Offsets are set to Auto. Track Offset settings can be changed in the track menu of the base track.");
             public static Texture2D kProblemIcon = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.warning);
         }
 
@@ -164,6 +172,7 @@ namespace UnityEditor.Timeline
                 m_TrackDrawData.m_Binding = bindings[0];
             m_TrackDrawData.m_IsSubTrack = IsSubTrack();
             m_TrackDrawData.m_AllowsRecording = DoesTrackAllowsRecording(sequenceActor);
+            m_TrackDrawData.m_HasMarkers = track.GetMarkerCount() > 0;
             m_DefaultTrackIcon = TrackResourceCache.GetTrackIcon(track);
 
             m_TrackEditor = CustomTimelineEditorCache.GetTrackEditor(sequenceActor);
@@ -260,6 +269,7 @@ namespace UnityEditor.Timeline
                     m_TrackDrawOptions = CustomTimelineEditorCache.GetDefaultTrackEditor().GetTrackOptions(track, m_TrackDrawData.m_TrackBinding);
                 }
 
+                m_TrackDrawData.m_HasMarkers = track.GetMarkerCount() > 0;
                 m_TrackDrawData.m_AllowsRecording = DoesTrackAllowsRecording(track);
                 m_TrackDrawData.m_TrackIcon = m_TrackDrawOptions.icon;
                 if (m_TrackDrawData.m_TrackIcon == null)
@@ -294,15 +304,6 @@ namespace UnityEditor.Timeline
             {
                 m_TreeViewRect = trackContentRect;
             }
-
-            if (s_ArmForRecordContentOn == null)
-                s_ArmForRecordContentOn = new GUIContent(DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.autoKey, StyleState.active));
-
-            if (s_ArmForRecordContentOff == null)
-                s_ArmForRecordContentOff = new GUIContent(DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.autoKey));
-
-            if (s_ArmForRecordDisabled == null)
-                s_ArmForRecordDisabled = new GUIContent(DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.autoKey), Styles.kArmForRecordDisabled);
 
             track.SetCollapsed(!isExpanded);
 
@@ -472,24 +473,59 @@ namespace UnityEditor.Timeline
 
                 const float buttonSize = WindowConstants.trackHeaderButtonSize;
                 const float padding = WindowConstants.trackHeaderButtonPadding;
-                var buttonRect = new Rect(trackHeaderRect.xMax - buttonSize - padding, rect.y + ((rect.height - buttonSize) / 2f), buttonSize, buttonSize);
+                var buttonRect = new Rect(trackHeaderRect.xMax - buttonSize - padding, rect.y + (rect.height - buttonSize) / 2f, buttonSize, buttonSize);
 
                 rect.x += DrawTrackIconKind(rect, state);
-                DrawTrackBinding(rect, trackHeaderRect);
 
                 if (track is GroupTrack)
                     return;
 
-                buttonRect.x -= Spaced(DrawTrackDropDownMenu(buttonRect));
-                buttonRect.x -= Spaced(DrawLockMarkersButton(buttonRect, state));
-                buttonRect.x -= Spaced(DrawInlineCurveButton(buttonRect, state));
-                buttonRect.x -= Spaced(DrawMuteButton(buttonRect, state));
-                buttonRect.x -= Spaced(DrawLockButton(buttonRect, state));
-                buttonRect.x -= Spaced(DrawRecordButton(buttonRect, state));
-                buttonRect.x -= Spaced(DrawCustomTrackButton(buttonRect, state));
+                buttonRect.x -= DrawTrackDropDownMenu(buttonRect);
+                var suiteRect = DrawGeneralSuite(state, buttonRect);
+                suiteRect = DrawCustomSuite(state, suiteRect);
+
+                var bindingRect = new Rect(rect.x, rect.y, suiteRect.xMax - rect.x, rect.height);
+                DrawTrackBinding(bindingRect, trackHeaderRect);
             }
 
             m_ResizeHandle.Draw(trackHeaderRect, state);
+        }
+
+        Rect DrawGeneralSuite(WindowState state, Rect rect)
+        {
+            const float buttonWidth = WindowConstants.trackHeaderButtonSize + WindowConstants.trackHeaderButtonPadding;
+            var padding = DrawButtonSuite(3, ref rect);
+
+            DrawMuteButton(rect, state);
+            rect.x -= buttonWidth;
+            DrawLockButton(rect, state);
+            rect.x -= buttonWidth;
+            DrawLockMarkersButton(rect, state);
+            rect.x -= buttonWidth;
+
+            rect.x -= padding;
+            return rect;
+        }
+
+        Rect DrawCustomSuite(WindowState state, Rect rect)
+        {
+            var numberOfButtons = 0;
+            if (m_TrackDrawData.m_AllowsRecording || showTrackRecordingDisabled)
+                numberOfButtons++;
+            if (CanDrawInlineCurve())
+                numberOfButtons++;
+            if (drawer.HasCustomTrackHeaderButton())
+                numberOfButtons++;
+            if (numberOfButtons == 0)
+                return rect;
+
+            var padding = DrawButtonSuite(numberOfButtons, ref rect);
+
+            rect.x -= DrawRecordButton(rect, state);
+            rect.x -= DrawInlineCurveButton(rect, state);
+            rect.x -= DrawCustomTrackButton(rect, state);
+            rect.x -= padding;
+            return rect;
         }
 
         void DrawHeaderBackground(Rect headerRect)
@@ -552,7 +588,7 @@ namespace UnityEditor.Timeline
         {
             if (m_TrackDrawData.m_ShowTrackBindings)
             {
-                DoTrackBindingGUI(rect, headerRect);
+                DoTrackBindingGUI(rect);
                 return;
             }
 
@@ -581,8 +617,6 @@ namespace UnityEditor.Timeline
 
         float DrawTrackDropDownMenu(Rect rect)
         {
-            rect.y += WindowConstants.trackOptionButtonVerticalPadding;
-
             if (GUI.Button(rect, GUIContent.none, m_Styles.trackOptions))
             {
                 // the drop down will apply to all selected tracks
@@ -617,7 +651,9 @@ namespace UnityEditor.Timeline
             // Override enable state to display "Show Inline Curves" button in disabled state.
             bool prevEnabledState = GUI.enabled;
             GUI.enabled = true;
-            var newValue = GUI.Toggle(rect, track.GetShowInlineCurves(), GUIContent.none, DirectorStyles.Instance.curves);
+            var showInlineCurves = track.GetShowInlineCurves();
+            var tooltip = showInlineCurves ? Styles.trackCurvesBtnOnTooltip : Styles.trackCurvesBtnOffTooltip;
+            var newValue = GUI.Toggle(rect, track.GetShowInlineCurves(), tooltip, DirectorStyles.Instance.trackCurvesButton);
             GUI.enabled = prevEnabledState;
 
             if (newValue != track.GetShowInlineCurves())
@@ -626,11 +662,14 @@ namespace UnityEditor.Timeline
                 state.GetWindow().treeView.CalculateRowRects();
             }
 
-            return WindowConstants.trackHeaderButtonSize;
+            return WindowConstants.trackHeaderButtonSize + WindowConstants.trackHeaderButtonPadding;
         }
 
         float DrawRecordButton(Rect rect, WindowState state)
         {
+            var style = DirectorStyles.Instance.trackRecordButton;
+            const float buttonWidth = WindowConstants.trackHeaderButtonSize + WindowConstants.trackHeaderButtonPadding;
+
             if (m_TrackDrawData.m_AllowsRecording)
             {
                 bool isPlayerDisabled = state.editSequence.director != null && !state.editSequence.director.isActiveAndEnabled;
@@ -644,46 +683,37 @@ namespace UnityEditor.Timeline
                 }
 
                 if (goBinding == null && m_TrackDrawData.m_IsSubTrack)
-                {
                     goBinding = ParentTrack().GetGameObjectBinding(state.editSequence.director);
-                }
 
-                bool isTrackBindingValid = goBinding != null;
-                bool trackErrorDisableButton = !string.IsNullOrEmpty(m_TrackDrawOptions.errorText) && isTrackBindingValid && goBinding.activeInHierarchy;
-                bool disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid;
+                var isTrackBindingValid = goBinding != null;
+                var trackErrorDisableButton = !string.IsNullOrEmpty(m_TrackDrawOptions.errorText) && isTrackBindingValid && goBinding.activeInHierarchy;
+                var disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid;
                 using (new EditorGUI.DisabledScope(disableButton))
                 {
                     if (IsRecording(state))
                     {
                         state.editorWindow.Repaint();
-                        float remainder = Time.realtimeSinceStartup % 1;
+                        var remainder = Time.realtimeSinceStartup % 1;
 
-                        var animatedContent = s_ArmForRecordContentOn;
                         if (remainder < 0.22f)
-                        {
-                            animatedContent = GUIContent.none;
-                        }
-                        if (GUI.Button(rect, animatedContent, GUIStyle.none) || isPlayerDisabled || !isTrackBindingValid)
-                        {
+                            style = GUIStyle.none;
+                        if (GUI.Button(rect, Styles.kActiveRecordButtonTooltip, style) || isPlayerDisabled || !isTrackBindingValid)
                             state.UnarmForRecord(track);
-                        }
                     }
                     else
                     {
-                        if (GUI.Button(rect, s_ArmForRecordContentOff, GUIStyle.none))
-                        {
+                        if (GUI.Button(rect, Styles.kInactiveRecordButtonTooltip, style))
                             state.ArmForRecord(track);
-                        }
                     }
-                    return WindowConstants.trackHeaderButtonSize;
+                    return buttonWidth;
                 }
             }
 
             if (showTrackRecordingDisabled)
             {
                 using (new EditorGUI.DisabledScope(true))
-                    GUI.Button(rect, s_ArmForRecordDisabled, GUIStyle.none);
-                return k_ButtonSize;
+                    GUI.Button(rect, Styles.kDisabledRecordButtonTooltip, style);
+                return buttonWidth;
             }
 
             return 0.0f;
@@ -691,58 +721,56 @@ namespace UnityEditor.Timeline
 
         float DrawCustomTrackButton(Rect rect, WindowState state)
         {
-            if (drawer.DrawTrackHeaderButton(rect, track, state))
-            {
-                return WindowConstants.trackHeaderButtonSize;
-            }
-            return 0.0f;
-        }
-
-        float DrawLockMarkersButton(Rect rect, WindowState state)
-        {
-            if (track.GetMarkerCount() == 0)
+            if (!drawer.HasCustomTrackHeaderButton())
                 return 0.0f;
 
-            var markersShown = showMarkers;
-            var style = TimelineWindow.styles.collapseMarkers;
-            if (Event.current.type == EventType.Repaint)
-                style.Draw(rect, GUIContent.none, false, false, markersShown, false);
+            drawer.DrawTrackHeaderButton(rect, state);
+            return WindowConstants.trackHeaderButtonSize + WindowConstants.trackHeaderButtonPadding;
+        }
 
-            // Override enable state to display "Show Marker" button in disabled state.
-            bool prevEnabledState = GUI.enabled;
-            GUI.enabled = true;
-            if (GUI.Button(rect, DirectorStyles.markerCollapseButton, GUIStyle.none))
+        void DrawLockMarkersButton(Rect rect, WindowState state)
+        {
+            var hasMarkers = track.GetMarkerCount() != 0;
+            var markersShown = showMarkers && hasMarkers;
+            var style = TimelineWindow.styles.trackMarkerButton;
+
+            using (var check = new EditorGUI.ChangeCheckScope())
             {
-                state.GetWindow().SetShowTrackMarkers(track, !markersShown);
+                var tooltip = markersShown ? Styles.trackMarkerBtnOnTooltip : Styles.trackMarkerBtnOffTooltip;
+                var toggleMarkers = GUI.Toggle(rect, markersShown, tooltip, style);
+                if (check.changed && hasMarkers)
+                    state.GetWindow().SetShowTrackMarkers(track, toggleMarkers);
             }
-            GUI.enabled = prevEnabledState;
-            return WindowConstants.trackHeaderButtonSize;
         }
 
         static void ObjectBindingField(Rect position, Object obj, PlayableBinding binding)
         {
-            bool allowScene =
+            var allowScene =
                 typeof(GameObject).IsAssignableFrom(binding.outputTargetType) ||
                 typeof(Component).IsAssignableFrom(binding.outputTargetType);
 
-            using (var check = new EditorGUI.ChangeCheckScope())
+            var bindingFieldRect = EditorGUI.IndentedRect(position);
+            using (new GUIViewportScope(bindingFieldRect))
             {
-                // FocusType.Passive so it never gets focused when pressing tab
-                int controlId = GUIUtility.GetControlID("s_ObjectFieldHash".GetHashCode(), FocusType.Passive, position);
-                var newObject = UnityEditorInternals.DoObjectField(EditorGUI.IndentedRect(position), obj, binding.outputTargetType, controlId, allowScene);
-                if (check.changed)
+                using (var check = new EditorGUI.ChangeCheckScope())
                 {
-                    BindingUtility.Bind(TimelineEditor.inspectedDirector, binding.sourceObject as TrackAsset, newObject);
+                    // FocusType.Passive so it never gets focused when pressing tab
+                    int controlId = GUIUtility.GetControlID("s_ObjectFieldHash".GetHashCode(), FocusType.Passive, position);
+                    var newObject = UnityEditorInternals.DoObjectField(EditorGUI.IndentedRect(position), obj, binding.outputTargetType, controlId, allowScene);
+                    if (check.changed)
+                    {
+                        BindingUtility.Bind(TimelineEditor.inspectedDirector, binding.sourceObject as TrackAsset, newObject);
+                    }
                 }
             }
         }
 
-        void DoTrackBindingGUI(Rect rect, Rect headerRect)
+        void DoTrackBindingGUI(Rect rect)
         {
             var bindingRect = new Rect(
                 rect.xMin,
                 rect.y + (rect.height - WindowConstants.trackHeaderButtonSize) / 2f,
-                headerRect.xMax - WindowConstants.trackHeaderMaxButtonsWidth - rect.xMin,
+                Mathf.Min(rect.width, WindowConstants.trackBindingMaxSize),
                 WindowConstants.trackHeaderButtonSize);
 
             if (bindingRect.Contains(Event.current.mousePosition) && TimelineDragging.IsDraggingEvent() && DragAndDrop.objectReferences.Length == 1)

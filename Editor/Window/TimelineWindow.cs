@@ -523,7 +523,7 @@ namespace UnityEditor.Timeline
         {
             bool disabled = state == null || state.editSequence.asset == null;
 
-            m_LockTracker.ShowButton(r, DirectorStyles.Instance.lockButton, disabled);
+            m_LockTracker.ShowButton(r, DirectorStyles.Instance.timelineLockButton, disabled);
         }
 
         internal void TreeViewKeyboardCallback()

@@ -35,8 +35,8 @@ namespace UnityEditor.Timeline
                 bool autoScale = (clip.clipCaps & ClipCaps.AutoScale) == ClipCaps.AutoScale;
 
                 // TODO Do not use Event.current from here.
-                bool affectTimeScale = ( autoScale && (Event.current.modifiers != EventModifiers.Shift))
-                                    || (!autoScale && (Event.current.modifiers == EventModifiers.Shift));
+                bool affectTimeScale = (autoScale && (Event.current.modifiers != EventModifiers.Shift))
+                    || (!autoScale && (Event.current.modifiers == EventModifiers.Shift));
                 return affectTimeScale;
             }
         }

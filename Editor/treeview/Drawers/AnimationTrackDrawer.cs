@@ -1,9 +1,6 @@
 using System;
-using System.ComponentModel;
-using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -11,32 +8,30 @@ namespace UnityEditor.Timeline
     [CustomTrackDrawer(typeof(AnimationTrack)), UsedImplicitly]
     class AnimationTrackDrawer : TrackDrawer
     {
-        internal static class Styles
+        static class Styles
         {
-            public static readonly GUIContent AnimationButtonOnTooltip = EditorGUIUtility.TrTextContent("", "Avatar Mask enabled\nClick to disable");
-            public static readonly GUIContent AnimationButtonOffTooltip = EditorGUIUtility.TrTextContent("", "Avatar Mask disabled\nClick to enable");
+            public static readonly GUIContent AvatarMaskActiveTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Enable Avatar Mask");
+            public static readonly GUIContent AvatarMaskInactiveTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Disable Avatar Mask");
         }
 
-        public override bool DrawTrackHeaderButton(Rect rect, TrackAsset track, WindowState state)
+        public override void DrawTrackHeaderButton(Rect rect, WindowState state)
         {
             var animTrack = track as AnimationTrack;
-            bool hasAvatarMask = animTrack != null && animTrack.avatarMask != null;
-            if (hasAvatarMask)
+            if (animTrack == null) return;
+
+            var style = DirectorStyles.Instance.trackAvatarMaskButton;
+            var tooltip = animTrack.applyAvatarMask ? Styles.AvatarMaskInactiveTooltip : Styles.AvatarMaskActiveTooltip;
+
+            using (var check = new EditorGUI.ChangeCheckScope())
             {
-                var style = animTrack.applyAvatarMask
-                    ? DirectorStyles.Instance.avatarMaskOn
-                    : DirectorStyles.Instance.avatarMaskOff;
-                var tooltip = animTrack.applyAvatarMask
-                    ? Styles.AnimationButtonOnTooltip
-                    : Styles.AnimationButtonOffTooltip;
-                if (GUI.Button(rect, tooltip, style))
+                var toggle = GUI.Toggle(rect, animTrack.applyAvatarMask, tooltip, style);
+                if (check.changed)
                 {
-                    animTrack.applyAvatarMask = !animTrack.applyAvatarMask;
+                    animTrack.applyAvatarMask = toggle;
                     if (state != null)
                         state.rebuildGraph = true;
                 }
             }
-            return hasAvatarMask;
         }
 
         public override void DrawRecordingBackground(Rect trackRect, TrackAsset trackAsset, Vector2 visibleTime, WindowState state)
@@ -81,6 +76,14 @@ namespace UnityEditor.Timeline
 
             var r = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
             ClipDrawer.DrawClipSelectionBorder(r, ClipBorder.Recording(), ClipBlends.kNone);
+        }
+
+        public override bool HasCustomTrackHeaderButton()
+        {
+            var animTrack = track as AnimationTrack;
+            if (animTrack == null) return false;
+
+            return animTrack != null && animTrack.avatarMask != null;
         }
     }
 }

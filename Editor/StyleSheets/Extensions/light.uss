@@ -6,24 +6,24 @@
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineActivation.png");
 }
 
-.Icon-AutoKey {
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineAutokey.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineAutokey@2x.png");
+.trackRecordButton {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackRecordButtonDisabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackRecordButtonDisabled@2x.png");
 }
 
-.Icon-AutoKey:active {
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineAutokey_active.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineAutokey_active@2x.png");
+.trackRecordButton:checked {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackRecordButtonEnabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackRecordButtonEnabled@2x.png");
 }
 
-.Icon-AvatarMaskOff {
-    /* GUIState.background */
-    background-image: resource("Builtin Skins/LightSkin/Images/AvatarMaskDisabled.png");
+.trackAvatarMaskButton {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackAvatarButtonDisabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/AvatarMaskDisabled.png");
 }
 
-.Icon-AvatarMaskOn {
-    /* GUIState.background */
-    background-image: resource("Builtin Skins/LightSkin/Images/AvatarMaskEnabled.png");
+.trackAvatarMaskButton:checked {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackAvatarButtonEnabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackAvatarButtonEnabled.png");
 }
 
 .Icon-ClipIn {
@@ -41,27 +41,14 @@
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineClipGradientSelected.png");
 }
 
-.Icon-Curves {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineCurvesOff.png");
+.trackCurvesButton {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackCurvesButtonDisabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackCurvesButtonDisabled@2x.png");
 }
 
-/* GUIStyle.active */
-.Icon-Curves:hover:active {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineCurvesOn.png");
-}
-
-/* GUIStyle.onActive */
-.Icon-Curves:hover:active:checked {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineCurvesOn.png");
-}
-
-/* GUIStyle.onNormal */
-.Icon-Curves:checked {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineCurvesOn.png");
+.trackCurvesButton:checked {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackCurvesButtonEnabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackCurvesButtonEnabled@2x.png");
 }
 
 .Icon-Endmarker {
@@ -99,14 +86,14 @@
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineSignalSelected.png");
 }
 
-.TrackCollapseMarkerButton {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineCollapseMarkerButtonDisabled.png");
+.trackCollapseMarkerButton {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMarkerButtonDisabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMarkerButtonDisabled@2x.png");
 }
 
-.TrackCollapseMarkerButton:checked {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineCollapseMarkerButtonEnabled.png");
+.trackCollapseMarkerButton:checked {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMarkerButtonEnabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMarkerButtonEnabled@2x.png");
 }
 
 .Icon-ExtrapolationContinue {
@@ -174,55 +161,29 @@
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineKeyframe.png");
 }
 
-.Icon-Locked {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton@2x.png");
-}
-
-/* GUIStyle.active */
-.Icon-Locked:hover:active {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton@2x.png");
-}
-
-/* GUIStyle.focused */
-.Icon-Locked:focus {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton@2x.png");
-}
-
-/* GUIStyle.hover */
-.Icon-Locked:hover {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton@2x.png");
-}
-
-/* GUIStyle.onActive */
-.Icon-Locked:hover:active:checked {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton@2x.png");
-}
-
-/* GUIStyle.onNormal */
-.Icon-Locked:checked {
-    /* GUIState.background */
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineLockButton@2x.png");
-}
-
-.Icon-LockedBG {
+.trackLockOverlay {
     /* GUIState.background */
     background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineDisabledBackground.png");
 }
 
-.Icon-Mute {
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineEye.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/LightSkin/TimelineEye@2x.png");
+.trackMuteButton {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMuteButtonDisabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMuteButtonDisabled@2x.png");
+}
+
+.trackMuteButton:checked {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMuteButtonEnabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMuteButtonEnabled@2x.png");
+}
+
+.trackLockButton {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackLockButtonDisabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackLockButtonDisabled@2x.png");
+}
+
+.trackLockButton:checked {
+    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackLockButtonEnabled.png");
+    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackLockButtonEnabled@2x.png");
 }
 
 .Icon-Options {
@@ -279,4 +240,8 @@
 
 .sequenceSwitcher{
     background-color: rgb(208, 208, 208);
+}
+
+.trackButtonSuite {
+    background-color: rgba(241, 241, 241, 0.7);
 }

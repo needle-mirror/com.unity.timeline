@@ -86,11 +86,6 @@ namespace UnityEditor.Timeline
             return depth;
         }
 
-        internal static float Spaced(float width)
-        {
-            return width > 0 ? width + WindowConstants.trackHeaderButtonSpacing : 0;
-        }
-
         void DrawTrackButtons(Rect headerRect, WindowState state)
         {
             const float buttonSize = WindowConstants.trackHeaderButtonSize;
@@ -109,8 +104,13 @@ namespace UnityEditor.Timeline
                 SequencerContextMenu.ShowNewTracksContextMenu(SelectionManager.SelectedTracks().ToArray(), TimelineWindow.state, buttonRect);
             }
             buttonRect.x -= buttonSize;
-            buttonRect.x -= Spaced(DrawMuteButton(buttonRect, state));
-            buttonRect.x -= Spaced(DrawLockButton(buttonRect, state));
+
+            var suitePadding = DrawButtonSuite(2, ref buttonRect);
+
+            DrawMuteButton(buttonRect, state);
+            buttonRect.x -= buttonSize + padding;
+            DrawLockButton(buttonRect, state);
+            buttonRect.x -= suitePadding;
         }
 
         public void SetExpanded(bool expanded)
@@ -305,6 +305,19 @@ namespace UnityEditor.Timeline
             if (groupGui.children == null)
                 return true;
             return groupGui.children.OfType<TimelineGroupGUI>().All(AllChildrenMuted);
+        }
+
+        protected static float DrawButtonSuite(int numberOfButtons, ref Rect buttonRect)
+        {
+            var style = DirectorStyles.Instance.trackButtonSuite;
+            var buttonWidth = WindowConstants.trackHeaderButtonSize * numberOfButtons + WindowConstants.trackHeaderButtonPadding * Math.Max(0, numberOfButtons - 1);
+            var suiteWidth = buttonWidth + style.padding.right + style.padding.left;
+
+            var rect = new Rect(buttonRect.xMax - style.margin.right - suiteWidth, buttonRect.y + style.margin.top, suiteWidth, buttonRect.height);
+            if (Event.current.type == EventType.Repaint)
+                style.Draw(rect, false, false, false, false);
+            buttonRect.x -= style.margin.right + style.padding.right;
+            return style.margin.left + style.padding.left;
         }
     }
 }

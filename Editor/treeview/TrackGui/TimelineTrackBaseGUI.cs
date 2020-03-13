@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -15,11 +14,15 @@ namespace UnityEditor.Timeline
             public static readonly GUIContent s_Muted = EditorGUIUtility.TrTextContent("Muted");
             public static readonly GUIContent s_PartiallyMuted = EditorGUIUtility.TrTextContent("Partially Muted");
 
-            public static readonly Texture2D lockBg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.lockedBG);
+            public static readonly GUIContent trackMuteBtnOnTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Umute");
+            public static readonly GUIContent trackMuteBtnOffTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Mute");
+            public static readonly GUIContent trackLockBtnOnTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Unlock");
+            public static readonly GUIContent trackLockBtnOffTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Lock");
+
+            public static readonly Texture2D lockBg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.trackLockOverlay);
         }
 
         protected bool m_IsRoot = false;
-        protected const float k_ButtonSize = 16.0f;
 
         readonly TimelineTreeViewGUI m_TreeViewGUI;
         readonly TrackDrawer m_Drawer;
@@ -149,41 +152,34 @@ namespace UnityEditor.Timeline
             TimelineWindow.instance.OverlayDrawData.Add(TimelineWindow.OverlayData.CreateTextBoxOverlay(GUIClip.Unclip(textRect), content.text, styles.fontClip, Color.white, styles.customSkin.colorLockTextBG, styles.displayBackground));
         }
 
-        protected float DrawMuteButton(Rect rect, WindowState state)
+        protected void DrawMuteButton(Rect rect, WindowState state)
         {
-            if (track.mutedInHierarchy)
+            using (new EditorGUI.DisabledScope(TimelineUtility.IsParentMuted(track)))
             {
-                using (new EditorGUI.DisabledScope(TimelineUtility.IsParentMuted(track)))
+                using (var check = new EditorGUI.ChangeCheckScope())
                 {
-                    if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.mute))
-                    {
-                        MuteTrack.Mute(state, new[] { track }, false);
-                    }
+                    var isMuted = track.mutedInHierarchy;
+                    var tooltip = isMuted ? Styles.trackMuteBtnOnTooltip : Styles.trackMuteBtnOffTooltip;
+                    var muted = GUI.Toggle(rect, isMuted, tooltip, TimelineWindow.styles.trackMuteButton);
+                    if (check.changed)
+                        MuteTrack.Mute(state, new[] { track }, muted);
                 }
-
-                return WindowConstants.trackHeaderButtonSize;
             }
-
-            return 0.0f;
         }
 
-        protected float DrawLockButton(Rect rect, WindowState state)
+        protected void DrawLockButton(Rect rect, WindowState state)
         {
-            if (track.lockedInHierarchy)
+            using (new EditorGUI.DisabledScope(TimelineUtility.IsLockedFromGroup(track)))
             {
-                // if the parent is locked, show it the lock disabled
-                using (new EditorGUI.DisabledScope(TimelineUtility.IsLockedFromGroup(track)))
+                using (var check = new EditorGUI.ChangeCheckScope())
                 {
-                    if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.locked))
-                    {
-                        LockTrack.SetLockState(new[] { track }, !track.locked, state);
-                    }
+                    var isLocked = track.lockedInHierarchy;
+                    var tooltip = isLocked ? Styles.trackLockBtnOnTooltip : Styles.trackLockBtnOffTooltip;
+                    var locked = GUI.Toggle(rect, track.lockedInHierarchy, tooltip, TimelineWindow.styles.trackLockButton);
+                    if (check.changed)
+                        LockTrack.SetLockState(new[] { track }, locked, state);
                 }
-
-                return WindowConstants.trackHeaderButtonSize;
             }
-
-            return 0.0f;
         }
 
         public void DrawInsertionMarkers(Rect rowRectWithIndent)

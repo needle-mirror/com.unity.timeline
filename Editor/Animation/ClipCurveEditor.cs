@@ -290,15 +290,14 @@ namespace UnityEditor
 
         public void DrawCurveEditor(Rect rect, WindowState state, Vector2 clipRange, bool loop, bool selected)
         {
-            var curveEndTime = m_DataSource.start + m_DataSource.animationClip.length / m_DataSource.timeScale;
-            var curveRange = new Vector2(state.TimeToPixel(m_DataSource.start), state.TimeToPixel(curveEndTime));
-
-            SetupMarginsAndRect(rect, curveRange, state);
+            SetupMarginsAndRect(rect, state);
             UpdateCurveEditorIfNeeded(state);
 
             if (m_ShouldRestoreShownArea)
                 RestoreShownArea();
-            m_CurveEditor.SetShownHRangeInsideMargins(0.0f, m_DataSource.animationClip.length); //align the curve with the clip.
+
+            var curveVisibleTimeRange = CalculateCurveVisibleTimeRange(state.timeAreaShownRange, m_DataSource);
+            m_CurveEditor.SetShownHRangeInsideMargins(curveVisibleTimeRange.x, curveVisibleTimeRange.y); //align the curve with the clip.
 
             if (m_LastFrameRate != state.referenceSequence.frameRate)
             {
@@ -313,10 +312,10 @@ namespace UnityEditor
             {
                 var localRect = new Rect(0.0f, 0.0f, rect.width, rect.height);
                 var localClipRange = new Vector2(Mathf.Floor(clipRange.x - rect.xMin), Mathf.Ceil(clipRange.y - rect.xMin));
-                var localCurveRange = new Vector2(Mathf.Floor(curveRange.x - rect.xMin), Mathf.Ceil(curveRange.y - rect.xMin));
+                var curveStartPosX = Mathf.Floor(state.TimeToPixel(m_DataSource.start) - rect.xMin);
 
-                EditorGUI.DrawRect(new Rect(localCurveRange.x, 0.0f, 1.0f, rect.height), new Color(1.0f, 1.0f, 1.0f, 0.5f));
-                DrawCurveEditorBackground(localRect, localClipRange);
+                EditorGUI.DrawRect(new Rect(curveStartPosX, 0.0f, 1.0f, rect.height), new Color(1.0f, 1.0f, 1.0f, 0.5f));
+                DrawCurveEditorBackground(localRect);
 
                 if (selected)
                 {
@@ -334,16 +333,27 @@ namespace UnityEditor
                     OnCurvesUpdated();
 
                 DrawOverlay(localRect, localClipRange, DirectorStyles.Instance.customSkin.colorInlineCurveOutOfRangeOverlay);
-                DrawGrid(localRect, localCurveRange);
+                DrawGrid(localRect, curveStartPosX);
             }
         }
 
-        void SetupMarginsAndRect(Rect rect, Vector2 curveRange, WindowState state)
+        static Vector2 CalculateCurveVisibleTimeRange(Vector2 timeAreaShownRange, CurveDataSource curve)
         {
-            var timelineWidth = state.TimeToPixel(Mathf.Max((float)state.editSequence.duration, state.timeAreaShownRange.y));
-            m_CurveEditor.rect = new Rect(-rect.xMin, 0.0f, timelineWidth, rect.height);
-            m_CurveEditor.leftmargin = curveRange.x;
-            m_CurveEditor.rightmargin = timelineWidth - curveRange.y;
+            var curveVisibleTimeRange = new Vector2
+            {
+                x = Math.Max(0.0f, timeAreaShownRange.x - curve.start),
+                y = timeAreaShownRange.y - curve.start
+            };
+            return curveVisibleTimeRange * curve.timeScale;
+        }
+
+        void SetupMarginsAndRect(Rect rect, WindowState state)
+        {
+            var startX = state.TimeToPixel(m_DataSource.start) - rect.x;
+            var timelineWidth = state.timeAreaRect.width;
+            m_CurveEditor.rect = new Rect(0.0f, 0.0f, timelineWidth, rect.height);
+            m_CurveEditor.leftmargin = Math.Max(startX, 0.0f);
+            m_CurveEditor.rightmargin = 0.0f;
             m_CurveEditor.topmargin = m_CurveEditor.bottommargin = CalculateTopMargin(rect.height);
         }
 
@@ -356,7 +366,7 @@ namespace UnityEditor
             m_ShouldRestoreShownArea = false;
         }
 
-        static void DrawCurveEditorBackground(Rect rect, Vector2 activeRange)
+        static void DrawCurveEditorBackground(Rect rect)
         {
             if (EditorGUIUtility.isProSkin)
                 return;
@@ -396,9 +406,9 @@ namespace UnityEditor
             EditorGUI.DrawRect(rightSide, color);
         }
 
-        void DrawGrid(Rect rect, Vector2 curveRange)
+        void DrawGrid(Rect rect, float curveXPosition)
         {
-            var gridXPos = Mathf.Max(curveRange.x - s_GridLabelWidth, rect.xMin);
+            var gridXPos = Mathf.Max(curveXPosition - s_GridLabelWidth, rect.xMin);
             var gridRect = new Rect(gridXPos, rect.y, s_GridLabelWidth, rect.height);
             var originalRect = m_CurveEditor.rect;
 

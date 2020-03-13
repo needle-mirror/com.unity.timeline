@@ -1,3 +1,5 @@
+
+using System;
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
@@ -27,6 +29,9 @@ namespace UnityEngine.Timeline
         private const string k_RootQ = "RootQ";
 
 
+        internal static Object s_PreviewDriver;
+
+
         internal class EditorCurveBindingComparer : IEqualityComparer<EditorCurveBinding>
         {
             public bool Equals(EditorCurveBinding x, EditorCurveBinding y) { return x.path.Equals(y.path) && x.type == y.type && x.propertyName == y.propertyName; }
@@ -41,6 +46,25 @@ namespace UnityEngine.Timeline
         // a dictionary is faster than a hashset, because the capacity can be pre-set
         private static readonly Dictionary<EditorCurveBinding, int> s_CurveSet = new Dictionary<EditorCurveBinding, int>(10000, EditorCurveBindingComparer.Instance);
         private static readonly AnimatorBindingCache s_BindingCache = new AnimatorBindingCache();
+
+        // string.StartsWith is slow (https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity5.html)
+        // hand rolled version has best performance.
+        private static bool FastStartsWith(string a, string toCompare)
+        {
+            int aLen = a.Length;
+            int bLen = toCompare.Length;
+
+            int ap = 0;
+            int bp = 0;
+
+            while (ap < aLen && bp < bLen && a[ap] == toCompare[bp])
+            {
+                ap++;
+                bp++;
+            }
+
+            return (bp == bLen);
+        }
 
         public static void ClearCaches()
         {
@@ -65,6 +89,18 @@ namespace UnityEngine.Timeline
             return bindings;
         }
 
+        public static int GetClipHash(List<AnimationClip> clips)
+        {
+            int hash = 0;
+
+            foreach (var clip in clips)
+            {
+                var stats = AnimationUtility.GetAnimationClipStats(clip);
+                hash = HashUtility.CombineHash(hash, clip.GetHashCode(), stats.clips, stats.size, stats.totalCurves);
+            }
+            return hash;
+        }
+
         public static void PreviewFromCurves(GameObject animatorRoot, IEnumerable<EditorCurveBinding> keys)
         {
             if (!AnimationMode.InAnimationMode())
@@ -77,9 +113,9 @@ namespace UnityEngine.Timeline
                     continue;
 
                 bool isTransform = typeof(Transform).IsAssignableFrom(binding.type);
-                if (isTransform && binding.propertyName == AnimatorBindingCache.TRPlaceHolder)
+                if (isTransform && binding.propertyName.Equals(AnimatorBindingCache.TRPlaceHolder))
                     AddTRBinding(animatorRoot, binding);
-                else if (isTransform && binding.propertyName == AnimatorBindingCache.ScalePlaceholder)
+                else if (isTransform && binding.propertyName.Equals(AnimatorBindingCache.ScalePlaceholder))
                     AddScaleBinding(animatorRoot, binding);
                 else
                     AnimationMode.AddEditorCurveBinding(avatarRoot, binding);
@@ -102,7 +138,7 @@ namespace UnityEngine.Timeline
                     continue;
                 }
 
-                if (typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName == AnimatorBindingCache.TRPlaceHolder)
+                if (typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.Equals( AnimatorBindingCache.TRPlaceHolder))
                 {
                     if (string.IsNullOrEmpty(binding.path))
                         rootMotion = true;
@@ -173,14 +209,16 @@ namespace UnityEngine.Timeline
             // Root Transform TR.
             if (typeof(Transform).IsAssignableFrom(binding.type) && string.IsNullOrEmpty(binding.path))
             {
-                return binding.propertyName.StartsWith(k_Pos) || binding.propertyName.StartsWith(k_Rot);
+                return FastStartsWith(binding.propertyName, k_Pos)  || FastStartsWith(binding.propertyName,k_Rot);
             }
 
             // MotionCurves/RootCurves.
             if (binding.type == typeof(Animator))
             {
-                return binding.propertyName.StartsWith(k_MotionT) || binding.propertyName.StartsWith(k_MotionQ) ||
-                    binding.propertyName.StartsWith(k_RootT) ||  binding.propertyName.StartsWith(k_RootQ);
+                return FastStartsWith(binding.propertyName, k_MotionT) ||
+                       FastStartsWith(binding.propertyName, k_MotionQ) ||
+                       FastStartsWith(binding.propertyName, k_RootT) ||
+                       FastStartsWith(binding.propertyName, k_RootQ);
             }
 
             return false;
@@ -208,32 +246,31 @@ namespace UnityEngine.Timeline
 
         private static void AddTRBinding(GameObject root, EditorCurveBinding binding)
         {
-            // This is faster than AnimationMode.AddTransformTR
-            binding.propertyName = k_PosX; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_PosY; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_PosZ; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_RotX; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_RotY; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_RotZ; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_RotW; AnimationMode.AddEditorCurveBinding(root, binding);
+            var t = root.transform.Find(binding.path);
+            if (t != null)
+            {
+                DrivenPropertyManager.RegisterProperty(s_PreviewDriver, t, "m_LocalPosition");
+                DrivenPropertyManager.RegisterProperty(s_PreviewDriver, t, "m_LocalRotation");
+            }
         }
 
         private static void AddScaleBinding(GameObject root, EditorCurveBinding binding)
         {
-            // AnimationMode.AddTransformTRS is slow
-            binding.propertyName = k_ScaleX; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_ScaleY; AnimationMode.AddEditorCurveBinding(root, binding);
-            binding.propertyName = k_ScaleZ; AnimationMode.AddEditorCurveBinding(root, binding);
+            var t = root.transform.Find(binding.path);
+            if (t != null)
+                DrivenPropertyManager.RegisterProperty(s_PreviewDriver, t, "m_LocalScale");
         }
 
         private static bool IsEuler(EditorCurveBinding binding)
         {
-            return typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.StartsWith(k_EulerAnglesRaw);
+            return FastStartsWith(binding.propertyName, k_EulerAnglesRaw) &&
+                   typeof(Transform).IsAssignableFrom(binding.type);
+
         }
 
         private static bool IsAvatarBinding(EditorCurveBinding binding)
         {
-            return typeof(Animator).IsAssignableFrom(binding.type) && string.IsNullOrEmpty(binding.path);
+            return string.IsNullOrEmpty(binding.path) && typeof(Animator) == binding.type;
         }
 
         private static bool IsSkeletalBinding(EditorCurveBinding binding)

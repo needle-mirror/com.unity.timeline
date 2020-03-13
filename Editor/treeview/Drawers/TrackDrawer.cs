@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.Timeline;
 namespace UnityEditor.Timeline
 {
@@ -33,10 +30,12 @@ namespace UnityEditor.Timeline
 
         protected TrackAsset track { get; private set; }
 
-        public virtual bool DrawTrackHeaderButton(Rect rect, TrackAsset track, WindowState state)
+        public virtual bool HasCustomTrackHeaderButton()
         {
             return false;
         }
+
+        public virtual void DrawTrackHeaderButton(Rect rect, WindowState state) {}
 
         public virtual bool DrawTrack(Rect trackRect, TrackAsset trackAsset, Vector2 visibleTime, WindowState state)
         {

@@ -169,6 +169,8 @@ namespace UnityEngine.Timeline
 #if UNITY_EDITOR
         private AnimationClip m_DefaultPoseClip;
         private AnimationClip m_CachedPropertiesClip;
+        private int           m_CachedHash;
+        private EditorCurveBinding[] m_CachedBindings;
 
         AnimationOffsetPlayable m_ClipOffset;
 
@@ -643,7 +645,6 @@ namespace UnityEngine.Timeline
             return mixer;
         }
 
-
         private int GetDefaultBlendCount()
         {
 #if  UNITY_EDITOR
@@ -914,11 +915,16 @@ namespace UnityEngine.Timeline
             if (hasHumanMotion)
                 animClips.Add(GetDefaultHumanoidClip());
 
-            var bindings = AnimationPreviewUtilities.GetBindings(animator.gameObject, animClips);
-
-            m_CachedPropertiesClip = AnimationPreviewUtilities.CreateDefaultClip(animator.gameObject, bindings);
-            AnimationPreviewUtilities.PreviewFromCurves(animator.gameObject, bindings); // faster to preview from curves then an animation clip
             m_DefaultPoseClip = hasHumanMotion ? GetDefaultHumanoidClip() : null;
+            var hash = AnimationPreviewUtilities.GetClipHash(animClips);
+            if (m_CachedBindings == null || m_CachedHash != hash)
+            {
+                m_CachedBindings = AnimationPreviewUtilities.GetBindings(animator.gameObject, animClips);
+                m_CachedPropertiesClip = AnimationPreviewUtilities.CreateDefaultClip(animator.gameObject, m_CachedBindings);
+                m_CachedHash = hash;
+            }
+
+            AnimationPreviewUtilities.PreviewFromCurves(animator.gameObject, m_CachedBindings); // faster to preview from curves then an animation clip
 #endif
         }
 
@@ -1018,7 +1024,6 @@ namespace UnityEngine.Timeline
             // walk the hierarchy to find the first bone with this name
             return FindInHierarchyBreadthFirst(animator.transform, rootName);
         }
-
 
         internal bool AnimatesRootTransform()
         {

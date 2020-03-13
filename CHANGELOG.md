@@ -1,10 +1,22 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.0-preview.2] - 2020-03-13
+
+### Changed
+- Improved performance with ControlTracks in preview mode for cases where multiple Control Tracks are assigned to the same PlayableDirector.
+- Improved layout and appearance of track header buttons.
+
 ## [1.4.0-preview.1] - 2020-02-27
 
 ### Added
 - Added `ClipCaps.AutoScale` to automatically change the speed multiplier value when the clip is trimmed in the Timeline window.
+
+## [1.3.1] - 2020-03-13
+
+### Fixed
+- Fixed issue where the curves view would flicker when editing multiple keys. ([1217326](https://issuetracker.unity3d.com/product/unity/issues/guid/1217326/))
+- Fixed issue where adding a keyframe in the curves view at the end of a clip would not place the keyframe at the correct position. ([1221337](https://issuetracker.unity3d.com/product/unity/issues/guid/1221337/))
 
 ## [1.3.0] - 2020-02-26
 

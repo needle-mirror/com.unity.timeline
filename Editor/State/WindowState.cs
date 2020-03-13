@@ -78,7 +78,10 @@ namespace UnityEditor.Timeline
             get
             {
                 if (s_PreviewDriver == null)
+                {
                     s_PreviewDriver = ScriptableObject.CreateInstance<AnimationModeDriver>();
+                    AnimationPreviewUtilities.s_PreviewDriver = s_PreviewDriver;
+                }
                 return s_PreviewDriver;
             }
         }
