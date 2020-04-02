@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.2] - 2020-04-02
+
+### Fixed
+- Fixed issue where the clip Inspector's curve preview would close when clicking on the curve. ([1228127](https://issuetracker.unity3d.com/product/unity/issues/guid/1228127/))
+- Fixed issue where the curves view was not synced between Animation and Timeline windows. ([1213937](https://issuetracker.unity3d.com/issues/animation-window-curves-are-not-updated-immediately-when-changing-them-in-timeline-window))
+- Fixed issue where play range didn't loop when range ends on the final frame. ([1215926](https://issuetracker.unity3d.com/issues/timeline-play-range-doesnt-loop-when-play-range-ends-on-the-final-frame))
+- Fixed issue where displaying an array in the curves view generated errors. ([1178251](https://issuetracker.unity3d.com/product/unity/issues/guid/1178251/))
+
 ## [1.3.1] - 2020-03-13
 
 ### Fixed

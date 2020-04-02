@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
@@ -53,7 +54,7 @@ namespace UnityEditor.Timeline
                 EnsurePlayRangeIsRespected();
             }
 
-            if (director.extrapolationMode == DirectorWrapMode.None && director.playableGraph.IsValid() && director.playableGraph.IsDone())
+            if (director.extrapolationMode == DirectorWrapMode.None && director.playableGraph.IsValid() && !state.playRangeEnabled && director.playableGraph.IsDone())
             {
                 //reset time if we hit the end of the timeline
                 state.masterSequence.time = 0.0;
@@ -73,8 +74,14 @@ namespace UnityEditor.Timeline
         {
             var playRangeTime = state.playRange;
             var time = state.masterSequence.time;
-            if (time > playRangeTime.y || time < playRangeTime.x)
+            if (Math.Abs(time - playRangeTime.y) < TimeUtility.kFrameRateEpsilon || time > playRangeTime.y || time < playRangeTime.x)
+            {
                 state.masterSequence.time = playRangeTime.x;
+                // case 1215926 : Special case to make the director mode to play if the wrap mode is None.
+                // In that mode, the engine stop the graph before we can ensure play range is respected.
+                if (!state.playing && state.masterSequence.director.extrapolationMode == DirectorWrapMode.None)
+                    state.Play();
+            }
         }
     }
 }
