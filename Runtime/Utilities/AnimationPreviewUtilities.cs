@@ -1,4 +1,3 @@
-
 using System;
 #if UNITY_EDITOR
 using System.Collections.Generic;
@@ -138,7 +137,7 @@ namespace UnityEngine.Timeline
                     continue;
                 }
 
-                if (typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.Equals( AnimatorBindingCache.TRPlaceHolder))
+                if (typeof(Transform).IsAssignableFrom(binding.type) && binding.propertyName.Equals(AnimatorBindingCache.TRPlaceHolder))
                 {
                     if (string.IsNullOrEmpty(binding.path))
                         rootMotion = true;
@@ -209,16 +208,16 @@ namespace UnityEngine.Timeline
             // Root Transform TR.
             if (typeof(Transform).IsAssignableFrom(binding.type) && string.IsNullOrEmpty(binding.path))
             {
-                return FastStartsWith(binding.propertyName, k_Pos)  || FastStartsWith(binding.propertyName,k_Rot);
+                return FastStartsWith(binding.propertyName, k_Pos)  || FastStartsWith(binding.propertyName, k_Rot);
             }
 
             // MotionCurves/RootCurves.
             if (binding.type == typeof(Animator))
             {
                 return FastStartsWith(binding.propertyName, k_MotionT) ||
-                       FastStartsWith(binding.propertyName, k_MotionQ) ||
-                       FastStartsWith(binding.propertyName, k_RootT) ||
-                       FastStartsWith(binding.propertyName, k_RootQ);
+                    FastStartsWith(binding.propertyName, k_MotionQ) ||
+                    FastStartsWith(binding.propertyName, k_RootT) ||
+                    FastStartsWith(binding.propertyName, k_RootQ);
             }
 
             return false;
@@ -264,8 +263,7 @@ namespace UnityEngine.Timeline
         private static bool IsEuler(EditorCurveBinding binding)
         {
             return FastStartsWith(binding.propertyName, k_EulerAnglesRaw) &&
-                   typeof(Transform).IsAssignableFrom(binding.type);
-
+                typeof(Transform).IsAssignableFrom(binding.type);
         }
 
         private static bool IsAvatarBinding(EditorCurveBinding binding)

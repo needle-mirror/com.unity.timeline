@@ -277,6 +277,7 @@ namespace UnityEditor
                     // update just the curves
                     m_BindingHierarchy.RefreshCurves();
                 }
+                m_CurveEditor.InvalidateSelectionBounds();
                 m_LastClipVersion = version;
             }
 

@@ -53,7 +53,8 @@ namespace UnityEditorInternal
             if (propertyName.Contains("Array"))
             {
                 propertyName = propertyName.Replace("Array.", "");
-                propertyName = propertyName.Replace(arrayPrefixToRemove, "");
+                if (!string.IsNullOrWhiteSpace(arrayPrefixToRemove))
+                    propertyName = propertyName.Replace(arrayPrefixToRemove, "");
                 propertyName = propertyName.TrimStart('.');
             }
             return propertyName;

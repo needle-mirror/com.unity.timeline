@@ -84,7 +84,13 @@ namespace UnityEditor.Timeline
         void OnCurveModified(AnimationClip clip, EditorCurveBinding binding, AnimationUtility.CurveModifiedType type)
         {
             InspectorWindow.RepaintAllInspectors();
-            if (state == null || state.previewMode == false || state.rebuildGraph)
+            if (state == null || state.rebuildGraph)
+                return;
+
+            //Force refresh of curve when modified by another editor.
+            Repaint();
+
+            if (state.previewMode == false)
                 return;
 
             if (type == AnimationUtility.CurveModifiedType.CurveModified)

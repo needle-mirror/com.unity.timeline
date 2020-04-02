@@ -12,7 +12,7 @@ namespace UnityEngine.Timeline
     public class ControlTrack : TrackAsset
     {
 #if UNITY_EDITOR
-       private static readonly HashSet<PlayableDirector> s_ProcessedDirectors = new HashSet<PlayableDirector>();
+        private static readonly HashSet<PlayableDirector> s_ProcessedDirectors = new HashSet<PlayableDirector>();
 
         /// <inheritdoc/>
         public override void GatherProperties(PlayableDirector director, IPropertyCollector driver)
@@ -63,7 +63,7 @@ namespace UnityEngine.Timeline
             timeControlToPreview.Clear();
             subDirectorsToPreview.Clear();
         }
-#endif
 
+#endif
     }
 }

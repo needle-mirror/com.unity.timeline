@@ -510,6 +510,25 @@ namespace UnityEngine.Timeline
         }
 
         /// <summary>
+        /// Delete a clip from this track.
+        /// </summary>
+        /// <param name="clip">The clip to delete.</param>
+        /// <returns>Returns true if the removal was successful</returns>
+        /// <remarks>
+        /// This method will delete a clip and any assets owned by the clip.
+        /// </remarks>
+        /// <exception>
+        /// Throws <cref>System.InvalidOperationException</cref> if <paramref name="clip"/> is not a child of the TrackAsset.
+        /// </exception>
+        public bool DeleteClip(TimelineClip clip)
+        {
+            if (!m_Clips.Contains(clip))
+                throw new InvalidOperationException("Cannot delete clip since it is not a child of the TrackAsset.");
+
+            return timelineAsset != null && timelineAsset.DeleteClip(clip);
+        }
+
+        /// <summary>
         /// Creates a marker of the requested type, at a specific time, and adds the marker to the current asset.
         /// </summary>
         /// <param name="type">The type of marker.</param>
