@@ -80,7 +80,11 @@ namespace UnityEditor.Timeline
                 if (GUILayout.Button("Create", GUILayout.Width(WindowConstants.createButtonWidth)))
                 {
                     var message = DirectorStyles.createNewTimelineText.text + " '" + currentlySelectedGo.name + "'";
-                    string newSequencePath = EditorUtility.SaveFilePanelInProject(DirectorStyles.createNewTimelineText.text, currentlySelectedGo.name + "Timeline", "playable", message, ProjectWindowUtil.GetActiveFolderPath());
+                    var defaultName = currentlySelectedGo.name.EndsWith(DirectorStyles.newTimelineDefaultNameSuffix, StringComparison.OrdinalIgnoreCase)
+                                            ? currentlySelectedGo.name
+                                            : currentlySelectedGo.name + DirectorStyles.newTimelineDefaultNameSuffix;
+
+                    string newSequencePath = EditorUtility.SaveFilePanelInProject(DirectorStyles.createNewTimelineText.text, defaultName, "playable", message, ProjectWindowUtil.GetActiveFolderPath());
                     if (!string.IsNullOrEmpty(newSequencePath))
                     {
                         var newAsset = TimelineUtility.CreateAndSaveTimelineAsset(newSequencePath);
@@ -97,7 +101,7 @@ namespace UnityEditor.Timeline
                         windowState.previewMode = false;
                     }
 
-                    // If we reach this point, the state of the pannel has changed; skip the rest of this GUI phase
+                    // If we reach this point, the state of the panel has changed; skip the rest of this GUI phase
                     // Fixes: case 955831 - [OSX] NullReferenceException when creating a timeline on a selected object
                     GUIUtility.ExitGUI();
                 }

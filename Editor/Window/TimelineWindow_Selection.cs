@@ -12,6 +12,9 @@ namespace UnityEditor.Timeline
 
         void OnSelectionChange()
         {
+            //Sanitize the inline curve selection
+            SelectionManager.GetCurrentInlineEditorCurve()?.ValidateCurvesSelection();
+
             RefreshSelection(false);
         }
 

@@ -1,5 +1,4 @@
 using System;
-using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
@@ -46,9 +45,9 @@ namespace UnityEngine.Timeline
         AutoScale       = 1 << 5 | SpeedMultiplier,
 
         /// <summary>
-        /// All features, except ClipCaps.AutoScale, are supported.
+        /// All features are supported.
         /// </summary>
-        All = ~(None | (ClipCaps.AutoScale & ~ClipCaps.SpeedMultiplier))
+        All = ~None
     }
 
     static class TimelineClipCapsExtensions

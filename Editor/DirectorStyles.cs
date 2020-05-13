@@ -12,6 +12,8 @@ namespace UnityEditor.Timeline
         public const string resourcesPath = "Packages/com.unity.timeline/Editor/StyleSheets/res/";
 
         //Timeline resources
+        public const string newTimelineDefaultNameSuffix = "Timeline";
+
         public static readonly GUIContent referenceTrackLabel = TrTextContent("R", "This track references an external asset");
         public static readonly GUIContent recordingLabel = TrTextContent("Recording...");
         public static readonly GUIContent noTimelineAssetSelected = TrTextContent("To start creating a timeline, select a GameObject");

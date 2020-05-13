@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
-using UnityEditor.Timeline;
 using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Timeline;
 
-namespace UnityEditor
+namespace UnityEditor.Timeline
 {
     class BindingSelector
     {
@@ -23,6 +21,7 @@ namespace UnityEditor
         TimelineWindow m_Window;
         CurveEditor m_CurveEditor;
         ReorderableList m_DopeLines;
+
         string[] m_StringList = {};
         int[] m_Selection;
         bool m_PartOfSelection;
@@ -39,51 +38,6 @@ namespace UnityEditor
             m_DopeLines.headerHeight = 0;
             m_DopeLines.elementHeight = 20;
             m_DopeLines.draggable = false;
-        }
-
-        public bool selectable { get { return true; } }
-
-        public object selectableObject
-        {
-            get { return this; }
-        }
-
-        public bool selected
-        {
-            get { return m_PartOfSelection; }
-            set
-            {
-                m_PartOfSelection = value;
-
-                if (!m_PartOfSelection)
-                {
-                    m_DopeLines.index = -1;
-                }
-            }
-        }
-
-        public virtual void Delete(WindowState state)
-        {
-            // we dont support deleting the summary
-            if (m_DopeLines.index < 1)
-                return;
-
-            if (m_CurveDataSource == null)
-                return;
-
-            var clip = m_CurveDataSource.animationClip;
-            if (clip == null)
-                return;
-
-            int curveIndexToDelete = m_DopeLines.index - 1;
-            var bindings = AnimationUtility.GetCurveBindings(clip);
-
-            if (curveIndexToDelete >= bindings.Length)
-                return;
-
-            TimelineUndo.PushUndo(clip, "Delete Curve");
-            AnimationUtility.SetEditorCurve(clip, bindings[m_DopeLines.index - 1], null);
-            state.rebuildGraph = true;
         }
 
         public void OnGUI(Rect targetRect)

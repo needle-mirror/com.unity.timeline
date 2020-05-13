@@ -312,6 +312,11 @@ namespace UnityEditor.Timeline
             foreach (var track in trackData)
             {
                 var newTrack = track.item.Duplicate(TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, TimelineEditor.inspectedAsset);
+                if (track.binding != null)
+                {
+                    TimelineHelpers.Bind(newTrack, track.binding, TimelineEditor.inspectedDirector);
+                }
+
                 SelectionManager.Add(newTrack);
                 foreach (var childTrack in newTrack.GetFlattenedChildTracks())
                 {
@@ -404,9 +409,6 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(WindowState state)
         {
-            if (SelectionManager.GetCurrentInlineEditorCurve() != null)
-                return false;
-
             if (!CanDelete(state))
                 return false;
 
@@ -414,7 +416,7 @@ namespace UnityEditor.Timeline
             DeleteItems(selectedItems);
 
             var tracks = SelectionManager.SelectedTracks().ToArray();
-            if (tracks.Any())
+            if (tracks.Any() && SelectionManager.GetCurrentInlineEditorCurve() == null)
                 TrackAction.Invoke<DeleteTracks>(state, tracks);
 
             state.Refresh();
@@ -445,7 +447,7 @@ namespace UnityEditor.Timeline
         {
             var clips = SelectionManager.SelectedClips().ToArray();
 
-            if (!clips.Any() || SelectionManager.GetCurrentInlineEditorCurve() != null)
+            if (!clips.Any())
                 return MenuActionDisplayState.Hidden;
 
             return clips.Any(TimelineHelpers.HasUsableAssetDuration)
@@ -455,9 +457,6 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(WindowState state)
         {
-            if (SelectionManager.GetCurrentInlineEditorCurve() != null)
-                return false;
-
             var clips = SelectionManager.SelectedClips().ToArray();
             return clips.Length > 0 && ClipModifier.MatchContent(clips);
         }
@@ -517,13 +516,13 @@ namespace UnityEditor.Timeline
         public override bool Execute(WindowState state)
         {
             var inlineCurveEditor = SelectionManager.GetCurrentInlineEditorCurve();
-            if (inlineCurveEditor != null && inlineCurveEditor.inlineCurvesSelected)
+            if (FrameSelectedAction.ShouldHandleInlineCurve(inlineCurveEditor))
             {
                 FrameSelectedAction.FrameInlineCurves(inlineCurveEditor, state, false);
                 return true;
             }
 
-            if (state.IsEditingASubItem())
+            if (state.IsCurrentEditingASequencerTextField())
                 return false;
 
             var w = state.GetWindow();
@@ -593,17 +592,20 @@ namespace UnityEditor.Timeline
         public override bool Execute(WindowState state)
         {
             var inlineCurveEditor = SelectionManager.GetCurrentInlineEditorCurve();
-            if (inlineCurveEditor != null && inlineCurveEditor.inlineCurvesSelected)
+            if (ShouldHandleInlineCurve(inlineCurveEditor))
             {
                 FrameInlineCurves(inlineCurveEditor, state, true);
                 return true;
             }
 
-            if (state.IsEditingASubItem())
+            if (state.IsCurrentEditingASequencerTextField())
                 return false;
 
             if (SelectionManager.Count() == 0)
-                return false;
+            {
+                Invoke<FrameAllAction>(state);
+                return true;
+            }
 
             var startTime = float.MaxValue;
             var endTime = float.MinValue;
@@ -632,6 +634,14 @@ namespace UnityEditor.Timeline
             FrameRange(startTime, endTime, state);
 
             return true;
+        }
+
+        public static bool ShouldHandleInlineCurve(IClipCurveEditorOwner curveEditorOwner)
+        {
+            return curveEditorOwner?.clipCurveEditor != null &&
+                curveEditorOwner.inlineCurvesSelected &&
+                curveEditorOwner.owner != null &&
+                curveEditorOwner.owner.GetShowInlineCurves();
         }
 
         public static void FrameInlineCurves(IClipCurveEditorOwner curveEditorOwner, WindowState state, bool selectionOnly)

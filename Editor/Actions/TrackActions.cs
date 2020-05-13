@@ -480,6 +480,16 @@ namespace UnityEditor.Timeline
                 {
                     SelectionManager.Add(childTrack);
                 }
+
+                if (TimelineEditor.inspectedDirector != null)
+                {
+                    var binding = TimelineEditor.inspectedDirector.GetGenericBinding(track);
+                    if (binding != null)
+                    {
+                        TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, "Duplicate");
+                        TimelineEditor.inspectedDirector.SetGenericBinding(newTrack, binding);
+                    }
+                }
             }
 
             state.Refresh();

@@ -763,11 +763,6 @@ namespace UnityEditor.Timeline
                 .CombineHash(trackScale.GetHashCode());
         }
 
-        public bool IsEditingASubItem()
-        {
-            return IsCurrentEditingASequencerTextField() || !SelectionManager.IsCurveEditorFocused(null);
-        }
-
         public bool IsEditingASubTimeline()
         {
             return editSequence != masterSequence;

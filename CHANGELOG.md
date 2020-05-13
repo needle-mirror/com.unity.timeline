@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.0-preview.5] - 2020-05-13
+
+### Fixed
+
+- Fixed incorrect metafiles.
+
+## [1.4.0-preview.4] - 2020-05-12
+
+### Changed
+- A track's binding will be duplicated when pasting or duplicating a track.
+- When creating a new timeline asset, the "Timeline" suffix will not be added to the file name twice.
+- `ClipCaps.All` now includes the new `Autoscale` feature. To get the previous `ClipCaps.All` behaviour on clips, use
+```
+ClipCaps.Looping | ClipCaps.Extrapolation | ClipCaps.ClipIn | ClipCaps.SpeedMultiplier | ClipCaps.Blending
+```
+- Inline curve selection is now synced with the clip's selection.
+- Selecting a curve view property will also select the corresponding curve view.
+- Clicking and holding the `Command` or `Control` key on a curve view will deselect it if it was already selected.
+
+### Fixed
+- Selecting clips from locked tracks is not allowed anymore when using the playhead's context menu.
+- Inserting gaps in locked tracks is not allowed anymore.
+- When adding an Activation track, the viewport is adjusted to show the new Activation clip.
+
 ## [1.4.0-preview.3] - 2020-04-02
 
 ### Added

@@ -11,12 +11,10 @@ namespace UnityEditor.Timeline
 
         public static void Insert(TimelineAsset asset, double at, double amount, double tolerance)
         {
+            var tracks =  asset.flattenedTracks.Where(x => x.lockedInHierarchy == false).ToList();
             // gather all clips
-            var clips = asset.flattenedTracks.SelectMany(x => x.clips).Where(x => (x.start - at) >= -tolerance).ToList();
-            var markers = asset.flattenedTracks.SelectMany(x => x.GetMarkers()).Where(x => (x.time - at) >= -tolerance).ToList();
-
-            if (!clips.Any() && !markers.Any())
-                return;
+            var clips = tracks.SelectMany(x => x.clips).Where(x => (x.start - at) >= -tolerance).ToList();
+            var markers = tracks.SelectMany(x => x.GetMarkers()).Where(x => (x.time - at) >= -tolerance).ToList();
 
             // push undo on the tracks for the clips that are being modified
             foreach (var t in clips.Select(x => x.parentTrack).Distinct())
@@ -47,6 +45,16 @@ namespace UnityEditor.Timeline
     {
         readonly TimeAreaItem m_TimeAreaItem;
         static readonly int[] kFrameInsertionValues = {5, 10, 25, 100};
+        static readonly GUIContent[] kFrameInsertionValuesGuiContents =
+        {
+            EditorGUIUtility.TrTextContent("Insert/Frame/5 Frames"),
+            EditorGUIUtility.TrTextContent("Insert/Frame/10 Frames"),
+            EditorGUIUtility.TrTextContent("Insert/Frame/25 Frames"),
+            EditorGUIUtility.TrTextContent("Insert/Frame/100 Frames")
+        };
+
+        static readonly GUIContent kSingleFrameGuiContents = EditorGUIUtility.TrTextContent("Insert/Frame/Single");
+        static readonly GUIContent kSelectedTimeGuiContents = EditorGUIUtility.TrTextContent("Insert/Selected Time");
 
         public PlayheadContextMenu(TimeAreaItem timeAreaItem)
         {
@@ -63,36 +71,75 @@ namespace UnityEditor.Timeline
 
             if (!TimelineWindow.instance.state.editSequence.isReadOnly)
             {
-                menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Frame/Single"), false, () =>
-                    Gaps.Insert(state.editSequence.asset, state.editSequence.time, 1.0 / state.referenceSequence.frameRate, tolerance)
+                menu.AddItem(kSingleFrameGuiContents, false, () =>
+                    Gaps.Insert(state.editSequence.asset, state.editSequence.time,
+                        1.0 / state.referenceSequence.frameRate, tolerance)
                 );
 
                 for (var i = 0; i != kFrameInsertionValues.Length; ++i)
                 {
                     double f = kFrameInsertionValues[i];
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Frame/" + kFrameInsertionValues[i] + " Frames"), false, () =>
-                        Gaps.Insert(state.editSequence.asset, state.editSequence.time, f / state.referenceSequence.frameRate, tolerance)
+                    menu.AddItem(
+                        kFrameInsertionValuesGuiContents[i],
+                        false, () =>
+                            Gaps.Insert(state.editSequence.asset, state.editSequence.time,
+                                f / state.referenceSequence.frameRate, tolerance)
                     );
                 }
 
                 var playRangeTime = state.playRange;
                 if (playRangeTime.y > playRangeTime.x)
                 {
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Insert/Selected Time"), false, () =>
-                        Gaps.Insert(state.editSequence.asset, playRangeTime.x, playRangeTime.y - playRangeTime.x, TimeUtility.GetEpsilon(playRangeTime.x, state.referenceSequence.frameRate))
+                    menu.AddItem(kSelectedTimeGuiContents, false, () =>
+                        Gaps.Insert(state.editSequence.asset, playRangeTime.x, playRangeTime.y - playRangeTime.x,
+                            TimeUtility.GetEpsilon(playRangeTime.x, state.referenceSequence.frameRate))
                     );
                 }
             }
 
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Ending Before"), false, () => SelectMenuCallback(x => x.end < state.editSequence.time + tolerance, state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Starting Before"), false, () => SelectMenuCallback(x => x.start < state.editSequence.time + tolerance, state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Ending After"), false, () => SelectMenuCallback(x => x.end - state.editSequence.time >= -tolerance, state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Starting After"), false, () => SelectMenuCallback(x => x.start - state.editSequence.time >= -tolerance, state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Intersecting"), false, () => SelectMenuCallback(x => x.start <= state.editSequence.time && state.editSequence.time <= x.end, state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Blends Intersecting"), false, () => SelectMenuCallback(x => SelectBlendingIntersecting(x, state.editSequence.time), state));
+            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Ending Before"), false, () => SelectClipsEndingBefore(state));
+            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Starting Before"), false, () => SelectClipsStartingBefore(state));
+            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Ending After"), false, () => SelectClipsEndingAfter(state));
+            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Starting After"), false, () => SelectClipsStartingAfter(state));
+            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Intersecting"), false, () => SelectClipsIntersecting(state));
+            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Blends Intersecting"), false, () => SelectBlendsIntersecting(state));
             menu.ShowAsContext();
 
             return true;
+        }
+
+        internal static void SelectClipsEndingBefore(WindowState state)
+        {
+            var tolerance = TimeUtility.GetEpsilon(state.editSequence.time, state.referenceSequence.frameRate);
+            SelectMenuCallback(x => x.end < state.editSequence.time + tolerance, state);
+        }
+
+        internal static void SelectClipsStartingBefore(WindowState state)
+        {
+            var tolerance = TimeUtility.GetEpsilon(state.editSequence.time, state.referenceSequence.frameRate);
+            SelectMenuCallback(x => x.start < state.editSequence.time + tolerance, state);
+        }
+
+        internal static void SelectClipsEndingAfter(WindowState state)
+        {
+            var tolerance = TimeUtility.GetEpsilon(state.editSequence.time, state.referenceSequence.frameRate);
+            SelectMenuCallback(x => x.end - state.editSequence.time >= -tolerance, state);
+        }
+
+        internal static void SelectClipsStartingAfter(WindowState state)
+        {
+            var tolerance = TimeUtility.GetEpsilon(state.editSequence.time, state.referenceSequence.frameRate);
+            SelectMenuCallback(x => x.start - state.editSequence.time >= -tolerance, state);
+        }
+
+        internal static void SelectClipsIntersecting(WindowState state)
+        {
+            SelectMenuCallback(x => x.start <= state.editSequence.time && state.editSequence.time <= x.end, state);
+        }
+
+        internal static void SelectBlendsIntersecting(WindowState state)
+        {
+            SelectMenuCallback(x => SelectBlendingIntersecting(x, state.editSequence.time), state);
         }
 
         static bool SelectBlendingIntersecting(TimelineClip clip, double time)
@@ -114,7 +161,7 @@ namespace UnityEditor.Timeline
             {
                 var c = allClips[i];
 
-                if (c != null && c.clip != null && selector(c.clip))
+                if (c != null && c.clip != null && c.clip.parentTrack.lockedInHierarchy == false && selector(c.clip))
                 {
                     SelectionManager.Add(c.clip);
                 }

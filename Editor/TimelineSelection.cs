@@ -120,28 +120,6 @@ namespace UnityEditor.Timeline
 
         public static void SelectInlineCurveEditor(IClipCurveEditorOwner selection)
         {
-            // case 1030681 - selecting an inline curve should remove clips and
-            // tracks to prevent shortcuts being forwarded incorrectly
-            if (selection != null && selection != currentInlineEditorCurve)
-            {
-                var track = selection.owner;
-                var selectedTracks = SelectedTracks().ToArray();
-                var selectedClips = SelectedClips().ToArray();
-
-                foreach (var t in selectedTracks)
-                {
-                    if (t != track)
-                        Remove(t);
-                }
-
-                foreach (var c in selectedClips)
-                {
-                    if (c.parentTrack != track)
-                        Remove(c);
-                }
-            }
-
-
             currentInlineEditorCurve = selection;
         }
 

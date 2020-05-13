@@ -8,9 +8,6 @@ namespace UnityEditor.Timeline
     {
         protected override bool ExecuteCommand(Event evt, WindowState state)
         {
-            if (state.IsEditingASubItem())
-                return false;
-
             var consumed = false;
             var clips = SelectionManager.SelectedClips();
             foreach (var clip in clips)

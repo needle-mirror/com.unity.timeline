@@ -1,9 +1,9 @@
 using System.Linq;
-using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using UnityEditorInternal;
 using UnityEngine;
 
-namespace UnityEditorInternal
+namespace UnityEditor.Timeline
 {
     class BindingTreeViewGUI : TreeViewGUI
     {
@@ -49,7 +49,7 @@ namespace UnityEditorInternal
             return false;
         }
 
-        void DoCurveColorIndicator(Rect rect, CurveTreeViewNode node)
+        static void DoCurveColorIndicator(Rect rect, CurveTreeViewNode node)
         {
             if (node == null)
                 return;

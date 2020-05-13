@@ -50,17 +50,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public bool inlineCurvesSelected
-        {
-            get { return SelectionManager.IsCurveEditorFocused(this); }
-            set
-            {
-                if (!value && SelectionManager.IsCurveEditorFocused(this))
-                    SelectionManager.SelectInlineCurveEditor(null);
-                else
-                    SelectionManager.SelectInlineCurveEditor(this);
-            }
-        }
+        public bool inlineCurvesSelected => SelectionManager.IsCurveEditorFocused(this);
 
         public Rect mixOutRect
         {
@@ -135,7 +125,6 @@ namespace UnityEditor.Timeline
             get { return m_ClipEditor.supportsSubTimelines; }
         }
 
-
         public int minLoopIndex
         {
             get { return m_MinLoopIndex; }
@@ -152,6 +141,8 @@ namespace UnityEditor.Timeline
         {
             zOrder = zOrderProvider.Next();
             SelectionManager.Add(clip);
+            if (clipCurveEditor != null && SelectionManager.Count() == 1)
+                SelectionManager.SelectInlineCurveEditor(this);
         }
 
         public override bool IsSelected()
@@ -162,6 +153,8 @@ namespace UnityEditor.Timeline
         public override void Deselect()
         {
             SelectionManager.Remove(clip);
+            if (inlineCurvesSelected)
+                SelectionManager.SelectInlineCurveEditor(null);
         }
 
         public override ITimelineItem item
@@ -755,6 +748,18 @@ namespace UnityEditor.Timeline
             var shownTime = TimelineWindow.instance.state.timeAreaShownRange;
             if (time >= shownTime.x && time <= shownTime.y)
                 edges.Add(new Edge(time, showEdgeHint));
+        }
+
+        public void SelectCurves()
+        {
+            SelectionManager.SelectOnly(clip);
+            SelectionManager.SelectInlineCurveEditor(this);
+        }
+
+        public void ValidateCurvesSelection()
+        {
+            if (!IsSelected()) //if clip is not selected, deselect the inline curve
+                SelectionManager.SelectInlineCurveEditor(null);
         }
     }
 }

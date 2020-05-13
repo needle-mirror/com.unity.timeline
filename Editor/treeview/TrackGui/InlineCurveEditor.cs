@@ -8,9 +8,11 @@ namespace UnityEditor.Timeline
     interface IClipCurveEditorOwner
     {
         ClipCurveEditor clipCurveEditor { get; }
-        bool inlineCurvesSelected { get; set; }
+        bool inlineCurvesSelected { get; }
         bool showLoops { get; }
         TrackAsset owner { get; }
+        void SelectCurves();
+        void ValidateCurvesSelection();
     }
 
     class InlineCurveResizeHandle : IBounds
@@ -97,9 +99,10 @@ namespace UnityEditor.Timeline
             CurveDataSource dataSource = clipCurveEditor.dataSource;
             Rect curveRect = dataSource.GetBackgroundRect(state);
 
-            bool newlySelected = false;
+            var newlySelected = false;
+            var currentEvent = Event.current;
 
-            if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.ContextClick)
+            if (currentEvent.type == EventType.MouseDown || currentEvent.type == EventType.ContextClick)
                 newlySelected = MouseOverTrackArea(curveRect, trackRect) || MouseOverHeaderArea(headerRect, trackRect);
 
             // make sure to not use any event before drawing the curve.
@@ -114,10 +117,24 @@ namespace UnityEditor.Timeline
                 clipCurveEditor.DrawCurveEditor(trackRect, state, activeRange, clipCurveEditorOwner.showLoops, displayAsSelected);
 
             if (newlySelected && !locked)
+                OnMouseClick(clipCurveEditorOwner, currentEvent);
+        }
+
+        static void OnMouseClick(IClipCurveEditorOwner clipCurveEditorOwner, Event currentEvent)
+        {
+            if (currentEvent.modifiers == ManipulatorsUtils.actionModifier)
             {
-                clipCurveEditorOwner.inlineCurvesSelected = true;
-                HandleCurrentEvent();
+                if (clipCurveEditorOwner.inlineCurvesSelected)
+                    SelectionManager.Clear();
+                else
+                    clipCurveEditorOwner.SelectCurves();
             }
+            else
+            {
+                clipCurveEditorOwner.SelectCurves();
+            }
+
+            HandleCurrentEvent();
         }
 
         public void Draw(Rect headerRect, Rect trackRect, WindowState state)
@@ -136,9 +153,7 @@ namespace UnityEditor.Timeline
             // Remove the width of the color swatch.
             headerRect.x += 4.0f;
             headerRect.width -= 4.0f;
-
             m_HeaderRect = headerRect;
-
             EditorGUI.DrawRect(m_HeaderRect, DirectorStyles.Instance.customSkin.colorAnimEditorBinding);
 
             if (ShouldShowClipCurves(state))
@@ -201,10 +216,11 @@ namespace UnityEditor.Timeline
 
             if (Event.current.type == EventType.Layout)
             {
-                TimelineClipGUI selectedClip = SelectionManager.SelectedClipGUI().FirstOrDefault(x => x.parent == m_TrackGUI);
+                var selectedClip = SelectionManager.SelectedClipGUI().FirstOrDefault(x => x.parent == m_TrackGUI);
                 if (selectedClip != null)
                 {
                     m_LastSelectedClipGUI = selectedClip;
+                    SelectFromCurveOwner(m_LastSelectedClipGUI);
                 }
                 else if (state.recording && state.IsArmedForRecord(m_TrackGUI.track))
                 {
@@ -291,6 +307,18 @@ namespace UnityEditor.Timeline
 #else
             Event.current.Use();
 #endif
+        }
+
+        static void SelectFromCurveOwner(IClipCurveEditorOwner curveOwner)
+        {
+            if (curveOwner.clipCurveEditor == null)
+            {
+                SelectionManager.SelectInlineCurveEditor(null);
+            }
+            else if (!curveOwner.inlineCurvesSelected && SelectionManager.Count() == 1)
+            {
+                SelectionManager.SelectInlineCurveEditor(curveOwner);
+            }
         }
     }
 }

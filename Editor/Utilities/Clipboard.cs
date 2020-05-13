@@ -37,6 +37,7 @@ namespace UnityEditor.Timeline
         {
             public TrackAsset item;
             public TrackAsset parent;
+            public Object binding;
         }
 
         static readonly int kListInitialSize = 10;
@@ -101,7 +102,8 @@ namespace UnityEditor.Timeline
                 foreach (var track in TrackExtensions.FilterTracks(tracks))
                 {
                     var newTrack = track.Duplicate(TimelineEditor.inspectedDirector, TimelineEditor.clipboard.exposedPropertyTable, rootTimeline);
-                    m_trackData.Add(new ClipboardTrackEntry {item = newTrack, parent = track.parent as TrackAsset});
+                    var bind = TimelineEditor.inspectedDirector != null ? TimelineEditor.inspectedDirector.GetGenericBinding(track) : null;
+                    m_trackData.Add(new ClipboardTrackEntry {item = newTrack, parent = track.parent as TrackAsset, binding = bind});
                 }
             }
         }

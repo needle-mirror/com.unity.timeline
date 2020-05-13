@@ -67,17 +67,7 @@ namespace UnityEditor.Timeline
 
         public ClipCurveEditor clipCurveEditor { get; private set; }
 
-        public bool inlineCurvesSelected
-        {
-            get { return SelectionManager.IsCurveEditorFocused(this); }
-            set
-            {
-                if (!value && SelectionManager.IsCurveEditorFocused(this))
-                    SelectionManager.SelectInlineCurveEditor(null);
-                else
-                    SelectionManager.SelectInlineCurveEditor(this);
-            }
-        }
+        public bool inlineCurvesSelected => SelectionManager.IsCurveEditorFocused(this);
 
         bool IClipCurveEditorOwner.showLoops
         {
@@ -770,7 +760,7 @@ namespace UnityEditor.Timeline
             var bindingRect = new Rect(
                 rect.xMin,
                 rect.y + (rect.height - WindowConstants.trackHeaderButtonSize) / 2f,
-                Mathf.Min(rect.width, WindowConstants.trackBindingMaxSize),
+                Mathf.Min(rect.width, WindowConstants.trackBindingMaxSize) - WindowConstants.trackBindingPadding,
                 WindowConstants.trackHeaderButtonSize);
 
             if (bindingRect.Contains(Event.current.mousePosition) && TimelineDragging.IsDraggingEvent() && DragAndDrop.objectReferences.Length == 1)
@@ -847,5 +837,13 @@ namespace UnityEditor.Timeline
                     });
             }
         }
+
+        public void SelectCurves()
+        {
+            SelectionManager.RemoveTimelineSelection();
+            SelectionManager.SelectInlineCurveEditor(this);
+        }
+
+        public void ValidateCurvesSelection() {}
     }
 }

@@ -34,8 +34,7 @@ namespace UnityEditor.Timeline
             {
                 var clipClass = (TrackClipTypeAttribute)attr[0];
 
-                var clip =  TimelineHelpers.CreateClipOnTrack(clipClass.inspectedType, track, TimelineWindow.instance.state);
-                clip.start = time;
+                var clip =  TimelineHelpers.CreateClipOnTrack(clipClass.inspectedType, track, time);
                 return clip;
             }
 

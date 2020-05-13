@@ -32,7 +32,8 @@ namespace UnityEditor.Timeline
 
         public const float trackHeaderButtonSize = 16.0f;
         public const float trackHeaderButtonPadding = 2.0f;
-        public const float trackBindingMaxSize = 150.0f;
+        public const float trackBindingMaxSize = 300.0f;
+        public const float trackBindingPadding = 5.0f;
 
         public const float trackInsertionMarkerHeight = 1f;
         public const float trackResizeHandleHeight = 7f;
