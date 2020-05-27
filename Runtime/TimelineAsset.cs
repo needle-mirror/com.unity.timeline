@@ -36,6 +36,7 @@ namespace UnityEngine.Timeline
             internal static readonly float kMaxFps = 1000.0f;
             internal static readonly float kDefaultFps = 60.0f;
             [HideInInspector, SerializeField] float m_Framerate = kDefaultFps;
+            [HideInInspector, SerializeField] bool m_ScenePreview = true;
 
             /// <summary>
             /// The frames per second used for snapping and time ruler display
@@ -50,6 +51,25 @@ namespace UnityEngine.Timeline
                 {
                     m_Framerate = GetValidFramerate(value);
                 }
+            }
+
+            /// <summary>
+            /// Set to false to ignore scene preview when this timeline is played by the Timeline window.
+            /// </summary>
+            /// <remarks>
+            /// When set to false, this setting will
+            /// - Disable scene preview when this timeline is played by the Timeline window.
+            /// - Disable recording for all recordable tracks.
+            /// - Disable play range in the Timeline window.
+            /// - `Stop()` is not called on the `PlayableDirector` when switching between different `TimelineAsset`s in the TimelineWindow.
+            ///
+            /// `scenePreview` will only be applied if the asset is the master timeline.
+            /// </remarks>
+            /// <seealso cref="UnityEngine.Timeline.TimelineAsset"/>
+            public bool scenePreview
+            {
+                get => m_ScenePreview;
+                set => m_ScenePreview = value;
             }
         }
 

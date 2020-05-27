@@ -9,10 +9,7 @@ namespace UnityEditor.Timeline
     {
         void OnPreviewPlayModeChanged(bool isPlaying)
         {
-            if (EditorApplication.isPlaying)
-                return;
-
-            if (isPlaying)
+            if (state != null && !state.ignorePreview && isPlaying)
             {
                 PreparePreviewPlay();
                 EditorApplication.update += OnPreviewPlay;

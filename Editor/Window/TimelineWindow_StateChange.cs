@@ -35,6 +35,9 @@ namespace UnityEditor.Timeline
                     EditorApplication.SetSceneRepaintDirty();
                 }
 
+                if (state.ignorePreview && state.IsPlayableGraphDone())
+                    state.Pause();
+
                 // the time is sync'd prior to the callback
                 state.Evaluate();     // will do the repaint
 

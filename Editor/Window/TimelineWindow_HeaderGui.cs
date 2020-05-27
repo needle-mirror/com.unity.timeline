@@ -47,6 +47,12 @@ namespace UnityEditor.Timeline
 
         void PreviewModeButtonGUI()
         {
+            if (state.ignorePreview && !Application.isPlaying)
+            {
+                GUILayout.Label(DirectorStyles.previewDisabledContent, DirectorStyles.Instance.previewButtonDisabled);
+                return;
+            }
+
             EditorGUI.BeginChangeCheck();
             var enabled = state.previewMode;
             enabled = GUILayout.Toggle(enabled, DirectorStyles.previewContent, EditorStyles.toolbarButton);
@@ -135,7 +141,7 @@ namespace UnityEditor.Timeline
 
         void PlayRangeButtonGUI()
         {
-            using (new EditorGUI.DisabledScope(EditorApplication.isPlaying || state.IsEditingASubTimeline()))
+            using (new EditorGUI.DisabledScope(state.ignorePreview || state.IsEditingASubTimeline()))
             {
                 state.playRangeEnabled = GUILayout.Toggle(state.playRangeEnabled, DirectorStyles.Instance.playrangeContent, EditorStyles.toolbarButton);
             }

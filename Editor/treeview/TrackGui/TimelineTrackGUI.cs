@@ -32,6 +32,7 @@ namespace UnityEditor.Timeline
 
             public static readonly GUIContent kActiveRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty, "End recording");
             public static readonly GUIContent kInactiveRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty, "Start recording");
+            public static readonly GUIContent kIgnorePreviewRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty, "Recording is disabled: scene preview is ignored for this TimelineAsset");
             public static readonly GUIContent kDisabledRecordButtonTooltip = DirectorStyles.TrTextContent(string.Empty,
                 "Recording is not permitted when Track Offsets are set to Auto. Track Offset settings can be changed in the track menu of the base track.");
             public static Texture2D kProblemIcon = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.warning);
@@ -677,7 +678,7 @@ namespace UnityEditor.Timeline
 
                 var isTrackBindingValid = goBinding != null;
                 var trackErrorDisableButton = !string.IsNullOrEmpty(m_TrackDrawOptions.errorText) && isTrackBindingValid && goBinding.activeInHierarchy;
-                var disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid;
+                var disableButton = track.lockedInHierarchy || isPlayerDisabled || trackErrorDisableButton || !isTrackBindingValid || state.ignorePreview;
                 using (new EditorGUI.DisabledScope(disableButton))
                 {
                     if (IsRecording(state))
@@ -690,6 +691,8 @@ namespace UnityEditor.Timeline
                         if (GUI.Button(rect, Styles.kActiveRecordButtonTooltip, style) || isPlayerDisabled || !isTrackBindingValid)
                             state.UnarmForRecord(track);
                     }
+                    else if (!track.timelineAsset.editorSettings.scenePreview)
+                        GUI.Button(rect, Styles.kIgnorePreviewRecordButtonTooltip, style);
                     else
                     {
                         if (GUI.Button(rect, Styles.kInactiveRecordButtonTooltip, style))

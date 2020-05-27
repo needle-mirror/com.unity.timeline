@@ -217,13 +217,10 @@ namespace UnityEditor.Timeline
             if (PerformUndo())
                 return;
 
-            if (EditorApplication.isPlaying)
+            if (state != null && state.ignorePreview && state.playing)
             {
-                if (state != null)
-                {
-                    if (state.recording)
-                        state.recording = false;
-                }
+                if (state.recording)
+                    state.recording = false;
                 Repaint();
             }
 
@@ -429,7 +426,7 @@ namespace UnityEditor.Timeline
                 var wasPlaying = false;
 
                 // disable preview mode,
-                if (!EditorApplication.isPlaying)
+                if (!state.ignorePreview)
                 {
                     wasPlaying = state.playing;
 

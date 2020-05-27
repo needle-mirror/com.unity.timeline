@@ -202,6 +202,9 @@ namespace UnityEditor.Timeline
             // set can only be used to disable recording
             set
             {
+                if (ignorePreview)
+                    return;
+
                 // force preview mode on
                 if (value)
                     previewMode = true;
@@ -235,10 +238,10 @@ namespace UnityEditor.Timeline
 
         public bool previewMode
         {
-            get { return Application.isPlaying || AnimationMode.InAnimationMode(previewDriver); }
+            get { return ignorePreview || AnimationMode.InAnimationMode(previewDriver); }
             set
             {
-                if (Application.isPlaying)
+                if (ignorePreview)
                     return;
                 bool inAnimationMode = AnimationMode.InAnimationMode(previewDriver);
                 if (!value)
@@ -360,7 +363,7 @@ namespace UnityEditor.Timeline
 
         public void OnDestroy()
         {
-            if (!Application.isPlaying)
+            if (!ignorePreview)
                 Stop();
 
             if (m_OnStartFrameUpdates != null)
@@ -624,13 +627,20 @@ namespace UnityEditor.Timeline
 
         public bool playRangeEnabled
         {
-            get { return !EditorApplication.isPlaying && masterSequence.viewModel.playRangeEnabled && !IsEditingASubTimeline(); }
+            get { return !ignorePreview && masterSequence.viewModel.playRangeEnabled && !IsEditingASubTimeline(); }
             set
             {
-                if (EditorApplication.isPlaying)
-                    return;
+                if (!ignorePreview)
+                    masterSequence.viewModel.playRangeEnabled = value;
+            }
+        }
 
-                masterSequence.viewModel.playRangeEnabled = value;
+        public bool ignorePreview
+        {
+            get
+            {
+                var shouldIgnorePreview = masterSequence.asset != null && !masterSequence.asset.editorSettings.scenePreview;
+                return Application.isPlaying || shouldIgnorePreview;
             }
         }
 
@@ -931,7 +941,7 @@ namespace UnityEditor.Timeline
         {
             SynchronizeViewModelTime(editSequence);
 
-            if (!Application.isPlaying)
+            if (!ignorePreview)
                 Stop();
 
             rebuildGraph = true; // needed for asset previews
@@ -943,6 +953,8 @@ namespace UnityEditor.Timeline
                 return;
 
             var asset = director.playableAsset as TimelineAsset;
+            if (asset != null && !asset.editorSettings.scenePreview)
+                return;
 
             if (!previewMode)
             {
@@ -1101,10 +1113,8 @@ namespace UnityEditor.Timeline
 
         void EnsureWindowTimeConsistency()
         {
-            if (Application.isPlaying || masterSequence.director == null || masterSequence.viewModel == null)
-                return;
-
-            masterSequence.time = masterSequence.viewModel.windowTime;
+            if (masterSequence.director != null && masterSequence.viewModel != null && !ignorePreview)
+                masterSequence.time = masterSequence.viewModel.windowTime;
         }
 
         void SynchronizeSequencesAfterPlayback()
@@ -1131,6 +1141,13 @@ namespace UnityEditor.Timeline
         {
             var directorTime = director.time;
             director.time = directorTime;
+        }
+
+        public bool IsPlayableGraphDone()
+        {
+            return masterSequence.director != null
+                && masterSequence.director.playableGraph.IsValid()
+                && masterSequence.director.playableGraph.IsDone();
         }
     }
 }

@@ -1044,3 +1044,10 @@
     padding-left: 3px;
     padding-right: 4px;
 }
+
+.previewButtonDisabled {
+    -unity-extend: ".toolbarbutton";
+    padding-left: 0px;
+    padding-right: 0px;
+    -unity-text-align: middle-center;
+}

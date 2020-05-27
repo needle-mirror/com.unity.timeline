@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.0-preview.6] - 2020-05-27
+
+### Added
+
+- Added dependency on Animation, Audio, Director and Particle System modules.  ([1229825](https://issuetracker.unity3d.com/product/unity/issues/guid/1229825/))
+- Added an option in `TimelineAsset.EditorSettings` to disable scene preview.
+
+### Fixed
+- Fixed issue where trimming AnimationClips would also change the speed multiplier.
+
 ## [1.4.0-preview.5] - 2020-05-13
 
 ### Fixed

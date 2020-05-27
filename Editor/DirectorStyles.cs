@@ -21,6 +21,7 @@ namespace UnityEditor.Timeline
         public static readonly GUIContent noTimelinesInScene = TrTextContent("No timeline found in the scene");
         public static readonly GUIContent createNewTimelineText = TrTextContent("Create a new Timeline and Director Component for Game Object");
         public static readonly GUIContent previewContent = TrTextContent("Preview", "Enable/disable scene preview mode");
+        public static readonly GUIContent previewDisabledContent = EditorGUIUtility.TrTextContentWithIcon("Preview", "Scene preview is disabled for this TimelineAsset", MessageType.Info);
         public static readonly GUIContent mixOff = TrIconContent("TimelineEditModeMixOFF", "Mix Mode (1)");
         public static readonly GUIContent mixOn = TrIconContent("TimelineEditModeMixON", "Mix Mode (1)");
         public static readonly GUIContent rippleOff = TrIconContent("TimelineEditModeRippleOFF", "Ripple Mode (2)");
@@ -106,6 +107,7 @@ namespace UnityEditor.Timeline
         public GUIStyle inlineCurveHandle;
         public GUIStyle timeReferenceButton;
         public GUIStyle trackButtonSuite;
+        public GUIStyle previewButtonDisabled;
 
         static internal DirectorStyles s_Instance;
 
@@ -280,6 +282,7 @@ namespace UnityEditor.Timeline
             inlineCurveHandle = GetGUIStyle("RL DragHandle");
             timeReferenceButton = GetGUIStyle("timeReferenceButton");
             trackButtonSuite = GetGUIStyle("trackButtonSuite");
+            previewButtonDisabled = GetGUIStyle("previewButtonDisabled");
 
             playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = "Toggle play range markers." };
 

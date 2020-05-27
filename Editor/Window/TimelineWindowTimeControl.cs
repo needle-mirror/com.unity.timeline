@@ -261,10 +261,8 @@ namespace UnityEditor.Timeline
         {
             if (!canRecord)
                 return false;
-            if (Application.isPlaying)
-                return false;
 
-            if (state != null && track != null)
+            if (track != null && state != null && !state.ignorePreview)
             {
                 state.ArmForRecord(track);
                 return state.recording;
@@ -275,10 +273,7 @@ namespace UnityEditor.Timeline
 
         public override void StopRecording()
         {
-            if (Application.isPlaying)
-                return;
-
-            if (state != null && track != null)
+            if (track != null && state != null && !state.ignorePreview)
                 state.UnarmForRecord(track);
         }
 
@@ -301,18 +296,6 @@ namespace UnityEditor.Timeline
 
         public override void ProcessCandidates() {}
         public override void ClearCandidates() {}
-
-        double durationD
-        {
-            get
-            {
-                if (m_Clip != null)
-                {
-                    return ToAnimationClipTime(m_Clip.end);
-                }
-                return m_ClipData.duration;
-            }
-        }
 
         double ToGlobalTime(float localTime)
         {

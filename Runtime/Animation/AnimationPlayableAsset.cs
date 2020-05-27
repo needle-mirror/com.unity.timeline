@@ -287,14 +287,13 @@ namespace UnityEngine.Timeline
         {
             get
             {
-                var caps = ClipCaps.All;
-                if (m_Clip == null || (m_Loop == LoopMode.Off) || (m_Loop == LoopMode.UseSourceAsset && !m_Clip.isLooping))
-                    caps &= ~ClipCaps.Looping;
+                var caps = ClipCaps.Extrapolation | ClipCaps.SpeedMultiplier | ClipCaps.Blending;
+                if (m_Clip != null && (m_Loop != LoopMode.Off) && (m_Loop != LoopMode.UseSourceAsset || m_Clip.isLooping))
+                    caps |= ClipCaps.Looping;
 
-                // empty clips don't support clip in. This allows trim operations to simply become
-                //  move operations
-                if (m_Clip == null || m_Clip.empty)
-                    caps &= ~ClipCaps.ClipIn;
+                // empty clips don't support clip in. This allows trim operations to simply become move operations
+                if (m_Clip != null && !m_Clip.empty)
+                    caps |= ClipCaps.ClipIn;
 
                 return caps;
             }

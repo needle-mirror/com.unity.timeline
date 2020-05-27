@@ -47,7 +47,7 @@ namespace UnityEditor.Timeline
 
         public virtual TimelineModeGUIState PreviewState(WindowState state)
         {
-            return Application.isPlaying ? TimelineModeGUIState.Disabled : TimelineModeGUIState.Enabled;
+            return state.ignorePreview ? TimelineModeGUIState.Disabled : TimelineModeGUIState.Enabled;
         }
 
         public virtual TimelineModeGUIState EditModeButtonsState(WindowState state)
