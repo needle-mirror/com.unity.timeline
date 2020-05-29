@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.3] - 2020-05-29
+
+## Fixed
+- Fixed regression where animation tracks were writing root motion when the animation clip did not contain root transform values ([1249355](https://issuetracker.unity3d.com/product/unity/issues/guid/1249355/))
+
 ## [1.3.2] - 2020-04-02
 
 ### Fixed
