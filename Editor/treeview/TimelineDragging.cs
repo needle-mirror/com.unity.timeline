@@ -267,7 +267,7 @@ namespace UnityEditor
                 }
                 else
                 {
-                    var candidateTime = TimelineHelpers.GetCandidateTime(m_Window.state, Event.current.mousePosition);
+                    var candidateTime = TimelineHelpers.GetCandidateTime(Event.current.mousePosition);
                     retMode = HandleClipPaneObjectDragAndDrop(objectsBeingDropped, GetTrack(targetItem), perform, m_Timeline, GetTrack(parentItem), director, candidateTime, ResolveType);
                 }
             }

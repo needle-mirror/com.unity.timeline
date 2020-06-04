@@ -1,119 +1,17 @@
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
-    [ActiveInMode(TimelineModes.Default)]
-    abstract class TrackAction : MenuItemActionBase
-    {
-        public abstract bool Execute(WindowState state, TrackAsset[] tracks);
-
-        protected virtual MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
-        {
-            return tracks.Length > 0 ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
-        }
-
-        protected virtual bool IsChecked(WindowState state, TrackAsset[] tracks)
-        {
-            return false;
-        }
-
-        protected virtual string GetDisplayName(TrackAsset[] tracks)
-        {
-            return menuName;
-        }
-
-        public static void Invoke<T>(WindowState state, TrackAsset[] tracks) where T : TrackAction
-        {
-            actions.First(x => x.GetType() == typeof(T)).Execute(state, tracks);
-        }
-
-        static List<TrackAction> s_ActionClasses;
-
-        static List<TrackAction> actions
-        {
-            get
-            {
-                if (s_ActionClasses == null)
-                    s_ActionClasses =
-                        GetActionsOfType(typeof(TrackAction))
-                            .Select(x => (TrackAction)x.GetConstructors()[0].Invoke(null))
-                            .OrderBy(x => x.priority).ThenBy(x => x.category)
-                            .ToList();
-
-                return s_ActionClasses;
-            }
-        }
-
-        public static void GetMenuEntries(WindowState state, Vector2? mousePos, TrackAsset[] tracks, List<MenuActionItem> items)
-        {
-            var mode = TimelineWindow.instance.currentMode.mode;
-            foreach (var action in actions)
-            {
-                if (!action.showInMenu)
-                    continue;
-
-                var actionItem = action;
-                items.Add(
-                    new MenuActionItem()
-                    {
-                        category =  action.category,
-                        entryName = action.GetDisplayName(tracks),
-                        shortCut = action.shortCut,
-                        isChecked = action.IsChecked(state, tracks),
-                        isActiveInMode = IsActionActiveInMode(action, mode),
-                        priority = action.priority,
-                        state = action.GetDisplayState(state, tracks),
-                        callback = () =>
-                        {
-                            actionItem.mousePosition = mousePos;
-                            actionItem.Execute(state, tracks);
-                            actionItem.mousePosition = null;
-                        }
-                    }
-                );
-            }
-        }
-
-        public static bool HandleShortcut(WindowState state, Event evt, TrackAsset[] tracks)
-        {
-            foreach (var action in actions)
-            {
-                var attr = action.GetType().GetCustomAttributes(typeof(ShortcutAttribute), true);
-
-                foreach (ShortcutAttribute shortcut in attr)
-                {
-                    if (shortcut.MatchesEvent(evt))
-                    {
-                        if (s_ShowActionTriggeredByShortcut)
-                            Debug.Log(action.GetType().Name);
-
-                        if (!IsActionActiveInMode(action, TimelineWindow.instance.currentMode.mode))
-                            return false;
-
-                        return action.Execute(state, tracks);
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        // For testing
-        internal MenuActionDisplayState InternalGetDisplayState(WindowState state, TrackAsset[] tracks)
-        {
-            return GetDisplayState(state, tracks);
-        }
-    }
-
-    [MenuEntry("Edit in Animation Window", MenuOrder.TrackAction.EditInAnimationWindow)]
+    [MenuEntry("Edit in Animation Window", MenuPriority.TrackActionSection.editInAnimationWindow)]
     class EditTrackInAnimationWindow : TrackAction
     {
-        public static bool Do(WindowState state, TrackAsset track)
+        public static bool Do(TrackAsset track)
         {
             AnimationClip clipToEdit = null;
 
@@ -133,35 +31,39 @@ namespace UnityEditor.Timeline
             if (clipToEdit == null)
                 return false;
 
-            var gameObject = state.GetSceneReference(track);
-            var timeController = TimelineAnimationUtilities.CreateTimeController(state, CreateTimeControlClipData(track));
+            GameObject gameObject = null;
+            if (TimelineEditor.inspectedDirector != null)
+                gameObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, track);
+
+            var timeController = TimelineAnimationUtilities.CreateTimeController(CreateTimeControlClipData(track));
             TimelineAnimationUtilities.EditAnimationClipWithTimeController(clipToEdit, timeController, gameObject);
 
             return true;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Length == 0)
-                return MenuActionDisplayState.Hidden;
+            if (!tracks.Any())
+                return ActionValidity.Invalid;
 
-            if (tracks[0] is AnimationTrack)
+            var firstTrack = tracks.First();
+            if (firstTrack is AnimationTrack)
             {
-                var animTrack = tracks[0] as AnimationTrack;
+                var animTrack = firstTrack as AnimationTrack;
                 if (animTrack.CanConvertToClipMode())
-                    return MenuActionDisplayState.Visible;
+                    return ActionValidity.Valid;
             }
-            else if (tracks[0].hasCurves)
+            else if (firstTrack.hasCurves)
             {
-                return MenuActionDisplayState.Visible;
+                return ActionValidity.Valid;
             }
 
-            return MenuActionDisplayState.Hidden;
+            return ActionValidity.NotApplicable;
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
-            return Do(state, tracks[0]);
+            return Do(tracks.First());
         }
 
         static TimelineWindowTimeControl.ClipData CreateTimeControlClipData(TrackAsset track)
@@ -174,35 +76,37 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Lock selected track only", MenuOrder.TrackAction.LockSelected)]
-    class LockSelectedTrack : TrackAction
+    [MenuEntry("Lock selected track only", MenuPriority.TrackActionSection.lockSelected)]
+    class LockSelectedTrack : TrackAction, IMenuName
     {
         public static readonly string LockSelectedTrackOnlyText = L10n.Tr("Lock selected track only");
         public static readonly string UnlockSelectedTrackOnlyText = L10n.Tr("Unlock selected track only");
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public string menuName { get; private set; }
+
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(track => TimelineUtility.IsLockedFromGroup(track) || track is GroupTrack ||
-                !track.subTracksObjects.Any()))
-                return MenuActionDisplayState.Hidden;
-            return MenuActionDisplayState.Visible;
+            UpdateMenuName(tracks);
+            if (tracks.Any(track => TimelineUtility.IsLockedFromGroup(track) || track is GroupTrack || !track.subTracksObjects.Any()))
+                return ActionValidity.NotApplicable;
+            return ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             if (!tracks.Any()) return false;
 
             var hasUnlockedTracks = tracks.Any(x => !x.locked);
-            Lock(state, tracks.Where(p => !(p is GroupTrack)).ToArray(), hasUnlockedTracks);
+            Lock(tracks.Where(p => !(p is GroupTrack)).ToArray(), hasUnlockedTracks);
             return true;
         }
 
-        protected override string GetDisplayName(TrackAsset[] tracks)
+        void UpdateMenuName(IEnumerable<TrackAsset> tracks)
         {
-            return tracks.All(t => t.locked) ? UnlockSelectedTrackOnlyText : LockSelectedTrackOnlyText;
+            menuName = tracks.All(t => t.locked) ? UnlockSelectedTrackOnlyText : LockSelectedTrackOnlyText;
         }
 
-        public static void Lock(WindowState state, TrackAsset[] tracks, bool shouldlock)
+        public static void Lock(TrackAsset[] tracks, bool shouldlock)
         {
             if (tracks.Length == 0)
                 return;
@@ -216,37 +120,41 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Lock", MenuOrder.TrackAction.LockTrack)]
+    [MenuEntry("Lock", MenuPriority.TrackActionSection.lockTrack)]
     [Shortcut(Shortcuts.Timeline.toggleLock)]
-    class LockTrack : TrackAction
+    class LockTrack : TrackAction, IMenuName
     {
-        public static readonly string UnlockText = L10n.Tr("Unlock");
+        static readonly string k_LockText = L10n.Tr("Lock");
+        static readonly string k_UnlockText = L10n.Tr("Unlock");
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public string menuName { get; private set; }
+
+
+        void UpdateMenuName(IEnumerable<TrackAsset> tracks)
         {
-            bool hasUnlockableTracks = tracks.Any(x => TimelineUtility.IsLockedFromGroup(x));
-            if (hasUnlockableTracks)
-                return MenuActionDisplayState.Disabled;
-            return MenuActionDisplayState.Visible;
+            menuName = tracks.Any(x => !x.locked) ? k_LockText : k_UnlockText;
         }
 
-        protected override string GetDisplayName(TrackAsset[] tracks)
-        {
-            return tracks.Any(x => !x.locked) ? base.GetDisplayName(tracks) : UnlockText;
-        }
-
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             if (!tracks.Any()) return false;
 
             var hasUnlockedTracks = tracks.Any(x => !x.locked);
-            SetLockState(tracks, hasUnlockedTracks, state);
+            SetLockState(tracks, hasUnlockedTracks);
             return true;
         }
 
-        public static void SetLockState(TrackAsset[] tracks, bool shouldLock, WindowState state = null)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Length == 0)
+            UpdateMenuName(tracks);
+            if (tracks.Any(TimelineUtility.IsLockedFromGroup))
+                return ActionValidity.Invalid;
+            return ActionValidity.Valid;
+        }
+
+        public static void SetLockState(IEnumerable<TrackAsset> tracks, bool shouldLock)
+        {
+            if (!tracks.Any())
                 return;
 
             foreach (var track in tracks)
@@ -255,113 +163,116 @@ namespace UnityEditor.Timeline
                     continue;
 
                 if (track as GroupTrack == null)
-                    SetLockState(track.GetChildTracks().ToArray(), shouldLock, state);
+                    SetLockState(track.GetChildTracks().ToArray(), shouldLock);
 
                 TimelineUndo.PushUndo(track, "Lock Tracks");
                 track.locked = shouldLock;
             }
 
-            if (state != null)
+            // find the tracks we've locked. unselect anything locked and remove recording.
+            foreach (var track in tracks)
             {
-                // find the tracks we've locked. unselect anything locked and remove recording.
-                foreach (var track in tracks)
+                if (TimelineUtility.IsLockedFromGroup(track) || !track.locked)
+                    continue;
+
+                var flattenedChildTracks = track.GetFlattenedChildTracks();
+                foreach (var i in track.clips)
+                    SelectionManager.Remove(i);
+                track.UnarmForRecord();
+                foreach (var child in flattenedChildTracks)
                 {
-                    if (TimelineUtility.IsLockedFromGroup(track) || !track.locked)
-                        continue;
-
-                    var flattenedChildTracks = track.GetFlattenedChildTracks();
-                    foreach (var i in track.clips)
-                        SelectionManager.Remove(i);
-                    state.UnarmForRecord(track);
-                    foreach (var child in flattenedChildTracks)
-                    {
-                        SelectionManager.Remove(child);
-                        state.UnarmForRecord(child);
-                        foreach (var clip in child.GetClips())
-                            SelectionManager.Remove(clip);
-                    }
+                    SelectionManager.Remove(child);
+                    child.UnarmForRecord();
+                    foreach (var clip in child.GetClips())
+                        SelectionManager.Remove(clip);
                 }
-
-                // no need to rebuild, just repaint (including inspectors)
-                InspectorWindow.RepaintAllInspectors();
-                state.editorWindow.Repaint();
             }
+
+            // no need to rebuild, just repaint (including inspectors)
+            InspectorWindow.RepaintAllInspectors();
+            TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
         }
     }
 
     [UsedImplicitly]
-    [MenuEntry("Show Markers", MenuOrder.TrackAction.ShowHideMarkers)]
+    [MenuEntry("Show Markers", MenuPriority.TrackActionSection.showHideMarkers)]
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
-    class ShowHideMarkers : TrackAction
+    class ShowHideMarkers : TrackAction, IMenuChecked
     {
-        protected override bool IsChecked(WindowState state, TrackAsset[] tracks)
+        public bool isChecked { get; private set; }
+
+        void UpdateCheckedStatus(IEnumerable<TrackAsset> tracks)
         {
-            return tracks.All(x => x.GetShowMarkers());
+            isChecked = tracks.All(x => x.GetShowMarkers());
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
+            UpdateCheckedStatus(tracks);
             if (tracks.Any(x => x is GroupTrack) || tracks.Any(t => t.GetMarkerCount() == 0))
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
-                return MenuActionDisplayState.Disabled;
+            {
+                return ActionValidity.Invalid;
+            }
 
-            return MenuActionDisplayState.Visible;
+            return ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             if (!tracks.Any()) return false;
 
             var hasUnlockedTracks = tracks.Any(x => !x.GetShowMarkers());
-            ShowHide(state, tracks, hasUnlockedTracks);
+            ShowHide(tracks, hasUnlockedTracks);
             return true;
         }
 
-        static void ShowHide(WindowState state, TrackAsset[] tracks, bool shouldLock)
+        static void ShowHide(IEnumerable<TrackAsset> tracks, bool shouldLock)
         {
-            if (tracks.Length == 0)
+            if (!tracks.Any())
                 return;
 
-            var window = state.GetWindow();
             foreach (var track in tracks)
-            {
-                window.SetShowTrackMarkers(track, shouldLock);
-            }
+                track.SetShowTrackMarkers(shouldLock);
 
             TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
         }
     }
 
-    [MenuEntry("Mute selected track only", MenuOrder.TrackAction.MuteSelected), UsedImplicitly]
-    class MuteSelectedTrack : TrackAction
+    [MenuEntry("Mute selected track only", MenuPriority.TrackActionSection.muteSelected), UsedImplicitly]
+    class MuteSelectedTrack : TrackAction, IMenuName
     {
+        public static readonly string MuteSelectedText = L10n.Tr("Mute selected track only");
         public static readonly string UnmuteSelectedText = L10n.Tr("Unmute selected track only");
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+
+        public string menuName { get; private set; }
+
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(track => TimelineUtility.IsParentMuted(track) || track is GroupTrack ||
-                !track.subTracksObjects.Any()))
-                return MenuActionDisplayState.Hidden;
-            return MenuActionDisplayState.Visible;
+            UpdateMenuName(tracks);
+            if (tracks.Any(track => TimelineUtility.IsParentMuted(track) || track is GroupTrack || !track.subTracksObjects.Any()))
+                return ActionValidity.NotApplicable;
+            return ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             if (!tracks.Any())
                 return false;
 
             var hasUnmutedTracks = tracks.Any(x => !x.muted);
-            Mute(state, tracks.Where(p => !(p is GroupTrack)).ToArray(), hasUnmutedTracks);
+            Mute(tracks.Where(p => !(p is GroupTrack)).ToArray(), hasUnmutedTracks);
             return true;
         }
 
-        protected override string GetDisplayName(TrackAsset[] tracks)
+        void UpdateMenuName(IEnumerable<TrackAsset> tracks)
         {
-            return tracks.All(t => t.muted) ?  UnmuteSelectedText : base.GetDisplayName(tracks);
+            menuName = tracks.All(t => t.muted) ? UnmuteSelectedText : MuteSelectedText;
         }
 
-        public static void Mute(WindowState state, TrackAsset[] tracks, bool shouldMute)
+        public static void Mute(TrackAsset[] tracks, bool shouldMute)
         {
             if (tracks.Length == 0)
                 return;
@@ -372,52 +283,56 @@ namespace UnityEditor.Timeline
                 track.muted = shouldMute;
             }
 
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.ContentsModified);
         }
     }
 
-    [MenuEntry("Mute", MenuOrder.TrackAction.MuteTrack)]
+    [MenuEntry("Mute", MenuPriority.TrackActionSection.mute)]
     [Shortcut(Shortcuts.Timeline.toggleMute)]
-    class MuteTrack : TrackAction
+    class MuteTrack : TrackAction, IMenuName
     {
-        public static readonly string UnMuteText = L10n.Tr("Unmute");
+        static readonly string k_MuteText = L10n.Tr("Mute");
+        static readonly string k_UnMuteText = L10n.Tr("Unmute");
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public string menuName { get; private set; }
+
+        void UpdateMenuName(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(track => TimelineUtility.IsParentMuted(track)))
-                return MenuActionDisplayState.Disabled;
-            return MenuActionDisplayState.Visible;
+            menuName = tracks.Any(x => !x.muted) ? k_MuteText : k_UnMuteText;
         }
 
-        protected override string GetDisplayName(TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
-            return tracks.Any(x => !x.muted) ? base.GetDisplayName(tracks) : UnMuteText;
-        }
-
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
-        {
-            if (!tracks.Any() || tracks.Any(track => TimelineUtility.IsParentMuted(track)))
+            if (!tracks.Any() || tracks.Any(TimelineUtility.IsParentMuted))
                 return false;
 
             var hasUnmutedTracks = tracks.Any(x => !x.muted);
-            Mute(state, tracks, hasUnmutedTracks);
+            Mute(tracks, hasUnmutedTracks);
             return true;
         }
 
-        public static void Mute(WindowState state, TrackAsset[] tracks, bool shouldMute)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Length == 0)
+            UpdateMenuName(tracks);
+            if (tracks.Any(TimelineUtility.IsLockedFromGroup))
+                return ActionValidity.Invalid;
+            return ActionValidity.Valid;
+        }
+
+        public static void Mute(IEnumerable<TrackAsset> tracks, bool shouldMute)
+        {
+            if (!tracks.Any())
                 return;
 
             foreach (var track in tracks)
             {
                 if (track as GroupTrack == null)
-                    Mute(state, track.GetChildTracks().ToArray(), shouldMute);
+                    Mute(track.GetChildTracks().ToArray(), shouldMute);
                 TimelineUndo.PushUndo(track, "Mute Tracks");
                 track.muted = shouldMute;
             }
 
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.ContentsModified);
         }
     }
 
@@ -429,18 +344,20 @@ namespace UnityEditor.Timeline
             TrackModifier.DeleteTrack(timeline, track);
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks) => ActionValidity.Valid;
+
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             // disable preview mode so deleted tracks revert to default state
             // Case 956129: Disable preview mode _before_ deleting the tracks, since clip data is still needed
-            state.previewMode = false;
+            TimelineEditor.state.previewMode = false;
 
             TimelineAnimationUtilities.UnlinkAnimationWindowFromTracks(tracks);
 
             foreach (var track in tracks)
-                Do(state.editSequence.asset, track);
+                Do(TimelineEditor.inspectedAsset, track);
 
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
 
             return true;
         }
@@ -448,14 +365,15 @@ namespace UnityEditor.Timeline
 
     class CopyTracksToClipboard : TrackAction
     {
-        public static bool Do(WindowState state, TrackAsset[] tracks)
+        public static bool Do(TrackAsset[] tracks)
         {
             var action = new CopyTracksToClipboard();
-
-            return action.Execute(state, tracks);
+            return action.Execute(tracks);
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks) => ActionValidity.Valid;
+
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             TimelineEditor.clipboard.CopyTracks(tracks);
 
@@ -465,7 +383,9 @@ namespace UnityEditor.Timeline
 
     class DuplicateTracks : TrackAction
     {
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks) => ActionValidity.Valid;
+
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             if (tracks.Any())
             {
@@ -492,24 +412,24 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
 
             return true;
         }
     }
 
-    [MenuEntry("Remove Invalid Markers", MenuOrder.TrackAction.RemoveInvalidMarkers), UsedImplicitly]
+    [MenuEntry("Remove Invalid Markers", MenuPriority.TrackActionSection.removeInvalidMarkers), UsedImplicitly]
     class RemoveInvalidMarkersAction : TrackAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             if (tracks.Any(target => target != null && target.GetMarkerCount() != target.GetMarkersRaw().Count()))
-                return MenuActionDisplayState.Visible;
+                return ActionValidity.Valid;
 
-            return MenuActionDisplayState.Hidden;
+            return ActionValidity.NotApplicable;
         }
 
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             bool anyRemoved = false;
             foreach (var target in tracks)

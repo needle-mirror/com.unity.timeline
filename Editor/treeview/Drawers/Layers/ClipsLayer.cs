@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
-    class ClipsLayer : ItemsLayer
+    class ClipsLayer : ItemsLayer<TimelineClipGUI>
     {
         static readonly GUIStyle k_ConnectorIcon = DirectorStyles.Instance.connector;
 
@@ -31,10 +30,10 @@ namespace UnityEditor.Timeline
         public override void Draw(Rect rect, WindowState state)
         {
             base.Draw(rect, state); //draw clips
-            DrawConnector(items.OfType<TimelineClipGUI>());
+            DrawConnector(items);
         }
 
-        static void DrawConnector(IEnumerable<TimelineClipGUI> clips)
+        static void DrawConnector(List<TimelineClipGUI> clips)
         {
             if (Event.current.type != EventType.Repaint)
                 return;

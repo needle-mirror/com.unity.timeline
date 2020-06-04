@@ -77,7 +77,7 @@ namespace UnityEditor.Timeline
             if (!m_TreeView.IsSelected(id))
                 SelectionChangedCallback(new[] {id});
 
-            SequencerContextMenu.ShowTrackContextMenu(SelectionManager.SelectedTracks().ToArray(), Event.current.mousePosition);
+            SequencerContextMenu.ShowTrackContextMenu(Event.current.mousePosition);
 
             Event.current.Use();
         }

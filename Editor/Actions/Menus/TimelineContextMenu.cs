@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -10,18 +11,6 @@ namespace UnityEditor.Timeline
 {
     static class SequencerContextMenu
     {
-        static readonly TimelineAction[] MarkerHeaderCommonOperations =
-        {
-            new PasteAction()
-        };
-
-        public static readonly TimelineAction[] MarkerHeaderMenuItems =
-            TimelineAction.AllActions.OfType<MarkerHeaderAction>().
-                Where(a => a.showInMenu).
-                Union(MarkerHeaderCommonOperations).
-                ToArray();
-
-
         static class Styles
         {
             public static readonly string addItemFromAssetTemplate       = L10n.Tr("Add {0} From {1}");
@@ -39,7 +28,7 @@ namespace UnityEditor.Timeline
             var menu = new GenericMenu();
             List<MenuActionItem> items = new List<MenuActionItem>(100);
             BuildMarkerHeaderContextMenu(items, mousePosition, state);
-            MenuItemActionBase.BuildMenu(menu, items);
+            ActionManager.BuildMenu(menu, items);
             menu.ShowAsContext();
         }
 
@@ -48,7 +37,7 @@ namespace UnityEditor.Timeline
             var menu = new GenericMenu();
             List<MenuActionItem> items = new List<MenuActionItem>(100);
             BuildNewTracksContextMenu(items, tracks, state);
-            MenuItemActionBase.BuildMenu(menu, items);
+            ActionManager.BuildMenu(menu, items);
             menu.ShowAsContext();
         }
 
@@ -57,44 +46,40 @@ namespace UnityEditor.Timeline
             var menu = new GenericMenu();
             List<MenuActionItem> items = new List<MenuActionItem>(100);
             BuildNewTracksContextMenu(items, tracks, state);
-            MenuItemActionBase.BuildMenu(menu, items);
+            ActionManager.BuildMenu(menu, items);
             menu.DropDown(rect);
         }
 
-        public static void ShowTrackContextMenu(TrackAsset[] tracks, Vector2? mousePosition)
+        public static void ShowTrackContextMenu(Vector2? mousePosition)
         {
-            if (tracks == null || tracks.Length == 0)
-                return;
-
             var items = new List<MenuActionItem>();
             var menu = new GenericMenu();
-            BuildTrackContextMenu(items, tracks, mousePosition);
-            MenuItemActionBase.BuildMenu(menu, items);
+            BuildTrackContextMenu(items, mousePosition);
+            ActionManager.BuildMenu(menu, items);
             menu.ShowAsContext();
         }
 
-        public static void ShowItemContextMenu(Vector2 mousePosition, TimelineClip[] clips, IMarker[] markers)
+        public static void ShowItemContextMenu(Vector2 mousePosition)
         {
             var menu = new GenericMenu();
             var items = new List<MenuActionItem>();
-            BuildItemContextMenu(items, mousePosition, clips, markers);
-            MenuItemActionBase.BuildMenu(menu, items);
+            BuildItemContextMenu(items, mousePosition);
+            ActionManager.BuildMenu(menu, items);
             menu.ShowAsContext();
         }
 
-        internal static void BuildItemContextMenu(List<MenuActionItem> items, Vector2 mousePosition, TimelineClip[] clips, IMarker[] markers)
+        public static void BuildItemContextMenu(List<MenuActionItem> items, Vector2 mousePosition)
         {
-            var state = TimelineWindow.instance.state;
+            ActionManager.GetMenuEntries(ActionManager.TimelineActions, mousePosition, items);
+            ActionManager.GetMenuEntries(ActionManager.ClipActions, items);
+            ActionManager.GetMenuEntries(ActionManager.MarkerActions, items);
 
-            TimelineAction.GetMenuEntries(TimelineAction.MenuActions, mousePosition, items);
-            ItemAction<TimelineClip>.GetMenuEntries(clips, items);
-            ItemAction<IMarker>.GetMenuEntries(markers, items);
-
+            var clips = TimelineEditor.selectedClips;
             if (clips.Length > 0)
-                AddMarkerMenuCommands(items, clips.Select(c => c.parentTrack).Distinct().ToList(), TimelineHelpers.GetCandidateTime(state, mousePosition));
+                AddMarkerMenuCommands(items, clips.Select(c => c.parentTrack).Distinct().ToList(), TimelineHelpers.GetCandidateTime(mousePosition));
         }
 
-        internal static void BuildNewTracksContextMenu(List<MenuActionItem> menuItems, ICollection<TrackAsset> parentTracks, WindowState state, string format = null)
+        public static void BuildNewTracksContextMenu(List<MenuActionItem> menuItems, ICollection<TrackAsset> parentTracks, WindowState state, string format = null)
         {
             if (parentTracks == null)
                 parentTracks = new TrackAsset[0];
@@ -104,11 +89,11 @@ namespace UnityEditor.Timeline
 
             // Add Group or SubGroup
             var title = string.Format(format, parentTracks.Any(t => t != null) ? Styles.trackSubGroup : Styles.trackGroup);
-            var menuState = MenuActionDisplayState.Visible;
+            var menuState = ActionValidity.Valid;
             if (state.editSequence.isReadOnly)
-                menuState = MenuActionDisplayState.Disabled;
+                menuState = ActionValidity.Invalid;
             if (parentTracks.Any() && parentTracks.Any(t => t != null && t.lockedInHierarchy))
-                menuState = MenuActionDisplayState.Disabled;
+                menuState = ActionValidity.Invalid;
 
             GenericMenu.MenuFunction command = () =>
             {
@@ -127,11 +112,10 @@ namespace UnityEditor.Timeline
                 {
                     category = string.Empty,
                     entryName = title,
-                    shortCut = string.Empty,
                     isActiveInMode = true,
-                    isChecked = false,
-                    priority =  MenuOrder.AddGroupItemStart,
+                    priority = MenuPriority.AddItem.addGroup,
                     state = menuState,
+                    isChecked = false,
                     callback = command
                 }
             );
@@ -139,8 +123,8 @@ namespace UnityEditor.Timeline
 
             var allTypes = TypeUtility.AllTrackTypes().Where(x => x != typeof(GroupTrack) && !TypeUtility.IsHiddenInMenu(x)).ToList();
 
-            int builtInPriority = MenuOrder.AddTrackItemStart;
-            int customPriority = MenuOrder.AddCustomTrackItemStart;
+            int builtInPriority = MenuPriority.AddItem.addTrack;
+            int customPriority = MenuPriority.AddItem.addCustomTrack;
             foreach (var trackType in allTypes)
             {
                 var trackItemType = trackType;
@@ -161,9 +145,7 @@ namespace UnityEditor.Timeline
                     {
                         category = TimelineHelpers.GetTrackCategoryName(trackType),
                         entryName = string.Format(format, TimelineHelpers.GetTrackMenuName(trackItemType)),
-                        shortCut = string.Empty,
                         isActiveInMode = true,
-                        isChecked = false,
                         priority = TypeUtility.IsBuiltIn(trackType) ? builtInPriority++ : customPriority++,
                         state = menuState,
                         callback = command
@@ -172,12 +154,12 @@ namespace UnityEditor.Timeline
             }
         }
 
-        internal static void BuildMarkerHeaderContextMenu(List<MenuActionItem> menu, Vector2? mousePosition, WindowState state)
+        public static void BuildMarkerHeaderContextMenu(List<MenuActionItem> menu, Vector2? mousePosition, WindowState state)
         {
-            TimelineAction.GetMenuEntries(MarkerHeaderMenuItems, null, menu);
+            ActionManager.GetMenuEntries(ActionManager.TimelineActions, null, menu, MenuFilter.MarkerHeader);
 
             var timeline = state.editSequence.asset;
-            var time = TimelineHelpers.GetCandidateTime(state, mousePosition);
+            var time = TimelineHelpers.GetCandidateTime(mousePosition);
             var enabled = timeline.markerTrack == null || !timeline.markerTrack.lockedInHierarchy;
 
             var addMarkerCommand = new Action<Type, Object>
@@ -188,13 +170,14 @@ namespace UnityEditor.Timeline
             AddMarkerMenuCommands(menu, new TrackAsset[] {timeline.markerTrack}, addMarkerCommand, enabled);
         }
 
-        internal static void BuildTrackContextMenu(List<MenuActionItem> items, TrackAsset[] tracks, Vector2? mousePosition)
+        public static void BuildTrackContextMenu(List<MenuActionItem> items, Vector2? mousePosition)
         {
-            if (tracks == null || tracks.Length == 0)
+            var tracks = SelectionManager.SelectedTracks().ToArray();
+            if (tracks.Length == 0)
                 return;
 
-            TimelineAction.GetMenuEntries(TimelineAction.MenuActions, mousePosition, items);
-            TrackAction.GetMenuEntries(TimelineWindow.instance.state, mousePosition, tracks, items);
+            ActionManager.GetMenuEntries(ActionManager.TimelineActions, mousePosition, items);
+            ActionManager.GetMenuEntries(ActionManager.TrackActions, items);
             AddLayeredTrackCommands(items, tracks);
 
             var first = tracks.First().GetType();
@@ -203,7 +186,7 @@ namespace UnityEditor.Timeline
             {
                 if (first != typeof(GroupTrack))
                 {
-                    var candidateTime = TimelineHelpers.GetCandidateTime(TimelineWindow.instance.state, mousePosition, tracks);
+                    var candidateTime = TimelineHelpers.GetCandidateTime(mousePosition, tracks);
                     AddClipMenuCommands(items, tracks, candidateTime);
                     AddMarkerMenuCommands(items, tracks, candidateTime);
                 }
@@ -236,7 +219,7 @@ namespace UnityEditor.Timeline
                 return;
 
             var enabled = tracks.All(t => t != null && !t.lockedInHierarchy) && !TimelineWindow.instance.state.editSequence.isReadOnly;
-            int priority = MenuOrder.TrackAddMenu.AddLayerTrack;
+            int priority = MenuPriority.AddTrackMenu.addLayerTrack;
             GenericMenu.MenuFunction menuCallback = () =>
             {
                 foreach (var track in tracks)
@@ -249,11 +232,9 @@ namespace UnityEditor.Timeline
                 {
                     category = string.Empty,
                     entryName = entryName,
-                    shortCut = string.Empty,
                     isActiveInMode = true,
-                    isChecked = false,
                     priority = priority++,
-                    state = enabled ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled,
+                    state = enabled ? ActionValidity.Valid : ActionValidity.Invalid,
                     callback = menuCallback
                 }
             );
@@ -275,8 +256,8 @@ namespace UnityEditor.Timeline
 
             // skips the name if there is only a single type
             var commandNameTemplate = assetTypes.Count() == 1 ? Styles.addSingleItemFromAssetTemplate : Styles.addItemFromAssetTemplate;
-            int builtInPriority = MenuOrder.AddClipItemStart;
-            int customPriority = MenuOrder.AddCustomClipItemStart;
+            int builtInPriority = MenuPriority.AddItem.addClip;
+            int customPriority = MenuPriority.AddItem.addCustomClip;
             foreach (var assetType in assetTypes)
             {
                 var assetItemType = assetType;
@@ -307,11 +288,9 @@ namespace UnityEditor.Timeline
                         {
                             category = category,
                             entryName = string.Format(commandNameTemplate, TypeUtility.GetDisplayName(assetType), TypeUtility.GetDisplayName(objectReference.type)),
-                            shortCut = string.Empty,
                             isActiveInMode = true,
-                            isChecked = false,
                             priority = TypeUtility.IsBuiltIn(assetType) ? builtInPriority++ : customPriority++,
-                            state = enabled ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled,
+                            state = enabled ? ActionValidity.Valid : ActionValidity.Invalid,
                             callback = menuCallback
                         }
                     );
@@ -336,11 +315,9 @@ namespace UnityEditor.Timeline
                     {
                         category = category,
                         entryName = commandName,
-                        shortCut = string.Empty,
                         isActiveInMode = true,
-                        isChecked = false,
                         priority = TypeUtility.IsBuiltIn(assetItemType) ? builtInPriority++ : customPriority++,
-                        state = enabled ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled,
+                        state = enabled ? ActionValidity.Valid : ActionValidity.Invalid,
                         callback = command
                     }
                 );
@@ -349,8 +326,8 @@ namespace UnityEditor.Timeline
 
         static void AddMarkerMenuCommands(List<MenuActionItem> menu, IEnumerable<Type> markerTypes, Action<Type, Object> addMarkerCommand, bool enabled)
         {
-            int builtInPriority = MenuOrder.AddMarkerItemStart;
-            int customPriority = MenuOrder.AddCustomMarkerItemStart;
+            int builtInPriority = MenuPriority.AddItem.addMarker;
+            int customPriority = MenuPriority.AddItem.addCustomMarker;
             foreach (var markerType in markerTypes)
             {
                 var markerItemType = markerType;
@@ -360,11 +337,9 @@ namespace UnityEditor.Timeline
                     {
                         category = category,
                         entryName = string.Format(Styles.addItemTemplate, TypeUtility.GetDisplayName(markerType)),
-                        shortCut = string.Empty,
                         isActiveInMode = true,
-                        isChecked = false,
                         priority = TypeUtility.IsBuiltIn(markerType) ? builtInPriority++ : customPriority++,
-                        state = enabled ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled,
+                        state = enabled ? ActionValidity.Valid : ActionValidity.Invalid,
                         callback = () => addMarkerCommand(markerItemType, null)
                     }
                 );
@@ -384,11 +359,9 @@ namespace UnityEditor.Timeline
                         {
                             category = TimelineHelpers.GetItemCategoryName(markerItemType),
                             entryName = string.Format(Styles.addItemFromAssetTemplate, TypeUtility.GetDisplayName(markerType), TypeUtility.GetDisplayName(objectReference.type)),
-                            shortCut = string.Empty,
                             isActiveInMode = true,
-                            isChecked = false,
                             priority = TypeUtility.IsBuiltIn(markerType) ? builtInPriority++ : customPriority++,
-                            state = enabled ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled,
+                            state = enabled ? ActionValidity.Valid : ActionValidity.Invalid,
                             callback = menuCallback
                         }
                     );

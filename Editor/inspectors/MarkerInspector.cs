@@ -45,7 +45,7 @@ namespace UnityEditor.Timeline
                     var newName = EditorGUI.DelayedTextField(titleRect, marker.name);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        TimelineUndo.PushUndo(marker, Styles.UndoCommand);
+                        UndoExtensions.RegisterMarker(marker, Styles.UndoCommand);
                         marker.name = newName;
                     }
                 }

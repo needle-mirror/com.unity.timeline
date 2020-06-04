@@ -127,7 +127,7 @@ namespace UnityEditor.Timeline
             var uiClip = m_TrimClipHandler.clipGUI;
             if (!m_UndoSaved)
             {
-                TimelineUndo.PushUndo(uiClip.clip.parentTrack, "Trim Clip");
+                UndoExtensions.RegisterClip(uiClip.clip, "Trim Clip");
                 if (TimelineUtility.IsRecordableAnimationClip(uiClip.clip))
                 {
                     TimelineUndo.PushUndo(uiClip.clip.animationClip, "Trim Clip");

@@ -120,7 +120,7 @@ namespace UnityEngine.Timeline
             TimelineUndo.PushUndo(clip.parentTrack, "Delete Clip");
             if (clip.curves != null)
             {
-                TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.curves, "Delete Curves");
+                TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.curves);
             }
 
             // handle wrapped assets
@@ -134,7 +134,7 @@ namespace UnityEngine.Timeline
                 if (path == UnityEditor.AssetDatabase.GetAssetPath(this))
 #endif
                 {
-                    TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.asset, "Delete Clip Asset");
+                    TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.asset);
                 }
             }
 
@@ -178,7 +178,7 @@ namespace UnityEngine.Timeline
             }
             RemoveTrack(track);
 
-            TimelineUndo.PushDestroyUndo(this, this, track, "Delete Track");
+            TimelineUndo.PushDestroyUndo(this, this, track);
 
             return true;
         }
@@ -228,10 +228,10 @@ namespace UnityEngine.Timeline
         {
             var animTrack = track as AnimationTrack;
             if (animTrack != null && animTrack.infiniteClip != null)
-                TimelineUndo.PushDestroyUndo(this, track, animTrack.infiniteClip, "Delete Track");
+                TimelineUndo.PushDestroyUndo(this, track, animTrack.infiniteClip);
 
             if (track.curves != null)
-                TimelineUndo.PushDestroyUndo(this, track, track.curves, "Delete Track Parameters");
+                TimelineUndo.PushDestroyUndo(this, track, track.curves);
         }
 
         void DeleteRecordedAnimation(TimelineClip clip)
@@ -240,7 +240,7 @@ namespace UnityEngine.Timeline
                 return;
 
             if (clip.curves != null)
-                TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.curves, "Delete Clip Parameters");
+                TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.curves);
 
             if (!clip.recordable)
                 return;
@@ -249,7 +249,7 @@ namespace UnityEngine.Timeline
             if (asset == null || asset.clip == null)
                 return;
 
-            TimelineUndo.PushDestroyUndo(this, asset, asset.clip, "Delete Recording");
+            TimelineUndo.PushDestroyUndo(this, asset, asset.clip);
         }
     }
 }

@@ -78,7 +78,7 @@ namespace UnityEditor.Timeline
                 if (clipTime < 0)
                 {
                     Undo.RegisterCompleteObjectUndo(clip, "Record Key");
-                    TimelineUndo.PushUndo(track, "Prepend Key");
+                    UndoExtensions.RegisterTrack(track, "Prepend Key");
                     ShiftAnimationClip(clip, (float)-clipTime);
                     activeClip.start = state.editSequence.time;
                     activeClip.duration += -clipTime;
@@ -127,7 +127,7 @@ namespace UnityEditor.Timeline
                 // stretch the clip out to meet the new recording time
                 if (m_ClipTime > recordClip.duration)
                 {
-                    TimelineUndo.PushUndo(track, "Add Key");
+                    UndoExtensions.RegisterTrack(track, "Add Key");
                     recordClip.duration = m_ClipTime;
                 }
 
@@ -245,8 +245,8 @@ namespace UnityEditor.Timeline
             if (!double.IsInfinity(gapEnd))
                 end = gapEnd;
 
-            start = state.SnapToFrameIfRequired(start);
-            end = state.SnapToFrameIfRequired(end);
+            start = TimeReferenceUtility.SnapToFrameIfRequired(start);
+            end = TimeReferenceUtility.SnapToFrameIfRequired(end);
         }
 
         // Given a clip, shifts the keys in that clip by the given amount.

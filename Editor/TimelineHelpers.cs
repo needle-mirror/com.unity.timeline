@@ -177,7 +177,7 @@ namespace UnityEditor.Timeline
             return newTrack;
         }
 
-        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, ItemsPerTrack items, TrackAsset targetParent, double candidateTime, string undoOperation)
+        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, ItemsPerTrack items, TrackAsset targetParent, double candidateTime, string undoOperation)
         {
             if (targetParent != null)
             {
@@ -186,20 +186,20 @@ namespace UnityEditor.Timeline
                     aTrack.ConvertToClipMode();
 
                 var duplicatedItems = DuplicateItems(items, targetParent, sourceTable, destTable, undoOperation);
-                FinalizeInsertItemsUsingCurrentEditMode(state, new[] {duplicatedItems}, candidateTime);
+                FinalizeInsertItemsUsingCurrentEditMode(new[] {duplicatedItems}, candidateTime);
                 return duplicatedItems.items;
             }
 
             return Enumerable.Empty<ITimelineItem>();
         }
 
-        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(WindowState state, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, IEnumerable<ItemsPerTrack> items, double candidateTime, string undoOperation)
+        public static IEnumerable<ITimelineItem> DuplicateItemsUsingCurrentEditMode(IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, IEnumerable<ItemsPerTrack> items, double candidateTime, string undoOperation)
         {
             var duplicatedItemsGroups = new List<ItemsPerTrack>();
             foreach (var i in items)
                 duplicatedItemsGroups.Add(DuplicateItems(i, i.targetTrack, sourceTable, destTable, undoOperation));
 
-            FinalizeInsertItemsUsingCurrentEditMode(state, duplicatedItemsGroups, candidateTime);
+            FinalizeInsertItemsUsingCurrentEditMode(duplicatedItemsGroups, candidateTime);
             return duplicatedItemsGroups.SelectMany(i => i.items);
         }
 
@@ -223,7 +223,7 @@ namespace UnityEditor.Timeline
             return new ItemsPerTrack(target, duplicatedItems.ToArray());
         }
 
-        static void FinalizeInsertItemsUsingCurrentEditMode(WindowState state, IList<ItemsPerTrack> itemsGroups, double candidateTime)
+        static void FinalizeInsertItemsUsingCurrentEditMode(IList<ItemsPerTrack> itemsGroups, double candidateTime)
         {
             EditMode.FinalizeInsertItemsAtTime(itemsGroups, candidateTime);
 
@@ -250,7 +250,7 @@ namespace UnityEditor.Timeline
                 SelectionManager.Add(item);
             }
 
-            FrameItems(state, allItems);
+            FrameItems(allItems);
         }
 
         internal static TimelineClip Clone(TimelineClip clip, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset newOwner)
@@ -503,15 +503,19 @@ namespace UnityEditor.Timeline
             return times.ToArray();
         }
 
-        public static double GetCandidateTime(WindowState state, Vector2? mousePosition, params TrackAsset[] trackAssets)
+        public static double GetCandidateTime(Vector2? mousePosition, params TrackAsset[] trackAssets)
         {
             // Right-Click
             if (mousePosition != null)
-                return state.GetSnappedTimeAtMousePosition(mousePosition.Value);
+            {
+                return TimeReferenceUtility.GetSnappedTimeAtMousePosition(mousePosition.Value);
+            }
 
             // Playhead
-            if (state != null && state.editSequence.director != null)
-                return state.SnapToFrameIfRequired(state.editSequence.time);
+            if (TimelineEditor.inspectedDirector != null)
+            {
+                return TimeReferenceUtility.SnapToFrameIfRequired(TimelineEditor.inspectedSequenceTime);
+            }
 
             // Specific tracks end
             if (trackAssets != null && trackAssets.Any())
@@ -521,15 +525,15 @@ namespace UnityEditor.Timeline
             }
 
             // Timeline tracks end
-            if (state != null && state.editSequence.asset != null)
-                return state.editSequence.asset.flattenedTracks.Any() ? state.editSequence.asset.flattenedTracks.Max(t => t.end) : 0;
+            if (TimelineEditor.inspectedAsset != null)
+                return TimelineEditor.inspectedAsset.flattenedTracks.Any() ? TimelineEditor.inspectedAsset.flattenedTracks.Max(t => t.end) : 0;
 
             return 0.0;
         }
 
         public static TimelineClip CreateClipOnTrack(Object asset, TrackAsset parentTrack, WindowState state)
         {
-            return CreateClipOnTrack(asset, parentTrack, GetCandidateTime(state, null, parentTrack), state);
+            return CreateClipOnTrack(asset, parentTrack, GetCandidateTime(null, parentTrack), state);
         }
 
         public static TimelineClip CreateClipOnTrack(Object asset, TrackAsset parentTrack, double candidateTime)
@@ -543,7 +547,7 @@ namespace UnityEditor.Timeline
 
         public static TimelineClip CreateClipOnTrack(Type playableAssetType, TrackAsset parentTrack, WindowState state)
         {
-            return CreateClipOnTrack(playableAssetType, null, parentTrack, GetCandidateTime(state, null, parentTrack), state);
+            return CreateClipOnTrack(playableAssetType, null, parentTrack, GetCandidateTime(null, parentTrack), state);
         }
 
         public static TimelineClip CreateClipOnTrack(Type playableAssetType, TrackAsset parentTrack, double candidateTime)
@@ -670,11 +674,11 @@ namespace UnityEditor.Timeline
             var state = TimelineWindow.instance.state;
             for (var i = 1; i < mList.Count; ++i)
             {
-                var delta = ItemsUtils.TimeGapBetweenItems(mList[i - 1], mList[i], state);
+                var delta = ItemsUtils.TimeGapBetweenItems(mList[i - 1], mList[i]);
                 mList[i].start += delta;
             }
 
-            FinalizeInsertItemsUsingCurrentEditMode(state, new[] {new ItemsPerTrack(targetTrack, mList)}, candidateTime);
+            FinalizeInsertItemsUsingCurrentEditMode(new[] {new ItemsPerTrack(targetTrack, mList)}, candidateTime);
             state.Refresh();
         }
 
@@ -723,31 +727,33 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static void FrameItems(WindowState state, IEnumerable<ITimelineItem> items)
+        public static void FrameItems(IEnumerable<ITimelineItem> items)
         {
-            if (items == null || !items.Any() || state == null)
+            if (items == null || !items.Any())
                 return;
 
             // if this is called before a repaint, the timeArea can be null
-            var window = state.editorWindow as TimelineWindow;
-            if (window == null || window.timeArea == null)
+            if (TimelineEditor.window.timeArea == null)
                 return;
 
             var start = (float)items.Min(x => x.start);
             var end = (float)items.Max(x => x.end);
-            var timeRange = state.timeAreaShownRange;
+            var timeRange = TimelineEditor.visibleTimeRange;
 
             // nothing to do
             if (timeRange.x <= start && timeRange.y >= end)
                 return;
 
+            timeRange.x = Mathf.Max(0, timeRange.x);
+            timeRange.y = Mathf.Max(0, timeRange.y);
+
             var ds = start - timeRange.x;
             var de = end - timeRange.y;
 
-            var padding = state.PixelDeltaToDeltaTime(15);
+            var padding = TimeReferenceUtility.PixelToTime(15) - TimeReferenceUtility.PixelToTime(0);
             var d = Math.Abs(ds) < Math.Abs(de) ? ds - padding : de + padding;
 
-            state.SetTimeAreaShownRange(timeRange.x + d, timeRange.y + d);
+            TimelineEditor.visibleTimeRange = new Vector2(timeRange.x + d, timeRange.y + d);
         }
 
         public static void Frame(WindowState state, double start, double end)
@@ -879,7 +885,7 @@ namespace UnityEditor.Timeline
 
             var newClipsByTracks = new[] { new ItemsPerTrack(parentTrack, new[] {newClip.ToItem()}) };
 
-            FinalizeInsertItemsUsingCurrentEditMode(state, newClipsByTracks, candidateTime);
+            FinalizeInsertItemsUsingCurrentEditMode(newClipsByTracks, candidateTime);
 
             if (state != null)
                 state.Refresh();

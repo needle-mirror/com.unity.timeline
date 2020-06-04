@@ -176,7 +176,7 @@ namespace UnityEditor.Timeline
                 }
                 else
                 {
-                    KeyboardNavigation.FocusFirstVisibleItem(GetState(args));
+                    KeyboardNavigation.FocusFirstVisibleItem();
                 }
             }
 
@@ -194,7 +194,7 @@ namespace UnityEditor.Timeline
                 }
                 else
                 {
-                    KeyboardNavigation.FocusFirstVisibleItem(GetState(args));
+                    KeyboardNavigation.FocusFirstVisibleItem();
                 }
             }
 

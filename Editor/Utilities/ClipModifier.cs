@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -13,9 +14,9 @@ namespace UnityEditor.Timeline
             return timeline.DeleteClip(clip);
         }
 
-        public static bool Tile(TimelineClip[] clips)
+        public static bool Tile(IEnumerable<TimelineClip> clips)
         {
-            if (clips.Length < 2)
+            if (clips.Count() < 2)
                 return false;
 
             var clipsByTracks = clips.GroupBy(x => x.parentTrack)
@@ -23,7 +24,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in clipsByTracks)
             {
-                TimelineUndo.PushUndo(track.Key, "Tile");
+                UndoExtensions.RegisterTrack(track.Key, "Tile");
             }
 
             foreach (var track in clipsByTracks)
@@ -39,7 +40,7 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool TrimStart(TimelineClip[] clips, double trimTime)
+        public static bool TrimStart(IEnumerable<TimelineClip> clips, double trimTime)
         {
             var result = false;
 
@@ -60,7 +61,7 @@ namespace UnityEditor.Timeline
             if (clip.end < trimTime)
                 return false;
 
-            TimelineUndo.PushUndo(clip.parentTrack, "Trim Clip Start");
+            UndoExtensions.RegisterClip(clip, "Trim Clip Start");
 
             // Note: We are NOT using edit modes in this case because we want the same result
             // regardless of the selected EditMode: split at cursor and delete left part
@@ -69,7 +70,7 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool TrimEnd(TimelineClip[] clips, double trimTime)
+        public static bool TrimEnd(IEnumerable<TimelineClip> clips, double trimTime)
         {
             var result = false;
 
@@ -90,19 +91,18 @@ namespace UnityEditor.Timeline
             if (clip.end < trimTime)
                 return false;
 
-            TimelineUndo.PushUndo(clip.parentTrack, "Trim Clip End");
+            UndoExtensions.RegisterClip(clip, "Trim Clip End");
             TrimClipWithEditMode(clip, TrimEdge.End, trimTime);
 
             return true;
         }
 
-        public static bool MatchDuration(TimelineClip[] clips)
+        public static bool MatchDuration(IEnumerable<TimelineClip> clips)
         {
-            double referenceDuration = clips[0].duration;
+            double referenceDuration = clips.First().duration;
+            UndoExtensions.RegisterClips(clips, "Match Clip Duration");
             foreach (var clip in clips)
             {
-                TimelineUndo.PushUndo(clip.parentTrack, "Match Clip Duration");
-
                 var newEnd = clip.start + referenceDuration;
                 TrimClipWithEditMode(clip, TrimEdge.End, newEnd);
             }
@@ -110,7 +110,7 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool Split(TimelineClip[] clips, double splitTime, PlayableDirector director)
+        public static bool Split(IEnumerable<TimelineClip> clips, double splitTime, PlayableDirector director)
         {
             var result = false;
 
@@ -122,7 +122,7 @@ namespace UnityEditor.Timeline
                 if (clip.end <= splitTime)
                     continue;
 
-                TimelineUndo.PushUndo(clip.parentTrack, "Split Clip");
+                UndoExtensions.RegisterClip(clip, "Split Clip");
 
                 TimelineClip newClip = TimelineHelpers.Clone(clip, director, director, clip.start);
 
@@ -220,7 +220,7 @@ namespace UnityEditor.Timeline
             clip.ConformEaseValues();
         }
 
-        public static bool ResetEditing(TimelineClip[] clips)
+        public static bool ResetEditing(IEnumerable<TimelineClip> clips)
         {
             var result = false;
 
@@ -235,7 +235,7 @@ namespace UnityEditor.Timeline
             if (clip.asset == null)
                 return false;
 
-            TimelineUndo.PushUndo(clip.parentTrack, "Reset Clip Editing");
+            UndoExtensions.RegisterClip(clip, "Reset Clip Editing");
 
             clip.clipIn = 0.0;
 
@@ -248,7 +248,7 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool MatchContent(TimelineClip[] clips)
+        public static bool MatchContent(IEnumerable<TimelineClip> clips)
         {
             var result = false;
 
@@ -263,7 +263,7 @@ namespace UnityEditor.Timeline
             if (clip.asset == null)
                 return false;
 
-            TimelineUndo.PushUndo(clip.parentTrack, "Match Clip Content");
+            UndoExtensions.RegisterClip(clip, "Match Clip Content");
 
             var newStartCandidate = clip.start - clip.clipIn / clip.timeScale;
             var newStart = newStartCandidate < 0.0 ? 0.0 : newStartCandidate;
@@ -293,7 +293,7 @@ namespace UnityEditor.Timeline
             EditMode.FinishTrim();
         }
 
-        public static bool CompleteLastLoop(TimelineClip[] clips)
+        public static bool CompleteLastLoop(IEnumerable<TimelineClip> clips)
         {
             foreach (var clip in clips)
             {
@@ -308,7 +308,7 @@ namespace UnityEditor.Timeline
             FixLoops(clip, true);
         }
 
-        public static bool TrimLastLoop(TimelineClip[] clips)
+        public static bool TrimLastLoop(IEnumerable<TimelineClip> clips)
         {
             foreach (var clip in clips)
             {
@@ -346,18 +346,18 @@ namespace UnityEditor.Timeline
 
             var newEnd = clip.start + firstLoopDuration + loopDuration * numCompletedLoops;
 
-            TimelineUndo.PushUndo(clip.parentTrack, "Trim Clip Last Loop");
+            UndoExtensions.RegisterClip(clip, "Trim Clip Last Loop");
 
             TrimClipWithEditMode(clip, TrimEdge.End, newEnd);
         }
 
-        public static bool DoubleSpeed(TimelineClip[] clips)
+        public static bool DoubleSpeed(IEnumerable<TimelineClip> clips)
         {
             foreach (var clip in clips)
             {
                 if (clip.SupportsSpeedMultiplier())
                 {
-                    TimelineUndo.PushUndo(clip.parentTrack, "Double Clip Speed");
+                    UndoExtensions.RegisterClip(clip, "Double Clip Speed");
                     clip.timeScale = clip.timeScale * 2.0f;
                 }
             }
@@ -365,13 +365,13 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool HalfSpeed(TimelineClip[] clips)
+        public static bool HalfSpeed(IEnumerable<TimelineClip> clips)
         {
             foreach (var clip in clips)
             {
                 if (clip.SupportsSpeedMultiplier())
                 {
-                    TimelineUndo.PushUndo(clip.parentTrack, "Half Clip Speed");
+                    UndoExtensions.RegisterClip(clip, "Half Clip Speed");
                     clip.timeScale = clip.timeScale * 0.5f;
                 }
             }
@@ -379,13 +379,13 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool ResetSpeed(TimelineClip[] clips)
+        public static bool ResetSpeed(IEnumerable<TimelineClip> clips)
         {
             foreach (var clip in clips)
             {
                 if (clip.timeScale != 1.0)
                 {
-                    TimelineUndo.PushUndo(clip.parentTrack, "Reset Clip Speed");
+                    UndoExtensions.RegisterClip(clip, "Reset Clip Speed");
                     clip.timeScale = 1.0;
                 }
             }

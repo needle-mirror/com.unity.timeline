@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
-using MarkerAction = UnityEditor.Timeline.ItemAction<UnityEngine.Timeline.IMarker>;
 
 namespace UnityEditor.Timeline
 {
     [UsedImplicitly]
     class CopyMarkersToClipboard : MarkerAction
     {
-        public override bool Execute(WindowState state, IMarker[] markers)
+        public override ActionValidity Validate(IEnumerable<IMarker> markers) => ActionValidity.Valid;
+
+        public override bool Execute(IEnumerable<IMarker> markers)
         {
             TimelineEditor.clipboard.CopyItems(markers.ToItems());
             return true;

@@ -85,7 +85,7 @@ namespace UnityEditor.Timeline
             {
                 var track = curvesOwner.targetTrack;
                 var timeline = track != null ? track.timelineAsset : null;
-                TimelineUndo.PushDestroyUndo(timeline, track, curves, "Delete Parameter Curves");
+                TimelineUndo.PushDestroyUndo(timeline, track, curves);
             }
         }
 

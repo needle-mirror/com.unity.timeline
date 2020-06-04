@@ -1,23 +1,26 @@
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.Playables;
-using ClipAction = UnityEditor.Timeline.ItemAction<UnityEngine.Timeline.TimelineClip>;
 
 namespace UnityEditor.Timeline
 {
-    [MenuEntry("Match Offsets To Previous Clip", MenuOrder.CustomClipAction.AnimClipMatchPrevious), UsedImplicitly]
+    [ApplyDefaultUndo("Match Offsets")]
+    [MenuEntry("Match Offsets To Previous Clip", MenuPriority.CustomClipActionSection.matchPrevious), UsedImplicitly]
     class MatchOffsetsPreviousAction : ClipAction
     {
-        public override bool Execute(WindowState state, TimelineClip[] items)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            AnimationOffsetMenu.MatchClipsToPrevious(state, items.Where(x => IsValidClip(x, TimelineEditor.inspectedDirector)).ToArray());
+            if (clips == null || !clips.Any())
+                return false;
+            AnimationOffsetMenu.MatchClipsToPrevious(clips.Where(x => IsValidClip(x, TimelineEditor.inspectedDirector)).ToArray());
             return true;
         }
 
-        private static bool IsValidClip(TimelineClip clip, PlayableDirector director)
+        static bool IsValidClip(TimelineClip clip, PlayableDirector director)
         {
             return clip != null &&
                 clip.parentTrack != null &&
@@ -26,32 +29,33 @@ namespace UnityEditor.Timeline
                 TimelineUtility.GetSceneGameObject(director, clip.parentTrack) != null;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] items)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            if (!items.All(TimelineAnimationUtilities.IsAnimationClip))
-                return MenuActionDisplayState.Hidden;
+            if (!clips.All(TimelineAnimationUtilities.IsAnimationClip))
+                return ActionValidity.NotApplicable;
 
             var director = TimelineEditor.inspectedDirector;
             if (TimelineEditor.inspectedDirector == null)
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
-            if (items.Any(c => IsValidClip(c, director)))
-                return MenuActionDisplayState.Visible;
+            if (clips.Any(c => IsValidClip(c, director)))
+                return ActionValidity.Valid;
 
-            return MenuActionDisplayState.Hidden;
+            return ActionValidity.NotApplicable;
         }
     }
 
-    [MenuEntry("Match Offsets To Next Clip", MenuOrder.CustomClipAction.AnimClipMatchNext), UsedImplicitly]
+    [ApplyDefaultUndo("Match Offsets")]
+    [MenuEntry("Match Offsets To Next Clip", MenuPriority.CustomClipActionSection.matchNext), UsedImplicitly]
     class MatchOffsetsNextAction : ClipAction
     {
-        public override bool Execute(WindowState state, TimelineClip[] items)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            AnimationOffsetMenu.MatchClipsToNext(state, items.Where(x => IsValidClip(x, TimelineEditor.inspectedDirector)).ToArray());
+            AnimationOffsetMenu.MatchClipsToNext(clips.Where(x => IsValidClip(x, TimelineEditor.inspectedDirector)).ToArray());
             return true;
         }
 
-        private static bool IsValidClip(TimelineClip clip, PlayableDirector director)
+        static bool IsValidClip(TimelineClip clip, PlayableDirector director)
         {
             return clip != null &&
                 clip.parentTrack != null &&
@@ -60,37 +64,38 @@ namespace UnityEditor.Timeline
                 TimelineUtility.GetSceneGameObject(director, clip.parentTrack) != null;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] items)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            if (!items.All(TimelineAnimationUtilities.IsAnimationClip))
-                return MenuActionDisplayState.Hidden;
+            if (!clips.All(TimelineAnimationUtilities.IsAnimationClip))
+                return ActionValidity.NotApplicable;
 
             var director = TimelineEditor.inspectedDirector;
             if (TimelineEditor.inspectedDirector == null)
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
-            if (items.Any(c => IsValidClip(c, director)))
-                return MenuActionDisplayState.Visible;
+            if (clips.Any(c => IsValidClip(c, director)))
+                return ActionValidity.Valid;
 
-            return MenuActionDisplayState.Hidden;
+            return ActionValidity.NotApplicable;
         }
     }
 
-    [MenuEntry("Reset Offsets", MenuOrder.CustomClipAction.AnimClipResetOffset), UsedImplicitly]
+    [ApplyDefaultUndo]
+    [MenuEntry("Reset Offsets", MenuPriority.CustomClipActionSection.resetOffset), UsedImplicitly]
     class ResetOffsets : ClipAction
     {
-        public override bool Execute(WindowState state, TimelineClip[] items)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            AnimationOffsetMenu.ResetClipOffsets(state, items.Where(TimelineAnimationUtilities.IsAnimationClip).ToArray());
+            AnimationOffsetMenu.ResetClipOffsets(clips.Where(TimelineAnimationUtilities.IsAnimationClip).ToArray());
             return true;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] items)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            if (!items.All(TimelineAnimationUtilities.IsAnimationClip))
-                return MenuActionDisplayState.Hidden;
+            if (!clips.All(TimelineAnimationUtilities.IsAnimationClip))
+                return ActionValidity.NotApplicable;
 
-            return MenuActionDisplayState.Visible;
+            return ActionValidity.Valid;
         }
     }
 }

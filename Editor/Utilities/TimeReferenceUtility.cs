@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -5,6 +6,26 @@ namespace UnityEditor.Timeline
     static class TimeReferenceUtility
     {
         static WindowState state { get { return TimelineWindow.instance.state; } }
+
+        public static float PixelToTime(Vector2 mousePos)
+        {
+            return PixelToTime(mousePos.x);
+        }
+
+        public static float PixelToTime(float pixelX)
+        {
+            return state.PixelToTime(pixelX);
+        }
+
+        public static double GetSnappedTimeAtMousePosition(Vector2 mousePos)
+        {
+            return state.GetSnappedTimeAtMousePosition(mousePos);
+        }
+
+        public static double SnapToFrameIfRequired(double currentTime)
+        {
+            return TimelinePreferences.instance.snapToFrame ? SnapToFrame(currentTime) : currentTime;
+        }
 
         public static double SnapToFrame(double time)
         {

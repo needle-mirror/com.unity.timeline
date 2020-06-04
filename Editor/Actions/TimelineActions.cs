@@ -1,210 +1,82 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using UnityEditor.ShortcutManagement;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
-using MenuEntryPair = System.Collections.Generic.KeyValuePair<UnityEngine.GUIContent, UnityEditor.Timeline.TimelineAction>;
 
 namespace UnityEditor.Timeline
 {
-    [ActiveInMode(TimelineModes.Default)]
-    abstract class TimelineAction : MenuItemActionBase
-    {
-        public abstract bool Execute(WindowState state);
-
-        public virtual MenuActionDisplayState GetDisplayState(WindowState state)
-        {
-            return MenuActionDisplayState.Visible;
-        }
-
-        public virtual bool IsChecked(WindowState state)
-        {
-            return false;
-        }
-
-        protected string GetDisplayName(WindowState state)
-        {
-            return menuName;
-        }
-
-        bool CanExecute(WindowState state)
-        {
-            return GetDisplayState(state) == MenuActionDisplayState.Visible;
-        }
-
-        public static void Invoke<T>(WindowState state) where T : TimelineAction
-        {
-            var action = AllActions.FirstOrDefault(x => x.GetType() == typeof(T));
-            if (action != null && action.CanExecute(state))
-                action.Execute(state);
-        }
-
-        // an instance of all TimelineActions
-        public static readonly TimelineAction[] AllActions = GetActionsOfType(typeof(TimelineAction)).Select(x => (TimelineAction)x.GetConstructors()[0].Invoke(null)).ToArray();
-
-        // an instance of all TimelineActions that should appear in a regular contextMenu
-        public static readonly TimelineAction[] MenuActions = AllActions.Where(a => a.showInMenu && !(a is MarkerHeaderAction)).ToArray();
-
-        public static void GetMenuEntries(IEnumerable<TimelineAction> actions, Vector2? mousePos, List<MenuActionItem> items)
-        {
-            var state = TimelineWindow.instance.state;
-            var mode = TimelineWindow.instance.currentMode.mode;
-
-            foreach (var action in actions)
-            {
-                var actionItem = action;
-                action.mousePosition = mousePos;
-                items.Add(
-                    new MenuActionItem()
-                    {
-                        category =  action.category,
-                        entryName = action.GetDisplayName(state),
-                        shortCut = action.shortCut,
-                        isChecked = action.IsChecked(state),
-                        isActiveInMode = IsActionActiveInMode(action, mode),
-                        priority = action.priority,
-                        state = action.GetDisplayState(state),
-                        callback = () =>
-                        {
-                            actionItem.mousePosition = mousePos;
-                            actionItem.Execute(state);
-                            actionItem.mousePosition = null;
-                        }
-                    }
-                );
-                action.mousePosition = null;
-            }
-        }
-
-        public static bool HandleShortcut(WindowState state, Event evt)
-        {
-            if (EditorGUI.IsEditingTextField())
-                return false;
-
-            foreach (var action in AllActions)
-            {
-                var attr = action.GetType().GetCustomAttributes(typeof(ShortcutAttribute), true);
-
-                foreach (ShortcutAttribute shortcut in attr)
-                {
-                    if (shortcut.MatchesEvent(evt))
-                    {
-                        if (s_ShowActionTriggeredByShortcut)
-                            Debug.Log(action.GetType().Name);
-
-                        if (!IsActionActiveInMode(action, TimelineWindow.instance.currentMode.mode))
-                            return false;
-
-                        var handled = action.Execute(state);
-                        if (handled)
-                            return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        protected static bool DoInternal(Type t, WindowState state)
-        {
-            var action = (TimelineAction)t.GetConstructors()[0].Invoke(null);
-
-            if (action.CanExecute(state))
-                return action.Execute(state);
-
-            return false;
-        }
-    }
-
-    // indicates the action only applies to the marker header menu
-    abstract class MarkerHeaderAction : TimelineAction
-    {
-    }
-
-
-    [MenuEntry("Copy", MenuOrder.TimelineAction.Copy)]
+    [MenuEntry("Copy", MenuPriority.TimelineActionSection.copy)]
     [Shortcut("Main Menu/Edit/Copy", EventCommandNames.Copy)]
     class CopyAction : TimelineAction
     {
-        public static bool Do(WindowState state)
+        public override ActionValidity Validate(ActionContext context)
         {
-            return DoInternal(typeof(CopyAction), state);
+            return SelectionManager.Count() > 0 ? ActionValidity.Valid : ActionValidity.NotApplicable;
         }
 
-        public override MenuActionDisplayState GetDisplayState(WindowState state)
-        {
-            return SelectionManager.Count() > 0 ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
-        }
-
-        public override bool Execute(WindowState state)
+        public override bool Execute(ActionContext context)
         {
             TimelineEditor.clipboard.Clear();
 
-            var clips = SelectionManager.SelectedClips().ToArray();
-            if (clips.Length > 0)
+            var clips = context.clips;
+            if (clips.Any())
             {
-                ItemAction<TimelineClip>.Invoke<CopyClipsToClipboard>(state, clips);
+                clips.Invoke<CopyClipsToClipboard>();
             }
-            var markers = SelectionManager.SelectedMarkers().ToArray();
-            if (markers.Length > 0)
+            var markers = context.markers;
+            if (markers.Any())
             {
-                ItemAction<IMarker>.Invoke<CopyMarkersToClipboard>(state, markers);
+                markers.Invoke<CopyMarkersToClipboard>();
             }
-            var tracks = SelectionManager.SelectedTracks().ToArray();
-            if (tracks.Length > 0)
+            var tracks = context.tracks;
+            if (tracks.Any())
             {
-                CopyTracksToClipboard.Do(state, tracks);
+                CopyTracksToClipboard.Do(tracks.ToArray());
             }
 
             return true;
         }
     }
 
-    [MenuEntry("Paste", MenuOrder.TimelineAction.Paste)]
+    [MenuEntry("Paste", MenuPriority.TimelineActionSection.paste, MenuFilter.Default | MenuFilter.MarkerHeader)]
     [Shortcut("Main Menu/Edit/Paste", EventCommandNames.Paste)]
     class PasteAction : TimelineAction
     {
-        public static bool Do(WindowState state)
+        public override ActionValidity Validate(ActionContext context)
         {
-            return DoInternal(typeof(PasteAction), state);
+            return CanPaste(context.invocationTime) ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override MenuActionDisplayState GetDisplayState(WindowState state)
+        public override bool Execute(ActionContext context)
         {
-            return CanPaste(state) ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
-        }
-
-        public override bool Execute(WindowState state)
-        {
-            if (!CanPaste(state))
+            if (!CanPaste(context.invocationTime))
                 return false;
 
-            PasteItems(state, mousePosition);
-            PasteTracks(state);
+            PasteItems(context.invocationTime);
+            PasteTracks();
 
-            state.Refresh();
-
-            mousePosition = null;
+            TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
             return true;
         }
 
-        bool CanPaste(WindowState state)
+        static bool CanPaste(double? invocationTime)
         {
             var copiedItems = TimelineEditor.clipboard.GetCopiedItems().ToList();
 
             if (!copiedItems.Any())
                 return TimelineEditor.clipboard.GetTracks().Any();
 
-            return CanPasteItems(copiedItems, state, mousePosition);
+            return CanPasteItems(copiedItems, invocationTime);
         }
 
-        static bool CanPasteItems(ICollection<ItemsPerTrack> itemsGroups, WindowState state, Vector2? mousePosition)
+        static bool CanPasteItems(ICollection<ItemsPerTrack> itemsGroups, double? invocationTime)
         {
             var hasItemsCopiedFromMultipleTracks = itemsGroups.Count > 1;
-            var allItemsCopiedFromCurrentAsset = itemsGroups.All(x => x.targetTrack.timelineAsset == state.editSequence.asset);
-            var hasUsedShortcut = mousePosition == null;
+            var allItemsCopiedFromCurrentAsset = itemsGroups.All(x => x.targetTrack.timelineAsset == TimelineEditor.inspectedAsset);
+            var hasUsedShortcut = invocationTime == null;
             var anySourceLocked = itemsGroups.Any(x => x.targetTrack != null && x.targetTrack.lockedInHierarchy);
 
             var targetTrack = GetPickedTrack();
@@ -216,7 +88,7 @@ namespace UnityEditor.Timeline
             //or if a keyboard shortcut was used (since the user will not see the paste result)
             if (!allItemsCopiedFromCurrentAsset)
             {
-                var isSelectedTrackInCurrentAsset = targetTrack != null && targetTrack.timelineAsset == state.editSequence.asset;
+                var isSelectedTrackInCurrentAsset = targetTrack != null && targetTrack.timelineAsset == TimelineEditor.inspectedAsset;
                 if (hasItemsCopiedFromMultipleTracks || (hasUsedShortcut && !isSelectedTrackInCurrentAsset))
                     return false;
             }
@@ -234,7 +106,7 @@ namespace UnityEditor.Timeline
             return IsTrackValidForItems(targetTrack, copiedItems);
         }
 
-        static void PasteItems(WindowState state, Vector2? mousePosition)
+        static void PasteItems(double? invocationTime)
         {
             var copiedItems = TimelineEditor.clipboard.GetCopiedItems().ToList();
             var numberOfUniqueParentsInClipboard = copiedItems.Count();
@@ -247,22 +119,22 @@ namespace UnityEditor.Timeline
             {
                 var itemsGroup = copiedItems.First();
                 TrackAsset target = null;
-                if (mousePosition.HasValue)
+                if (invocationTime.HasValue)
                     target = GetPickedTrack();
                 if (target == null)
                     target = FindSuitableParentForSingleTrackPasteWithoutMouse(itemsGroup);
 
-                var candidateTime = TimelineHelpers.GetCandidateTime(state, mousePosition, target);
-                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, itemsGroup, target, candidateTime, "Paste Items").ToList();
+                var candidateTime = invocationTime ?? TimelineHelpers.GetCandidateTime(null, target);
+                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, itemsGroup, target, candidateTime, "Paste Items").ToList();
             }
             //if copied items were on multiple parents, then the destination parents are the same as the original parents
             else
             {
-                var time = TimelineHelpers.GetCandidateTime(state, mousePosition, copiedItems.Select(c => c.targetTrack).ToArray());
-                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, copiedItems, time, "Paste Items").ToList();
+                var time = invocationTime ?? TimelineHelpers.GetCandidateTime(null, copiedItems.Select(c => c.targetTrack).ToArray());
+                newItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, copiedItems, time, "Paste Items").ToList();
             }
 
-            TimelineHelpers.FrameItems(state, newItems);
+            TimelineHelpers.FrameItems(newItems);
             SelectionManager.RemoveTimelineSelection();
             foreach (var item in newItems)
             {
@@ -294,6 +166,9 @@ namespace UnityEditor.Timeline
 
         static TrackAsset GetPickedTrack()
         {
+            if (PickerUtils.pickedElements == null)
+                return null;
+
             var rowGUI = PickerUtils.pickedElements.OfType<IRowGUI>().FirstOrDefault();
             if (rowGUI != null)
                 return rowGUI.asset;
@@ -301,7 +176,7 @@ namespace UnityEditor.Timeline
             return null;
         }
 
-        static void PasteTracks(WindowState state)
+        static void PasteTracks()
         {
             var trackData = TimelineEditor.clipboard.GetTracks().ToList();
             if (trackData.Any())
@@ -323,7 +198,7 @@ namespace UnityEditor.Timeline
                     SelectionManager.Add(childTrack);
                 }
 
-                if (track.parent != null && track.parent.timelineAsset == state.editSequence.asset)
+                if (track.parent != null && track.parent.timelineAsset == TimelineEditor.inspectedAsset)
                 {
                     TrackExtensions.ReparentTracks(new List<TrackAsset> { newTrack }, track.parent, track.item);
                 }
@@ -331,34 +206,47 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Duplicate", MenuOrder.TimelineAction.Duplicate)]
+    [MenuEntry("Duplicate", MenuPriority.TimelineActionSection.duplicate)]
     [Shortcut("Main Menu/Edit/Duplicate", EventCommandNames.Duplicate)]
     class DuplicateAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context)
         {
-            return Execute(state, (item1, item2) => ItemsUtils.TimeGapBetweenItems(item1, item2, state));
+            return context.clips.Any() || context.tracks.Any() || context.markers.Any() ? ActionValidity.Valid : ActionValidity.NotApplicable;
         }
 
-        internal bool Execute(WindowState state, Func<ITimelineItem, ITimelineItem, double> gapBetweenItems)
+        public bool Execute(Func<ITimelineItem, ITimelineItem, double> gapBetweenItems)
         {
-            var selectedItems = SelectionManager.SelectedItems().ToItemsPerTrack().ToList();
+            return Execute(TimelineEditor.CurrentContext(), gapBetweenItems);
+        }
+
+        public override bool Execute(ActionContext context)
+        {
+            return Execute(context, (item1, item2) => ItemsUtils.TimeGapBetweenItems(item1, item2));
+        }
+
+        internal bool Execute(ActionContext context, Func<ITimelineItem, ITimelineItem, double> gapBetweenItems)
+        {
+            List<ITimelineItem> items = new List<ITimelineItem>();
+            items.AddRange(context.clips.Select(p => p.ToItem()));
+            items.AddRange(context.markers.Select(p => p.ToItem()));
+            List<ItemsPerTrack> selectedItems = items.ToItemsPerTrack().ToList();
             if (selectedItems.Any())
             {
                 var requestedTime = CalculateDuplicateTime(selectedItems, gapBetweenItems);
-                var duplicatedItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(state, TimelineEditor.inspectedDirector, TimelineEditor.inspectedDirector, selectedItems, requestedTime, "Duplicate Items");
+                var duplicatedItems = TimelineHelpers.DuplicateItemsUsingCurrentEditMode(TimelineEditor.inspectedDirector, TimelineEditor.inspectedDirector, selectedItems, requestedTime, "Duplicate Items");
 
-                TimelineHelpers.FrameItems(state, duplicatedItems);
+                TimelineHelpers.FrameItems(duplicatedItems);
                 SelectionManager.RemoveTimelineSelection();
                 foreach (var item in duplicatedItems)
                     SelectionManager.Add(item);
             }
 
-            var tracks = SelectionManager.SelectedTracks().ToArray();
+            var tracks = context.tracks.ToArray();
             if (tracks.Length > 0)
-                TrackAction.Invoke<DuplicateTracks>(state, tracks);
+                tracks.Invoke<DuplicateTracks>();
 
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
             return true;
         }
 
@@ -387,40 +275,41 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Delete", MenuOrder.TimelineAction.Delete)]
+    [MenuEntry("Delete", MenuPriority.TimelineActionSection.delete)]
     [Shortcut("Main Menu/Edit/Delete", EventCommandNames.Delete)]
     [ShortcutPlatformOverride(RuntimePlatform.OSXEditor, KeyCode.Backspace, ShortcutModifiers.Action)]
     [ActiveInMode(TimelineModes.Default)]
     class DeleteAction : TimelineAction
     {
-        public override MenuActionDisplayState GetDisplayState(WindowState state)
+        public override ActionValidity Validate(ActionContext context)
         {
-            return CanDelete(state) ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return CanDelete(context) ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        static bool CanDelete(WindowState state)
+        static bool CanDelete(ActionContext context)
         {
-            if (state.editSequence.isReadOnly)
+            if (TimelineWindow.instance.state.editSequence.isReadOnly)
                 return false;
             // All() returns true when empty
-            return SelectionManager.SelectedTracks().All(x => !x.lockedInHierarchy) &&
-                SelectionManager.SelectedItems().All(x => x.parentTrack == null || !x.parentTrack.lockedInHierarchy);
+            return context.tracks.All(x => !x.lockedInHierarchy) &&
+                context.clips.All(x => x.parentTrack == null || !x.parentTrack.lockedInHierarchy) &&
+                context.markers.All(x => x.parent == null || !x.parent.lockedInHierarchy);
         }
 
-        public override bool Execute(WindowState state)
+        public override bool Execute(ActionContext context)
         {
-            if (!CanDelete(state))
+            if (!CanDelete(context))
                 return false;
 
-            var selectedItems = SelectionManager.SelectedItems();
+            var selectedItems = context.clips.Select(p => p.ToItem()).ToList();
+            selectedItems.AddRange(context.markers.Select(p => p.ToItem()));
             DeleteItems(selectedItems);
 
-            var tracks = SelectionManager.SelectedTracks().ToArray();
-            if (tracks.Any() && SelectionManager.GetCurrentInlineEditorCurve() == null)
-                TrackAction.Invoke<DeleteTracks>(state, tracks);
+            if (context.tracks.Any() && SelectionManager.GetCurrentInlineEditorCurve() == null)
+                context.tracks.Invoke<DeleteTracks>();
 
-            state.Refresh();
-            return selectedItems.Any() ||  tracks.Length > 0;
+            TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
+            return selectedItems.Any() || context.tracks.Any();
         }
 
         internal static void DeleteItems(IEnumerable<ITimelineItem> items)
@@ -439,26 +328,26 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Match Content", MenuOrder.TimelineAction.MatchContent)]
+    [MenuEntry("Match Content", MenuPriority.TimelineActionSection.matchContent)]
     [Shortcut(Shortcuts.Timeline.matchContent)]
     class MatchContent : TimelineAction
     {
-        public override MenuActionDisplayState GetDisplayState(WindowState state)
+        public override ActionValidity Validate(ActionContext actionContext)
         {
-            var clips = SelectionManager.SelectedClips().ToArray();
+            var clips = actionContext.clips;
 
             if (!clips.Any())
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
             return clips.Any(TimelineHelpers.HasUsableAssetDuration)
-                ? MenuActionDisplayState.Visible
-                : MenuActionDisplayState.Disabled;
+                ? ActionValidity.Valid
+                : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state)
+        public override bool Execute(ActionContext actionContext)
         {
-            var clips = SelectionManager.SelectedClips().ToArray();
-            return clips.Length > 0 && ClipModifier.MatchContent(clips);
+            var clips = actionContext.clips;
+            return clips.Any() && ClipModifier.MatchContent(clips);
         }
     }
 
@@ -466,10 +355,12 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class PlayTimelineAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            var currentState = state.playing;
-            state.SetPlaying(!currentState);
+            var currentState = TimelineEditor.state.playing;
+            TimelineEditor.state.SetPlaying(!currentState);
             return true;
         }
     }
@@ -477,12 +368,13 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectAllAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             // otherwise select all tracks.
             SelectionManager.Clear();
-            state.GetWindow().allTracks.ForEach(x => SelectionManager.Add(x.track));
-
+            TimelineWindow.instance.allTracks.ForEach(x => SelectionManager.Add(x.track));
             return true;
         }
     }
@@ -491,9 +383,15 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class PreviousFrameAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            state.editSequence.frame--;
+            if (TimelineEditor.inspectedAsset == null)
+                return false;
+            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.fps);
+            inspectedFrame = Mathf.Max(0, inspectedFrame - 1);
+            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.fps);
             return true;
         }
     }
@@ -502,9 +400,15 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class NextFrameAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            state.editSequence.frame++;
+            if (TimelineEditor.inspectedAsset == null)
+                return false;
+            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.fps);
+            inspectedFrame++;
+            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.fps);
             return true;
         }
     }
@@ -513,25 +417,24 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class FrameAllAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             var inlineCurveEditor = SelectionManager.GetCurrentInlineEditorCurve();
             if (FrameSelectedAction.ShouldHandleInlineCurve(inlineCurveEditor))
             {
-                FrameSelectedAction.FrameInlineCurves(inlineCurveEditor, state, false);
+                FrameSelectedAction.FrameInlineCurves(inlineCurveEditor, false);
                 return true;
             }
 
-            if (state.IsCurrentEditingASequencerTextField())
+            if (TimelineWindow.instance.state.IsCurrentEditingASequencerTextField())
                 return false;
 
-            var w = state.GetWindow();
-            if (w == null || w.treeView == null)
-                return false;
+            var visibleTracks = TimelineWindow.instance.treeView.visibleTracks.ToList();
 
-            var visibleTracks = w.treeView.visibleTracks.ToList();
-            if (state.editSequence.asset != null && state.editSequence.asset.markerTrack != null)
-                visibleTracks.Add(state.editSequence.asset.markerTrack);
+            if (TimelineEditor.inspectedAsset != null && TimelineEditor.inspectedAsset.markerTrack != null)
+                visibleTracks.Add(TimelineEditor.inspectedAsset.markerTrack);
 
             if (visibleTracks.Count == 0)
                 return false;
@@ -552,7 +455,7 @@ namespace UnityEditor.Timeline
 
             if (startTime != float.MinValue)
             {
-                FrameSelectedAction.FrameRange(startTime, endTime, state);
+                FrameSelectedAction.FrameRange(startTime, endTime);
                 return true;
             }
 
@@ -563,7 +466,9 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class FrameSelectedAction : TimelineAction
     {
-        public static void FrameRange(float startTime, float endTime, WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public static void FrameRange(float startTime, float endTime)
         {
             if (startTime > endTime)
             {
@@ -574,44 +479,43 @@ namespace UnityEditor.Timeline
 
             if (halfDuration > 0.0f)
             {
-                state.SetTimeAreaShownRange(Mathf.Max(-10.0f, startTime - (halfDuration * 0.1f)),
-                    endTime + (halfDuration * 0.1f));
+                TimelineEditor.visibleTimeRange = new Vector2(Mathf.Max(0.0f, startTime - (halfDuration * 0.1f)), endTime + (halfDuration * 0.1f));
             }
             else
             {
                 // start == end
                 // keep the zoom level constant, only pan the time area to center the item
-                var currentRange = state.timeAreaShownRange.y - state.timeAreaShownRange.x;
-                state.SetTimeAreaShownRange(startTime - currentRange / 2, startTime + currentRange / 2);
+                var currentRange = TimelineEditor.visibleTimeRange.y - TimelineEditor.visibleTimeRange.x;
+                TimelineEditor.visibleTimeRange = new Vector2(Math.Max(-WindowConstants.timeAreaShownRangePadding, startTime - currentRange / 2), startTime + currentRange / 2);
             }
 
             TimelineZoomManipulator.InvalidateWheelZoom();
-            state.Evaluate();
+            TimelineEditor.Refresh(RefreshReason.SceneNeedsUpdate);
         }
 
-        public override bool Execute(WindowState state)
+        public override bool Execute(ActionContext actionContext)
         {
             var inlineCurveEditor = SelectionManager.GetCurrentInlineEditorCurve();
             if (ShouldHandleInlineCurve(inlineCurveEditor))
             {
-                FrameInlineCurves(inlineCurveEditor, state, true);
+                FrameInlineCurves(inlineCurveEditor, true);
                 return true;
             }
 
-            if (state.IsCurrentEditingASequencerTextField())
+            if (TimelineWindow.instance.state.IsCurrentEditingASequencerTextField())
                 return false;
 
             if (SelectionManager.Count() == 0)
             {
-                Invoke<FrameAllAction>(state);
+                actionContext.Invoke<FrameAllAction>();
                 return true;
             }
 
             var startTime = float.MaxValue;
             var endTime = float.MinValue;
 
-            var clips = SelectionManager.SelectedClipGUI();
-            var markers = SelectionManager.SelectedMarkers();
+            var clips = actionContext.clips.Select(ItemToItemGui.GetGuiForClip);
+            var markers = actionContext.markers;
             if (!clips.Any() && !markers.Any())
                 return false;
 
@@ -631,7 +535,7 @@ namespace UnityEditor.Timeline
                 endTime = Mathf.Max(endTime, (float)marker.time);
             }
 
-            FrameRange(startTime, endTime, state);
+            FrameRange(startTime, endTime);
 
             return true;
         }
@@ -644,7 +548,7 @@ namespace UnityEditor.Timeline
                 curveEditorOwner.owner.GetShowInlineCurves();
         }
 
-        public static void FrameInlineCurves(IClipCurveEditorOwner curveEditorOwner, WindowState state, bool selectionOnly)
+        public static void FrameInlineCurves(IClipCurveEditorOwner curveEditorOwner, bool selectionOnly)
         {
             var curveEditor = curveEditorOwner.clipCurveEditor.curveEditor;
             var frameBounds = selectionOnly ? curveEditor.GetSelectionBounds() : curveEditor.GetClipBounds();
@@ -673,7 +577,7 @@ namespace UnityEditor.Timeline
             area.x += areaOffset;
 
             var curveStart = curveEditorOwner.clipCurveEditor.dataSource.start;
-            FrameRange(curveStart + frameBounds.min.x, curveStart + frameBounds.max.x, state);
+            FrameRange(curveStart + frameBounds.min.x, curveStart + frameBounds.max.x);
         }
     }
 
@@ -681,13 +585,17 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class PrevKeyAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            var keyTraverser = new Utilities.KeyTraverser(state.editSequence.asset, 0.01f / state.referenceSequence.frameRate);
-            var time = keyTraverser.GetPrevKey((float)state.editSequence.time, state.dirtyStamp);
-            if (time != state.editSequence.time)
+            if (TimelineEditor.inspectedAsset == null)
+                return false;
+            var keyTraverser = new Utilities.KeyTraverser(TimelineEditor.inspectedAsset, 0.01f / TimelineEditor.inspectedAsset.editorSettings.fps);
+            var time = keyTraverser.GetPrevKey((float)TimelineEditor.inspectedSequenceTime, TimelineWindow.instance.state.dirtyStamp);
+            if (time != TimelineEditor.inspectedSequenceTime)
             {
-                state.editSequence.time = time;
+                TimelineEditor.inspectedSequenceTime = time;
             }
 
             return true;
@@ -698,13 +606,17 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class NextKeyAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            var keyTraverser = new Utilities.KeyTraverser(state.editSequence.asset, 0.01f / state.referenceSequence.frameRate);
-            var time = keyTraverser.GetNextKey((float)state.editSequence.time, state.dirtyStamp);
-            if (time != state.editSequence.time)
+            if (TimelineEditor.inspectedAsset == null)
+                return false;
+            var keyTraverser = new Utilities.KeyTraverser(TimelineEditor.inspectedAsset, 0.01f / TimelineEditor.inspectedAsset.editorSettings.fps);
+            var time = keyTraverser.GetNextKey((float)TimelineEditor.inspectedSequenceTime, TimelineWindow.instance.state.dirtyStamp);
+            if (time != TimelineEditor.inspectedSequenceTime)
             {
-                state.editSequence.time = time;
+                TimelineEditor.inspectedSequenceTime = time;
             }
 
             return true;
@@ -715,10 +627,12 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class GotoStartAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            state.editSequence.time = 0.0f;
-            state.EnsurePlayHeadIsVisible();
+            TimelineEditor.inspectedSequenceTime = 0.0f;
+            TimelineWindow.instance.state.EnsurePlayHeadIsVisible();
 
             return true;
         }
@@ -728,10 +642,12 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class GotoEndAction : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            state.editSequence.time = state.editSequence.duration;
-            state.EnsurePlayHeadIsVisible();
+            TimelineEditor.inspectedSequenceTime = TimelineWindow.instance.state.editSequence.duration;
+            TimelineWindow.instance.state.EnsurePlayHeadIsVisible();
 
             return true;
         }
@@ -741,9 +657,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class ZoomIn : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            TimelineZoomManipulator.Instance.DoZoom(1.15f, state);
+            TimelineZoomManipulator.Instance.DoZoom(1.15f);
             return true;
         }
     }
@@ -752,9 +670,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class ZoomOut : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            TimelineZoomManipulator.Instance.DoZoom(0.85f, state);
+            TimelineZoomManipulator.Instance.DoZoom(0.85f);
             return true;
         }
     }
@@ -763,9 +683,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class CollapseGroup : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.CollapseGroup(state);
+            return KeyboardNavigation.CollapseGroup();
         }
     }
 
@@ -773,9 +695,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class UnCollapseGroup : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.UnCollapseGroup(state);
+            return KeyboardNavigation.UnCollapseGroup();
         }
     }
 
@@ -783,10 +707,12 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectLeftClip : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             // Switches to track header if no left track exists
-            return KeyboardNavigation.SelectLeftItem(state);
+            return KeyboardNavigation.SelectLeftItem();
         }
     }
 
@@ -794,9 +720,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectRightClip : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.SelectRightItem(state);
+            return KeyboardNavigation.SelectRightItem();
         }
     }
 
@@ -804,9 +732,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectUpClip : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.SelectUpItem(state);
+            return KeyboardNavigation.SelectUpItem();
         }
     }
 
@@ -814,7 +744,9 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectUpTrack : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             return KeyboardNavigation.SelectUpTrack();
         }
@@ -824,9 +756,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectDownClip : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.SelectDownItem(state);
+            return KeyboardNavigation.SelectDownItem();
         }
     }
 
@@ -834,10 +768,12 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class SelectDownTrack : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             if (!KeyboardNavigation.ClipAreaActive() && !KeyboardNavigation.TrackHeadActive())
-                return KeyboardNavigation.FocusFirstVisibleItem(state);
+                return KeyboardNavigation.FocusFirstVisibleItem();
             else
                 return KeyboardNavigation.SelectDownTrack();
         }
@@ -847,9 +783,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class MultiselectLeftClip : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.SelectLeftItem(state, true);
+            return KeyboardNavigation.SelectLeftItem(true);
         }
     }
 
@@ -857,9 +795,11 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class MultiselectRightClip : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.SelectRightItem(state, true);
+            return KeyboardNavigation.SelectRightItem(true);
         }
     }
 
@@ -867,7 +807,9 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class MultiselectUpTrack : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             return KeyboardNavigation.SelectUpTrack(true);
         }
@@ -877,7 +819,9 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class MultiselectDownTrack : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
         {
             return KeyboardNavigation.SelectDownTrack(true);
         }
@@ -887,13 +831,16 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class ToggleClipTrackArea : TimelineAction
     {
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+
+        public override bool Execute(ActionContext actionContext)
         {
             if (KeyboardNavigation.TrackHeadActive())
-                return KeyboardNavigation.FocusFirstVisibleItem(state, SelectionManager.SelectedTracks());
+                return KeyboardNavigation.FocusFirstVisibleItem(actionContext.tracks);
 
             if (!KeyboardNavigation.ClipAreaActive())
-                return KeyboardNavigation.FocusFirstVisibleItem(state);
+                return KeyboardNavigation.FocusFirstVisibleItem();
 
             var item = KeyboardNavigation.GetVisibleSelectedItems().LastOrDefault();
             if (item != null)
@@ -902,55 +849,60 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Mute", MenuOrder.TrackAction.MuteTrack)]
-    class ToggleMuteMarkersOnTimeline : MarkerHeaderAction
+    [MenuEntry("Mute Timeline Markers", MenuPriority.TrackActionSection.mute, MenuFilter.MarkerHeader)]
+    class ToggleMuteMarkersOnTimeline : TimelineAction, IMenuChecked
     {
-        public override bool IsChecked(WindowState state)
+        public bool isChecked
         {
-            return IsMarkerTrackValid(state) && state.editSequence.asset.markerTrack.muted;
+            get => IsMarkerTrackValid() && TimelineEditor.inspectedAsset.markerTrack.muted;
         }
 
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+
+        public override bool Execute(ActionContext actionContext)
         {
-            if (state.showMarkerHeader)
-                ToggleMute(state);
+            if (TimelineEditor.state.showMarkerHeader)
+                ToggleMute();
             return true;
         }
 
-        static void ToggleMute(WindowState state)
+        static void ToggleMute()
         {
-            var timeline = state.editSequence.asset;
+            var timeline = TimelineEditor.inspectedAsset;
             timeline.CreateMarkerTrack();
 
             TimelineUndo.PushUndo(timeline.markerTrack, "Toggle Mute");
             timeline.markerTrack.muted = !timeline.markerTrack.muted;
         }
 
-        static bool IsMarkerTrackValid(WindowState state)
+        static bool IsMarkerTrackValid()
         {
-            var timeline = state.editSequence.asset;
+            var timeline = TimelineEditor.inspectedAsset;
             return timeline != null && timeline.markerTrack != null;
         }
     }
 
-    [MenuEntry("Show Markers", MenuOrder.TrackAction.ShowHideMarkers)]
+    [MenuEntry("Show Timeline Markers", MenuPriority.TrackActionSection.showHideMarkers, MenuFilter.MarkerHeader)]
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
-    class ToggleShowMarkersOnTimeline : MarkerHeaderAction
+    class ToggleShowMarkersOnTimeline : TimelineAction, IMenuChecked
     {
-        public override bool IsChecked(WindowState state)
+        public bool isChecked
         {
-            return state.showMarkerHeader;
+            get => TimelineEditor.state.showMarkerHeader;
         }
 
-        public override bool Execute(WindowState state)
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext context)
         {
-            ToggleShow(state);
+            ToggleShow();
             return true;
         }
 
-        static void ToggleShow(WindowState state)
+        static void ToggleShow()
         {
-            state.GetWindow().SetShowMarkerHeader(!state.showMarkerHeader);
+            TimelineEditor.state.showMarkerHeader = !TimelineEditor.state.showMarkerHeader;
         }
     }
 }

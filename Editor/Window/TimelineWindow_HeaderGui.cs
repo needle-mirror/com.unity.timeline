@@ -182,7 +182,7 @@ namespace UnityEditor.Timeline
                 return;
 
             TimelineUndo.PushUndo(state.editSequence.viewModel, "Toggle Show Markers");
-            state.showMarkerHeader = newValue;
+            state.editSequence.viewModel.showMarkerHeader = newValue;
             if (!newValue)
             {
                 var asset = state.editSequence.asset;
@@ -197,51 +197,29 @@ namespace UnityEditor.Timeline
             }
         }
 
-        internal void SetShowTrackMarkers(TrackAsset track, bool showMarkerHeader)
-        {
-            var currentValue = track.GetShowMarkers();
-            if (currentValue != showMarkerHeader)
-            {
-                TimelineUndo.PushUndo(state.editSequence.viewModel, "Toggle Show Markers");
-                track.SetShowMarkers(showMarkerHeader);
-                if (!showMarkerHeader)
-                {
-                    foreach (var marker in track.GetMarkers())
-                    {
-                        SelectionManager.Remove(marker);
-                    }
-                }
-            }
-        }
-
         static void EditModeToolbarGUI(TimelineMode mode)
         {
             using (new EditorGUI.DisabledScope(mode.EditModeButtonsState(instance.state) == TimelineModeGUIState.Disabled))
             {
                 var editType = EditMode.editType;
 
-                using (var checkScope = new EditorGUI.ChangeCheckScope())
-                {
-                    var icon = editType == EditMode.EditType.Mix ? DirectorStyles.mixOn : DirectorStyles.mixOff;
-                    GUILayout.Toggle(editType == EditMode.EditType.Mix, icon, DirectorStyles.Instance.editModeBtn);
+                EditorGUI.BeginChangeCheck();
+                var mixIcon = editType == EditMode.EditType.Mix ? DirectorStyles.mixOn : DirectorStyles.mixOff;
+                GUILayout.Toggle(editType == EditMode.EditType.Mix, mixIcon, DirectorStyles.Instance.editModeBtn);
+                if (EditorGUI.EndChangeCheck())
+                    EditMode.editType = EditMode.EditType.Mix;
 
-                    if (checkScope.changed)
-                        EditMode.editType = EditMode.EditType.Mix;
-                }
-                using (var checkScope = new EditorGUI.ChangeCheckScope())
-                {
-                    var icon = editType == EditMode.EditType.Ripple ? DirectorStyles.rippleOn : DirectorStyles.rippleOff;
-                    GUILayout.Toggle(editType == EditMode.EditType.Ripple, icon, DirectorStyles.Instance.editModeBtn);
-                    if (checkScope.changed)
-                        EditMode.editType = EditMode.EditType.Ripple;
-                }
-                using (var checkScope = new EditorGUI.ChangeCheckScope())
-                {
-                    var icon = editType == EditMode.EditType.Replace ? DirectorStyles.replaceOn : DirectorStyles.replaceOff;
-                    GUILayout.Toggle(editType == EditMode.EditType.Replace, icon, DirectorStyles.Instance.editModeBtn);
-                    if (checkScope.changed)
-                        EditMode.editType = EditMode.EditType.Replace;
-                }
+                EditorGUI.BeginChangeCheck();
+                var rippleIcon = editType == EditMode.EditType.Ripple ? DirectorStyles.rippleOn : DirectorStyles.rippleOff;
+                GUILayout.Toggle(editType == EditMode.EditType.Ripple, rippleIcon, DirectorStyles.Instance.editModeBtn);
+                if (EditorGUI.EndChangeCheck())
+                    EditMode.editType = EditMode.EditType.Ripple;
+
+                EditorGUI.BeginChangeCheck();
+                var replaceIcon = editType == EditMode.EditType.Replace ? DirectorStyles.replaceOn : DirectorStyles.replaceOff;
+                GUILayout.Toggle(editType == EditMode.EditType.Replace, replaceIcon, DirectorStyles.Instance.editModeBtn);
+                if (EditorGUI.EndChangeCheck())
+                    EditMode.editType = EditMode.EditType.Replace;
             }
         }
 

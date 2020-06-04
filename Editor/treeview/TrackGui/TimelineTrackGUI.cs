@@ -122,7 +122,7 @@ namespace UnityEditor.Timeline
         {
             get
             {
-                return m_ItemsDrawer.clips == null ? new List<TimelineClipGUI>(0) : m_ItemsDrawer.clips.ToList();
+                return m_ItemsDrawer.clips == null ? new List<TimelineClipGUI>(0) : m_ItemsDrawer.clips;
             }
         }
 
@@ -194,7 +194,7 @@ namespace UnityEditor.Timeline
 
         void UpdateInfiniteClipEditor(TimelineWindow window)
         {
-            if (clipCurveEditor != null || track == null || !track.ShouldShowInfiniteClipEditor())
+            if (clipCurveEditor != null || track == null || !ShouldShowInfiniteClipEditor())
                 return;
 
             var dataSource = CurveDataSource.Create(this);
@@ -601,7 +601,7 @@ namespace UnityEditor.Timeline
 
             if (EditorGUI.EndChangeCheck())
             {
-                TimelineUndo.PushUndo(track, "Rename Track");
+                UndoExtensions.RegisterTrack(track, "Rename Track");
                 track.name = trackName;
             }
         }
@@ -617,7 +617,7 @@ namespace UnityEditor.Timeline
                     SelectionManager.Add(track);
                 }
 
-                SequencerContextMenu.ShowTrackContextMenu(SelectionManager.SelectedTracks().ToArray(), null);
+                SequencerContextMenu.ShowTrackContextMenu(null);
             }
 
             return WindowConstants.trackHeaderButtonSize;
@@ -727,13 +727,11 @@ namespace UnityEditor.Timeline
             var markersShown = showMarkers && hasMarkers;
             var style = TimelineWindow.styles.trackMarkerButton;
 
-            using (var check = new EditorGUI.ChangeCheckScope())
-            {
-                var tooltip = markersShown ? Styles.trackMarkerBtnOnTooltip : Styles.trackMarkerBtnOffTooltip;
-                var toggleMarkers = GUI.Toggle(rect, markersShown, tooltip, style);
-                if (check.changed && hasMarkers)
-                    state.GetWindow().SetShowTrackMarkers(track, toggleMarkers);
-            }
+            EditorGUI.BeginChangeCheck();
+            var tooltip = markersShown ? Styles.trackMarkerBtnOnTooltip : Styles.trackMarkerBtnOffTooltip;
+            var toggleMarkers = GUI.Toggle(rect, markersShown, tooltip, style);
+            if (EditorGUI.EndChangeCheck() && hasMarkers)
+                track.SetShowTrackMarkers(toggleMarkers);
         }
 
         static void ObjectBindingField(Rect position, Object obj, PlayableBinding binding)
@@ -831,7 +829,7 @@ namespace UnityEditor.Timeline
             if (track != null && window != null && window.state != null)
             {
                 bool hasEditor = clipCurveEditor != null;
-                bool shouldHaveEditor = track.ShouldShowInfiniteClipEditor();
+                bool shouldHaveEditor = ShouldShowInfiniteClipEditor();
                 if (hasEditor != shouldHaveEditor)
                     window.state.AddEndFrameDelegate((x, currentEvent) =>
                     {
@@ -839,6 +837,15 @@ namespace UnityEditor.Timeline
                         return true;
                     });
             }
+        }
+
+        bool ShouldShowInfiniteClipEditor()
+        {
+            var animationTrack = track as AnimationTrack;
+            if (animationTrack != null)
+                return animationTrack.ShouldShowInfiniteClipEditor();
+
+            return trackHasAnimatableParameters;
         }
 
         public void SelectCurves()

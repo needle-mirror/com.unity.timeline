@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -54,11 +53,16 @@ namespace UnityEditor.Timeline
         LayerZOrder Next();
     }
 
-    abstract class ItemsLayer : IZOrderProvider
+    interface ILayer : IZOrderProvider
     {
-        // provide a buffer for time-based culling to allow for UI that extends slightly beyong the time (e.g. markers)
+        void Draw(Rect rect, WindowState state);
+    }
+
+    abstract class ItemsLayer<T> : ILayer where T : TimelineItemGUI
+    {
+        // provide a buffer for time-based culling to allow for UI that extends slightly beyond the time (e.g. markers)
         // prevents popping of marker visibility.
-        private const int kVisibilityBufferInPixels = 10;
+        const int kVisibilityBufferInPixels = 10;
 
         int m_PreviousLayerStateHash = -1;
         LayerZOrder m_LastZOrder;
@@ -68,12 +72,12 @@ namespace UnityEditor.Timeline
             return m_LastZOrder++;
         }
 
-        readonly List<TimelineItemGUI> m_Items = new List<TimelineItemGUI>();
+        readonly List<T> m_Items = new List<T>();
         bool m_NeedSort = true;
 
         public virtual void Draw(Rect rect, WindowState state)
         {
-            if (!m_Items.Any()) return;
+            if (m_Items.Count <= 0) return;
 
             Sort();
 
@@ -92,15 +96,9 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public IEnumerable<TimelineItemGUI> items
-        {
-            get
-            {
-                return m_Items;
-            }
-        }
+        public List<T> items => m_Items;
 
-        protected void AddItem(TimelineItemGUI item)
+        protected void AddItem(T item)
         {
             m_Items.Add(item);
             m_NeedSort = true;

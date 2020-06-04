@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Timeline.Actions;
+using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
@@ -14,34 +16,40 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// The PlayableDirector associated with the timeline currently being shown in the Timeline window.
         /// </summary>
-        public static PlayableDirector inspectedDirector { get { return state == null ? null : state.editSequence.director; } }
+        public static PlayableDirector inspectedDirector => state?.editSequence.director;
 
         /// <summary>
         /// The PlayableDirector responsible for the playback of the timeline currently being shown in the Timeline window.
         /// </summary>
-        public static PlayableDirector masterDirector { get { return state == null ? null : state.masterSequence.director; } }
+        public static PlayableDirector masterDirector => state?.masterSequence.director;
 
         /// <summary>
         /// The TimelineAsset currently being shown in the Timeline window.
         /// </summary>
-        public static TimelineAsset inspectedAsset { get { return state == null ? null : state.editSequence.asset; } }
+        public static TimelineAsset inspectedAsset => state?.editSequence.asset;
 
         /// <summary>
         /// The TimelineAsset at the root of the hierarchy currently being shown in the Timeline window.
         /// </summary>
-        public static TimelineAsset masterAsset { get { return state == null ? null : state.masterSequence.asset; } }
+        public static TimelineAsset masterAsset => state?.masterSequence.asset;
 
         /// <summary>
         /// The PlayableDirector currently being shown in the Timeline Editor Window.
         /// </summary>
         [Obsolete("playableDirector is ambiguous. Please select either inspectedDirector or masterDirector instead.", false)]
-        public static PlayableDirector playableDirector { get { return inspectedDirector; } }
+        public static PlayableDirector playableDirector
+        {
+            get { return inspectedDirector; }
+        }
 
         /// <summary>
         /// The TimelineAsset currently being shown in the Timeline Editor Window.
         /// </summary>
         [Obsolete("timelineAsset is ambiguous. Please select either inspectedAsset or masterAsset instead.", false)]
-        public static TimelineAsset timelineAsset { get { return inspectedAsset; } }
+        public static TimelineAsset timelineAsset
+        {
+            get { return inspectedAsset; }
+        }
 
 
         /// <summary>
@@ -79,8 +87,8 @@ namespace UnityEditor.Timeline
             window.Repaint();
         }
 
-        static TimelineWindow window { get { return TimelineWindow.instance; } }
-        static WindowState state { get { return window == null ? null : window.state; } }
+        internal static TimelineWindow window => TimelineWindow.instance;
+        internal static WindowState state => window == null ? null : window.state;
 
         internal static readonly Clipboard clipboard = new Clipboard();
 
@@ -89,7 +97,7 @@ namespace UnityEditor.Timeline
         /// </summary>
         public static TimelineClip[] selectedClips
         {
-            get { return Selection.GetFiltered<EditorClip>(SelectionMode.Unfiltered).Select(e => e.clip).Where(x => x != null).ToArray();  }
+            get { return Selection.GetFiltered<EditorClip>(SelectionMode.Unfiltered).Select(e => e.clip).Where(x => x != null).ToArray(); }
             set
             {
                 if (value == null || value.Length == 0)
@@ -135,8 +143,68 @@ namespace UnityEditor.Timeline
                 Selection.activeObject = editorClip;
             }
         }
-    }
 
+        /// <summary>
+        /// Local time (in seconds) of the inspected sequence.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if timeline window is not available.</exception>
+        internal static double inspectedSequenceTime
+        {
+            get => state?.editSequence.time ?? 0;
+            set
+            {
+                if (state == null)
+                    throw new InvalidOperationException("Cannot set time. Timeline Window may not be available.");
+                state.editSequence.time = value;
+            }
+        }
+
+        /// <summary>
+        /// Global time (in seconds) of the master timeline.
+        /// Same as local time if not inspected a subtimeline.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if timeline window is not available.</exception>
+        internal static double masterSequenceTime
+        {
+            get => state?.editSequence.ToGlobalTime(state.editSequence.time) ?? 0;
+            set
+            {
+                if (state == null)
+                    throw new InvalidOperationException("Cannot set time. Timeline Window may not be available.");
+                state.masterSequence.time = value;
+            }
+        }
+
+        /// <summary>
+        /// Visible time range (in seconds) in Editor.
+        /// x : min time
+        /// y : max time
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if timeline window is not available.</exception>
+        internal static Vector2 visibleTimeRange
+        {
+            get => state?.timeAreaShownRange ?? TimelineAssetViewModel.TimeAreaDefaultRange;
+            set
+            {
+                if (state == null)
+                    throw new InvalidOperationException("Cannot set visible time range. Timeline Window may not be available.");
+                state.timeAreaShownRange = value;
+            }
+        }
+
+        internal static ActionContext CurrentContext(Vector2? mousePos = null)
+        {
+            return new ActionContext
+            {
+                invocationTime = mousePos != null ? TimelineHelpers.GetCandidateTime(mousePos) : (double?)null,
+                clips = SelectionManager.SelectedClips(),
+                tracks = SelectionManager.SelectedTracks(),
+                markers = SelectionManager.SelectedMarkers(),
+                timeline = inspectedAsset,
+                director = inspectedDirector
+            };
+        }
+    }
 
     /// <summary>
     /// <see cref="TimelineEditor.Refresh"/> uses these flags to determine what needs to be refreshed or updated.

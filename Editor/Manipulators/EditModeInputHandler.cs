@@ -98,7 +98,7 @@ namespace UnityEditor.Timeline
             public void OnDrag(double endValue, WindowState state)
             {
                 var trimValue = endValue;
-                trimValue = TimelineWindow.instance.state.SnapToFrameIfRequired(trimValue);
+                trimValue = TimeReferenceUtility.SnapToFrameIfRequired(trimValue);
 
                 foreach (var item in grabbedItems)
                 {
@@ -154,7 +154,7 @@ namespace UnityEditor.Timeline
                 if (m_MoveItemHandler == null) return;
 
                 var startValue = value;
-                startValue = state.SnapToFrameIfRequired(startValue);
+                startValue = TimeReferenceUtility.SnapToFrameIfRequired(startValue);
                 m_MoveItemHandler.OnAttractedEdge(null, ManipulateEdges.Both, AttractedEdge.None, startValue);
             }
 

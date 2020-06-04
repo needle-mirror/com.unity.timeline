@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -153,24 +154,33 @@ namespace UnityEditor.Timeline
             if ((trackGUI.track as AnimationTrack) == null)
                 return false;
 
-            return EditTrackInAnimationWindow.Do(state, trackGUI.track);
+            return EditTrackInAnimationWindow.Do(trackGUI.track);
         }
     }
 
     class TrackShortcutManipulator : Manipulator
     {
+        protected override bool KeyDown(Event evt, WindowState state)
+        {
+            return InternalExecute(evt, state);
+        }
+
         protected override bool ExecuteCommand(Event evt, WindowState state)
+        {
+            return InternalExecute(evt, state);
+        }
+
+        static bool InternalExecute(Event evt, WindowState state)
         {
             if (state.IsCurrentEditingASequencerTextField())
                 return false;
 
             var tracks = SelectionManager.SelectedTracks().ToList();
+            var items = SelectionManager.SelectedClipGUI();
 
-            var itemGUIs = SelectionManager.SelectedClipGUI();
-
-            foreach (var itemGUI in itemGUIs)
+            foreach (var item in items)
             {
-                var trackGUI = itemGUI.parent == null ? null : itemGUI.parent as TimelineTrackBaseGUI;
+                var trackGUI = item.parent as TimelineTrackBaseGUI;
                 if (trackGUI == null)
                     continue;
 
@@ -178,7 +188,9 @@ namespace UnityEditor.Timeline
                     tracks.Add(trackGUI.track);
             }
 
-            return TrackAction.HandleShortcut(state, evt, tracks.ToArray());
+            return ActionManager.HandleShortcut(evt,
+                ActionManager.TrackActions,
+                x => ActionManager.ExecuteTrackAction(x, tracks));
         }
     }
 }

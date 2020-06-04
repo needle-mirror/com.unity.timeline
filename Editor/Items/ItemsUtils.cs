@@ -101,12 +101,12 @@ namespace UnityEditor.Timeline
                 EditModeUtils.SetStart(newItems.ElementAt(i).items, startTimes[i]);
         }
 
-        public static double TimeGapBetweenItems(ITimelineItem leftItem, ITimelineItem rightItem, WindowState state)
+        public static double TimeGapBetweenItems(ITimelineItem leftItem, ITimelineItem rightItem)
         {
             if (leftItem is MarkerItem && rightItem is MarkerItem)
             {
                 var markerType = ((MarkerItem)leftItem).marker.GetType();
-                var gap = state.PixelDeltaToDeltaTime(StyleManager.UssStyleForType(markerType).fixedWidth);
+                var gap = TimeReferenceUtility.PixelToTime(StyleManager.UssStyleForType(markerType).fixedWidth) - TimeReferenceUtility.PixelToTime(0);
                 return gap;
             }
 

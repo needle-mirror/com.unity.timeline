@@ -47,15 +47,7 @@ namespace UnityEditor.Timeline
 
         public void PushUndo(string operation)
         {
-            var m = m_Marker as Object;
-            if (m != null)
-            {
-                TimelineUndo.PushUndo(m, operation);
-            }
-            else
-            {
-                TimelineUndo.PushUndo(m_Marker.parent, operation);
-            }
+            UndoExtensions.RegisterMarker(m_Marker, operation);
         }
 
         public TimelineItemGUI gui

@@ -1,15 +1,16 @@
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
-    [MenuEntry("Add Override Track", MenuOrder.CustomTrackAction.AnimAddOverrideTrack), UsedImplicitly]
+    [MenuEntry("Add Override Track", MenuPriority.CustomTrackActionSection.addOverrideTrack), UsedImplicitly]
     class AddOverrideTrackAction : TrackAction
     {
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             foreach (var animTrack in tracks.OfType<AnimationTrack>())
             {
@@ -19,22 +20,22 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             if (tracks.Any(t => t.isSubTrack || !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
-                return MenuActionDisplayState.Disabled;
+                return ActionValidity.Invalid;
 
-            return MenuActionDisplayState.Visible;
+            return ActionValidity.Valid;
         }
     }
 
-    [MenuEntry("Convert To Clip Track", MenuOrder.CustomTrackAction.AnimConvertToClipMode), UsedImplicitly]
+    [MenuEntry("Convert To Clip Track", MenuPriority.CustomTrackActionSection.convertToClipMode), UsedImplicitly]
     class ConvertToClipModeAction : TrackAction
     {
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             foreach (var animTrack in tracks.OfType<AnimationTrack>())
                 animTrack.ConvertToClipMode();
@@ -44,46 +45,46 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             if (tracks.Any(t => !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
-                return MenuActionDisplayState.Disabled;
+                return ActionValidity.Invalid;
 
             if (tracks.OfType<AnimationTrack>().All(a => a.CanConvertToClipMode()))
-                return MenuActionDisplayState.Visible;
+                return ActionValidity.Valid;
 
-            return MenuActionDisplayState.Hidden;
+            return ActionValidity.NotApplicable;
         }
     }
 
-    [MenuEntry("Convert To Infinite Clip", MenuOrder.CustomTrackAction.AnimConvertFromClipMode), UsedImplicitly]
+    [MenuEntry("Convert To Infinite Clip", MenuPriority.CustomTrackActionSection.convertFromClipMode), UsedImplicitly]
     class ConvertFromClipTrackAction : TrackAction
     {
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             foreach (var animTrack in tracks.OfType<AnimationTrack>())
-                animTrack.ConvertFromClipMode(state.editSequence.asset);
+                animTrack.ConvertFromClipMode(TimelineEditor.inspectedAsset);
 
             TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
 
             return true;
         }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             if (tracks.Any(t => !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
-                return MenuActionDisplayState.Disabled;
+                return ActionValidity.Invalid;
 
             if (tracks.OfType<AnimationTrack>().All(a => a.CanConvertFromClipMode()))
-                return MenuActionDisplayState.Visible;
+                return ActionValidity.Valid;
 
-            return MenuActionDisplayState.Hidden;
+            return ActionValidity.NotApplicable;
         }
     }
 
@@ -91,28 +92,24 @@ namespace UnityEditor.Timeline
     {
         public abstract TrackOffset trackOffset { get; }
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TrackAsset[] tracks)
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             if (tracks.Any(t => !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
-                return MenuActionDisplayState.Hidden;
+                return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
-                return MenuActionDisplayState.Disabled;
+            {
+                return ActionValidity.Invalid;
+            }
 
-            return MenuActionDisplayState.Visible;
+            return ActionValidity.Valid;
         }
 
-        protected override bool IsChecked(WindowState state, TrackAsset[] tracks)
-        {
-            return tracks.OfType<AnimationTrack>().All(t => t.trackOffset == trackOffset);
-        }
-
-        public override bool Execute(WindowState state, TrackAsset[] tracks)
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
             foreach (var animTrack in tracks.OfType<AnimationTrack>())
             {
-                state.UnarmForRecord(animTrack);
-                TimelineUndo.PushUndo(animTrack, "Set Transform Offsets");
+                animTrack.UnarmForRecord();
                 animTrack.trackOffset = trackOffset;
             }
 
@@ -122,7 +119,8 @@ namespace UnityEditor.Timeline
     }
 
 
-    [MenuEntry("Track Offsets/Apply Transform Offsets", MenuOrder.CustomTrackAction.AnimApplyTrackOffset), UsedImplicitly]
+    [MenuEntry("Track Offsets/Apply Transform Offsets", MenuPriority.CustomTrackActionSection.applyTrackOffset), UsedImplicitly]
+    [ApplyDefaultUndo]
     class ApplyTransformOffsetAction : TrackOffsetBaseAction
     {
         public override TrackOffset trackOffset
@@ -131,7 +129,8 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Track Offsets/Apply Scene Offsets", MenuOrder.CustomTrackAction.AnimApplySceneOffset), UsedImplicitly]
+    [MenuEntry("Track Offsets/Apply Scene Offsets", MenuPriority.CustomTrackActionSection.applySceneOffset), UsedImplicitly]
+    [ApplyDefaultUndo]
     class ApplySceneOffsetAction : TrackOffsetBaseAction
     {
         public override TrackOffset trackOffset
@@ -140,7 +139,8 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Track Offsets/Auto (Deprecated)", MenuOrder.CustomTrackAction.AnimApplyAutoOffset), UsedImplicitly]
+    [MenuEntry("Track Offsets/Auto (Deprecated)", MenuPriority.CustomTrackActionSection.applyAutoOffset), UsedImplicitly]
+    [ApplyDefaultUndo]
     class ApplyAutoAction : TrackOffsetBaseAction
     {
         public override TrackOffset trackOffset

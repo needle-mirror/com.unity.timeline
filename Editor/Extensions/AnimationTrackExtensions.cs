@@ -11,13 +11,13 @@ namespace UnityEditor.Timeline
             if (!track.CanConvertToClipMode())
                 return;
 
-            TimelineUndo.PushUndo(track, "Convert To Clip");
+            UndoExtensions.RegisterTrack(track, "Convert To Clip");
 
             if (!track.infiniteClip.empty)
             {
                 var animClip = track.infiniteClip;
                 TimelineUndo.PushUndo(animClip, "Convert To Clip");
-                TimelineUndo.PushUndo(track, "Convert To Clip");
+                UndoExtensions.RegisterTrack(track, "Convert To Clip");
                 var start = AnimationClipCurveCache.Instance.GetCurveInfo(animClip).keyTimes.FirstOrDefault();
                 animClip.ShiftBySeconds(-start);
 
@@ -61,7 +61,7 @@ namespace UnityEditor.Timeline
             if (!track.CanConvertFromClipMode())
                 return;
 
-            TimelineUndo.PushUndo(track, "Convert From Clip");
+            UndoExtensions.RegisterTrack(track, "Convert From Clip");
 
             var clip = track.clips[0];
             var delta = (float)clip.start;
@@ -99,7 +99,7 @@ namespace UnityEditor.Timeline
 
             // Remove the clip, remove old assets
             ClipModifier.Delete(timeline, clip);
-            TimelineUndo.PushDestroyUndo(null, track, asset, "Convert From Clip");
+            TimelineUndo.PushDestroyUndo(null, track, asset);
 
             track.infiniteClip = animClip;
 

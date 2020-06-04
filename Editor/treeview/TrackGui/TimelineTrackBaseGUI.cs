@@ -156,14 +156,12 @@ namespace UnityEditor.Timeline
         {
             using (new EditorGUI.DisabledScope(TimelineUtility.IsParentMuted(track)))
             {
-                using (var check = new EditorGUI.ChangeCheckScope())
-                {
-                    var isMuted = track.mutedInHierarchy;
-                    var tooltip = isMuted ? Styles.trackMuteBtnOnTooltip : Styles.trackMuteBtnOffTooltip;
-                    var muted = GUI.Toggle(rect, isMuted, tooltip, TimelineWindow.styles.trackMuteButton);
-                    if (check.changed)
-                        MuteTrack.Mute(state, new[] { track }, muted);
-                }
+                EditorGUI.BeginChangeCheck();
+                var isMuted = track.mutedInHierarchy;
+                var tooltip = isMuted ? Styles.trackMuteBtnOnTooltip : Styles.trackMuteBtnOffTooltip;
+                var muted = GUI.Toggle(rect, isMuted, tooltip, TimelineWindow.styles.trackMuteButton);
+                if (EditorGUI.EndChangeCheck())
+                    MuteTrack.Mute(new[] { track }, muted);
             }
         }
 
@@ -171,14 +169,12 @@ namespace UnityEditor.Timeline
         {
             using (new EditorGUI.DisabledScope(TimelineUtility.IsLockedFromGroup(track)))
             {
-                using (var check = new EditorGUI.ChangeCheckScope())
-                {
-                    var isLocked = track.lockedInHierarchy;
-                    var tooltip = isLocked ? Styles.trackLockBtnOnTooltip : Styles.trackLockBtnOffTooltip;
-                    var locked = GUI.Toggle(rect, track.lockedInHierarchy, tooltip, TimelineWindow.styles.trackLockButton);
-                    if (check.changed)
-                        LockTrack.SetLockState(new[] { track }, locked, state);
-                }
+                EditorGUI.BeginChangeCheck();
+                var isLocked = track.lockedInHierarchy;
+                var tooltip = isLocked ? Styles.trackLockBtnOnTooltip : Styles.trackLockBtnOffTooltip;
+                var locked = GUI.Toggle(rect, track.lockedInHierarchy, tooltip, TimelineWindow.styles.trackLockButton);
+                if (EditorGUI.EndChangeCheck())
+                    LockTrack.SetLockState(new[] { track }, locked);
             }
         }
 

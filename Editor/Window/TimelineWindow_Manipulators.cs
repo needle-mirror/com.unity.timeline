@@ -30,7 +30,6 @@ namespace UnityEditor.Timeline
             m_PreTreeViewControl.AddManipulator(new TrackDoubleClick());
             m_PreTreeViewControl.AddManipulator(new DrillIntoClip());
             m_PreTreeViewControl.AddManipulator(new InlineCurvesShortcutManipulator());
-            m_PreTreeViewControl.AddManipulator(new ItemActionShortcutManipulator());
 
             // Manipulators that needs to be processed AFTER the treeView or any GUI element able to use event (like inline curves)
             m_PostTreeViewControl.AddManipulator(new TimeAreaContextMenu());

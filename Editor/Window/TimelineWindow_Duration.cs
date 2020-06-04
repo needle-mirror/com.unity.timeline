@@ -112,7 +112,7 @@ namespace UnityEditor.Timeline
                 // this is the first call to the drag
                 if (m_TimelineDuration.firstDrag)
                 {
-                    TimelineUndo.PushUndo(state.editSequence.asset, "Change Duration");
+                    UndoExtensions.RegisterTimeline(state.editSequence.asset, "Change Duration");
                 }
 
                 state.editSequence.asset.fixedDuration = newTime;

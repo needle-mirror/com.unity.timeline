@@ -169,7 +169,7 @@ namespace UnityEditor.Timeline
             s_CurrentTrimItem = itemToTrim;
             s_CurrentTrimDirection = trimDirection;
             trimMode.OnBeforeTrim(itemToTrim, trimDirection);
-            TimelineUndo.PushUndo(itemToTrim.parentTrack, "Trim Clip");
+            UndoExtensions.RegisterTrack(itemToTrim.parentTrack, "Trim Clip");
         }
 
         public static void TrimStart(ITimelineItem item, double time, bool affectTimeScale)

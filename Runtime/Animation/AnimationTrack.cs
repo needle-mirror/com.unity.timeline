@@ -563,7 +563,7 @@ namespace UnityEngine.Timeline
 
             var genericRoot = GetGenericRootNode(go);
             var animatesRootTransformNoMask = AnimatesRootTransform();
-            var animatesRootTransform = animatesRootTransformNoMask || !IsRootTransformDisabledByMask(go, genericRoot);
+            var animatesRootTransform = animatesRootTransformNoMask && !IsRootTransformDisabledByMask(go, genericRoot);
             foreach (var subTrack in GetChildTracks())
             {
                 var child = subTrack as AnimationTrack;

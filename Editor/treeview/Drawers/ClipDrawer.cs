@@ -36,7 +36,7 @@ namespace UnityEditor.Timeline
         }
     }
 
-    class ClipBorder
+    struct ClipBorder
     {
         public readonly Color color;
         public readonly float thickness;
@@ -530,8 +530,7 @@ namespace UnityEditor.Timeline
             if (textRect.width > k_ClipLabelMinWidth)
                 DrawClipLabel(clip.displayName, textRect, Color.white, drawOptions.errorText);
 
-            if (border != null)
-                DrawClipSelectionBorder(clipRect, border, ClipBlends.kNone);
+            DrawClipSelectionBorder(clipRect, border, ClipBlends.kNone);
 
             GUI.EndClip();
         }

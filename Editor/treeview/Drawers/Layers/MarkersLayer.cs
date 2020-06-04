@@ -5,7 +5,7 @@ using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
-    class MarkersLayer : ItemsLayer
+    class MarkersLayer : ItemsLayer<TimelineItemGUI>
     {
         public MarkersLayer(Layer layerOrder, IRowGUI parent) : base(layerOrder)
         {

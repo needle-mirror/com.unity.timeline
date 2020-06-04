@@ -522,15 +522,5 @@ namespace UnityEditor.Timeline
 
             m_LockTracker.ShowButton(r, DirectorStyles.Instance.timelineLockButton, disabled);
         }
-
-        internal void TreeViewKeyboardCallback()
-        {
-            if (Event.current.type != EventType.KeyDown)
-                return;
-            if (TimelineAction.HandleShortcut(state, Event.current))
-            {
-                Event.current.Use();
-            }
-        }
     }
 }

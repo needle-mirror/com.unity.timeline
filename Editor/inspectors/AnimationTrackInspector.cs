@@ -408,7 +408,7 @@ namespace UnityEditor.Timeline
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    TimelineUndo.PushUndo(animationTrack, "Inspector");
+                    UndoExtensions.RegisterTrack(animationTrack, "Inspector");
                     TimelineAnimationUtilities.UpdateTrackOffset(animationTrack, boundObjectTransform, offsets);
                     Evaluate();
                     Repaint();

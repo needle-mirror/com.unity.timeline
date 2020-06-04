@@ -1,36 +1,38 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.Playables;
-using ClipAction = UnityEditor.Timeline.ItemAction<UnityEngine.Timeline.TimelineClip>;
 
 namespace UnityEditor.Timeline
 {
-    [MenuEntry("Edit in Animation Window", MenuOrder.ClipEditAction.EditInAnimationWindow), UsedImplicitly]
+    [MenuEntry("Edit in Animation Window", MenuPriority.ClipEditActionSection.editInAnimationWindow), UsedImplicitly]
     class EditClipInAnimationWindow : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            if (clips.Length == 1 && clips[0].animationClip != null)
-                return MenuActionDisplayState.Visible;
-            return MenuActionDisplayState.Hidden;
+            if (clips.Count() == 1 && clips.First().animationClip != null)
+                return ActionValidity.Valid;
+            return ActionValidity.NotApplicable;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            var clip = clips[0];
+            var clip = clips.FirstOrDefault();
 
-            if (clip.curves != null || clip.animationClip != null)
+            if (clip != null && (clip.curves != null || clip.animationClip != null))
             {
                 var clipToEdit = clip.animationClip != null ? clip.animationClip : clip.curves;
                 if (clipToEdit == null)
                     return false;
 
-                var gameObject = state.GetSceneReference(clip.parentTrack);
-                var timeController = TimelineAnimationUtilities.CreateTimeController(state, clip);
+                GameObject gameObject = null;
+                if (TimelineEditor.inspectedDirector != null)
+                    gameObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.parentTrack);
+
+                var timeController = TimelineAnimationUtilities.CreateTimeController(clip);
                 TimelineAnimationUtilities.EditAnimationClipWithTimeController(
                     clipToEdit, timeController, clip.animationClip != null  ? gameObject : null);
                 return true;
@@ -40,67 +42,66 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Edit Sub-Timeline", MenuOrder.ClipEditAction.EditSubTimeline), UsedImplicitly]
+    [MenuEntry("Edit Sub-Timeline", MenuPriority.ClipEditActionSection.editSubTimeline), UsedImplicitly]
     class EditSubTimeline : ClipAction
     {
         private static readonly string MultiItemPrefix = "Edit Sub-Timelines/";
         private static readonly string SingleItemPrefix = "Edit ";
 
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            return IsValid(state, clips) ? MenuActionDisplayState.Visible : MenuActionDisplayState.Hidden;
+            if (clips == null || clips.Count() != 1 || TimelineEditor.inspectedDirector == null)
+                return ActionValidity.NotApplicable;
+
+            var clip = clips.First();
+            var directors = TimelineUtility.GetSubTimelines(clip, TimelineEditor.inspectedDirector);
+            return directors.Any(x => x != null) ? ActionValidity.Valid : ActionValidity.NotApplicable;
         }
 
-        bool IsValid(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            if (clips.Length != 1 || state == null || state.editSequence.director == null) return false;
-            var clip = clips[0];
+            if (Validate(clips) != ActionValidity.Valid) return false;
 
-            var directors = TimelineUtility.GetSubTimelines(clip, state.editSequence.director);
-            return directors.Any(x => x != null);
-        }
+            var clip = clips.First();
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
-        {
-            if (!IsValid(state, clips)) return false;
-
-            var clip = clips[0];
-
-            var directors = TimelineUtility.GetSubTimelines(clip, state.editSequence.director);
-            ExecuteInternal(state, directors, 0, clip);
+            var directors = TimelineUtility.GetSubTimelines(clip, TimelineEditor.inspectedDirector);
+            ExecuteInternal(directors, 0, clip);
 
             return true;
         }
 
-        static void ExecuteInternal(WindowState state, IList<PlayableDirector> directors, int directorIndex, TimelineClip clip)
+        static void ExecuteInternal(IList<PlayableDirector> directors, int directorIndex, TimelineClip clip)
         {
             SelectionManager.Clear();
-            state.GetWindow().SetCurrentTimeline(directors[directorIndex], clip);
+            TimelineWindow.instance.SetCurrentTimeline(directors[directorIndex], clip);
         }
 
-        protected override void AddMenuItem(WindowState state, TimelineClip[] items, List<MenuActionItem> menuItems)
+        internal void AddMenuItem(List<MenuActionItem> menuItems)
         {
-            if (items == null || items.Length != 1)
+            var clips = TimelineEditor.selectedClips;
+            if (clips == null || clips.Length != 1)
                 return;
 
             var mode = TimelineWindow.instance.currentMode.mode;
+            MenuEntryAttribute menuAttribute = GetType().GetCustomAttributes(typeof(MenuEntryAttribute), false).OfType<MenuEntryAttribute>().FirstOrDefault();
             var menuItem = new MenuActionItem()
             {
-                category = category,
-                entryName = GetDisplayName(items),
-                shortCut = string.Empty,
-                isChecked = false,
-                isActiveInMode = IsActionActiveInMode(this, mode),
-                priority = priority,
-                state = GetDisplayState(state, items),
+                category = menuAttribute.subMenuPath ?? string.Empty,
+                entryName = menuAttribute.name,
+                isActiveInMode = this.IsActionActiveInMode(mode),
+                priority = menuAttribute.priority,
+                state = Validate(clips),
                 callback = null
             };
 
-            var subDirectors = TimelineUtility.GetSubTimelines(items[0], state.editSequence.director);
+            var subDirectors = TimelineUtility.GetSubTimelines(clips[0], TimelineEditor.inspectedDirector);
             if (subDirectors.Count == 1)
             {
                 menuItem.entryName = SingleItemPrefix + DisplayNameHelper.GetDisplayName(subDirectors[0]);
-                menuItem.callback = () => Execute(state, items);
+                menuItem.callback = () =>
+                {
+                    Execute(clips);
+                };
                 menuItems.Add(menuItem);
             }
             else
@@ -110,182 +111,182 @@ namespace UnityEditor.Timeline
                     var index = i;
                     menuItem.category = MultiItemPrefix;
                     menuItem.entryName = DisplayNameHelper.GetDisplayName(subDirectors[i]);
-                    menuItem.callback = () => ExecuteInternal(state, subDirectors, index, items[0]);
+                    menuItem.callback = () =>
+                    {
+                        ExecuteInternal(subDirectors, index, clips[0]);
+                    };
                     menuItems.Add(menuItem);
                 }
             }
         }
     }
 
-    [MenuEntry("Editing/Trim Start", MenuOrder.ClipAction.TrimStart)]
+    [MenuEntry("Editing/Trim Start", MenuPriority.ClipActionSection.trimStart)]
     [Shortcut(Shortcuts.Clip.trimStart), UsedImplicitly]
-    class TrimStart : ItemAction<TimelineClip>
+    class TrimStart : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            return clips.All(x => state.editSequence.time <= x.start || state.editSequence.time >= x.start + x.duration) ?
-                MenuActionDisplayState.Disabled : MenuActionDisplayState.Visible;
+            return clips.All(x => TimelineEditor.inspectedSequenceTime <= x.start || TimelineEditor.inspectedSequenceTime >= x.start + x.duration) ? ActionValidity.Invalid : ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            return ClipModifier.TrimStart(clips, state.editSequence.time);
+            return ClipModifier.TrimStart(clips, TimelineEditor.inspectedSequenceTime);
         }
     }
 
-    [MenuEntry("Editing/Trim End", MenuOrder.ClipAction.TrimEnd), UsedImplicitly]
+    [MenuEntry("Editing/Trim End", MenuPriority.ClipActionSection.trimEnd), UsedImplicitly]
     [Shortcut(Shortcuts.Clip.trimEnd)]
-    class TrimEnd : ItemAction<TimelineClip>
+    class TrimEnd : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            return clips.All(x => state.editSequence.time <= x.start || state.editSequence.time >= x.start + x.duration) ?
-                MenuActionDisplayState.Disabled : MenuActionDisplayState.Visible;
+            return clips.All(x => TimelineEditor.inspectedSequenceTime <= x.start || TimelineEditor.inspectedSequenceTime >= x.start + x.duration) ? ActionValidity.Invalid : ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            return ClipModifier.TrimEnd(clips, state.editSequence.time);
+            return ClipModifier.TrimEnd(clips, TimelineEditor.inspectedSequenceTime);
         }
     }
 
-    [Shortcut(Shortcuts.Clip.split), MenuEntry("Editing/Split", MenuOrder.ClipAction.Split), UsedImplicitly]
+    [Shortcut(Shortcuts.Clip.split)]
+    [MenuEntry("Editing/Split", MenuPriority.ClipActionSection.split), UsedImplicitly]
     class Split : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            return clips.All(x => state.editSequence.time <= x.start || state.editSequence.time >= x.start + x.duration) ?
-                MenuActionDisplayState.Disabled : MenuActionDisplayState.Visible;
+            return clips.All(x => TimelineEditor.inspectedSequenceTime <= x.start || TimelineEditor.inspectedSequenceTime >= x.start + x.duration) ? ActionValidity.Invalid : ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            bool success = ClipModifier.Split(clips, state.editSequence.time, state.editSequence.director);
+            bool success = ClipModifier.Split(clips, TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedDirector);
             if (success)
-                state.Refresh();
+                TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
             return success;
         }
     }
 
-    [MenuEntry("Editing/Complete Last Loop", MenuOrder.ClipAction.CompleteLastLoop), UsedImplicitly]
+    [MenuEntry("Editing/Complete Last Loop", MenuPriority.ClipActionSection.completeLastLoop), UsedImplicitly]
     class CompleteLastLoop : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
             bool canDisplay = clips.Any(TimelineHelpers.HasUsableAssetDuration);
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.CompleteLastLoop(clips);
         }
     }
 
-    [MenuEntry("Editing/Trim Last Loop", MenuOrder.ClipAction.TrimLastLoop), UsedImplicitly]
+    [MenuEntry("Editing/Trim Last Loop", MenuPriority.ClipActionSection.trimLastLoop), UsedImplicitly]
     class TrimLastLoop : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
             bool canDisplay = clips.Any(TimelineHelpers.HasUsableAssetDuration);
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.TrimLastLoop(clips);
         }
     }
 
-    [MenuEntry("Editing/Match Duration", MenuOrder.ClipAction.MatchDuration), UsedImplicitly]
+    [MenuEntry("Editing/Match Duration", MenuPriority.ClipActionSection.matchDuration), UsedImplicitly]
     class MatchDuration : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            return clips.Length > 1 ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return clips.Count() > 1 ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.MatchDuration(clips);
         }
     }
 
-    [MenuEntry("Editing/Double Speed", MenuOrder.ClipAction.DoubleSpeed), UsedImplicitly]
+    [MenuEntry("Editing/Double Speed", MenuPriority.ClipActionSection.doubleSpeed), UsedImplicitly]
     class DoubleSpeed : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
             bool canDisplay = clips.All(x => x.SupportsSpeedMultiplier());
 
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.DoubleSpeed(clips);
         }
     }
 
-    [MenuEntry("Editing/Half Speed", MenuOrder.ClipAction.HalfSpeed), UsedImplicitly]
+    [MenuEntry("Editing/Half Speed", MenuPriority.ClipActionSection.halfSpeed), UsedImplicitly]
     class HalfSpeed : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
             bool canDisplay = clips.All(x => x.SupportsSpeedMultiplier());
 
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.HalfSpeed(clips);
         }
     }
 
-    [MenuEntry("Editing/Reset Duration", MenuOrder.ClipAction.ResetDuration), UsedImplicitly]
+    [MenuEntry("Editing/Reset Duration", MenuPriority.ClipActionSection.resetDuration), UsedImplicitly]
     class ResetDuration : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
             bool canDisplay = clips.Any(TimelineHelpers.HasUsableAssetDuration);
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.ResetEditing(clips);
         }
     }
 
-    [MenuEntry("Editing/Reset Speed", MenuOrder.ClipAction.ResetSpeed), UsedImplicitly]
+    [MenuEntry("Editing/Reset Speed", MenuPriority.ClipActionSection.resetSpeed), UsedImplicitly]
     class ResetSpeed : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
             bool canDisplay = clips.All(x => x.SupportsSpeedMultiplier());
 
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.ResetSpeed(clips);
         }
     }
 
-    [MenuEntry("Editing/Reset All", MenuOrder.ClipAction.ResetAll), UsedImplicitly]
+    [MenuEntry("Editing/Reset All", MenuPriority.ClipActionSection.resetAll), UsedImplicitly]
     class ResetAll : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            bool canDisplay = clips.Any(TimelineHelpers.HasUsableAssetDuration) ||
-                clips.All(x => x.SupportsSpeedMultiplier());
+            bool canDisplay = clips.Any(TimelineHelpers.HasUsableAssetDuration) || clips.All(x => x.SupportsSpeedMultiplier());
 
-            return canDisplay ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return canDisplay ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             var speedResult = ClipModifier.ResetSpeed(clips);
             var editResult = ClipModifier.ResetEditing(clips);
@@ -293,39 +294,38 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [MenuEntry("Tile", MenuOrder.ClipAction.Tile), UsedImplicitly]
+    [MenuEntry("Tile", MenuPriority.ClipActionSection.tile), UsedImplicitly]
     class Tile : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            return clips.Length > 1 ? MenuActionDisplayState.Visible : MenuActionDisplayState.Disabled;
+            return clips.Count() > 1 ? ActionValidity.Valid : ActionValidity.Invalid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             return ClipModifier.Tile(clips);
         }
     }
 
-    [MenuEntry("Find Source Asset", MenuOrder.ClipAction.FindSourceAsset), UsedImplicitly]
+    [MenuEntry("Find Source Asset", MenuPriority.ClipActionSection.findSourceAsset), UsedImplicitly]
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class FindSourceAsset : ClipAction
     {
-        protected override MenuActionDisplayState GetDisplayState(WindowState state,
-            TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            if (clips.Length > 1)
-                return MenuActionDisplayState.Disabled;
+            if (clips.Count() > 1)
+                return ActionValidity.Invalid;
 
-            if (GetUnderlyingAsset(state, clips[0]) == null)
-                return MenuActionDisplayState.Disabled;
+            if (GetUnderlyingAsset(clips.First()) == null)
+                return ActionValidity.Invalid;
 
-            return MenuActionDisplayState.Visible;
+            return ActionValidity.Valid;
         }
 
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            EditorGUIUtility.PingObject(GetUnderlyingAsset(state, clips[0]));
+            EditorGUIUtility.PingObject(GetUnderlyingAsset(clips.First()));
             return true;
         }
 
@@ -340,7 +340,7 @@ namespace UnityEditor.Timeline
             return clip.asset;
         }
 
-        private static UnityEngine.Object GetUnderlyingAsset(WindowState state, TimelineClip clip)
+        private static UnityEngine.Object GetUnderlyingAsset(TimelineClip clip)
         {
             var asset = clip.asset as ScriptableObject;
             if (asset == null)
@@ -354,9 +354,9 @@ namespace UnityEditor.Timeline
             foreach (var field in fields)
             {
                 // skip scene refs in asset mode
-                if (state.editSequence.director == null && field.isSceneReference)
+                if (TimelineEditor.inspectedDirector == null && field.isSceneReference)
                     continue;
-                var obj = field.Find(asset, state.editSequence.director);
+                var obj = field.Find(asset, TimelineEditor.inspectedDirector);
                 if (obj != null)
                     return obj;
             }
@@ -367,7 +367,8 @@ namespace UnityEditor.Timeline
 
     class CopyClipsToClipboard : ClipAction
     {
-        public override bool Execute(WindowState state, TimelineClip[] clips)
+        public override ActionValidity Validate(IEnumerable<TimelineClip> clips) => ActionValidity.Valid;
+        public override bool Execute(IEnumerable<TimelineClip> clips)
         {
             TimelineEditor.clipboard.CopyItems(clips.ToItems());
             return true;

@@ -7,7 +7,9 @@ using UnityEngine.Playables;
 
 namespace UnityEditor.Timeline
 {
-    // Editor-only extension methods on track assets
+    /// <summary>
+    /// Editor-only extension methods on track assets.
+    /// </summary>
     static class TrackExtensions
     {
         public static readonly double kMinOverlapTime = TimeUtility.kTimeEpsilon * 1000;
@@ -175,7 +177,7 @@ namespace UnityEditor.Timeline
             RecursiveSubtrackClone(track, newTrack, sourceTable, destTable, finalParent);
             TimelineCreateUtilities.SaveAssetIntoObject(newTrack, finalParent);
             TimelineUndo.RegisterCreatedObjectUndo(newTrack, "Duplicate");
-            TimelineUndo.PushUndo(finalParent, "Duplicate");
+            UndoExtensions.RegisterPlayableAsset(finalParent, "Duplicate");
 
             if (destinationTimeline != null) // other timeline
                 destinationTimeline.AddTrackInternal(newTrack);
@@ -223,17 +225,13 @@ namespace UnityEditor.Timeline
                 return false;
 
             var parents = validTracks.Select(x => x.parent).Where(x => x != null).Distinct().ToList();
-
             // push the current state of the tracks that will change
             foreach (var p in parents)
             {
-                TimelineUndo.PushUndo(p, "Reparent");
+                UndoExtensions.RegisterPlayableAsset(p, "Reparent");
             }
-            foreach (var t in validTracks)
-            {
-                TimelineUndo.PushUndo(t, "Reparent");
-            }
-            TimelineUndo.PushUndo(targetParent, "Reparent");
+            UndoExtensions.RegisterTracks(validTracks, "Reparent");
+            UndoExtensions.RegisterPlayableAsset(targetParent, "Reparent");
 
             // need to reparent tracks first, before moving them.
             foreach (var t in validTracks)
@@ -353,15 +351,6 @@ namespace UnityEditor.Timeline
             TimelineWindowViewPrefs.SetShowInlineCurves(track, inlineOn);
         }
 
-        internal static bool ShouldShowInfiniteClipEditor(this TrackAsset track)
-        {
-            var animationTrack = track as AnimationTrack;
-            if (animationTrack != null)
-                return animationTrack.ShouldShowInfiniteClipEditor();
-
-            return track.HasAnyAnimatableParameters();
-        }
-
         internal static bool ShouldShowInfiniteClipEditor(this AnimationTrack track)
         {
             return track != null && !track.inClipMode && track.infiniteClip != null;
@@ -387,7 +376,7 @@ namespace UnityEditor.Timeline
                 int index = parentTrack.subTracksObjects.FindIndex(t => t.GetInstanceID() == track.GetInstanceID());
                 if (index >= 0)
                 {
-                    TimelineUndo.PushUndo(parentTrack, "Remove Track");
+                    UndoExtensions.RegisterTrack(parentTrack, "Remove Track");
                     parentTrack.subTracksObjects.RemoveAt(index);
                     parentTrack.Invalidate();
                     Undo.DestroyObjectImmediate(track);
@@ -399,7 +388,7 @@ namespace UnityEditor.Timeline
                 int index = parentTimeline.trackObjects.FindIndex(t => t.GetInstanceID() == track.GetInstanceID());
                 if (index >= 0)
                 {
-                    TimelineUndo.PushUndo(parentTimeline, "Remove Track");
+                    UndoExtensions.RegisterPlayableAsset(parentTimeline, "Remove Track");
                     parentTimeline.trackObjects.RemoveAt(index);
                     parentTimeline.Invalidate();
                     Undo.DestroyObjectImmediate(track);
@@ -489,6 +478,28 @@ namespace UnityEditor.Timeline
             var flattenedChildTracks = new List<TrackAsset>();
             GetFlattenedChildTracks(asset, flattenedChildTracks);
             return flattenedChildTracks;
+        }
+
+        public static void UnarmForRecord(this TrackAsset track)
+        {
+            TimelineWindow.instance.state.UnarmForRecord(track);
+        }
+
+        public static void SetShowTrackMarkers(this TrackAsset track, bool showMarkerHeader)
+        {
+            var currentValue = track.GetShowMarkers();
+            if (currentValue != showMarkerHeader)
+            {
+                TimelineUndo.PushUndo(TimelineWindow.instance.state.editSequence.viewModel, "Toggle Show Markers");
+                track.SetShowMarkers(showMarkerHeader);
+                if (!showMarkerHeader)
+                {
+                    foreach (var marker in track.GetMarkers())
+                    {
+                        SelectionManager.Remove(marker);
+                    }
+                }
+            }
         }
     }
 }

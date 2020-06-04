@@ -140,10 +140,9 @@ namespace UnityEditor.Timeline
             return ret;
         }
 
-        public static bool FocusFirstVisibleItem(WindowState state,
-            IEnumerable<TrackAsset> focusTracks = null)
+        public static bool FocusFirstVisibleItem(IEnumerable<TrackAsset> focusTracks = null)
         {
-            var timeRange = state.timeAreaShownRange;
+            var timeRange = TimelineEditor.visibleTimeRange;
 
             var tracks = focusTracks ?? TimelineWindow.instance.treeView.visibleTracks.Where(x => x.IsVisibleRecursive() && x.GetItems().Any());
             var items = tracks.SelectMany(t => t.GetItems().OfType<ClipItem>().Where(x => x.end >= timeRange.x && x.end <= timeRange.y ||
@@ -159,7 +158,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool CollapseGroup(WindowState state)
+        public static bool CollapseGroup()
         {
             if (TrackHeadActive())
             {
@@ -174,7 +173,7 @@ namespace UnityEditor.Timeline
                 }
                 if (quit)
                 {
-                    state.Refresh();
+                    TimelineEditor.Refresh(RefreshReason.ContentsModified);
                     return true;
                 }
 
@@ -190,7 +189,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool SelectLeftItem(WindowState state, bool shift = false)
+        public static bool SelectLeftItem(bool shift = false)
         {
             if (ClipAreaActive())
             {
@@ -209,16 +208,16 @@ namespace UnityEditor.Timeline
                     }
                     else
                         SelectionManager.SelectOnly(prev);
-                    TimelineHelpers.FrameItems(state, new[] {prev});
+                    TimelineHelpers.FrameItems(new[] {prev});
                 }
-                else if (item != null && !shift && item.parentTrack != state.editSequence.asset.markerTrack)
+                else if (item != null && !shift && item.parentTrack != TimelineEditor.inspectedAsset.markerTrack)
                     SelectionManager.SelectOnly(item.parentTrack);
                 return true;
             }
             return false;
         }
 
-        public static bool SelectRightItem(WindowState state, bool shift = false)
+        public static bool SelectRightItem(bool shift = false)
         {
             if (ClipAreaActive())
             {
@@ -237,14 +236,14 @@ namespace UnityEditor.Timeline
                     }
                     else
                         SelectionManager.SelectOnly(next);
-                    TimelineHelpers.FrameItems(state, new[] {next});
+                    TimelineHelpers.FrameItems(new[] {next});
                     return true;
                 }
             }
             return false;
         }
 
-        public static bool UnCollapseGroup(WindowState state)
+        public static bool UnCollapseGroup()
         {
             if (TrackHeadActive())
             {
@@ -260,7 +259,7 @@ namespace UnityEditor.Timeline
 
                 if (quit)
                 {
-                    state.Refresh();
+                    TimelineEditor.Refresh(RefreshReason.ContentsModified);
                     return true;
                 }
 
@@ -280,7 +279,7 @@ namespace UnityEditor.Timeline
                 if (item != null)
                 {
                     SelectionManager.SelectOnly(item);
-                    TimelineHelpers.FrameItems(state, new[] {item});
+                    TimelineHelpers.FrameItems(new[] {item});
                     return true;
                 }
             }
@@ -309,7 +308,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool SelectUpItem(WindowState state)
+        public static bool SelectUpItem()
         {
             if (ClipAreaActive())
             {
@@ -325,7 +324,7 @@ namespace UnityEditor.Timeline
                     }
 
                     SelectionManager.SelectOnly(selectionItem);
-                    TimelineHelpers.FrameItems(state, new[] {selectionItem});
+                    TimelineHelpers.FrameItems(new[] {selectionItem});
                     FrameTrackHeader(GetVisibleTracks().First(x => x.track == selectionItem.parentTrack));
                     break;
                 }
@@ -359,7 +358,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool SelectDownItem(WindowState state)
+        public static bool SelectDownItem()
         {
             if (ClipAreaActive())
             {
@@ -375,7 +374,7 @@ namespace UnityEditor.Timeline
                     }
 
                     SelectionManager.SelectOnly(selectionItem);
-                    TimelineHelpers.FrameItems(state, new[] {selectionItem});
+                    TimelineHelpers.FrameItems(new[] {selectionItem});
                     FrameTrackHeader(GetVisibleTracks().First(x => x.track == selectionItem.parentTrack));
                     break;
                 }

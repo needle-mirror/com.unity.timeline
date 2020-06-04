@@ -1,26 +1,8 @@
-using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
-using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
-    class ItemActionShortcutManipulator : Manipulator
-    {
-        protected override bool ExecuteCommand(Event evt, WindowState state)
-        {
-            var consumed = false;
-            var clips = SelectionManager.SelectedClips();
-            foreach (var clip in clips)
-                consumed |= ItemAction<TimelineClip>.HandleShortcut(state, evt, clip);
-
-            var markers = SelectionManager.SelectedMarkers();
-            foreach (var marker in markers)
-                consumed |= ItemAction<IMarker>.HandleShortcut(state, evt, marker);
-
-            return consumed;
-        }
-    }
-
     class DrillIntoClip : Manipulator
     {
         protected override bool DoubleClick(Event evt, WindowState state)
@@ -34,10 +16,10 @@ namespace UnityEditor.Timeline
                 return false;
 
             if (!TimelineWindow.instance.state.editSequence.isReadOnly && (guiClip.clip.curves != null || guiClip.clip.animationClip != null))
-                ItemAction<TimelineClip>.Invoke<EditClipInAnimationWindow>(state, guiClip.clip);
+                Action.Invoke<EditClipInAnimationWindow>(new[] {guiClip.clip});
 
             if (guiClip.supportsSubTimelines)
-                ItemAction<TimelineClip>.Invoke<EditSubTimeline>(state, guiClip.clip);
+                Action.Invoke<EditSubTimeline>(new[] {guiClip.clip});
 
             return true;
         }
@@ -62,9 +44,7 @@ namespace UnityEditor.Timeline
 
             if (selectable != null && selectable.IsSelected())
             {
-                SequencerContextMenu.ShowItemContextMenu(evt.mousePosition,
-                    SelectionManager.SelectedClips().ToArray(),
-                    SelectionManager.SelectedMarkers().ToArray());
+                SequencerContextMenu.ShowItemContextMenu(evt.mousePosition);
                 return true;
             }
 

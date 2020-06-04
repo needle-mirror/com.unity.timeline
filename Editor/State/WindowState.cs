@@ -56,13 +56,13 @@ namespace UnityEditor.Timeline
         public event Action<WindowState, Event> windowOnGuiFinished;
 
         public event Action<bool> OnPlayStateChange;
-        public event Action OnDirtyStampChange;
-        public event Action OnRebuildGraphChange;
-        public event Action OnTimeChange;
-        public event Action OnRecordingChange;
+        public event System.Action OnDirtyStampChange;
+        public event System.Action OnRebuildGraphChange;
+        public event System.Action OnTimeChange;
+        public event System.Action OnRecordingChange;
 
-        public event Action OnBeforeSequenceChange;
-        public event Action OnAfterSequenceChange;
+        public event System.Action OnBeforeSequenceChange;
+        public event System.Action OnAfterSequenceChange;
 
         public WindowState(TimelineWindow w, SequenceHierarchy hierarchy)
         {
@@ -332,12 +332,11 @@ namespace UnityEditor.Timeline
         public bool showMarkerHeader
         {
             get { return editSequence.viewModel.showMarkerHeader; }
-            set { editSequence.viewModel.showMarkerHeader = value; }
+            set { GetWindow().SetShowMarkerHeader(value); }
         }
 
         void UnSelectMarkerOnHeaderTrack()
         {
-            //Where(m => editSequence.asset.markerTrack == m.parent)
             foreach (IMarker marker in SelectionManager.SelectedMarkers())
             {
                 if (marker.parent == editSequence.asset.markerTrack)
@@ -446,11 +445,6 @@ namespace UnityEditor.Timeline
             return m_SequenceHierarchy.allSequences;
         }
 
-        public double SnapToFrameIfRequired(double currentTime)
-        {
-            return frameSnap ? TimeReferenceUtility.SnapToFrame(currentTime) : currentTime;
-        }
-
         public void Reset()
         {
             recording = false;
@@ -459,10 +453,10 @@ namespace UnityEditor.Timeline
 
         public double GetSnappedTimeAtMousePosition(Vector2 mousePos)
         {
-            return SnapToFrameIfRequired(ScreenSpacePixelToTimeAreaTime(mousePos.x));
+            return TimeReferenceUtility.SnapToFrameIfRequired(ScreenSpacePixelToTimeAreaTime(mousePos.x));
         }
 
-        static void SyncNotifyValue<T>(ref T oldValue, T newValue, Action changeStateCallback)
+        static void SyncNotifyValue<T>(ref T oldValue, T newValue, System.Action changeStateCallback)
         {
             var stateChanged = false;
 
@@ -593,6 +587,10 @@ namespace UnityEditor.Timeline
                     return editSequence.viewModel.timeAreaShownRange;
 
                 return TimelineAssetViewModel.TimeAreaDefaultRange;
+            }
+            set
+            {
+                SetTimeAreaShownRange(value.x, value.y);
             }
         }
 

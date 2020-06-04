@@ -8,7 +8,7 @@ namespace UnityEditor.Timeline
 {
     class TimelineMarkerGUI : TimelineItemGUI, ISnappable, IAttractable
     {
-        public event Action onStartDrag;
+        public event System.Action onStartDrag;
 
         int m_ProjectedClipHash;
         int m_MarkerHash;

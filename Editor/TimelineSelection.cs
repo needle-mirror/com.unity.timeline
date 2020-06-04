@@ -251,7 +251,7 @@ namespace UnityEditor.Timeline
 
         public static IEnumerable<TimelineClip> SelectedClips()
         {
-            return Selection.objects.OfType<EditorClip>().Select(x => x.clip);
+            return Selection.objects.OfType<EditorClip>().Select(x => x.clip).Where(x => x != null);
         }
 
         public static IEnumerable<IMarker> SelectedMarkers()

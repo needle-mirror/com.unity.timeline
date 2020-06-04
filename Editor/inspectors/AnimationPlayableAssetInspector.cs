@@ -270,7 +270,7 @@ namespace UnityEditor.Timeline
 
             if (transform != null && animationPlayable != null && m_OffsetEditMode != TimelineAnimationUtilities.OffsetEditMode.None && track != null)
             {
-                TimelineUndo.PushUndo(animationPlayable, "Inspector");
+                UndoExtensions.RegisterPlayableAsset(animationPlayable, "Inspector");
                 Vector3 position = transform.position;
                 Quaternion rotation = transform.rotation;
 

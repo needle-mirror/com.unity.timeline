@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using UnityEditor.ShortcutManagement;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -92,15 +94,15 @@ namespace UnityEditor.Timeline
 
         public static readonly TimelineZoomManipulator Instance = new TimelineZoomManipulator();
 
-        internal void DoZoom(float zoomFactor, WindowState state)
+        internal void DoZoom(float zoomFactor)
         {
-            var refRange = state.timeAreaShownRange;
-            DoZoom(zoomFactor, state, refRange, (refRange.x + refRange.y) / 2);
+            var refRange = TimelineEditor.visibleTimeRange;
+            DoZoom(zoomFactor, refRange, (refRange.x + refRange.y) / 2);
             // Force resetting the reference zoom after a Framing operation
             InvalidateWheelZoom();
         }
 
-        static void DoZoom(float zoomFactor, WindowState state, Vector2 refRange, float focalTime)
+        static void DoZoom(float zoomFactor, Vector2 refRange, float focalTime)
         {
             const float kMinRange = 0.05f; // matches zoomable area.
 
@@ -115,9 +117,7 @@ namespace UnityEditor.Timeline
             if (Math.Abs(x - y) > kMinRange)
             {
                 // Zoomable area does not protect 100% against crazy values
-                state.SetTimeAreaShownRange(
-                    Math.Max(x, -WindowConstants.timeAreaShownRangePadding),
-                    Math.Min(y, WindowState.kMaxShownTime));
+                TimelineEditor.visibleTimeRange = new Vector2(Math.Max(x, -WindowConstants.timeAreaShownRangePadding), Math.Min(y, WindowState.kMaxShownTime));
             }
         }
 
@@ -157,7 +157,7 @@ namespace UnityEditor.Timeline
             newZoom = Mathf.Clamp(newZoom, 1e-7f, 1e7f);
 
             var lastRange = state.timeAreaShownRange;
-            DoZoom(newZoom, state, m_InitialShownRange, m_FocalTime);
+            DoZoom(newZoom, m_InitialShownRange, m_FocalTime);
 
             // if we hit a limit, don't change the zoom
             //  this prevents accumulating when zoom doesn't change
@@ -178,7 +178,7 @@ namespace UnityEditor.Timeline
                 ? mouseMoveLength.x
                 : -mouseMoveLength.y;
             m_ZoomFactor = PixelToZoom(delta);
-            DoZoom(m_ZoomFactor, state, m_InitialShownRange, m_FocalTime);
+            DoZoom(m_ZoomFactor, m_InitialShownRange, m_FocalTime);
 
             m_WheelUsedLast = false;
             return true;
@@ -221,23 +221,23 @@ namespace UnityEditor.Timeline
 
             if (evt.commandName == EventCommandNames.SelectAll)
             {
-                TimelineAction.Invoke<SelectAllAction>(state);
+                Action.InvokeWithSelected<SelectAllAction>();
                 return true;
             }
 
             if (evt.commandName == EventCommandNames.SoftDelete)
             {
-                TimelineAction.Invoke<DeleteAction>(state);
+                Action.InvokeWithSelected<DeleteAction>();
                 return true;
             }
 
             if (evt.commandName == EventCommandNames.FrameSelected)
             {
-                TimelineAction.Invoke<FrameSelectedAction>(state);
+                Action.InvokeWithSelected<FrameSelectedAction>();
                 return true;
             }
 
-            return TimelineAction.HandleShortcut(state, evt);
+            return ActionManager.HandleShortcut(evt);
         }
     }
 
@@ -255,7 +255,7 @@ namespace UnityEditor.Timeline
             if (evt.commandName != EventCommandNames.FrameSelected)
                 return false;
 
-            TimelineAction.Invoke<FrameSelectedAction>(state);
+            Action.InvokeWithSelected<FrameSelectedAction>();
             return true;
         }
 
@@ -279,7 +279,7 @@ namespace UnityEditor.Timeline
 
             // User is not actually pressing the correct key combination for FrameAll
             if (combination.Count == 1 && shortcutCombination.Equals(currentCombination))
-                TimelineAction.Invoke<FrameAllAction>(state);
+                Action.InvokeWithSelected<FrameAllAction>();
 
             return true;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
+using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -17,10 +18,7 @@ namespace UnityEditor.Timeline
             var markers = tracks.SelectMany(x => x.GetMarkers()).Where(x => (x.time - at) >= -tolerance).ToList();
 
             // push undo on the tracks for the clips that are being modified
-            foreach (var t in clips.Select(x => x.parentTrack).Distinct())
-            {
-                TimelineUndo.PushUndo(t, kInsertTime);
-            }
+            UndoExtensions.RegisterClips(clips, kInsertTime);
 
             // push the clips
             foreach (var clip in clips)
@@ -29,11 +27,9 @@ namespace UnityEditor.Timeline
             }
 
             // push undos and move the markers
+            UndoExtensions.RegisterMarkers(markers, kInsertTime);
             foreach (var marker in markers)
             {
-                var obj = marker as UnityEngine.Object;
-                if (obj != null)
-                    TimelineUndo.PushUndo(obj, kInsertTime);
                 marker.time += amount;
             }
 
@@ -196,7 +192,7 @@ namespace UnityEditor.Timeline
                 else
                     menu.AddItem(item, state.editSequence.asset.durationMode == mode, () => SelectDurationCallback(state, mode));
 
-                menu.AddItem(DirectorStyles.showMarkersOnTimeline, state.showMarkerHeader, () => new ToggleShowMarkersOnTimeline().Execute(state));
+                menu.AddItem(DirectorStyles.showMarkersOnTimeline, state.showMarkerHeader, () => Action.InvokeWithSelected<ToggleShowMarkersOnTimeline>());
             }
         }
 
@@ -205,7 +201,7 @@ namespace UnityEditor.Timeline
             if (mode == state.editSequence.asset.durationMode)
                 return;
 
-            TimelineUndo.PushUndo(state.editSequence.asset, "Duration Mode");
+            UndoExtensions.RegisterTimeline(state.editSequence.asset, "Duration Mode");
 
 
             // if we switched from Auto to Fixed, use the auto duration as the new fixed duration so the end marker stay in the same position.
@@ -223,11 +219,11 @@ namespace UnityEditor.Timeline
     {
         readonly Func<Event, WindowState, bool> m_OnMouseDown;
         readonly Action<double> m_OnMouseDrag;
-        readonly Action m_OnMouseUp;
+        readonly System.Action m_OnMouseUp;
 
         bool m_IsCaptured;
 
-        public Scrub(Func<Event, WindowState, bool> onMouseDown, Action<double> onMouseDrag, Action onMouseUp)
+        public Scrub(Func<Event, WindowState, bool> onMouseDown, Action<double> onMouseDrag, System.Action onMouseUp)
         {
             m_OnMouseDown = onMouseDown;
             m_OnMouseDrag = onMouseDrag;

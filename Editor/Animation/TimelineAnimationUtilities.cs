@@ -302,7 +302,7 @@ namespace UnityEditor.Timeline
             director.Evaluate();
         }
 
-        public static TimelineWindowTimeControl CreateTimeController(WindowState state, TimelineClip clip)
+        public static TimelineWindowTimeControl CreateTimeController(TimelineClip clip)
         {
             var animationWindow = EditorWindow.GetWindow<AnimationWindow>();
             var timeController = ScriptableObject.CreateInstance<TimelineWindowTimeControl>();
@@ -310,7 +310,7 @@ namespace UnityEditor.Timeline
             return timeController;
         }
 
-        public static TimelineWindowTimeControl CreateTimeController(WindowState state, TimelineWindowTimeControl.ClipData clipData)
+        public static TimelineWindowTimeControl CreateTimeController(TimelineWindowTimeControl.ClipData clipData)
         {
             var animationWindow = EditorWindow.GetWindow<AnimationWindow>();
             var timeController = ScriptableObject.CreateInstance<TimelineWindowTimeControl>();

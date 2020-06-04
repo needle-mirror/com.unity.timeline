@@ -1,18 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace UnityEditor.Timeline
 {
     struct TrackItemsDrawer
     {
-        List<ItemsLayer> m_Layers;
+        List<ILayer> m_Layers;
         ClipsLayer m_ClipsLayer;
 
-        public IEnumerable<TimelineClipGUI> clips
-        {
-            get { return m_ClipsLayer.items.Cast<TimelineClipGUI>(); }
-        }
+        public List<TimelineClipGUI> clips => m_ClipsLayer.items;
 
         public TrackItemsDrawer(IRowGUI parent)
         {
@@ -24,7 +20,7 @@ namespace UnityEditor.Timeline
         void BuildGUICache(IRowGUI parent)
         {
             m_ClipsLayer = new ClipsLayer(Layer.Clips, parent);
-            m_Layers = new List<ItemsLayer>
+            m_Layers = new List<ILayer>
             {
                 m_ClipsLayer,
                 new MarkersLayer(Layer.Markers, parent)

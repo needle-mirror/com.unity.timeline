@@ -52,7 +52,7 @@ namespace UnityEngine.Timeline
             TimelineUndo.PushUndo(thingToDirty, "Delete Marker");
             m_Objects.Remove(item);
             m_CacheDirty = true;
-            TimelineUndo.PushDestroyUndo(timelineAsset, thingToDirty, item, "Delete Marker");
+            TimelineUndo.PushDestroyUndo(timelineAsset, thingToDirty, item);
             return true;
         }
 

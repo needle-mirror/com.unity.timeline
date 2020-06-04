@@ -52,14 +52,13 @@ namespace UnityEditor.Timeline
             movingItems = new MovingItems[trackItemsCount];
 
             allowTrackSwitch = trackItemsCount == 1 && !trackItems.SelectMany(x => x).Any(x => x is MarkerItem); // For now, track switch is only supported when all items are on the same track and there are no items
+
+            // one push per track handles all the clips on the track
+            UndoExtensions.RegisterTracks(tracks, "Move Items");
             foreach (var sourceTrack in tracks)
             {
-                // one push per track handles all the clips on the track
-                TimelineUndo.PushUndo(sourceTrack, "Move Items");
-
                 // push all markers on the track because of ripple
-                foreach (var marker in sourceTrack.GetMarkers().OfType<ScriptableObject>())
-                    TimelineUndo.PushUndo(marker, "Move Items");
+                UndoExtensions.RegisterMarkers(sourceTrack.GetMarkers(), "Move Items");
             }
 
             for (var i = 0; i < trackItemsCount; ++i)
@@ -100,7 +99,7 @@ namespace UnityEditor.Timeline
                 foreach (var grabbedItems in movingItems)
                 {
                     var track = grabbedItems.targetTrack;
-                    TimelineUndo.PushUndo(track, "Move Items");
+                    UndoExtensions.RegisterTrack(track, "Move Items");
 
                     if (EditModeUtils.IsInfiniteTrack(track) && grabbedItems.clips.Any())
                         ((AnimationTrack)track).ConvertToClipMode();

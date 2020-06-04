@@ -81,8 +81,8 @@ namespace UnityEditor.Timeline
                 {
                     var message = DirectorStyles.createNewTimelineText.text + " '" + currentlySelectedGo.name + "'";
                     var defaultName = currentlySelectedGo.name.EndsWith(DirectorStyles.newTimelineDefaultNameSuffix, StringComparison.OrdinalIgnoreCase)
-                                            ? currentlySelectedGo.name
-                                            : currentlySelectedGo.name + DirectorStyles.newTimelineDefaultNameSuffix;
+                        ? currentlySelectedGo.name
+                        : currentlySelectedGo.name + DirectorStyles.newTimelineDefaultNameSuffix;
 
                     string newSequencePath = EditorUtility.SaveFilePanelInProject(DirectorStyles.createNewTimelineText.text, defaultName, "playable", message, ProjectWindowUtil.GetActiveFolderPath());
                     if (!string.IsNullOrEmpty(newSequencePath))

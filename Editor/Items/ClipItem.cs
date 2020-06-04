@@ -46,7 +46,7 @@ namespace UnityEditor.Timeline
 
         public void PushUndo(string operation)
         {
-            TimelineUndo.PushUndo(m_Clip.parentTrack, operation);
+            UndoExtensions.RegisterClip(m_Clip, operation);
         }
 
         public TimelineItemGUI gui

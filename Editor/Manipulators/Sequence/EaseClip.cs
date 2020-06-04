@@ -85,7 +85,7 @@ namespace UnityEditor.Timeline
             {
                 var uiClip = m_EaseClipHandler.clipGUI;
                 string undoName = m_Edges == ManipulateEdges.Left ? EaseInClipText : EaseOutClipText;
-                TimelineUndo.PushUndo(uiClip.clip.parentTrack, undoName);
+                UndoExtensions.RegisterClip(uiClip.clip, undoName);
                 m_UndoSaved = true;
             }
 

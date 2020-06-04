@@ -230,7 +230,7 @@ namespace UnityEditor.Timeline
             {
                 var time = isLeft ? m_CurrentTimes.left : m_CurrentTimes.right;
 
-                time = m_State.SnapToFrameIfRequired(time);
+                time = TimeReferenceUtility.SnapToFrameIfRequired(time);
 
                 m_AttractionHandler.OnAttractedEdge(m_Attractable, m_ManipulateEdges, AttractedEdge.None, time);
             }

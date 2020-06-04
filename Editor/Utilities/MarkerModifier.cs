@@ -54,7 +54,7 @@ namespace UnityEditor.Timeline
         {
             TimelineCreateUtilities.SaveAssetIntoObject(marker, parent);
             TimelineUndo.RegisterCreatedObjectUndo(marker, "Duplicate Marker");
-            TimelineUndo.PushUndo(parent, "Duplicate Marker");
+            UndoExtensions.RegisterTrack(parent, "Duplicate Marker");
 
             if (parent != null)
             {

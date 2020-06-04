@@ -11,7 +11,7 @@ namespace UnityEngine.Timeline
 {
     static class TimelineUndo
     {
-        public static void PushDestroyUndo(TimelineAsset timeline, Object thingToDirty, Object objectToDestroy, string operation)
+        public static void PushDestroyUndo(TimelineAsset timeline, Object thingToDirty, Object objectToDestroy)
         {
 #if UNITY_EDITOR
             if (objectToDestroy == null || !DisableUndoGuard.enableUndo)
@@ -31,6 +31,23 @@ namespace UnityEngine.Timeline
         }
 
         [Conditional("UNITY_EDITOR")]
+        public static void PushUndo(Object[] thingsToDirty, string operation)
+        {
+#if UNITY_EDITOR
+            if (thingsToDirty == null || !DisableUndoGuard.enableUndo)
+                return;
+
+            for (var i = 0; i < thingsToDirty.Length; i++)
+            {
+                if (thingsToDirty[i] is TrackAsset track)
+                    track.MarkDirty();
+                EditorUtility.SetDirty(thingsToDirty[i]);
+            }
+            Undo.RegisterCompleteObjectUndo(thingsToDirty, UndoName(operation));
+ #endif
+        }
+
+        [Conditional("UNITY_EDITOR")]
         public static void PushUndo(Object thingToDirty, string operation)
         {
 #if UNITY_EDITOR
@@ -41,7 +58,7 @@ namespace UnityEngine.Timeline
                     track.MarkDirty();
 
                 EditorUtility.SetDirty(thingToDirty);
-                Undo.RegisterCompleteObjectUndo(thingToDirty, "Timeline " + operation);
+                Undo.RegisterCompleteObjectUndo(thingToDirty, UndoName(operation));
             }
 #endif
         }
@@ -52,13 +69,15 @@ namespace UnityEngine.Timeline
 #if UNITY_EDITOR
             if (DisableUndoGuard.enableUndo)
             {
-                Undo.RegisterCreatedObjectUndo(thingCreated, "Timeline " + operation);
+                Undo.RegisterCreatedObjectUndo(thingCreated, UndoName(operation));
             }
 #endif
         }
 
+        private static string UndoName(string name) => "Timeline " + name;
+
 #if UNITY_EDITOR
-        public struct DisableUndoGuard : IDisposable
+        internal struct DisableUndoGuard : IDisposable
         {
             internal static bool enableUndo = true;
             static readonly Stack<bool> m_UndoStateStack = new Stack<bool>();

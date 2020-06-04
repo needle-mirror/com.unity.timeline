@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
+using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -18,7 +19,6 @@ namespace UnityEditor.Timeline
         {
             public Rect headerRect;
             public Rect contentRect;
-            public GUIStyle trackSwatchStyle;
             public GUIStyle trackHeaderFont;
             public Color colorTrackFont;
             public bool showLockButton;
@@ -59,7 +59,6 @@ namespace UnityEditor.Timeline
             {
                 headerRect = markerHeaderRect,
                 contentRect = markerContentRect,
-                trackSwatchStyle = new GUIStyle(),
                 trackHeaderFont = DirectorStyles.Instance.trackHeaderFont,
                 colorTrackFont = DirectorStyles.Instance.customSkin.colorTrackFont,
                 showLockButton = locked,
@@ -106,7 +105,7 @@ namespace UnityEditor.Timeline
 
             timeline.CreateMarkerTrack(); // Ensure Marker track is created.
             var objectsBeingDropped = DragAndDrop.objectReferences.OfType<Object>();
-            var candidateTime = TimelineHelpers.GetCandidateTime(TimelineWindow.instance.state, Event.current.mousePosition);
+            var candidateTime = TimelineHelpers.GetCandidateTime(Event.current.mousePosition);
             var perform = Event.current.type == EventType.DragPerform;
             var director = state.editSequence != null ? state.editSequence.director : null;
             DragAndDrop.visualMode = TimelineDragging.HandleClipPaneObjectDragAndDrop(objectsBeingDropped, timeline.markerTrack, perform,
@@ -133,8 +132,6 @@ namespace UnityEditor.Timeline
         {
             var backgroundColor = DirectorStyles.Instance.customSkin.markerHeaderDrawerBackgroundColor;
             var bgRect = data.headerRect;
-            bgRect.x += data.trackSwatchStyle.fixedWidth;
-            bgRect.width -= data.trackSwatchStyle.fixedWidth;
             EditorGUI.DrawRect(bgRect, backgroundColor);
         }
 
@@ -158,13 +155,13 @@ namespace UnityEditor.Timeline
 
             if (data.showMuteButton)
             {
-                DrawMuteButton(buttonRect, state);
+                DrawMuteButton(buttonRect);
                 buttonRect.x -= 16.0f;
             }
 
             if (data.showLockButton)
             {
-                DrawLockButton(buttonRect, state);
+                DrawLockButton(buttonRect);
             }
         }
 
@@ -174,10 +171,10 @@ namespace UnityEditor.Timeline
             EditorGUI.DrawRect(data.contentRect, trackBackgroundColor);
         }
 
-        static void DrawLockButton(Rect rect, WindowState state)
+        static void DrawLockButton(Rect rect)
         {
             if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.trackLockButton))
-                TimelineAction.Invoke<ToggleShowMarkersOnTimeline>(state);
+                Action.InvokeWithSelected<ToggleShowMarkersOnTimeline>();
         }
 
         static void DrawTrackDropDownMenu(Rect rect, WindowState state)
@@ -186,15 +183,12 @@ namespace UnityEditor.Timeline
                 SequencerContextMenu.ShowMarkerHeaderContextMenu(null, state);
         }
 
-        static void DrawMuteButton(Rect rect, WindowState state)
+        static void DrawMuteButton(Rect rect)
         {
-            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.trackMuteButton))
-                TimelineAction.Invoke<ToggleMuteMarkersOnTimeline>(state);
+            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.markerHeaderMuteButton))
+                Action.InvokeWithSelected<ToggleMuteMarkersOnTimeline>();
         }
 
-        public LayerZOrder zOrder
-        {
-            get { return m_ZOrder; }
-        }
+        public LayerZOrder zOrder => m_ZOrder;
     }
 }

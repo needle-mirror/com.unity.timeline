@@ -296,7 +296,7 @@ namespace UnityEditor.Timeline.Signals
             foreach (var o in targets)
             {
                 var signalEmitter = (SignalEmitter)o;
-                TimelineUndo.PushUndo(signalEmitter, Styles.UndoCreateSignalAsset);
+                UndoExtensions.RegisterMarker(signalEmitter, Styles.UndoCreateSignalAsset);
                 signalEmitter.asset = newAsset;
             }
         }

@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.0-preview.7] - 2020-06-04
+
+### Added
+- Added base classes to define custom actions:
+  - `TimelineAction`
+  - `TrackAction`
+  - `ClipAction`
+  - `MarkerAction`
+- Added the following attributes that can be used with action classes:
+  - `ApplyDefaultUndo` to automatically manage undo operations.
+  - `ActiveInMode` to control in which Timeline mode the action is valid.
+  - `MenuEntry` to add the action to the context menu.
+  - `TimelineShortcut` can be added to a static method to invoke the action with a shortcut.
+- `Action` to invoke actions using Timeline's selection or context.
+- `MenuOrder` contains menu priority values, to be used with `MenuEntry`.
+- `TimelineModes` to specify in which mode an action is valid, to be used with `MenuEntry`.
+- `ActionContext` to provide a context to invoke `TimelineAction`s.
+- `ActionValidity` to specify is an action is valid for a given context.
+- `UndoExtension` to manage undo operations with common Timeline types.
+
+### Changed
+- Improved Timeline window UI performance.
+
+### Fixed
+
 ## [1.4.0-preview.6] - 2020-05-27
 
 ### Added
@@ -53,6 +78,11 @@ ClipCaps.Looping | ClipCaps.Extrapolation | ClipCaps.ClipIn | ClipCaps.SpeedMult
 
 ### Added
 - Added `ClipCaps.AutoScale` to automatically change the speed multiplier value when the clip is trimmed in the Timeline window.
+
+## [1.3.3] - 2020-05-29
+
+## Fixed
+- Fixed regression where animation tracks were writing root motion when the animation clip did not contain root transform values ([1249355](https://issuetracker.unity3d.com/product/unity/issues/guid/1249355/))
 
 ## [1.3.2] - 2020-04-02
 
