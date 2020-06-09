@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.3.4] - 2020-06-09
+
+## Fixed
+- Fix a Control Track bug that caused the first frame of an animation to evaluated incorrectly when scrubbing forwards and backwards. (1253485)
+- Fixed memory leak where the most recently played timeline would not get unloaded ([1214752](https://issuetracker.unity3d.com/product/unity/issues/guid/1214752/) and 1253974).
+
 ## [1.3.3] - 2020-05-29
 
 ## Fixed

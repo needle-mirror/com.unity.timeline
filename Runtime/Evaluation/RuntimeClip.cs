@@ -95,7 +95,7 @@ namespace UnityEngine.Timeline
 
             // localTime of the sequence to localtime of the clip
             double clipTime = clip.ToLocalTime(localTime);
-            if (clipTime.CompareTo(0.0) >= 0)
+            if (clipTime >= -DiscreteTime.tickValue/2 )
             {
                 SetTime(clipTime);
             }
