@@ -554,10 +554,11 @@ namespace UnityEditor.Timeline
         void OnMixCurveSelected(string title, CurvePresetLibrary library, SerializedProperty curveSelected, bool easeIn)
         {
             m_CurvePresets = library;
-            m_PreviewCurves = new[] { curveSelected.animationCurveValue  };
+            var animationCurve = curveSelected.animationCurveValue;
+            m_PreviewCurves = new[] { animationCurve };
             m_ClipCurveEditor.headerString = title;
             m_ClipCurveEditor.SetCurves(m_PreviewCurves, null);
-            m_ClipCurveEditor.SetSelected(curveSelected.animationCurveValue);
+            m_ClipCurveEditor.SetSelected(animationCurve);
             if (easeIn)
                 m_ClipCurveEditor.SetUpdateCurveCallback(MixInCurveUpdated);
             else

@@ -128,6 +128,15 @@ namespace UnityEditor.Timeline
 
             if (hasChanged)
                 ProcessUpdates();
+
+            ConsumeMouseEvents(clientRect);
+        }
+
+        static void ConsumeMouseEvents(Rect rect)
+        {
+            var isMouseEvent = Event.current.type == EventType.MouseUp || Event.current.type == EventType.MouseDown;
+            if (isMouseEvent && rect.Contains(Event.current.mousePosition))
+                Event.current.Use();
         }
 
         void DrawPresets(Rect position, PresetLibrary curveLibrary)

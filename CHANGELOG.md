@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.15] - 2020-06-10
+
+### Fixed
+- Fixed issue where the clip Inspector's curve preview would close when clicking on the curve. ([1228127](https://issuetracker.unity3d.com/product/unity/issues/guid/1228127/))
+- Fix a Control Track bug that caused the first frame of an animation to evaluated incorrectly when scrubbing forwards and backwards. (1253485)
+- Fixed memory leak where the most recently played timeline would not get unloaded. ([1214752](https://issuetracker.unity3d.com/product/unity/issues/guid/1214752/) and 1253974)
+
 ## [1.2.14] - 2020-03-13
 
 ### Fixed
