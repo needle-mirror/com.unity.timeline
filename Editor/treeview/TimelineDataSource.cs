@@ -207,7 +207,7 @@ namespace UnityEditor.Timeline
             TimelineGroupGUI gui = item as TimelineGroupGUI;
             if (gui != null && gui.track != null)
             {
-                SetExpanded(item, !gui.track.GetCollapsed());
+                SetExpanded(item, !gui.track.IsCollapsed());
             }
 
             if (item.children != null)

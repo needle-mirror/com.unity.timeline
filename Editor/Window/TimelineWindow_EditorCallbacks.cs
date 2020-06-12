@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.SceneManagement;
+using UnityEditor.ShortcutManagement;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
+using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -37,6 +40,29 @@ namespace UnityEditor.Timeline
             EditorSceneManager.sceneSaved += OnSceneSaved;
             ObjectFactory.componentWasAdded += OnComponentWasAdded;
             PrefabUtility.prefabInstanceUpdated += OnPrefabApplied;
+            EditorApplication.globalEventHandler += GlobalEventHandler;
+        }
+
+        // This callback is needed because the Animation window registers "Animation/Key Selected" as a global hotkey
+        // and we want  to also react to the key.
+        void GlobalEventHandler()
+        {
+            if (instance == null  || !state.previewMode)
+            {
+                return;
+            }
+
+            var keyBinding = ShortcutManager.instance.GetShortcutBinding("Animation/Key Selected");
+            if (keyBinding.Equals(ShortcutBinding.empty))
+            {
+                return;
+            }
+
+            var evtCombo = KeyCombination.FromKeyboardInput(Event.current);
+            if (keyBinding.keyCombinationSequence.Contains(evtCombo))
+            {
+                Action.InvokeWithSelected<KeyAllAnimated>();
+            }
         }
 
         void OnEditorQuit()
@@ -57,6 +83,7 @@ namespace UnityEditor.Timeline
             EditorSceneManager.sceneSaved -= OnSceneSaved;
             ObjectFactory.componentWasAdded -= OnComponentWasAdded;
             PrefabUtility.prefabInstanceUpdated -= OnPrefabApplied;
+            EditorApplication.globalEventHandler -= GlobalEventHandler;
         }
 
         // Called when a prefab change is applied to the scene.

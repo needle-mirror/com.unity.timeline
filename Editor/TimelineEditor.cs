@@ -14,6 +14,27 @@ namespace UnityEditor.Timeline
     public static class TimelineEditor
     {
         /// <summary>
+        /// Returns a reference to the Timeline Window.
+        /// </summary>
+        /// <returns>A reference to the TimelineWindow and null if the window is not opened.</returns>
+        public static TimelineEditorWindow GetWindow()
+        {
+            return window;
+        }
+
+        /// <summary>
+        /// Returns a reference to the Timeline Window. If the window is not opened, it will be opened.
+        /// </summary>
+        /// <returns>A reference to the TimelineWindow.</returns>
+        public static TimelineEditorWindow GetOrCreateWindow()
+        {
+            if (window != null)
+                return window;
+
+            return EditorWindow.GetWindow<TimelineWindow>(false, null, false);
+        }
+
+        /// <summary>
         /// The PlayableDirector associated with the timeline currently being shown in the Timeline window.
         /// </summary>
         public static PlayableDirector inspectedDirector => state?.editSequence.director;

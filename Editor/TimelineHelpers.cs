@@ -170,7 +170,7 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            newTrack.SetCollapsed(trackAsset.GetCollapsed());
+            newTrack.SetCollapsed(trackAsset.IsCollapsed());
 
             // calling code is responsible for adding to asset, adding to sequence, and parenting,
             // and duplicating subtracks

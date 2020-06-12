@@ -42,6 +42,12 @@ namespace UnityEditor.Timeline.Actions
             /// Delete menu item priority.
             /// </summary>
             public const int delete = start + 400;
+
+            /// <summary>
+            /// Keyframe All animated item priority.
+            /// </summary>
+            public const int keyAllAnimated = start + 450;
+
             /// <summary>
             /// Match Content menu item priority.
             /// </summary>

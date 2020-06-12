@@ -8,13 +8,50 @@ using UnityEngine.Playables;
 namespace UnityEditor.Timeline
 {
     /// <summary>
-    /// Editor-only extension methods on track assets.
+    /// Extension Methods for Tracks that require the Unity Editor, and may require the Timeline containing the Track to be currently loaded in the Timeline Editor Window.
     /// </summary>
-    static class TrackExtensions
+    public static class TrackExtensions
     {
-        public static readonly double kMinOverlapTime = TimeUtility.kTimeEpsilon * 1000;
+        static readonly double kMinOverlapTime = TimeUtility.kTimeEpsilon * 1000;
 
-        public static AnimationClip GetOrCreateClip(this AnimationTrack track)
+        /// <summary>
+        /// Queries whether the children of the Track are currently visible in the Timeline Editor.
+        /// </summary>
+        /// <param name="track">The track asset to query.</param>
+        /// <returns>True if the track is collapsed and false otherwise.</returns>
+        public static bool IsCollapsed(this TrackAsset track)
+        {
+            return TimelineWindowViewPrefs.IsTrackCollapsed(track);
+        }
+
+        /// <summary>
+        /// Sets whether the children of the Track are currently visible in the Timeline Editor.
+        /// </summary>
+        /// <param name="track">The track asset to collapsed state to modify.</param>
+        /// <remarks> The track collapsed state is not serialized inside the asset and is lost from one checkout of the project to another. </remarks>>
+        public static void SetCollapsed(this TrackAsset track, bool collapsed)
+        {
+            TimelineWindowViewPrefs.SetTrackCollapsed(track, collapsed);
+        }
+
+        /// <summary>
+        /// Queries whether any parent of the track is collapsed, rendering the track not visible to the user.
+        /// </summary>
+        /// <param name="track">The track asset to query.</param>
+        /// <returns>True if all parents are not collapsed, false otherwise.</returns>
+        public static bool IsVisibleInHierarchy(this TrackAsset track)
+        {
+            var t = track;
+            while ((t = t.parent as TrackAsset) != null)
+            {
+                if (t.IsCollapsed())
+                    return false;
+            }
+
+            return true;
+        }
+
+        internal static AnimationClip GetOrCreateClip(this AnimationTrack track)
         {
             if (track.infiniteClip == null && !track.inClipMode)
                 track.CreateInfiniteClip(AnimationTrackRecorder.GetUniqueRecordedClipName(track, AnimationTrackRecorder.kRecordClipDefaultName));
@@ -22,7 +59,7 @@ namespace UnityEditor.Timeline
             return track.infiniteClip;
         }
 
-        public static TimelineClip CreateClip(this TrackAsset track, double time)
+        internal static TimelineClip CreateClip(this TrackAsset track, double time)
         {
             var attr = track.GetType().GetCustomAttributes(typeof(TrackClipTypeAttribute), true);
 
@@ -56,7 +93,7 @@ namespace UnityEditor.Timeline
             return blendIn.start >= blendOut.start && blendIn.start < blendOut.end;
         }
 
-        public static void ComputeBlendsFromOverlaps(this TrackAsset asset)
+        internal static void ComputeBlendsFromOverlaps(this TrackAsset asset)
         {
             ComputeBlendsFromOverlaps(asset.clips);
         }
@@ -84,7 +121,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        internal static void UpdateClipIntersection(TimelineClip blendOutClip, TimelineClip blendInClip)
+        static void UpdateClipIntersection(TimelineClip blendOutClip, TimelineClip blendInClip)
         {
             if (!blendOutClip.SupportsBlending() || !blendInClip.SupportsBlending())
                 return;
@@ -115,7 +152,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        internal static void RecursiveSubtrackClone(TrackAsset source, TrackAsset duplicate, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset assetOwner)
+        static void RecursiveSubtrackClone(TrackAsset source, TrackAsset duplicate, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, PlayableAsset assetOwner)
         {
             var subtracks = source.GetChildTracks();
             foreach (var sub in subtracks)
@@ -309,28 +346,6 @@ namespace UnityEditor.Timeline
             }
         }
 
-        internal static bool IsVisibleRecursive(this TrackAsset track)
-        {
-            var t = track;
-            while ((t = t.parent as TrackAsset) != null)
-            {
-                if (t.GetCollapsed())
-                    return false;
-            }
-
-            return true;
-        }
-
-        internal static bool GetCollapsed(this TrackAsset track)
-        {
-            return TimelineWindowViewPrefs.IsTrackCollapsed(track);
-        }
-
-        internal static void SetCollapsed(this TrackAsset track, bool collapsed)
-        {
-            TimelineWindowViewPrefs.SetTrackCollapsed(track, collapsed);
-        }
-
         internal static bool GetShowMarkers(this TrackAsset track)
         {
             return TimelineWindowViewPrefs.IsShowMarkers(track);
@@ -449,7 +464,7 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool IsCompatibleWithClip(this TrackAsset track, TimelineClip clip)
+        internal static bool IsCompatibleWithClip(this TrackAsset track, TimelineClip clip)
         {
             if (track == null || clip == null || clip.asset == null)
                 return false;
@@ -458,7 +473,7 @@ namespace UnityEditor.Timeline
         }
 
         // Get a flattened list of all child tracks
-        public static void GetFlattenedChildTracks(this TrackAsset asset, List<TrackAsset> list)
+        static void GetFlattenedChildTracks(this TrackAsset asset, List<TrackAsset> list)
         {
             if (asset == null || list == null)
                 return;
@@ -470,7 +485,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static IEnumerable<TrackAsset> GetFlattenedChildTracks(this TrackAsset asset)
+        internal static IEnumerable<TrackAsset> GetFlattenedChildTracks(this TrackAsset asset)
         {
             if (asset == null || !asset.GetChildTracks().Any())
                 return Enumerable.Empty<TrackAsset>();
@@ -480,12 +495,12 @@ namespace UnityEditor.Timeline
             return flattenedChildTracks;
         }
 
-        public static void UnarmForRecord(this TrackAsset track)
+        internal static void UnarmForRecord(this TrackAsset track)
         {
             TimelineWindow.instance.state.UnarmForRecord(track);
         }
 
-        public static void SetShowTrackMarkers(this TrackAsset track, bool showMarkerHeader)
+        internal static void SetShowTrackMarkers(this TrackAsset track, bool showMarkerHeader)
         {
             var currentValue = track.GetShowMarkers();
             if (currentValue != showMarkerHeader)

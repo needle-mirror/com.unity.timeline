@@ -181,6 +181,24 @@ namespace UnityEditor
             menu.ShowAsContext();
         }
 
+        internal IEnumerable<EditorCurveBinding> GetSelectedProperties()
+        {
+            var ret = new HashSet<EditorCurveBinding>();
+            var bindingTree = m_BindingHierarchy.treeViewController.data as BindingTreeViewDataSource;
+            foreach (var selectedId in m_BindingHierarchy.treeViewController.GetSelection())
+            {
+                var node = bindingTree.FindItem(selectedId) as CurveTreeViewNode;
+                if (node == null)
+                    continue;
+                foreach (var editorCurveBinding in node.bindings)
+                {
+                    ret.Add(editorCurveBinding);
+                }
+            }
+
+            return ret;
+        }
+
         internal void RemoveSelectedProperties()
         {
             RemovePropertiesByIds(m_BindingHierarchy.treeViewController.GetSelection());

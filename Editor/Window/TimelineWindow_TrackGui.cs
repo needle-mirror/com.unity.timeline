@@ -97,7 +97,7 @@ namespace UnityEditor.Timeline
                         }
 
                         existingDirector.playableAsset = newAsset;
-                        SetCurrentTimeline(existingDirector);
+                        SetTimeline(existingDirector);
                         windowState.previewMode = false;
                     }
 

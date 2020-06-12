@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
             if (selectedGameObject != null)
             {
                 PlayableDirector director = TimelineUtility.GetDirectorComponentForGameObject(selectedGameObject);
-                SetCurrentTimeline(director);
+                SetTimeline(director);
                 lastSelectedGO = selectedGameObject;
             }
             else
@@ -72,7 +72,7 @@ namespace UnityEditor.Timeline
                 var selectedSequenceAsset = obj as TimelineAsset;
                 if (selectedSequenceAsset != null)
                 {
-                    SetCurrentTimeline(selectedSequenceAsset);
+                    SetTimeline(selectedSequenceAsset);
                     lastSelectedGO = selectedGameObject;
                 }
             }

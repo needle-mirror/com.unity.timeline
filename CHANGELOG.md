@@ -1,9 +1,27 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.4.0-preview.7] - 2020-06-04
+## [1.5.0-preview.1] - 2020-06-12
 
 ### Added
+
+- During recording, there are new ways to key animated properties:
+  - A new Inspector context menu has been added (`Key All Animated`) that sets a key to all currently animated properties.
+  - It is possible to make a multi-selection of tracks to set a keyframe to all currently animated properties. If no track is selected, all recording tracks are keyed.
+  - If properties are selected in the curve editor, only those properties are keyed.
+- `TimelineEditor.GetWindow` and `TimelineEditor.GetOrCreateWindow` to get the current Timeline window or create a Timeline window.
+- `TimelineEditorWindow.SetCurrentTimeline` to change which timeline asset is opened in the Timeline window.
+- `TimelineEditorWindow.lock` to lock or unlock the Timeline window.
+- `TrackExtensions.GetCollapsed`, `TrackExtensions.SetCollapsed`, `TrackExtensions.IsVisibleRecursive` to get and change the visibility state of a track.
+- `AnimationTrackExtensions.IsRecording`, `AnimationTrackExtensions.SetRecording`, `AnimationTrackExtensions.SupportsRecording` to get or change the recording state of an Animation track.
+
+## [1.4.0] - 2020-06-10
+
+### Added
+- Added `ClipCaps.AutoScale` to automatically change the speed multiplier value when the clip is trimmed in the Timeline window.
+- Added a `DeleteClip` method in `TrackAsset`.
+- Added dependency on Animation, Audio, Director and Particle System modules.  ([1229825](https://issuetracker.unity3d.com/product/unity/issues/guid/1229825/))
+- Added an option in `TimelineAsset.EditorSettings` to disable scene preview.
 - Added base classes to define custom actions:
   - `TimelineAction`
   - `TrackAction`
@@ -22,29 +40,9 @@ All notable changes to this package will be documented in this file. The format 
 - `UndoExtension` to manage undo operations with common Timeline types.
 
 ### Changed
-- Improved Timeline window UI performance.
-
-### Fixed
-
-## [1.4.0-preview.6] - 2020-05-27
-
-### Added
-
-- Added dependency on Animation, Audio, Director and Particle System modules.  ([1229825](https://issuetracker.unity3d.com/product/unity/issues/guid/1229825/))
-- Added an option in `TimelineAsset.EditorSettings` to disable scene preview.
-
-### Fixed
-- Fixed issue where trimming AnimationClips would also change the speed multiplier.
-
-## [1.4.0-preview.5] - 2020-05-13
-
-### Fixed
-
-- Fixed incorrect metafiles.
-
-## [1.4.0-preview.4] - 2020-05-12
-
-### Changed
+- Improved performance with ControlTracks in preview mode for cases where multiple Control Tracks are assigned to the same PlayableDirector.
+- Improved layout and appearance of track header buttons.
+- Reduced icons' file size without any quality loss.
 - A track's binding will be duplicated when pasting or duplicating a track.
 - When creating a new timeline asset, the "Timeline" suffix will not be added to the file name twice.
 - `ClipCaps.All` now includes the new `Autoscale` feature. To get the previous `ClipCaps.All` behaviour on clips, use
@@ -54,34 +52,23 @@ ClipCaps.Looping | ClipCaps.Extrapolation | ClipCaps.ClipIn | ClipCaps.SpeedMult
 - Inline curve selection is now synced with the clip's selection.
 - Selecting a curve view property will also select the corresponding curve view.
 - Clicking and holding the `Command` or `Control` key on a curve view will deselect it if it was already selected.
+- Improved Timeline window UI performance.
 
 ### Fixed
 - Selecting clips from locked tracks is not allowed anymore when using the playhead's context menu.
 - Inserting gaps in locked tracks is not allowed anymore.
 - When adding an Activation track, the viewport is adjusted to show the new Activation clip.
+- Fixed issue where trimming AnimationClips would also change the speed multiplier.
 
-## [1.4.0-preview.3] - 2020-04-02
+## [1.3.4] - 2020-06-09
 
-### Added
-- Added a `DeleteClip` method in `TrackAsset`.
-
-### Changed
-- Reduced icons' file size without any quality loss.
-
-## [1.4.0-preview.2] - 2020-03-13
-
-### Changed
-- Improved performance with ControlTracks in preview mode for cases where multiple Control Tracks are assigned to the same PlayableDirector.
-- Improved layout and appearance of track header buttons.
-
-## [1.4.0-preview.1] - 2020-02-27
-
-### Added
-- Added `ClipCaps.AutoScale` to automatically change the speed multiplier value when the clip is trimmed in the Timeline window.
+### Fixed
+- Fix a Control Track bug that caused the first frame of an animation to evaluated incorrectly when scrubbing forwards and backwards. (1253485)
+- Fixed memory leak where the most recently played timeline would not get unloaded ([1214752](https://issuetracker.unity3d.com/product/unity/issues/guid/1214752/) and 1253974).
 
 ## [1.3.3] - 2020-05-29
 
-## Fixed
+### Fixed
 - Fixed regression where animation tracks were writing root motion when the animation clip did not contain root transform values ([1249355](https://issuetracker.unity3d.com/product/unity/issues/guid/1249355/))
 
 ## [1.3.2] - 2020-04-02

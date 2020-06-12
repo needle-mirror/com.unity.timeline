@@ -112,7 +112,7 @@ namespace UnityEditor.Timeline
             if (directorToBindTo)
             {
                 // don't just select the object, it may already be selected.
-                SetCurrentTimeline(directorToBindTo);
+                SetTimeline(directorToBindTo);
             }
         }
     }

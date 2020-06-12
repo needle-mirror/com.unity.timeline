@@ -905,4 +905,67 @@ namespace UnityEditor.Timeline
             TimelineEditor.state.showMarkerHeader = !TimelineEditor.state.showMarkerHeader;
         }
     }
+
+    [MenuEntry("Key All Animated", MenuPriority.TimelineActionSection.keyAllAnimated)]
+    [Shortcut(Shortcuts.Timeline.keyAllAnimated)]
+    class KeyAllAnimated : TimelineAction
+    {
+        public override ActionValidity Validate(ActionContext actionContext)
+        {
+            return CanExecute(TimelineEditor.state, actionContext.tracks.ToArray())
+                ? ActionValidity.Valid
+                : ActionValidity.NotApplicable;
+        }
+
+        public override bool Execute(ActionContext actionContext)
+        {
+            var state = TimelineEditor.state;
+            var director = TimelineEditor.inspectedDirector;
+            var keyableTracks = actionContext.tracks.ToArray();
+            if (keyableTracks.Length == 0)
+            {
+                keyableTracks = state.editSequence.asset.flattenedTracks.Where(state.IsArmedForRecord).ToArray();
+            }
+
+            if (!CanExecute(state, keyableTracks) || director == null)
+                return false;
+
+            var curveSelected = SelectionManager.GetCurrentInlineEditorCurve();
+            if (curveSelected != null)
+            {
+                var sel = curveSelected.clipCurveEditor.GetSelectedProperties().ToList();
+                var go = (director.GetGenericBinding(curveSelected.owner) as Component).gameObject;
+                if (sel.Count > 0)
+                {
+                    TimelineRecording.KeyProperties(go, state, sel);
+                }
+                else
+                {
+                    var binding = director.GetGenericBinding(curveSelected.owner) as Component;
+                    TimelineRecording.KeyAllProperties(binding, state);
+                }
+            }
+            else
+            {
+                foreach (var track in keyableTracks)
+                {
+                    var binding = director.GetGenericBinding(track) as Component;
+                    TimelineRecording.KeyAllProperties(binding, state);
+                }
+            }
+            return true;
+        }
+
+        static bool CanExecute(WindowState state, TrackAsset[] tracks)
+        {
+            var curveSelected = SelectionManager.GetCurrentInlineEditorCurve();
+            // Can't have an inline curve selected and have multiple tracks also.
+            if (curveSelected != null)
+            {
+                return state.IsArmedForRecord(curveSelected.owner);
+            }
+
+            return tracks.Length == 0 || tracks.All(state.IsArmedForRecord);
+        }
+    }
 }

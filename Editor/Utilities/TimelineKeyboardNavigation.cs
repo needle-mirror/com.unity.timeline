@@ -25,7 +25,7 @@ namespace UnityEditor.Timeline
 
         public static bool TrackHeadActive()
         {
-            return SelectionManager.SelectedTracks().Any(x => x.IsVisibleRecursive()) && !ClipAreaActive();
+            return SelectionManager.SelectedTracks().Any(x => x.IsVisibleInHierarchy()) && !ClipAreaActive();
         }
 
         public static bool ClipAreaActive()
@@ -35,12 +35,12 @@ namespace UnityEditor.Timeline
 
         public static IEnumerable<ITimelineItem> GetVisibleSelectedItems()
         {
-            return SelectionManager.SelectedItems().Where(x => x.parentTrack.IsVisibleRecursive());
+            return SelectionManager.SelectedItems().Where(x => x.parentTrack.IsVisibleInHierarchy());
         }
 
         public static IEnumerable<TimelineTrackBaseGUI> GetVisibleTracks()
         {
-            return TimelineWindow.instance.allTracks.Where(x => x.track.IsVisibleRecursive());
+            return TimelineWindow.instance.allTracks.Where(x => x.track.IsVisibleInHierarchy());
         }
 
         static TrackAsset PreviousTrack(this TrackAsset track)
@@ -144,7 +144,7 @@ namespace UnityEditor.Timeline
         {
             var timeRange = TimelineEditor.visibleTimeRange;
 
-            var tracks = focusTracks ?? TimelineWindow.instance.treeView.visibleTracks.Where(x => x.IsVisibleRecursive() && x.GetItems().Any());
+            var tracks = focusTracks ?? TimelineWindow.instance.treeView.visibleTracks.Where(x => x.IsVisibleInHierarchy() && x.GetItems().Any());
             var items = tracks.SelectMany(t => t.GetItems().OfType<ClipItem>().Where(x => x.end >= timeRange.x && x.end <= timeRange.y ||
                 x.start >= timeRange.x && x.start <= timeRange.y)).ToList();
             var itemFullyInView = items.Where(x => x.end >= timeRange.x && x.end <= timeRange.y &&
@@ -167,7 +167,7 @@ namespace UnityEditor.Timeline
                 {
                     if (!track.GetChildTracks().Any())
                         continue;
-                    if (!quit && !track.GetCollapsed())
+                    if (!quit && !track.IsCollapsed())
                         quit = true;
                     track.SetCollapsed(true);
                 }
@@ -252,7 +252,7 @@ namespace UnityEditor.Timeline
                 {
                     if (!track.GetChildTracks().Any()) continue;
 
-                    if (!quit && track.GetCollapsed())
+                    if (!quit && track.IsCollapsed())
                         quit = true;
                     track.SetCollapsed(false);
                 }

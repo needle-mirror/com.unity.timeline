@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
+using Component = UnityEngine.Component;
 
 namespace UnityEditor.Timeline
 {
