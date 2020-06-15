@@ -163,14 +163,7 @@ namespace UnityEditor.Timeline
 
                 // Call the custom editor on Create
                 var customEditor = CustomTimelineEditorCache.GetTrackEditor(newSub);
-                try
-                {
-                    customEditor.OnCreate(newSub, sub);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                customEditor.OnCreate_Safe(newSub, sub);
 
                 // registration has to happen AFTER recursion
                 TimelineCreateUtilities.SaveAssetIntoObject(newSub, assetOwner);
@@ -227,14 +220,7 @@ namespace UnityEditor.Timeline
             if (destinationTimeline == null || destinationTimeline == TimelineEditor.inspectedAsset)
             {
                 var customEditor = CustomTimelineEditorCache.GetTrackEditor(newTrack);
-                try
-                {
-                    customEditor.OnCreate(newTrack, track);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                customEditor.OnCreate_Safe(newTrack, track);
             }
 
             return newTrack;

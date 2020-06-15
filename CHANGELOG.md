@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.0-preview.2] - 2020-06-15
+
+### Added
+- Added two methods in `TrackEditor` to control how an object if bound to a track: `IsBindingAssignableFrom` and `GetBindingFrom`.
+
+### Changed
+- The binding field on a track header will change its background color when dragging a valid object on it.
+
 ## [1.5.0-preview.1] - 2020-06-12
 
 ### Added

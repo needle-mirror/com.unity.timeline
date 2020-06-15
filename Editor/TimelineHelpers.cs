@@ -811,31 +811,6 @@ namespace UnityEditor.Timeline
             selector(clickedItem);
         }
 
-        public static void Bind(TrackAsset track, Object obj, PlayableDirector director)
-        {
-            if (director != null && track != null)
-            {
-                var bindType = TypeUtility.GetTrackBindingAttribute(track.GetType());
-                if (bindType == null || bindType.type == null)
-                    return;
-
-                if (obj == null || bindType.type.IsInstanceOfType(obj))
-                {
-                    TimelineUndo.PushUndo(director, "Bind Track");
-                    director.SetGenericBinding(track, obj);
-                }
-                else if (obj is GameObject && typeof(Component).IsAssignableFrom(bindType.type))
-                {
-                    var component = (obj as GameObject).GetComponent(bindType.type);
-                    if (component == null)
-                        component = Undo.AddComponent(obj as GameObject, bindType.type);
-
-                    TimelineUndo.PushUndo(director, "Bind Track");
-                    director.SetGenericBinding(track, component);
-                }
-            }
-        }
-
         /// <summary>
         /// Shared code for adding a clip to a track
         /// </summary>
@@ -903,14 +878,7 @@ namespace UnityEditor.Timeline
                     parent.SetCollapsed(false);
 
                 var editor = CustomTimelineEditorCache.GetTrackEditor(track);
-                try
-                {
-                    editor.OnCreate(track, null);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                editor.OnCreate_Safe(track, null);
                 TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
             }
 

@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
-using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -174,7 +174,7 @@ namespace UnityEditor.Timeline
         static void DrawLockButton(Rect rect)
         {
             if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.trackLockButton))
-                Action.InvokeWithSelected<ToggleShowMarkersOnTimeline>();
+                Invoker.InvokeWithSelected<ToggleShowMarkersOnTimeline>();
         }
 
         static void DrawTrackDropDownMenu(Rect rect, WindowState state)
@@ -186,7 +186,7 @@ namespace UnityEditor.Timeline
         static void DrawMuteButton(Rect rect)
         {
             if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.markerHeaderMuteButton))
-                Action.InvokeWithSelected<ToggleMuteMarkersOnTimeline>();
+                Invoker.InvokeWithSelected<ToggleMuteMarkersOnTimeline>();
         }
 
         public LayerZOrder zOrder => m_ZOrder;

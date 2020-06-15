@@ -167,16 +167,7 @@ namespace UnityEditor.Timeline
             m_DefaultTrackIcon = TrackResourceCache.GetTrackIcon(track);
 
             m_TrackEditor = CustomTimelineEditorCache.GetTrackEditor(sequenceActor);
-
-            try
-            {
-                m_TrackDrawOptions = m_TrackEditor.GetTrackOptions(track, null);
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                m_TrackDrawOptions = CustomTimelineEditorCache.GetDefaultTrackEditor().GetTrackOptions(track, null);
-            }
+            m_TrackDrawOptions = m_TrackEditor.GetTrackOptions_Safe(track, null);
 
             m_TrackDrawOptions.errorText = null; // explicitly setting to null for an uninitialized state
             m_ResizeHandle = new TrackResizeHandle(this);
@@ -208,14 +199,7 @@ namespace UnityEditor.Timeline
                 // incremented when a track or it's clips changed
                 if (m_LastDirtyIndex != track.DirtyIndex)
                 {
-                    try
-                    {
-                        m_TrackEditor.OnTrackChanged(track);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
+                    m_TrackEditor.OnTrackChanged_Safe(track);
                     m_LastDirtyIndex = track.DirtyIndex;
                 }
                 OnTrackChanged();
@@ -250,15 +234,7 @@ namespace UnityEditor.Timeline
                 }
 
                 var lastHeight = m_TrackDrawOptions.minimumHeight;
-                try
-                {
-                    m_TrackDrawOptions = m_TrackEditor.GetTrackOptions(track, m_TrackDrawData.m_TrackBinding);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                    m_TrackDrawOptions = CustomTimelineEditorCache.GetDefaultTrackEditor().GetTrackOptions(track, m_TrackDrawData.m_TrackBinding);
-                }
+                m_TrackDrawOptions = m_TrackEditor.GetTrackOptions_Safe(track, m_TrackDrawData.m_TrackBinding);
 
                 m_TrackDrawData.m_HasMarkers = track.GetMarkerCount() > 0;
                 m_TrackDrawData.m_AllowsRecording = DoesTrackAllowsRecording(track);
@@ -734,7 +710,7 @@ namespace UnityEditor.Timeline
                 track.SetShowTrackMarkers(toggleMarkers);
         }
 
-        static void ObjectBindingField(Rect position, Object obj, PlayableBinding binding)
+        static void ObjectBindingField(Rect position, Object obj, PlayableBinding binding, int controlId)
         {
             var allowScene =
                 typeof(GameObject).IsAssignableFrom(binding.outputTargetType) ||
@@ -743,16 +719,10 @@ namespace UnityEditor.Timeline
             var bindingFieldRect = EditorGUI.IndentedRect(position);
             using (new GUIViewportScope(bindingFieldRect))
             {
-                using (var check = new EditorGUI.ChangeCheckScope())
-                {
-                    // FocusType.Passive so it never gets focused when pressing tab
-                    int controlId = GUIUtility.GetControlID("s_ObjectFieldHash".GetHashCode(), FocusType.Passive, position);
-                    var newObject = UnityEditorInternals.DoObjectField(EditorGUI.IndentedRect(position), obj, binding.outputTargetType, controlId, allowScene);
-                    if (check.changed)
-                    {
-                        BindingUtility.Bind(TimelineEditor.inspectedDirector, binding.sourceObject as TrackAsset, newObject);
-                    }
-                }
+                EditorGUI.BeginChangeCheck();
+                var newObject = UnityEditorInternals.DoObjectField(EditorGUI.IndentedRect(position), obj, binding.outputTargetType, controlId, allowScene, true);
+                if (EditorGUI.EndChangeCheck())
+                    BindingUtility.BindWithInteractiveEditorValidation(TimelineEditor.inspectedDirector, binding.sourceObject as TrackAsset, newObject);
             }
         }
 
@@ -764,17 +734,14 @@ namespace UnityEditor.Timeline
                 Mathf.Min(rect.width, WindowConstants.trackBindingMaxSize) - WindowConstants.trackBindingPadding,
                 WindowConstants.trackHeaderButtonSize);
 
-            if (bindingRect.Contains(Event.current.mousePosition) && TimelineDragging.IsDraggingEvent() && DragAndDrop.objectReferences.Length == 1)
+            if (m_TrackDrawData.m_Binding.outputTargetType != null && typeof(Object).IsAssignableFrom(m_TrackDrawData.m_Binding.outputTargetType))
             {
-                TimelineDragging.HandleBindingDragAndDrop(track, BindingUtility.GetRequiredBindingType(m_TrackDrawData.m_Binding));
-                Event.current.Use();
-            }
-            else
-            {
-                if (m_TrackDrawData.m_Binding.outputTargetType != null && typeof(Object).IsAssignableFrom(m_TrackDrawData.m_Binding.outputTargetType))
-                {
-                    ObjectBindingField(bindingRect, m_TrackDrawData.m_TrackBinding, m_TrackDrawData.m_Binding);
-                }
+                var controlId = GUIUtility.GetControlID("s_ObjectFieldHash".GetHashCode(), FocusType.Passive, rect);
+                var previousActiveControlId = DragAndDrop.activeControlID;
+
+                ObjectBindingField(bindingRect, m_TrackDrawData.m_TrackBinding, m_TrackDrawData.m_Binding, controlId);
+                if (previousActiveControlId != controlId && DragAndDrop.activeControlID == controlId)
+                    TimelineDragging.OnTrackBindingDragUpdate(track);
             }
         }
 

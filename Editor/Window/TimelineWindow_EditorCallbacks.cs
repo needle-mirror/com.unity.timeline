@@ -9,7 +9,6 @@ using UnityEngine.Animations;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
-using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -61,7 +60,7 @@ namespace UnityEditor.Timeline
             var evtCombo = KeyCombination.FromKeyboardInput(Event.current);
             if (keyBinding.keyCombinationSequence.Contains(evtCombo))
             {
-                Action.InvokeWithSelected<KeyAllAnimated>();
+                Invoker.InvokeWithSelected<KeyAllAnimated>();
             }
         }
 

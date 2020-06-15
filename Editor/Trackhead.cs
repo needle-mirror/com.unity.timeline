@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
-using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -192,7 +192,7 @@ namespace UnityEditor.Timeline
                 else
                     menu.AddItem(item, state.editSequence.asset.durationMode == mode, () => SelectDurationCallback(state, mode));
 
-                menu.AddItem(DirectorStyles.showMarkersOnTimeline, state.showMarkerHeader, () => Action.InvokeWithSelected<ToggleShowMarkersOnTimeline>());
+                menu.AddItem(DirectorStyles.showMarkersOnTimeline, state.showMarkerHeader, () => Invoker.InvokeWithSelected<ToggleShowMarkersOnTimeline>());
             }
         }
 

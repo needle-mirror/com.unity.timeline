@@ -189,7 +189,7 @@ namespace UnityEditor.Timeline
                 var newTrack = track.item.Duplicate(TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, TimelineEditor.inspectedAsset);
                 if (track.binding != null)
                 {
-                    TimelineHelpers.Bind(newTrack, track.binding, TimelineEditor.inspectedDirector);
+                    BindingUtility.Bind(TimelineEditor.inspectedDirector, newTrack, track.binding);
                 }
 
                 SelectionManager.Add(newTrack);

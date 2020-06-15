@@ -31,8 +31,8 @@ namespace UnityEditor.Timeline
             var director = TimelineEditor.inspectedDirector;
             var animTrack = TimelineUtility.GetSceneReferenceTrack(track) as AnimationTrack;
             return animTrack != null && animTrack.trackOffset != TrackOffset.Auto &&
-                   TimelineEditor.inspectedAsset == animTrack.timelineAsset &&
-                   director != null && TimelineUtility.GetSceneGameObject(director, animTrack) != null;
+                TimelineEditor.inspectedAsset == animTrack.timelineAsset &&
+                director != null && TimelineUtility.GetSceneGameObject(director, animTrack) != null;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace UnityEditor.Timeline
         /// <returns>True if track was put taken out of recording recording mode, False otherwise. </returns>
         public static void StopRecording(this AnimationTrack track)
         {
-            if ( !IsRecording(track) || TimelineEditor.state == null)
+            if (!IsRecording(track) || TimelineEditor.state == null)
             {
                 return;
             }

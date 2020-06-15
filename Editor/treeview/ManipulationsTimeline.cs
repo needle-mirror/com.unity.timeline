@@ -3,7 +3,6 @@ using System.Linq;
 using UnityEditor.ShortcutManagement;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
-using Action = UnityEditor.Timeline.Actions.Action;
 
 namespace UnityEditor.Timeline
 {
@@ -221,19 +220,19 @@ namespace UnityEditor.Timeline
 
             if (evt.commandName == EventCommandNames.SelectAll)
             {
-                Action.InvokeWithSelected<SelectAllAction>();
+                Invoker.InvokeWithSelected<SelectAllAction>();
                 return true;
             }
 
             if (evt.commandName == EventCommandNames.SoftDelete)
             {
-                Action.InvokeWithSelected<DeleteAction>();
+                Invoker.InvokeWithSelected<DeleteAction>();
                 return true;
             }
 
             if (evt.commandName == EventCommandNames.FrameSelected)
             {
-                Action.InvokeWithSelected<FrameSelectedAction>();
+                Invoker.InvokeWithSelected<FrameSelectedAction>();
                 return true;
             }
 
@@ -255,7 +254,7 @@ namespace UnityEditor.Timeline
             if (evt.commandName != EventCommandNames.FrameSelected)
                 return false;
 
-            Action.InvokeWithSelected<FrameSelectedAction>();
+            Invoker.InvokeWithSelected<FrameSelectedAction>();
             return true;
         }
 
@@ -279,7 +278,7 @@ namespace UnityEditor.Timeline
 
             // User is not actually pressing the correct key combination for FrameAll
             if (combination.Count == 1 && shortcutCombination.Equals(currentCombination))
-                Action.InvokeWithSelected<FrameAllAction>();
+                Invoker.InvokeWithSelected<FrameAllAction>();
 
             return true;
         }
