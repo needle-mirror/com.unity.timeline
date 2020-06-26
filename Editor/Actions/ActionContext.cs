@@ -9,7 +9,7 @@ namespace UnityEditor.Timeline.Actions
     /// <summary>
     /// Action context to be used by actions.
     /// </summary>
-    /// <seealso cref="Action"/>
+    /// <seealso cref="Invoker"/>
     /// <seealso cref="TimelineAction"/>
     public struct ActionContext
     {

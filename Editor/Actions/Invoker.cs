@@ -8,7 +8,7 @@ namespace UnityEditor.Timeline.Actions
     /// <summary>
     /// Class containing methods to invoke actions.
     /// </summary>
-    public static class Action
+    public static class Invoker
     {
         /// <summary>
         /// Execute a given action with a context parameter.
