@@ -182,6 +182,11 @@ namespace UnityEditor.Timeline
                         wrapper.curve.keys = (Keyframe[])presetCurve.keys.Clone();
                         wrapper.changed = true;
                     }
+
+                    // case 1259902 - flushes internal selection caches preventing index out of range exceptions
+                    m_CurveEditor.SelectNone();
+                    foreach (var wrapper in wrappers)
+                        wrapper.selected = CurveWrapper.SelectionMode.Selected;
                 }
 
                 if (Event.current.type == EventType.Repaint)

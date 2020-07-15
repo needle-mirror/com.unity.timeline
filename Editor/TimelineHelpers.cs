@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using UnityEditor.MemoryProfiler;
@@ -7,6 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using Component = UnityEngine.Component;
 using Object = UnityEngine.Object;
 
 namespace UnityEditor.Timeline
@@ -416,6 +418,11 @@ namespace UnityEditor.Timeline
             if (!String.IsNullOrEmpty(s))
                 return s;
 
+            // if as display name with a path is specified use that
+            var attr = Attribute.GetCustomAttribute(trackType, typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+            if (attr != null && attr.DisplayName.Contains('/'))
+                return string.Empty;
+
             if (trackType.Namespace == null || trackType.Namespace.Contains("UnityEngine"))
                 return string.Empty;
 
@@ -441,7 +448,7 @@ namespace UnityEditor.Timeline
 
         public static string GetTrackMenuName(System.Type trackType)
         {
-            return ObjectNames.NicifyVariableName(trackType.Name);
+            return TypeUtility.GetDisplayName(trackType);
         }
 
         // retrieve the duration of a single loop, taking into account speed

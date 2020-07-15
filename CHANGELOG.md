@@ -1,12 +1,22 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.1] - 2020-07-15
+
+- Fixed `IndexOutOfRangeException` exception being thrown when editing inspector curves. ([1259902](https://issuetracker.unity3d.com/product/unity/issues/guid/1259902/))
+- Fixed `IndexOutOfRangeException` exception being thrown when the `New Signal` dialog replaces an existing signal. ([1241170](https://issuetracker.unity3d.com/product/unity/issues/guid/1241170/))
+- Fixed signal state being reset on paused timelines. ([1257208](https://issuetracker.unity3d.com/product/unity/issues/guid/1257208/))
+- Fixed nested custom types not updating animation values in the inspector. ([1239893](https://issuetracker.unity3d.com/product/unity/issues/guid/1239893/))
+- Fixed `AnimationTrack`s SceneOffset mode incorrectly overriding root transform on tracks without root transform in editor. ([1237704](https://issuetracker.unity3d.com/product/unity/issues/guid/1237704/))
+- The `DisplayName` attribute is now supported when used with `TrackAsset`s. ([1253397](https://issuetracker.unity3d.com/product/unity/issues/guid/1253397/))
+- Fixed `NullReference` exception being thrown when clicking on the `Scene Preview` checkbox if the Timeline window was closed. (1261543)
+
 ## [1.4.0] - 2020-06-26
 
 ### Added
 - Added `ClipCaps.AutoScale` to automatically change the speed multiplier value when the clip is trimmed in the Timeline window.
 - Added a `DeleteClip` method in `TrackAsset`.
-- Added dependency on Animation, Audio, Director and Particle System modules.  ([1229825](https://issuetracker.unity3d.com/product/unity/issues/guid/1229825/))
+- Added dependency on Animation, Audio, Director and Particle System modules. ([1229825](https://issuetracker.unity3d.com/product/unity/issues/guid/1229825/))
 - Added an option in `TimelineAsset.EditorSettings` to disable scene preview.
 - Added base classes to define custom actions:
   - `TimelineAction`
@@ -50,7 +60,7 @@ ClipCaps.Looping | ClipCaps.Extrapolation | ClipCaps.ClipIn | ClipCaps.SpeedMult
 
 ### Fixed
 - Fix a Control Track bug that caused the first frame of an animation to evaluated incorrectly when scrubbing forwards and backwards. (1253485)
-- Fixed memory leak where the most recently played timeline would not get unloaded ([1214752](https://issuetracker.unity3d.com/product/unity/issues/guid/1214752/) and 1253974).
+- Fixed memory leak where the most recently played timeline would not get unloaded. ([1214752](https://issuetracker.unity3d.com/product/unity/issues/guid/1214752/) and 1253974)
 
 ## [1.3.3] - 2020-05-29
 

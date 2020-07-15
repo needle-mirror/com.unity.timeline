@@ -324,7 +324,7 @@ namespace UnityEditor.Timeline
             if (binding.propertyName == parameterName)
                 return true;
 
-            var indexOfDot = binding.propertyName.IndexOf('.');
+            var indexOfDot = binding.propertyName.LastIndexOf('.');
             return indexOfDot > 0 && parameterName.Length == indexOfDot &&
                 binding.propertyName.StartsWith(parameterName, StringComparison.Ordinal);
         }

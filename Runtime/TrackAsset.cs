@@ -9,6 +9,31 @@ namespace UnityEngine.Timeline
     /// <summary>
     /// A PlayableAsset representing a track inside a timeline.
     /// </summary>
+    /// <remarks>
+    /// Derive from TrackAsset to implement custom timeline tracks. TrackAsset derived classes support the following attributes:
+    ///
+    /// <seealso cref="UnityEngine.Timeline.HideInMenuAttribute"/>
+    /// <seealso cref="UnityEngine.Timeline.TrackColorAttribute"/>
+    /// <seealso cref="UnityEngine.Timeline.TrackClipTypeAttribute"/>
+    /// <seealso cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.displaynameattribute">DisplayNameAttribute</seealso>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// using UnityEngine;
+    /// using UnityEngine.Timeline;
+    ///
+    /// [DisplayName("Custom Lighting Track")]
+    /// [TrackColor(1,0,0)]
+    /// [TrackBindingType(typeof(Light))]
+    /// [TrackClipType(typeof(PointLightClip))]
+    /// [TrackClipType(typeof(SpotLightClip))]
+    /// public class LightTrack : TrackAsset
+    /// {
+    /// }
+    /// </code>
+    /// </example>
+    ///
     [Serializable]
     [IgnoreOnPlayableTrack]
     public abstract partial class TrackAsset : PlayableAsset, IPropertyPreview, ICurvesOwner
