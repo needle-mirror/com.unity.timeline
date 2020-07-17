@@ -520,7 +520,7 @@ namespace UnityEngine.Timeline
 #endif
         }
 
-        Playable CompileTrackPlayable(PlayableGraph graph, TrackAsset track, GameObject go, IntervalTree<RuntimeElement> tree, AppliedOffsetMode mode)
+        Playable CompileTrackPlayable(PlayableGraph graph, AnimationTrack track, GameObject go, IntervalTree<RuntimeElement> tree, AppliedOffsetMode mode)
         {
             var mixer = AnimationMixerPlayable.Create(graph, track.clips.Length);
             for (int i = 0; i < track.clips.Length; i++)
@@ -543,6 +543,9 @@ namespace UnityEngine.Timeline
                     mixer.SetInputWeight(i, 0.0f);
                 }
             }
+
+            if (!track.AnimatesRootTransform())
+                return mixer;
 
             return ApplyTrackOffset(graph, mixer, go, mode);
         }
@@ -796,7 +799,11 @@ namespace UnityEngine.Timeline
                 mixer.SetInputWeight(0, 1.0f);
             }
 
-            return ApplyTrackOffset(graph, mixer, go, mode);
+            if (!AnimatesRootTransform())
+                return mixer;
+
+            var rootTrack = isSubTrack ? (AnimationTrack)parent : this;
+            return rootTrack.ApplyTrackOffset(graph, mixer, go, mode);
         }
 
         Playable ApplyTrackOffset(PlayableGraph graph, Playable root, GameObject go, AppliedOffsetMode mode)
@@ -808,8 +815,7 @@ namespace UnityEngine.Timeline
             // offsets don't apply in scene offset, or if there is no root transform (globally or on this track)
             if (mode == AppliedOffsetMode.SceneOffsetLegacy ||
                 mode == AppliedOffsetMode.SceneOffset     ||
-                mode == AppliedOffsetMode.NoRootTransform ||
-                !AnimatesRootTransform()
+                mode == AppliedOffsetMode.NoRootTransform
             )
                 return root;
 

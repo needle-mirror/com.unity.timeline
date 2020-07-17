@@ -167,6 +167,12 @@ namespace UnityEditor.Timeline.Signals
         {
             var newSignalAsset = SignalManager.CreateSignalAssetInstance(path);
             Undo.RecordObject(m_CurrentReceiver, Styles.UndoCreateSignalAsset);
+
+            // case 1241170 - overwriting an existing signal with throw an exception. Instead, clear the old key
+            int index = m_CurrentReceiver.GetRegisteredSignals().ToList().IndexOf(newSignalAsset);
+            if (index != -1)
+                m_CurrentReceiver.ChangeSignalAtIndex(index, null);
+
             m_CurrentReceiver.ChangeSignalAtIndex(m_CurrentRowIdx, newSignalAsset);
             PrefabUtility.RecordPrefabInstancePropertyModifications(m_CurrentReceiver);
         }

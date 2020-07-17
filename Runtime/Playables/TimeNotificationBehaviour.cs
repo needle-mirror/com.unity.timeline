@@ -89,13 +89,17 @@ namespace UnityEngine.Timeline
         public override void OnGraphStart(Playable playable)
         {
             SortNotifications();
+            var currentTime = playable.GetTime();
             for (var i = 0; i < m_Notifications.Count; i++)
             {
-                var notification = m_Notifications[i];
-                notification.notificationFired = false;
-                m_Notifications[i] = notification;
+                // case 1257208 - when a timeline is _resumed_, only reset notifications after the resumed time
+                if (m_Notifications[i].time > currentTime && !m_Notifications[i].triggerOnce)
+                {
+                    var notification = m_Notifications[i];
+                    notification.notificationFired = false;
+                    m_Notifications[i] = notification;
+                }
             }
-
             m_PreviousTime = playable.GetTime();
         }
 

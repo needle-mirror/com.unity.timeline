@@ -290,7 +290,7 @@ namespace UnityEditor.Timeline
         internal static string GetDisplayName(Type t)
         {
             var displayName = ObjectNames.NicifyVariableName(t.Name);
-            var attr = Attribute.GetCustomAttribute(t, typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+            var attr = Attribute.GetCustomAttribute(t, typeof(DisplayNameAttribute), false) as DisplayNameAttribute;
             if (attr != null)
                 displayName = attr.DisplayName;
             return displayName;

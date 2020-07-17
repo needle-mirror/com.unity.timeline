@@ -93,7 +93,7 @@ namespace UnityEditor.Timeline
             }
             var changed = EditorGUI.EndChangeCheck();
 
-            if (changed && TimelineWindow.instance.state != null && ContainsMasterAsset(targets))
+            if (changed && TimelineWindow.instance && TimelineWindow.instance.state != null && ContainsMasterAsset(targets))
                 ResetWindowState(TimelineWindow.instance.state);
 
             if (!m_ScenePreviewProperty.boolValue || m_ScenePreviewProperty.hasMultipleDifferentValues)

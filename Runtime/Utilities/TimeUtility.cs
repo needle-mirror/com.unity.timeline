@@ -22,7 +22,7 @@ namespace UnityEngine.Timeline
             ValidateFrameRate(frameRate);
             time = Math.Min(Math.Max(time, -k_MaxTimelineDurationInSeconds), k_MaxTimelineDurationInSeconds);
             // this matches OnFrameBoundary
-            double tolerance = GetEpsilon(time, frameRate) / 2.0;
+            double tolerance = GetEpsilon(time, frameRate);
             if (time < 0)
             {
                 return (int)Math.Ceiling(time * frameRate - tolerance);
