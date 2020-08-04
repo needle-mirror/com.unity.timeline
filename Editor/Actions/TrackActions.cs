@@ -114,7 +114,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in tracks.Where(t => !TimelineUtility.IsLockedFromGroup(t)))
             {
-                TimelineUndo.PushUndo(track, "Lock Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Lock Tracks"));
                 track.locked = shouldlock;
             }
             TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
@@ -166,7 +166,7 @@ namespace UnityEditor.Timeline
                 if (track as GroupTrack == null)
                     SetLockState(track.GetChildTracks().ToArray(), shouldLock);
 
-                TimelineUndo.PushUndo(track, "Lock Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Lock Tracks"));
                 track.locked = shouldLock;
             }
 
@@ -280,7 +280,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in tracks.Where(t => !TimelineUtility.IsParentMuted(t)))
             {
-                TimelineUndo.PushUndo(track, "Mute Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Mute Tracks"));
                 track.muted = shouldMute;
             }
 
@@ -329,7 +329,7 @@ namespace UnityEditor.Timeline
             {
                 if (track as GroupTrack == null)
                     Mute(track.GetChildTracks().ToArray(), shouldMute);
-                TimelineUndo.PushUndo(track, "Mute Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Mute Tracks"));
                 track.muted = shouldMute;
             }
 
@@ -407,7 +407,7 @@ namespace UnityEditor.Timeline
                     var binding = TimelineEditor.inspectedDirector.GetGenericBinding(track);
                     if (binding != null)
                     {
-                        TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, "Duplicate");
+                        TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, L10n.Tr("Duplicate"));
                         TimelineEditor.inspectedDirector.SetGenericBinding(newTrack, binding);
                     }
                 }

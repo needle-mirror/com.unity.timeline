@@ -8,16 +8,16 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent s_LockedAndMuted = EditorGUIUtility.TrTextContent("Locked / Muted");
-            public static readonly GUIContent s_LockedAndPartiallyMuted = EditorGUIUtility.TrTextContent("Locked / Partially Muted");
-            public static readonly GUIContent s_Locked = EditorGUIUtility.TrTextContent("Locked");
-            public static readonly GUIContent s_Muted = EditorGUIUtility.TrTextContent("Muted");
-            public static readonly GUIContent s_PartiallyMuted = EditorGUIUtility.TrTextContent("Partially Muted");
+            public static readonly GUIContent s_LockedAndMuted = L10n.TextContent("Locked / Muted");
+            public static readonly GUIContent s_LockedAndPartiallyMuted = L10n.TextContent("Locked / Partially Muted");
+            public static readonly GUIContent s_Locked = L10n.TextContent("Locked");
+            public static readonly GUIContent s_Muted = L10n.TextContent("Muted");
+            public static readonly GUIContent s_PartiallyMuted = L10n.TextContent("Partially Muted");
 
-            public static readonly GUIContent trackMuteBtnOnTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Umute");
-            public static readonly GUIContent trackMuteBtnOffTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Mute");
-            public static readonly GUIContent trackLockBtnOnTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Unlock");
-            public static readonly GUIContent trackLockBtnOffTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Lock");
+            public static readonly GUIContent trackMuteBtnOnTooltip = L10n.TextContent(string.Empty, "Umute");
+            public static readonly GUIContent trackMuteBtnOffTooltip = L10n.TextContent(string.Empty, "Mute");
+            public static readonly GUIContent trackLockBtnOnTooltip = L10n.TextContent(string.Empty, "Unlock");
+            public static readonly GUIContent trackLockBtnOffTooltip = L10n.TextContent(string.Empty, "Lock");
 
             public static readonly Texture2D lockBg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.trackLockOverlay);
         }

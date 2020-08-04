@@ -8,8 +8,8 @@ namespace UnityEditor.Timeline
     {
         static readonly GUIContent[] k_TimeReferenceGUIContents =
         {
-            EditorGUIUtility.TrTextContent("Local", "Display time based on the current timeline."),
-            EditorGUIUtility.TrTextContent("Global", "Display time based on the master timeline.")
+            L10n.TextContent("Local", "Display time based on the current timeline."),
+            L10n.TextContent("Global", "Display time based on the master timeline.")
         };
 
         TimelineMarkerHeaderGUI m_MarkerHeaderGUI;
@@ -181,7 +181,7 @@ namespace UnityEditor.Timeline
             if (state.showMarkerHeader == newValue)
                 return;
 
-            TimelineUndo.PushUndo(state.editSequence.viewModel, "Toggle Show Markers");
+            TimelineUndo.PushUndo(state.editSequence.viewModel, L10n.Tr("Toggle Show Markers"));
             state.editSequence.viewModel.showMarkerHeader = newValue;
             if (!newValue)
             {

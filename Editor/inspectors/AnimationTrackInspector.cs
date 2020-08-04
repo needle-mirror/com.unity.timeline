@@ -14,17 +14,17 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static GUIContent MatchTargetFieldsTitle = EditorGUIUtility.TrTextContent("Default Offset Match Fields", "Fields to apply when matching offsets on clips. These are the defaults, and can be overridden for each clip.");
+            public static GUIContent MatchTargetFieldsTitle = L10n.TextContent("Default Offset Match Fields", "Fields to apply when matching offsets on clips. These are the defaults, and can be overridden for each clip.");
             public static readonly GUIContent PositionIcon = EditorGUIUtility.IconContent("MoveTool");
             public static readonly GUIContent RotationIcon = EditorGUIUtility.IconContent("RotateTool");
 
             public static GUIContent XTitle = EditorGUIUtility.TextContent("X");
             public static GUIContent YTitle = EditorGUIUtility.TextContent("Y");
             public static GUIContent ZTitle = EditorGUIUtility.TextContent("Z");
-            public static GUIContent PositionTitle = EditorGUIUtility.TrTextContent("Position");
-            public static GUIContent RotationTitle = EditorGUIUtility.TrTextContent("Rotation");
+            public static GUIContent PositionTitle = L10n.TextContent("Position");
+            public static GUIContent RotationTitle = L10n.TextContent("Rotation");
 
-            public static readonly GUIContent OffsetModeTitle = EditorGUIUtility.TrTextContent("Track Offsets");
+            public static readonly GUIContent OffsetModeTitle = L10n.TextContent("Track Offsets");
             public static readonly string TransformOffsetInfo = L10n.Tr("Transform offsets are applied to the entire track. Use this mode to play the animation track at a fixed position and rotation.");
             public static readonly string SceneOffsetInfo = L10n.Tr("Scene offsets will use the existing transform as initial offsets. Use this to play the track from the gameObjects current position and rotation.");
             public static readonly string AutoOffsetInfo = L10n.Tr("Auto will apply scene offsets if there is a controller attached to the animator and transform offsets otherwise.");
@@ -34,7 +34,7 @@ namespace UnityEditor.Timeline
 
             public static readonly string AvatarMaskWarning = L10n.Tr("Applying an Avatar Mask to the base track may not properly mask Root Motion or Humanoid bones from an Animator Controller or other Timeline track.");
 
-            public static readonly GUIContent RecordingOffsets = EditorGUIUtility.TrTextContent("Recorded Offsets", "Offsets applied to recorded position and rotation keys");
+            public static readonly GUIContent RecordingOffsets = L10n.TextContent("Recorded Offsets", "Offsets applied to recorded position and rotation keys");
 
             public static readonly GUIContent[] OffsetContents;
             public static readonly GUIContent[] OffsetInheritContents;
@@ -408,7 +408,7 @@ namespace UnityEditor.Timeline
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    UndoExtensions.RegisterTrack(animationTrack, "Inspector");
+                    UndoExtensions.RegisterTrack(animationTrack, L10n.Tr("Inspector"));
                     TimelineAnimationUtilities.UpdateTrackOffset(animationTrack, boundObjectTransform, offsets);
                     Evaluate();
                     Repaint();

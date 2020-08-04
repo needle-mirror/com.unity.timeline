@@ -77,8 +77,8 @@ namespace UnityEditor.Timeline
                 // if we are in the past
                 if (clipTime < 0)
                 {
-                    Undo.RegisterCompleteObjectUndo(clip, "Record Key");
-                    UndoExtensions.RegisterTrack(track, "Prepend Key");
+                    Undo.RegisterCompleteObjectUndo(clip, L10n.Tr("Record Key"));
+                    UndoExtensions.RegisterTrack(track, L10n.Tr("Prepend Key"));
                     ShiftAnimationClip(clip, (float)-clipTime);
                     activeClip.start = state.editSequence.time;
                     activeClip.duration += -clipTime;
@@ -127,7 +127,7 @@ namespace UnityEditor.Timeline
                 // stretch the clip out to meet the new recording time
                 if (m_ClipTime > recordClip.duration)
                 {
-                    UndoExtensions.RegisterTrack(track, "Add Key");
+                    UndoExtensions.RegisterTrack(track, L10n.Tr("Add Key"));
                     recordClip.duration = m_ClipTime;
                 }
 

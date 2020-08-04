@@ -12,17 +12,17 @@ namespace UnityEditor.Timeline
         static class Styles
         {
             static string s_DisabledBecauseOfSelfControlTooltip = "Must be disabled when the Source Game Object references the same PlayableDirector component that is being controlled";
-            public static readonly GUIContent activationContent = EditorGUIUtility.TrTextContent("Control Activation", "When checked the clip will control the active state of the source game object");
-            public static readonly GUIContent activationDisabledContent = EditorGUIUtility.TextContent("Control Activation|" + s_DisabledBecauseOfSelfControlTooltip);
-            public static readonly GUIContent prefabContent = EditorGUIUtility.TrTextContent("Prefab", "A prefab to instantiate as a child object of the source game object");
-            public static readonly GUIContent advancedContent = EditorGUIUtility.TrTextContent("Advanced");
-            public static readonly GUIContent updateParticleSystemsContent = EditorGUIUtility.TrTextContent("Control Particle Systems", "Synchronize the time between the clip and any particle systems on the game object");
-            public static readonly GUIContent updatePlayableDirectorContent = EditorGUIUtility.TrTextContent("Control Playable Directors", "Synchronize the time between the clip and any playable directors on the game object");
-            public static readonly GUIContent updatePlayableDirectorDisabledContent = EditorGUIUtility.TextContent("Control Playable Directors|" + s_DisabledBecauseOfSelfControlTooltip);
-            public static readonly GUIContent updateITimeControlContent = EditorGUIUtility.TrTextContent("Control ITimeControl", "Synchronize the time between the clip and any Script that implements the ITimeControl interface on the game object");
-            public static readonly GUIContent updateHierarchy = EditorGUIUtility.TrTextContent("Control Children", "Search child game objects for particle systems and playable directors");
-            public static readonly GUIContent randomSeedContent = EditorGUIUtility.TrTextContent("Random Seed", "A random seed to provide the particle systems for consistent previews. This will only be used on particle systems where AutoRandomSeed is on.");
-            public static readonly GUIContent postPlayableContent = EditorGUIUtility.TrTextContent("Post Playback", "The active state to the leave the game object when the timeline is finished. \n\nRevert will leave the game object in the state it was prior to the timeline being run");
+            public static readonly GUIContent activationContent = L10n.TextContent("Control Activation", "When checked the clip will control the active state of the source game object");
+            public static readonly GUIContent activationDisabledContent = L10n.TextContent("Control Activation", s_DisabledBecauseOfSelfControlTooltip);
+            public static readonly GUIContent prefabContent = L10n.TextContent("Prefab", "A prefab to instantiate as a child object of the source game object");
+            public static readonly GUIContent advancedContent = L10n.TextContent("Advanced");
+            public static readonly GUIContent updateParticleSystemsContent = L10n.TextContent("Control Particle Systems", "Synchronize the time between the clip and any particle systems on the game object");
+            public static readonly GUIContent updatePlayableDirectorContent = L10n.TextContent("Control Playable Directors", "Synchronize the time between the clip and any playable directors on the game object");
+            public static readonly GUIContent updatePlayableDirectorDisabledContent = L10n.TextContent("Control Playable Directors", s_DisabledBecauseOfSelfControlTooltip);
+            public static readonly GUIContent updateITimeControlContent = L10n.TextContent("Control ITimeControl", "Synchronize the time between the clip and any Script that implements the ITimeControl interface on the game object");
+            public static readonly GUIContent updateHierarchy = L10n.TextContent("Control Children", "Search child game objects for particle systems and playable directors");
+            public static readonly GUIContent randomSeedContent = L10n.TextContent("Random Seed", "A random seed to provide the particle systems for consistent previews. This will only be used on particle systems where AutoRandomSeed is on.");
+            public static readonly GUIContent postPlayableContent = L10n.TextContent("Post Playback", "The active state to the leave the game object when the timeline is finished. \n\nRevert will leave the game object in the state it was prior to the timeline being run");
         }
 
         SerializedProperty m_SourceObject;
@@ -79,7 +79,7 @@ namespace UnityEditor.Timeline
             m_SourceObjectLabel.text = m_SourceObject.displayName;
 
             if (m_PrefabObject.objectReferenceValue != null)
-                m_SourceObjectLabel.text = "Parent Object";
+                m_SourceObjectLabel.text = L10n.Tr("Parent Object");
 
             bool selfControlled = false;
 
@@ -102,11 +102,11 @@ namespace UnityEditor.Timeline
 
             if (selfControlled)
             {
-                EditorGUILayout.HelpBox("The assigned GameObject references the same PlayableDirector component being controlled.", MessageType.Warning);
+                EditorGUILayout.HelpBox(L10n.Tr("The assigned GameObject references the same PlayableDirector component being controlled."), MessageType.Warning);
             }
             else if (m_CycleReference)
             {
-                EditorGUILayout.HelpBox("The assigned GameObject contains a PlayableDirector component that results in a circular reference.", MessageType.Warning);
+                EditorGUILayout.HelpBox(L10n.Tr("The assigned GameObject contains a PlayableDirector component that results in a circular reference."), MessageType.Warning);
             }
 
             EditorGUI.indentLevel++;

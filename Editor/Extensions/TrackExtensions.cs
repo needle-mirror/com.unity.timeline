@@ -167,7 +167,7 @@ namespace UnityEditor.Timeline
 
                 // registration has to happen AFTER recursion
                 TimelineCreateUtilities.SaveAssetIntoObject(newSub, assetOwner);
-                TimelineUndo.RegisterCreatedObjectUndo(newSub, "Duplicate");
+                TimelineUndo.RegisterCreatedObjectUndo(newSub, L10n.Tr("Duplicate"));
             }
         }
 
@@ -206,8 +206,8 @@ namespace UnityEditor.Timeline
 
             RecursiveSubtrackClone(track, newTrack, sourceTable, destTable, finalParent);
             TimelineCreateUtilities.SaveAssetIntoObject(newTrack, finalParent);
-            TimelineUndo.RegisterCreatedObjectUndo(newTrack, "Duplicate");
-            UndoExtensions.RegisterPlayableAsset(finalParent, "Duplicate");
+            TimelineUndo.RegisterCreatedObjectUndo(newTrack, L10n.Tr("Duplicate"));
+            UndoExtensions.RegisterPlayableAsset(finalParent, L10n.Tr("Duplicate"));
 
             if (destinationTimeline != null) // other timeline
                 destinationTimeline.AddTrackInternal(newTrack);
@@ -377,7 +377,7 @@ namespace UnityEditor.Timeline
                 int index = parentTrack.subTracksObjects.FindIndex(t => t.GetInstanceID() == track.GetInstanceID());
                 if (index >= 0)
                 {
-                    UndoExtensions.RegisterTrack(parentTrack, "Remove Track");
+                    UndoExtensions.RegisterTrack(parentTrack, L10n.Tr("Remove Track"));
                     parentTrack.subTracksObjects.RemoveAt(index);
                     parentTrack.Invalidate();
                     Undo.DestroyObjectImmediate(track);
@@ -389,7 +389,7 @@ namespace UnityEditor.Timeline
                 int index = parentTimeline.trackObjects.FindIndex(t => t.GetInstanceID() == track.GetInstanceID());
                 if (index >= 0)
                 {
-                    UndoExtensions.RegisterPlayableAsset(parentTimeline, "Remove Track");
+                    UndoExtensions.RegisterPlayableAsset(parentTimeline, L10n.Tr("Remove Track"));
                     parentTimeline.trackObjects.RemoveAt(index);
                     parentTimeline.Invalidate();
                     Undo.DestroyObjectImmediate(track);
@@ -491,7 +491,7 @@ namespace UnityEditor.Timeline
             var currentValue = track.GetShowMarkers();
             if (currentValue != showMarkerHeader)
             {
-                TimelineUndo.PushUndo(TimelineWindow.instance.state.editSequence.viewModel, "Toggle Show Markers");
+                TimelineUndo.PushUndo(TimelineWindow.instance.state.editSequence.viewModel, L10n.Tr("Toggle Show Markers"));
                 track.SetShowMarkers(showMarkerHeader);
                 if (!showMarkerHeader)
                 {

@@ -10,15 +10,15 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent RotationText = EditorGUIUtility.TrTextContent("Rotation");
-            public static readonly GUIContent AnimClipText = EditorGUIUtility.TrTextContent("Animation Clip");
-            public static readonly GUIContent TransformOffsetTitle = EditorGUIUtility.TrTextContent("Clip Transform Offsets", "Use this to offset the root transform position and rotation relative to the track when playing this clip");
-            public static readonly GUIContent AnimationClipName = EditorGUIUtility.TrTextContent("Animation Clip Name");
-            public static readonly GUIContent MatchTargetFieldsTitle = EditorGUIUtility.TrTextContent("Offsets Match Fields", "Fields to apply when matching offsets on clips. The defaults can be set on the track.");
-            public static readonly GUIContent UseDefaults = EditorGUIUtility.TrTextContent("Use defaults");
-            public static readonly GUIContent RemoveStartOffset = EditorGUIUtility.TrTextContent("Remove Start Offset", "Makes playback of the clip play relative to first key of the root transform");
-            public static readonly GUIContent ApplyFootIK = EditorGUIUtility.TrTextContent("Foot IK", "Enable to apply foot IK to the AnimationClip when the target is humanoid.");
-            public static readonly GUIContent Loop = EditorGUIUtility.TrTextContent("Loop", "Whether the source Animation Clip loops during playback.");
+            public static readonly GUIContent RotationText = L10n.TextContent("Rotation");
+            public static readonly GUIContent AnimClipText = L10n.TextContent("Animation Clip");
+            public static readonly GUIContent TransformOffsetTitle = L10n.TextContent("Clip Transform Offsets", "Use this to offset the root transform position and rotation relative to the track when playing this clip");
+            public static readonly GUIContent AnimationClipName = L10n.TextContent("Animation Clip Name");
+            public static readonly GUIContent MatchTargetFieldsTitle = L10n.TextContent("Offsets Match Fields", "Fields to apply when matching offsets on clips. The defaults can be set on the track.");
+            public static readonly GUIContent UseDefaults = L10n.TextContent("Use defaults");
+            public static readonly GUIContent RemoveStartOffset = L10n.TextContent("Remove Start Offset", "Makes playback of the clip play relative to first key of the root transform");
+            public static readonly GUIContent ApplyFootIK = L10n.TextContent("Foot IK", "Enable to apply foot IK to the AnimationClip when the target is humanoid.");
+            public static readonly GUIContent Loop = L10n.TextContent("Loop", "Whether the source Animation Clip loops during playback.");
         }
 
         TimelineWindow m_TimelineWindow;
@@ -110,7 +110,7 @@ namespace UnityEditor.Timeline
                             if (apa != null && apa.clip != null && c.clip.displayName == apa.clip.name)
                             {
                                 if (c.clip.parentTrack != null)
-                                    Undo.RegisterCompleteObjectUndo(c.clip.parentTrack, "Inspector");
+                                    Undo.RegisterCompleteObjectUndo(c.clip.parentTrack, L10n.Tr("Inspector"));
                                 c.clip.displayName = newName;
                             }
                         }
@@ -270,7 +270,7 @@ namespace UnityEditor.Timeline
 
             if (transform != null && animationPlayable != null && m_OffsetEditMode != TimelineAnimationUtilities.OffsetEditMode.None && track != null)
             {
-                UndoExtensions.RegisterPlayableAsset(animationPlayable, "Inspector");
+                UndoExtensions.RegisterPlayableAsset(animationPlayable, L10n.Tr("Inspector"));
                 Vector3 position = transform.position;
                 Quaternion rotation = transform.rotation;
 

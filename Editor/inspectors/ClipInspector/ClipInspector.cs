@@ -13,28 +13,28 @@ namespace UnityEditor.Timeline
     {
         internal static class Styles
         {
-            public static readonly GUIContent StartName = EditorGUIUtility.TrTextContent("Start", "The start time of the clip");
-            public static readonly GUIContent DurationName = EditorGUIUtility.TrTextContent("Duration", "The length of the clip");
-            public static readonly GUIContent EndName = EditorGUIUtility.TrTextContent("End", "The end time of the clip");
-            public static readonly GUIContent EaseInDurationName = EditorGUIUtility.TrTextContent("Ease In Duration", "The length of the ease in");
-            public static readonly GUIContent BlendInDurationName = EditorGUIUtility.TrTextContent("Blend In Duration", "The length of the blend in");
-            public static readonly GUIContent EaseOutDurationName = EditorGUIUtility.TrTextContent("Ease Out Duration", "The length of the ease out");
-            public static readonly GUIContent BlendOutDurationName = EditorGUIUtility.TrTextContent("Blend Out Duration", "The length of the blend out");
-            public static readonly GUIContent ClipInName = EditorGUIUtility.TrTextContent("Clip In", "Start the clip at this local time");
-            public static readonly GUIContent TimeScaleName = EditorGUIUtility.TrTextContent("Speed Multiplier", "Time scale of the playback speed");
-            public static readonly GUIContent PreExtrapolateLabel = EditorGUIUtility.TrTextContent("Pre-Extrapolate", "Extrapolation used prior to the first clip");
-            public static readonly GUIContent PostExtrapolateLabel = EditorGUIUtility.TrTextContent("Post-Extrapolate", "Extrapolation used after a clip ends");
-            public static readonly GUIContent BlendInCurveName = EditorGUIUtility.TrTextContent("In", "Blend In Curve");
-            public static readonly GUIContent BlendOutCurveName = EditorGUIUtility.TrTextContent("Out", "Blend Out Curve");
-            public static readonly GUIContent PreviewTitle = EditorGUIUtility.TrTextContent("Curve Editor");
-            public static readonly GUIContent ClipTimingTitle = EditorGUIUtility.TrTextContent("Clip Timing");
-            public static readonly GUIContent AnimationExtrapolationTitle = EditorGUIUtility.TrTextContent("Animation Extrapolation");
-            public static readonly GUIContent BlendCurvesTitle = EditorGUIUtility.TrTextContent("Blend Curves");
-            public static readonly GUIContent GroupTimingTitle = EditorGUIUtility.TrTextContent("Multiple Clip Timing");
-            public static readonly GUIContent MultipleClipsSelectedIncompatibleCapabilitiesWarning = EditorGUIUtility.TrTextContent("Multiple clips selected. Only common properties are shown.");
-            public static readonly GUIContent MultipleSelectionTitle = EditorGUIUtility.TrTextContent("Timeline Clips");
-            public static readonly GUIContent MultipleClipStartName = EditorGUIUtility.TrTextContent("Start", "The start time of the clip group");
-            public static readonly GUIContent MultipleClipEndName = EditorGUIUtility.TrTextContent("End", "The end time of the clip group");
+            public static readonly GUIContent StartName = L10n.TextContent("Start", "The start time of the clip");
+            public static readonly GUIContent DurationName = L10n.TextContent("Duration", "The length of the clip");
+            public static readonly GUIContent EndName = L10n.TextContent("End", "The end time of the clip");
+            public static readonly GUIContent EaseInDurationName = L10n.TextContent("Ease In Duration", "The length of the ease in");
+            public static readonly GUIContent BlendInDurationName = L10n.TextContent("Blend In Duration", "The length of the blend in");
+            public static readonly GUIContent EaseOutDurationName = L10n.TextContent("Ease Out Duration", "The length of the ease out");
+            public static readonly GUIContent BlendOutDurationName = L10n.TextContent("Blend Out Duration", "The length of the blend out");
+            public static readonly GUIContent ClipInName = L10n.TextContent("Clip In", "Start the clip at this local time");
+            public static readonly GUIContent TimeScaleName = L10n.TextContent("Speed Multiplier", "Time scale of the playback speed");
+            public static readonly GUIContent PreExtrapolateLabel = L10n.TextContent("Pre-Extrapolate", "Extrapolation used prior to the first clip");
+            public static readonly GUIContent PostExtrapolateLabel = L10n.TextContent("Post-Extrapolate", "Extrapolation used after a clip ends");
+            public static readonly GUIContent BlendInCurveName = L10n.TextContent("In", "Blend In Curve");
+            public static readonly GUIContent BlendOutCurveName = L10n.TextContent("Out", "Blend Out Curve");
+            public static readonly GUIContent PreviewTitle = L10n.TextContent("Curve Editor");
+            public static readonly GUIContent ClipTimingTitle = L10n.TextContent("Clip Timing");
+            public static readonly GUIContent AnimationExtrapolationTitle = L10n.TextContent("Animation Extrapolation");
+            public static readonly GUIContent BlendCurvesTitle = L10n.TextContent("Blend Curves");
+            public static readonly GUIContent GroupTimingTitle = L10n.TextContent("Multiple Clip Timing");
+            public static readonly GUIContent MultipleClipsSelectedIncompatibleCapabilitiesWarning = L10n.TextContent("Multiple clips selected. Only common properties are shown.");
+            public static readonly GUIContent MultipleSelectionTitle = L10n.TextContent("Timeline Clips");
+            public static readonly GUIContent MultipleClipStartName = L10n.TextContent("Start", "The start time of the clip group");
+            public static readonly GUIContent MultipleClipEndName = L10n.TextContent("End", "The end time of the clip group");
             public static readonly GUIContent TimelineClipFG = DirectorStyles.IconContent("TimelineClipFG");
             public static readonly GUIContent TimelineClipBG = DirectorStyles.IconContent("TimelineClipBG");
         }

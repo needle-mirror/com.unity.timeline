@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.0-preview.4] - 2020-08-04
+
+### Added
+- Added Japanese translation.
+
+### Fixed
+- Fixed issue where the Timeline window would rebuild its Playable Graph every time an AnimationClip would be added, changed or deserialized. (1265314, [1267055](https://issuetracker.unity3d.com/product/unity/issues/guid/1267055/))
+- Fixed double-click not opening the AnimationWindow on clips with animated parameters. ([1262950](https://issuetracker.unity3d.com/product/unity/issues/guid/1262950/))
+
 ## [1.5.0-preview.3] - 2020-07-17
 
 ### Fixed

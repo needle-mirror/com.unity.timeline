@@ -317,7 +317,7 @@ namespace UnityEditor.Timeline
             var tracks = items.GroupBy(c => c.parentTrack);
 
             foreach (var track in tracks)
-                TimelineUndo.PushUndo(track.Key, "Delete Items");
+                TimelineUndo.PushUndo(track.Key, L10n.Tr("Delete Items"));
 
             TimelineAnimationUtilities.UnlinkAnimationWindowFromClips(items.OfType<ClipItem>().Select(i => i.clip));
 
@@ -872,7 +872,7 @@ namespace UnityEditor.Timeline
             var timeline = TimelineEditor.inspectedAsset;
             timeline.CreateMarkerTrack();
 
-            TimelineUndo.PushUndo(timeline.markerTrack, "Toggle Mute");
+            TimelineUndo.PushUndo(timeline.markerTrack, L10n.Tr("Toggle Mute"));
             timeline.markerTrack.muted = !timeline.markerTrack.muted;
         }
 

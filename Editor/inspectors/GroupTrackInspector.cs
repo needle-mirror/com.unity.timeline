@@ -12,11 +12,11 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent GroupSubTrackHeaderName     = EditorGUIUtility.TrTextContent("Name");
-            public static readonly GUIContent GroupSubTrackHeaderType     = EditorGUIUtility.TrTextContent("Type");
-            public static readonly GUIContent GroupSubTrackHeaderDuration = EditorGUIUtility.TrTextContent("Duration");
-            public static readonly GUIContent GroupSubTrackHeaderFrames   = EditorGUIUtility.TrTextContent("Frames");
-            public static readonly GUIContent GroupInvalidTrack           = EditorGUIUtility.TrTextContent("Invalid Track");
+            public static readonly GUIContent GroupSubTrackHeaderName     = L10n.TextContent("Name");
+            public static readonly GUIContent GroupSubTrackHeaderType     = L10n.TextContent("Type");
+            public static readonly GUIContent GroupSubTrackHeaderDuration = L10n.TextContent("Duration");
+            public static readonly GUIContent GroupSubTrackHeaderFrames   = L10n.TextContent("Frames");
+            public static readonly GUIContent GroupInvalidTrack           = L10n.TextContent("Invalid Track");
         }
 
         ReorderableList m_SubTracks;

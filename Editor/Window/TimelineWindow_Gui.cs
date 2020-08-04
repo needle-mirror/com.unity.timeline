@@ -391,11 +391,11 @@ namespace UnityEditor.Timeline
                 {
                     GenericMenu menu = new GenericMenu();
 
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Preferences Page..."), false, () => SettingsWindow.Show(SettingsScope.User, "Preferences/Timeline"));
+                    menu.AddItem(L10n.TextContent("Preferences Page..."), false, () => SettingsWindow.Show(SettingsScope.User, "Preferences/Timeline"));
                     menu.AddSeparator("");
 
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Seconds"), !state.timeInFrames, ChangeTimeCode, "seconds");
-                    menu.AddItem(EditorGUIUtility.TrTextContent("Frames"), state.timeInFrames, ChangeTimeCode, "frames");
+                    menu.AddItem(L10n.TextContent("Seconds"), !state.timeInFrames, ChangeTimeCode, "seconds");
+                    menu.AddItem(L10n.TextContent("Frames"), state.timeInFrames, ChangeTimeCode, "frames");
                     menu.AddSeparator("");
 
                     TimeAreaContextMenu.AddTimeAreaMenuItems(menu, state);
@@ -409,34 +409,34 @@ namespace UnityEditor.Timeline
                     }
 
                     if (standardFrameRate)
-                        menu.AddDisabledItem(EditorGUIUtility.TrTextContent("Frame Rate/Custom"));
+                        menu.AddDisabledItem(L10n.TextContent("Frame Rate/Custom"));
                     else
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Frame Rate/Custom (" + state.editSequence.frameRate + ")"), true, () => {});
+                        menu.AddItem(L10n.TextContent("Frame Rate/Custom (" + state.editSequence.frameRate + ")"), true, () => {});
 
                     menu.AddSeparator("");
                     if (state.playRangeEnabled)
                     {
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Play Range Mode/Loop"), state.playRangeLoopMode, () => state.playRangeLoopMode = true);
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Play Range Mode/Once"), !state.playRangeLoopMode, () => state.playRangeLoopMode = false);
+                        menu.AddItem(L10n.TextContent("Play Range Mode/Loop"), state.playRangeLoopMode, () => state.playRangeLoopMode = true);
+                        menu.AddItem(L10n.TextContent("Play Range Mode/Once"), !state.playRangeLoopMode, () => state.playRangeLoopMode = false);
                     }
                     else
                     {
-                        menu.AddDisabledItem(EditorGUIUtility.TrTextContent("Play Range Mode"));
+                        menu.AddDisabledItem(L10n.TextContent("Play Range Mode"));
                     }
 
                     if (Unsupported.IsDeveloperMode())
                     {
                         menu.AddSeparator("");
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Show Snapping Debug"), SnapEngine.displayDebugLayout,
+                        menu.AddItem(L10n.TextContent("Show Snapping Debug"), SnapEngine.displayDebugLayout,
                             () => SnapEngine.displayDebugLayout = !SnapEngine.displayDebugLayout);
 
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Debug TimeArea"), false,
+                        menu.AddItem(L10n.TextContent("Debug TimeArea"), false,
                             () =>
                                 Debug.LogFormat("translation: {0}   scale: {1}   rect: {2}   shownRange: {3}", m_TimeArea.translation, m_TimeArea.scale, m_TimeArea.rect, m_TimeArea.shownArea));
 
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Edit Skin"), false, () => Selection.activeObject = DirectorStyles.Instance.customSkin);
+                        menu.AddItem(L10n.TextContent("Edit Skin"), false, () => Selection.activeObject = DirectorStyles.Instance.customSkin);
 
-                        menu.AddItem(EditorGUIUtility.TrTextContent("Show QuadTree Debugger"), state.showQuadTree,
+                        menu.AddItem(L10n.TextContent("Show QuadTree Debugger"), state.showQuadTree,
                             () => state.showQuadTree = !state.showQuadTree);
                     }
 

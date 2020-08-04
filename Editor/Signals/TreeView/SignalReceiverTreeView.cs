@@ -63,7 +63,7 @@ namespace UnityEditor.Timeline.Signals
             {
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = EditorGUIUtility.TrTextContent("Signal"),
+                    headerContent = L10n.TextContent("Signal"),
                     contextMenuText = "",
                     headerTextAlignment = TextAlignment.Center,
                     width = 50, minWidth = 50,
@@ -73,7 +73,7 @@ namespace UnityEditor.Timeline.Signals
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = EditorGUIUtility.TrTextContent("Reaction"),
+                    headerContent = L10n.TextContent("Reaction"),
                     contextMenuText = "",
                     headerTextAlignment = TextAlignment.Center,
                     width = 120, minWidth = 120,

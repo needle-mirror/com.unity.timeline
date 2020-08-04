@@ -5,6 +5,9 @@ using System.Text;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Timeline;
+#if !UNITY_2020_2_OR_NEWER
+using L10n = UnityEditor.Timeline.L10n;
+#endif
 
 namespace UnityEngine.Timeline
 {
@@ -18,12 +21,12 @@ namespace UnityEngine.Timeline
 
             const string k_Indent = "    ";
             public const string valuesFormatter = "0.###";
-            public static string mixedPropertiesInfo = L10n.Tr("The final {3} is {0}\n" +
-                "Calculated from:\n" +
-                k_Indent + "Clip: {1}\n" +
-                k_Indent + "Track: {2}");
+            public static string mixedPropertiesInfo = L10n.Tr("The final {3} is {0}\n") +
+                L10n.Tr("Calculated from:\n") +
+                k_Indent + L10n.Tr("Clip: {1}\n") +
+                k_Indent + L10n.Tr("Track: {2}");
 
-            public static string audioSourceContribution = L10n.Tr(k_Indent + "AudioSource: {0}");
+            public static string audioSourceContribution = k_Indent + L10n.Tr("AudioSource: {0}");
         }
 
         static StringBuilder s_MixInfoBuilder = new StringBuilder();

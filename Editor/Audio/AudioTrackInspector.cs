@@ -6,6 +6,9 @@ using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Timeline;
 using UnityEngine.Playables;
+#if !UNITY_2020_2_OR_NEWER
+using L10n = UnityEditor.Timeline.L10n;
+#endif
 
 namespace UnityEngine.Timeline
 {
@@ -23,10 +26,10 @@ namespace UnityEngine.Timeline
             const string k_Indent = "    ";
             public const string valuesFormatter = "0.###";
             public const string mixInfoSectionSeparator = "\n\n";
-            public static string mixedPropertiesInfo = L10n.Tr("The final {3} is {0}\n" +
-                "Calculated from:\n" +
-                k_Indent + "Track: {1}\n" +
-                k_Indent + "AudioSource: {2}");
+            public static string mixedPropertiesInfo = L10n.Tr("The final {3} is {0}\n") +
+                L10n.Tr("Calculated from:\n") +
+                k_Indent + L10n.Tr("Track: {1}\n") +
+                k_Indent + L10n.Tr("AudioSource: {2}");
         }
 
         static StringBuilder s_MixInfoBuilder = new StringBuilder();

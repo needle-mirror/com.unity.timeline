@@ -6,7 +6,7 @@ namespace UnityEditor.Timeline
 {
     static class AnimationOffsetMenu
     {
-        public static string MatchFieldsPrefix = "Match Offsets Fields/";
+        public static string MatchFieldsPrefix = L10n.Tr("Match Offsets Fields/");
 
         static bool EnforcePreviewMode()
         {

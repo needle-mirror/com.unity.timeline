@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
             if (currentlySelectedGo != null && !TimelineUtility.IsPrefabOrAsset(currentlySelectedGo) && existingAsset == null)
             {
                 showCreateButton = true;
-                textContent = new GUIContent(String.Format(DirectorStyles.createTimelineOnSelection.text, currentlySelectedGo.name, "a Director component and a Timeline asset"));
+                textContent = new GUIContent(String.Format(DirectorStyles.createTimelineOnSelection.text, currentlySelectedGo.name, L10n.Tr("a Director component and a Timeline asset")));
             }
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical();
@@ -77,7 +77,7 @@ namespace UnityEditor.Timeline
                 GUILayout.BeginHorizontal();
                 var textSize = GUI.skin.label.CalcSize(textContent);
                 GUILayout.Space((textSize.x / 2.0f) - (WindowConstants.createButtonWidth / 2.0f));
-                if (GUILayout.Button("Create", GUILayout.Width(WindowConstants.createButtonWidth)))
+                if (GUILayout.Button(L10n.Tr("Create"), GUILayout.Width(WindowConstants.createButtonWidth)))
                 {
                     var message = DirectorStyles.createNewTimelineText.text + " '" + currentlySelectedGo.name + "'";
                     var defaultName = currentlySelectedGo.name.EndsWith(DirectorStyles.newTimelineDefaultNameSuffix, StringComparison.OrdinalIgnoreCase)

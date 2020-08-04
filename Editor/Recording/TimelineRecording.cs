@@ -304,7 +304,7 @@ namespace UnityEditor.Timeline
             if (!GetClipAndRelativeTime(target, state, out clip, out keyTime, out inRange) || !inRange)
                 return;
             var refreshPreview = false;
-            TimelineUndo.PushUndo(clip, "Remove Key");
+            TimelineUndo.PushUndo(clip, L10n.Tr("Remove Key"));
             foreach (var mod in modifications)
             {
                 EditorCurveBinding temp;
@@ -459,7 +459,7 @@ namespace UnityEditor.Timeline
             if (!GetClipAndRelativeTime(target, state, out clip, out keyTime, out inRange))
                 return;
 
-            TimelineUndo.PushUndo(clip, "Remove Curve");
+            TimelineUndo.PushUndo(clip, L10n.Tr("Remove Curve"));
             foreach (var mod in modifications)
             {
                 EditorCurveBinding temp;

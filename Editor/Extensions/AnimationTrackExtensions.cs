@@ -84,13 +84,13 @@ namespace UnityEditor.Timeline
             if (!track.CanConvertToClipMode())
                 return;
 
-            UndoExtensions.RegisterTrack(track, "Convert To Clip");
+            UndoExtensions.RegisterTrack(track, L10n.Tr("Convert To Clip"));
 
             if (!track.infiniteClip.empty)
             {
                 var animClip = track.infiniteClip;
-                TimelineUndo.PushUndo(animClip, "Convert To Clip");
-                UndoExtensions.RegisterTrack(track, "Convert To Clip");
+                TimelineUndo.PushUndo(animClip, L10n.Tr("Convert To Clip"));
+                UndoExtensions.RegisterTrack(track, L10n.Tr("Convert To Clip"));
                 var start = AnimationClipCurveCache.Instance.GetCurveInfo(animClip).keyTimes.FirstOrDefault();
                 animClip.ShiftBySeconds(-start);
 
@@ -134,7 +134,7 @@ namespace UnityEditor.Timeline
             if (!track.CanConvertFromClipMode())
                 return;
 
-            UndoExtensions.RegisterTrack(track, "Convert From Clip");
+            UndoExtensions.RegisterTrack(track, L10n.Tr("Convert From Clip"));
 
             var clip = track.clips[0];
             var delta = (float)clip.start;
@@ -163,7 +163,7 @@ namespace UnityEditor.Timeline
                 animClip.ScaleTime(scale);
             }
 
-            TimelineUndo.PushUndo(animClip, "Convert From Clip");
+            TimelineUndo.PushUndo(animClip, L10n.Tr("Convert From Clip"));
             animClip.ShiftBySeconds(delta);
 
             // manually delete the clip

@@ -293,7 +293,7 @@ namespace UnityEditor.Timeline
             var attr = Attribute.GetCustomAttribute(t, typeof(DisplayNameAttribute), false) as DisplayNameAttribute;
             if (attr != null)
                 displayName = attr.DisplayName;
-            return displayName;
+            return L10n.Tr(displayName);
         }
 
         public static bool IsHiddenInMenu(Type type)

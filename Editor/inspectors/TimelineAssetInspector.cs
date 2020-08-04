@@ -13,12 +13,12 @@ namespace UnityEditor.Timeline
 
         static class Styles
         {
-            public static readonly GUIContent FrameRate = EditorGUIUtility.TrTextContent("Frame Rate", "The frame rate at which this sequence updates");
-            public static readonly GUIContent DurationMode = EditorGUIUtility.TrTextContent("Duration Mode", "Specified how the duration of the sequence is calculated");
-            public static readonly GUIContent Duration = EditorGUIUtility.TrTextContent("Duration", "The length of the sequence");
-            public static readonly GUIContent HeaderTitleMultiselection = EditorGUIUtility.TrTextContent("Timeline Assets");
-            public static readonly GUIContent IgnorePreviewWarning = EditorGUIUtility.TrTextContent("When ignoring preview, the Timeline window will modify the scene when this timeline is opened.");
-            public static readonly GUIContent ScenePreviewLabel = EditorGUIUtility.TrTextContent("Scene Preview");
+            public static readonly GUIContent FrameRate = L10n.TextContent("Frame Rate", "The frame rate at which this sequence updates");
+            public static readonly GUIContent DurationMode = L10n.TextContent("Duration Mode", "Specified how the duration of the sequence is calculated");
+            public static readonly GUIContent Duration = L10n.TextContent("Duration", "The length of the sequence");
+            public static readonly GUIContent HeaderTitleMultiselection = L10n.TextContent("Timeline Assets");
+            public static readonly GUIContent IgnorePreviewWarning = L10n.TextContent("When ignoring preview, the Timeline window will modify the scene when this timeline is opened.");
+            public static readonly GUIContent ScenePreviewLabel = L10n.TextContent("Scene Preview");
         }
 
         SerializedProperty m_FrameRateProperty;

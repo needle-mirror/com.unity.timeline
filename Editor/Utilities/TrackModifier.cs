@@ -11,7 +11,7 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedDirector != null)
             {
-                TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, "Delete Track");
+                TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, L10n.Tr("Delete Track"));
                 TimelineEditor.inspectedDirector.ClearGenericBinding(track);
             }
 

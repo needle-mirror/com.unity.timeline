@@ -8,7 +8,7 @@ namespace UnityEditor.Timeline
 {
     static class Gaps
     {
-        static readonly string kInsertTime = "Insert Time";
+        static readonly string kInsertTime = L10n.Tr("Insert Time");
 
         public static void Insert(TimelineAsset asset, double at, double amount, double tolerance)
         {
@@ -43,14 +43,14 @@ namespace UnityEditor.Timeline
         static readonly int[] kFrameInsertionValues = {5, 10, 25, 100};
         static readonly GUIContent[] kFrameInsertionValuesGuiContents =
         {
-            EditorGUIUtility.TrTextContent("Insert/Frame/5 Frames"),
-            EditorGUIUtility.TrTextContent("Insert/Frame/10 Frames"),
-            EditorGUIUtility.TrTextContent("Insert/Frame/25 Frames"),
-            EditorGUIUtility.TrTextContent("Insert/Frame/100 Frames")
+            L10n.TextContent("Insert/Frame/5 Frames"),
+            L10n.TextContent("Insert/Frame/10 Frames"),
+            L10n.TextContent("Insert/Frame/25 Frames"),
+            L10n.TextContent("Insert/Frame/100 Frames")
         };
 
-        static readonly GUIContent kSingleFrameGuiContents = EditorGUIUtility.TrTextContent("Insert/Frame/Single");
-        static readonly GUIContent kSelectedTimeGuiContents = EditorGUIUtility.TrTextContent("Insert/Selected Time");
+        static readonly GUIContent kSingleFrameGuiContents = L10n.TextContent("Insert/Frame/Single");
+        static readonly GUIContent kSelectedTimeGuiContents = L10n.TextContent("Insert/Selected Time");
 
         public PlayheadContextMenu(TimeAreaItem timeAreaItem)
         {
@@ -93,12 +93,12 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Ending Before"), false, () => SelectClipsEndingBefore(state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Starting Before"), false, () => SelectClipsStartingBefore(state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Ending After"), false, () => SelectClipsEndingAfter(state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Starting After"), false, () => SelectClipsStartingAfter(state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Clips Intersecting"), false, () => SelectClipsIntersecting(state));
-            menu.AddItem(EditorGUIUtility.TrTextContent("Select/Blends Intersecting"), false, () => SelectBlendsIntersecting(state));
+            menu.AddItem(L10n.TextContent("Select/Clips Ending Before"), false, () => SelectClipsEndingBefore(state));
+            menu.AddItem(L10n.TextContent("Select/Clips Starting Before"), false, () => SelectClipsStartingBefore(state));
+            menu.AddItem(L10n.TextContent("Select/Clips Ending After"), false, () => SelectClipsEndingAfter(state));
+            menu.AddItem(L10n.TextContent("Select/Clips Starting After"), false, () => SelectClipsStartingAfter(state));
+            menu.AddItem(L10n.TextContent("Select/Clips Intersecting"), false, () => SelectClipsIntersecting(state));
+            menu.AddItem(L10n.TextContent("Select/Blends Intersecting"), false, () => SelectBlendsIntersecting(state));
             menu.ShowAsContext();
 
             return true;

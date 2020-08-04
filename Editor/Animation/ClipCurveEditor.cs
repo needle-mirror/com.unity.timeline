@@ -130,7 +130,7 @@ namespace UnityEditor
             AnimationClip clip = m_DataSource.animationClip;
 
             // something changed, manage the undo properly.
-            Undo.RegisterCompleteObjectUndo(clip, "Edit Clip Curve");
+            Undo.RegisterCompleteObjectUndo(clip, L10n.Tr("Edit Clip Curve"));
 
             foreach (CurveWrapper c in curvesToUpdate)
             {
@@ -176,7 +176,7 @@ namespace UnityEditor
                 return;
 
             GenericMenu menu = new GenericMenu();
-            GUIContent removePropertyContent = new GUIContent(EditorGUIUtility.TrTextContent("Remove Properties"));
+            GUIContent removePropertyContent = new GUIContent(L10n.Tr("Remove Properties"));
             menu.AddItem(removePropertyContent, false, RemoveSelectedProperties);
             menu.ShowAsContext();
         }
