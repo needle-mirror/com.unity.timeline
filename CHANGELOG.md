@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.16] - 2020-08-04
+
+### Fixed
+- Fixed issue where play range didn't loop when range ends on the final frame. ([1215926](https://issuetracker.unity3d.com/issues/timeline-play-range-doesnt-loop-when-play-range-ends-on-the-final-frame))
+- Fixed issue where the Timeline window would rebuild its Playable Graph every time an AnimationClip would be added, changed or deserialized. (1265314, [1267055](https://issuetracker.unity3d.com/product/unity/issues/guid/1267055/))
+
 ## [1.2.15] - 2020-06-10
 
 ### Fixed
