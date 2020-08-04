@@ -13,32 +13,47 @@ namespace UnityEditor.Timeline
     {
         public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
         {
-            if (clips.Count() == 1 && clips.First().animationClip != null)
-                return ActionValidity.Valid;
-            return ActionValidity.NotApplicable;
+            if (!GetEditableClip(clips, out _, out _))
+                return ActionValidity.NotApplicable;
+            return ActionValidity.Valid;
         }
 
         public override bool Execute(IEnumerable<TimelineClip> clips)
         {
-            var clip = clips.FirstOrDefault();
+            TimelineClip clip;
+            AnimationClip clipToEdit;
+            if (!GetEditableClip(clips, out clip, out clipToEdit))
+                return false;
 
-            if (clip != null && (clip.curves != null || clip.animationClip != null))
-            {
-                var clipToEdit = clip.animationClip != null ? clip.animationClip : clip.curves;
-                if (clipToEdit == null)
-                    return false;
+            GameObject gameObject = null;
+            if (TimelineEditor.inspectedDirector != null)
+                gameObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.parentTrack);
 
-                GameObject gameObject = null;
-                if (TimelineEditor.inspectedDirector != null)
-                    gameObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.parentTrack);
+            var timeController = TimelineAnimationUtilities.CreateTimeController(clip);
+            TimelineAnimationUtilities.EditAnimationClipWithTimeController(
+                clipToEdit, timeController, clip.animationClip != null ? gameObject : null);
 
-                var timeController = TimelineAnimationUtilities.CreateTimeController(clip);
-                TimelineAnimationUtilities.EditAnimationClipWithTimeController(
-                    clipToEdit, timeController, clip.animationClip != null  ? gameObject : null);
-                return true;
-            }
+            return true;
+        }
 
-            return false;
+        private static bool GetEditableClip(IEnumerable<TimelineClip> clips, out TimelineClip clip, out AnimationClip animClip)
+        {
+            clip = null;
+            animClip = null;
+
+            if (clips.Count() != 1)
+                return false;
+
+            clip = clips.FirstOrDefault();
+            if (clip == null)
+                return false;
+
+            if (clip.animationClip != null)
+                animClip = clip.animationClip;
+            else if (clip.curves != null && !clip.curves.empty)
+                animClip = clip.curves;
+
+            return animClip != null;
         }
     }
 

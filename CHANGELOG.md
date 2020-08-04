@@ -1,8 +1,15 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.2] - 2020-08-04
+
+### Fixed
+- Fixed double-click not opening the AnimationWindow on clips with animated parameters. ([1262950](https://issuetracker.unity3d.com/product/unity/issues/guid/1262950/))
+- Fixed issue where the Timeline window would rebuild its Playable Graph every time an AnimationClip would be added, changed or deserialized. (1265314, [1267055](https://issuetracker.unity3d.com/product/unity/issues/guid/1267055/))
+
 ## [1.4.1] - 2020-07-15
 
+### Fixed
 - Fixed `IndexOutOfRangeException` exception being thrown when editing inspector curves. ([1259902](https://issuetracker.unity3d.com/product/unity/issues/guid/1259902/))
 - Fixed `IndexOutOfRangeException` exception being thrown when the `New Signal` dialog replaces an existing signal. ([1241170](https://issuetracker.unity3d.com/product/unity/issues/guid/1241170/))
 - Fixed signal state being reset on paused timelines. ([1257208](https://issuetracker.unity3d.com/product/unity/issues/guid/1257208/))

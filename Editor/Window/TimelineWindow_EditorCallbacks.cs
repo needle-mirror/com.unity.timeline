@@ -93,30 +93,32 @@ namespace UnityEditor.Timeline
             if (state.previewMode == false)
                 return;
 
+            bool hasPlayable = m_PlayableLookup.GetPlayableFromAnimClip(clip, out Playable playable);
+
+            // mark the timeline clip as dirty
+            TimelineClip timelineClip = m_PlayableLookup.GetTimelineClipFromCurves(clip);
+            if (timelineClip != null)
+                timelineClip.MarkDirty();
+
             if (type == AnimationUtility.CurveModifiedType.CurveModified)
             {
-                Playable playable;
-                if (m_PlayableLookup.GetPlayableFromAnimClip(clip, out playable))
+                if (hasPlayable)
                 {
                     playable.SetAnimatedProperties(clip);
                 }
-
-                // mark the timeline clip as dirty
-                TimelineClip timelineClip = m_PlayableLookup.GetTimelineClipFromCurves(clip);
-                if (timelineClip != null)
-                    timelineClip.MarkDirty();
 
                 // updates the duration of the graph without rebuilding
                 AnimationUtility.SyncEditorCurves(clip); // deleted keys are not synced when this is sent out, so duration could be incorrect
                 state.UpdateRootPlayableDuration(state.editSequence.duration);
 
                 // don't evaluate if this is caused by recording on an animation track, the extra evaluation can cause hiccups
-                if (!TimelineRecording.IsRecordingAnimationTrack)
+                // Prevent graphs to be resurrected  by a changed clip.
+                if (!TimelineRecording.IsRecordingAnimationTrack && TimelineEditor.masterDirector.playableGraph.IsValid())
                     state.Evaluate();
             }
-            else // curve added/removed, or clip added/removed
+            else if (EditorUtility.IsDirty(clip)) // curve added/removed, or clip added/removed
             {
-                state.rebuildGraph = true;
+                state.rebuildGraph |= timelineClip!=null || hasPlayable  ;
             }
         }
 
