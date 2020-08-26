@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -13,7 +12,6 @@ namespace UnityEditor.Timeline
         readonly Dictionary<TimelineClip, WaveformPreview> m_PersistentPreviews = new Dictionary<TimelineClip, WaveformPreview>();
         ColorSpace m_ColorSpace = ColorSpace.Uninitialized;
 
-        /// <inheritdoc/>
         public override ClipDrawOptions GetClipOptions(TimelineClip clip)
         {
             var clipOptions = base.GetClipOptions(clip);
@@ -23,7 +21,6 @@ namespace UnityEditor.Timeline
             return clipOptions;
         }
 
-        /// <inheritdoc/>
         public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
         {
             if (!TimelineWindow.instance.state.showAudioWaveform)
@@ -45,35 +42,58 @@ namespace UnityEditor.Timeline
                 return;
 
             var quantizedRect = new Rect(Mathf.Ceil(rect.x), Mathf.Ceil(rect.y), Mathf.Ceil(rect.width), Mathf.Ceil(rect.height));
-            WaveformPreview preview;
 
+            WaveformPreview preview = GetOrCreateWaveformPreview(clip, audioClip, quantizedRect, region.startTime, region.endTime);
+            if (Event.current.type == EventType.Repaint)
+                DrawWaveformPreview(preview, quantizedRect);
+        }
+
+        public WaveformPreview GetOrCreateWaveformPreview(TimelineClip clip, AudioClip audioClip, Rect rect, double startTime, double endTime)
+        {
             if (QualitySettings.activeColorSpace != m_ColorSpace)
             {
                 m_ColorSpace = QualitySettings.activeColorSpace;
                 m_PersistentPreviews.Clear();
             }
 
-            if (!m_PersistentPreviews.TryGetValue(clip, out preview) || audioClip != preview.presentedObject)
+            bool previewExists = m_PersistentPreviews.TryGetValue(clip, out WaveformPreview preview);
+            bool audioClipHasChanged = preview != null && audioClip != preview.presentedObject;
+            if (!previewExists || audioClipHasChanged)
             {
-                preview = m_PersistentPreviews[clip] = WaveformPreviewFactory.Create((int)quantizedRect.width, audioClip);
-                Color waveColour = GammaCorrect(DirectorStyles.Instance.customSkin.colorAudioWaveform);
-                Color transparent = waveColour;
-                transparent.a = 0;
-                preview.backgroundColor = transparent;
-                preview.waveColor = waveColour;
-                preview.SetChannelMode(WaveformPreview.ChannelMode.MonoSum);
-                preview.updated += () => TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
+                if (AssetDatabase.Contains(audioClip))
+                    preview = CreateWaveformPreview(audioClip, rect);
+                m_PersistentPreviews[clip] = preview;
             }
+
+            if (preview == null)
+                return null;
 
             preview.looping = clip.SupportsLooping();
-            preview.SetTimeInfo(region.startTime, region.endTime - region.startTime);
-            preview.OptimizeForSize(quantizedRect.size);
+            preview.SetTimeInfo(startTime, endTime - startTime);
+            preview.OptimizeForSize(rect.size);
+            return preview;
+        }
 
-            if (Event.current.type == EventType.Repaint)
+        public static void DrawWaveformPreview(WaveformPreview preview, Rect rect)
+        {
+            if (preview != null)
             {
                 preview.ApplyModifications();
-                preview.Render(quantizedRect);
+                preview.Render(rect);
             }
+        }
+
+        static WaveformPreview CreateWaveformPreview(AudioClip audioClip, Rect quantizedRect)
+        {
+            WaveformPreview preview = WaveformPreviewFactory.Create((int)quantizedRect.width, audioClip);
+            Color waveColour = GammaCorrect(DirectorStyles.Instance.customSkin.colorAudioWaveform);
+            Color transparent = waveColour;
+            transparent.a = 0;
+            preview.backgroundColor = transparent;
+            preview.waveColor = waveColour;
+            preview.SetChannelMode(WaveformPreview.ChannelMode.MonoSum);
+            preview.updated += () => TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
+            return preview;
         }
 
         static Color GammaCorrect(Color color)

@@ -1,14 +1,23 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.0-preview.5] - 2020-08-26
+
+### Fixed
+- Fixed issue where `KeyAllAnimated` was available when right-clicking on markers and tracks that were not in record mode. (1270304)
+
+### Changed 
+- Timeline marker track is now selectable.
+
+### Added
+ - The Timeline window will automatically rebuild the graph when a notifications's properties are changed.
+ - The Timeline window will be automatically refreshed when a marker's properties are changed.
+ - Added `TimelineEditor.GetInspectedTimeFromMasterTime` and `TimelineEditor.GetMasterTimeFromInspectedTime` to convert time from master to inspected timeline and vice versa when using sub-timelines.
+
 ## [1.5.0-preview.4] - 2020-08-04
 
 ### Added
 - Added Japanese translation.
-
-### Fixed
-- Fixed issue where the Timeline window would rebuild its Playable Graph every time an AnimationClip would be added, changed or deserialized. (1265314, [1267055](https://issuetracker.unity3d.com/product/unity/issues/guid/1267055/))
-- Fixed double-click not opening the AnimationWindow on clips with animated parameters. ([1262950](https://issuetracker.unity3d.com/product/unity/issues/guid/1262950/))
 
 ## [1.5.0-preview.3] - 2020-07-17
 
@@ -37,8 +46,24 @@ All notable changes to this package will be documented in this file. The format 
 - `TrackExtensions.GetCollapsed`, `TrackExtensions.SetCollapsed`, `TrackExtensions.IsVisibleRecursive` to get and change the visibility state of a track.
 - `AnimationTrackExtensions.IsRecording`, `AnimationTrackExtensions.SetRecording`, `AnimationTrackExtensions.SupportsRecording` to get or change the recording state of an Animation track.
 
+## [1.4.3] - 2020-08-26
+
+### Fixed
+- Fixed incorrect selection when clicking on a clip's blend. (1178052)
+- Fixed issue where an exception was thrown when drawing an Audio clip's waveform when that clip wasn't in the AssetDatabase. ([1268868](https://issuetracker.unity3d.com/product/unity/issues/guid/1268868/))
+- When choosing `Add Signal Emitter from Signal Asset`, closing the Object Selector window will not add an empty Signal Emitter. ([1261553](https://issuetracker.unity3d.com/product/unity/issues/guid/1261553/))
+- Fixed issue where an error would appear when editing keys in the Animation window if the Timeline window is opened. (1269829)
+- Fixed issue where the `Frame All` operation would continually increase the zoom value when only empty tracks are added to the timeline ([1273540](https://issuetracker.unity3d.com/product/unity/issues/guid/1273540/)).
+
+## [1.4.2] - 2020-08-04
+
+### Fixed
+- Fixed double-click not opening the AnimationWindow on clips with animated parameters. ([1262950](https://issuetracker.unity3d.com/product/unity/issues/guid/1262950/))
+- Fixed issue where the Timeline window would rebuild its Playable Graph every time an AnimationClip would be added, changed or deserialized. (1265314, [1267055](https://issuetracker.unity3d.com/product/unity/issues/guid/1267055/))
+
 ## [1.4.1] - 2020-07-15
 
+### Fixed
 - Fixed `IndexOutOfRangeException` exception being thrown when editing inspector curves. ([1259902](https://issuetracker.unity3d.com/product/unity/issues/guid/1259902/))
 - Fixed `IndexOutOfRangeException` exception being thrown when the `New Signal` dialog replaces an existing signal. ([1241170](https://issuetracker.unity3d.com/product/unity/issues/guid/1241170/))
 - Fixed signal state being reset on paused timelines. ([1257208](https://issuetracker.unity3d.com/product/unity/issues/guid/1257208/))

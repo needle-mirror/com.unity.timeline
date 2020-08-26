@@ -105,5 +105,15 @@ namespace UnityEditor.Timeline
                 EditorGUI.DrawRect(rect, c);
             }
         }
+
+        public static Rect CalculateTextBoxSize(Rect trackRect, GUIStyle font, GUIContent content, float padding)
+        {
+            Rect textRect = trackRect;
+            textRect.width = font.CalcSize(content).x + padding;
+            textRect.x += (trackRect.width - textRect.width) / 2f;
+            textRect.height -= 4f;
+            textRect.y += 2f;
+            return textRect;
+        }
     }
 }

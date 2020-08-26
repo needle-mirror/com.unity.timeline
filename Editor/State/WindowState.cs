@@ -331,17 +331,8 @@ namespace UnityEditor.Timeline
 
         public bool showMarkerHeader
         {
-            get { return editSequence.viewModel.showMarkerHeader; }
+            get { return editSequence.asset != null && editSequence.asset.markerTrack != null && editSequence.asset.markerTrack.GetShowMarkers(); }
             set { GetWindow().SetShowMarkerHeader(value); }
-        }
-
-        void UnSelectMarkerOnHeaderTrack()
-        {
-            foreach (IMarker marker in SelectionManager.SelectedMarkers())
-            {
-                if (marker.parent == editSequence.asset.markerTrack)
-                    SelectionManager.Remove(marker);
-            }
         }
 
         public EditMode.EditType editType
@@ -355,8 +346,6 @@ namespace UnityEditor.Timeline
             get { return TimelinePreferences.instance.playbackScrollMode; }
             set { TimelinePreferences.instance.playbackScrollMode = value; }
         }
-
-        public bool isClipSnapping { get; set; }
 
         public List<PlayableDirector> previewedDirectors { get; private set; }
 

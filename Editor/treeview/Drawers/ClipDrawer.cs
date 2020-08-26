@@ -206,7 +206,10 @@ namespace UnityEditor.Timeline
                 DrawClipSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends);
 
             if (drawData.previousClip != null && drawData.previousClipSelected)
-                DrawClipBlendSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends);
+            {
+                bool shouldDrawLeftLine = Math.Abs(drawData.previousClip.start - drawData.clip.start) < double.Epsilon;
+                DrawClipBlendSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends, shouldDrawLeftLine);
+            }
         }
 
         public static void DrawClipSelectionBorder(Rect clipRect, ClipBorder border, ClipBlends blends)
@@ -263,7 +266,7 @@ namespace UnityEditor.Timeline
             Graphics.DrawPolygonAA(color, s_BlendLines);
         }
 
-        static void DrawClipBlendSelectionBorder(Rect clipRect, ClipBorder border, ClipBlends blends)
+        static void DrawClipBlendSelectionBorder(Rect clipRect, ClipBorder border, ClipBlends blends, bool shouldLeftLine = false)
         {
             var color = border.color;
             var thickness = border.thickness;
@@ -273,6 +276,8 @@ namespace UnityEditor.Timeline
                 var xBottom1 = blends.inRect.xMin;
                 var xBottom2 = blends.inRect.xMax;
                 EditorGUI.DrawRect(new Rect(xBottom1, clipRect.max.y - thickness, xBottom2 - xBottom1, thickness), color);
+                if (shouldLeftLine)
+                    EditorGUI.DrawRect(new Rect(xBottom1, clipRect.min.y, thickness, clipRect.max.y - clipRect.min.y), color);
             }
         }
 

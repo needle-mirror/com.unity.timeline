@@ -1051,5 +1051,3 @@
     padding-right: 0px;
     -unity-text-align: middle-center;
 }
-
-.markerHeaderMuteButton {}

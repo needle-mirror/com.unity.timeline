@@ -245,8 +245,3 @@
 .trackButtonSuite {
     background-color: rgba(241, 241, 241, 0.7);
 }
-
-.markerHeaderMuteButton {
-    background-image: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMuteButtonEnabled.png");
-    -unity-scaled-backgrounds: resource("Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/TrackMuteButtonEnabled@2x.png");
-}

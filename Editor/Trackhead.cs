@@ -192,7 +192,7 @@ namespace UnityEditor.Timeline
                 else
                     menu.AddItem(item, state.editSequence.asset.durationMode == mode, () => SelectDurationCallback(state, mode));
 
-                menu.AddItem(DirectorStyles.showMarkersOnTimeline, state.showMarkerHeader, () => Invoker.InvokeWithSelected<ToggleShowMarkersOnTimeline>());
+                menu.AddItem(DirectorStyles.showMarkersOnTimeline, state.showMarkerHeader, () => state.showMarkerHeader = !state.showMarkerHeader);
             }
         }
 

@@ -486,14 +486,14 @@ namespace UnityEditor.Timeline
             TimelineWindow.instance.state.UnarmForRecord(track);
         }
 
-        internal static void SetShowTrackMarkers(this TrackAsset track, bool showMarkerHeader)
+        internal static void SetShowTrackMarkers(this TrackAsset track, bool showMarkers)
         {
             var currentValue = track.GetShowMarkers();
-            if (currentValue != showMarkerHeader)
+            if (currentValue != showMarkers)
             {
                 TimelineUndo.PushUndo(TimelineWindow.instance.state.editSequence.viewModel, L10n.Tr("Toggle Show Markers"));
-                track.SetShowMarkers(showMarkerHeader);
-                if (!showMarkerHeader)
+                track.SetShowMarkers(showMarkers);
+                if (!showMarkers)
                 {
                     foreach (var marker in track.GetMarkers())
                     {
@@ -501,6 +501,16 @@ namespace UnityEditor.Timeline
                     }
                 }
             }
+        }
+
+        internal static IEnumerable<TrackAsset> RemoveTimelineMarkerTrackFromList(this IEnumerable<TrackAsset> tracks, TimelineAsset asset)
+        {
+            return tracks.Where(t => t != asset.markerTrack);
+        }
+
+        internal static bool ContainsTimelineMarkerTrack(this IEnumerable<TrackAsset> tracks, TimelineAsset asset)
+        {
+            return tracks.Contains(asset.markerTrack);
         }
     }
 }

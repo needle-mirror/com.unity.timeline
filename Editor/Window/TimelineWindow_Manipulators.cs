@@ -22,7 +22,6 @@ namespace UnityEditor.Timeline
             m_PreTreeViewControl.AddManipulator(new Jog());
             m_PreTreeViewControl.AddManipulator(TimelineZoomManipulator.Instance);
             m_PreTreeViewControl.AddManipulator(new ContextMenuManipulator());
-            m_PreTreeViewControl.AddManipulator(new TimelineMarkerHeaderContextMenu());
 
             m_PreTreeViewControl.AddManipulator(new EaseClip());
             m_PreTreeViewControl.AddManipulator(new TrimClip());
@@ -32,6 +31,7 @@ namespace UnityEditor.Timeline
             m_PreTreeViewControl.AddManipulator(new InlineCurvesShortcutManipulator());
 
             // Manipulators that needs to be processed AFTER the treeView or any GUI element able to use event (like inline curves)
+            m_PostTreeViewControl.AddManipulator(new MarkerHeaderTrackManipulator());
             m_PostTreeViewControl.AddManipulator(new TimeAreaContextMenu());
             m_PostTreeViewControl.AddManipulator(new TrackShortcutManipulator());
             m_PostTreeViewControl.AddManipulator(new TimelineShortcutManipulator());

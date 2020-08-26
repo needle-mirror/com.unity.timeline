@@ -130,11 +130,6 @@ namespace UnityEditor.Timeline
             get { return m_MinLoopIndex; }
         }
 
-        public TrackDrawer drawer
-        {
-            get { return ((TimelineTrackGUI)parent).drawer; }
-        }
-
         public Rect clippedRect { get; private set; }
 
         public override void Select()
@@ -155,6 +150,34 @@ namespace UnityEditor.Timeline
             SelectionManager.Remove(clip);
             if (inlineCurvesSelected)
                 SelectionManager.SelectInlineCurveEditor(null);
+        }
+
+        public override bool CanSelect()
+        {
+            ClipBlends clipBlends = GetClipBlends();
+
+            //clips that do not overlap are always selectable
+            if (clipBlends.inKind != BlendKind.Mix && clipBlends.outKind != BlendKind.Mix)
+                return true;
+
+            Vector2 mousePos = Event.current.mousePosition - rect.position;
+            return m_ClipCenterSection.Contains(mousePos) || IsPointLocatedInClipBlend(mousePos, clipBlends);
+        }
+
+        static bool IsPointLocatedInClipBlend(Vector2 pt, ClipBlends blends)
+        {
+            if (blends.inRect.Contains(pt))
+                return Sign(pt, blends.inRect.min, blends.inRect.max) < 0;
+
+            if (blends.outRect.Contains(pt))
+                return Sign(pt, blends.outRect.min, blends.outRect.max) >= 0;
+
+            return false;
+        }
+
+        static float Sign(Vector2 point, Vector2 linePoint1, Vector2 linePoint2)
+        {
+            return (point.x - linePoint2.x) * (linePoint1.y - linePoint2.y) - (linePoint1.x - linePoint2.x) * (point.y - linePoint2.y);
         }
 
         public override ITimelineItem item

@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Timeline;
-using Component = UnityEngine.Component;
 
 namespace UnityEditor.Timeline
 {
@@ -130,7 +129,6 @@ namespace UnityEditor.Timeline
 
         public string menuName { get; private set; }
 
-
         void UpdateMenuName(IEnumerable<TrackAsset> tracks)
         {
             menuName = tracks.Any(x => !x.locked) ? k_LockText : k_UnlockText;
@@ -148,6 +146,10 @@ namespace UnityEditor.Timeline
         public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             UpdateMenuName(tracks);
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
+
+            if (!tracks.Any())
+                return ActionValidity.NotApplicable;
             if (tracks.Any(TimelineUtility.IsLockedFromGroup))
                 return ActionValidity.Invalid;
             return ActionValidity.Valid;
@@ -349,6 +351,8 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
+
             // disable preview mode so deleted tracks revert to default state
             // Case 956129: Disable preview mode _before_ deleting the tracks, since clip data is still needed
             TimelineEditor.state.previewMode = false;
@@ -376,8 +380,8 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
             TimelineEditor.clipboard.CopyTracks(tracks);
-
             return true;
         }
     }
@@ -388,6 +392,7 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
             if (tracks.Any())
             {
                 SelectionManager.RemoveTimelineSelection();

@@ -178,23 +178,23 @@ namespace UnityEditor.Timeline
 
         internal void SetShowMarkerHeader(bool newValue)
         {
-            if (state.showMarkerHeader == newValue)
+            TimelineAsset asset = state.editSequence.asset;
+            if (state.showMarkerHeader == newValue || asset == null)
                 return;
 
-            TimelineUndo.PushUndo(state.editSequence.viewModel, L10n.Tr("Toggle Show Markers"));
-            state.editSequence.viewModel.showMarkerHeader = newValue;
-            if (!newValue)
+            string undoOperation = L10n.Tr("Toggle Show Markers");
+            if (newValue)
             {
-                var asset = state.editSequence.asset;
-                if (asset != null && asset.markerTrack != null)
-                {
-                    SelectionManager.Remove(asset.markerTrack);
-                    foreach (var marker in asset.markerTrack.GetMarkers())
-                    {
-                        SelectionManager.Remove(marker);
-                    }
-                }
+                //Create the marker track if it does not exist
+                TimelineUndo.PushUndo(asset, undoOperation);
+                asset.CreateMarkerTrack();
             }
+            else
+            {
+                SelectionManager.Remove(asset.markerTrack);
+            }
+
+            asset.markerTrack.SetShowTrackMarkers(newValue);
         }
 
         static void EditModeToolbarGUI(TimelineMode mode)

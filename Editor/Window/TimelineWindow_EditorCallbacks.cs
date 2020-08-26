@@ -137,14 +137,18 @@ namespace UnityEditor.Timeline
                 AnimationUtility.SyncEditorCurves(clip); // deleted keys are not synced when this is sent out, so duration could be incorrect
                 state.UpdateRootPlayableDuration(state.editSequence.duration);
 
+                bool isRecording = TimelineRecording.IsRecordingAnimationTrack;
+                PlayableDirector masterDirector = TimelineEditor.masterDirector;
+                bool isGraphValid = masterDirector != null && masterDirector.playableGraph.IsValid();
+
                 // don't evaluate if this is caused by recording on an animation track, the extra evaluation can cause hiccups
                 // Prevent graphs to be resurrected  by a changed clip.
-                if (!TimelineRecording.IsRecordingAnimationTrack && TimelineEditor.masterDirector.playableGraph.IsValid())
+                if (!isRecording && isGraphValid)
                     state.Evaluate();
             }
             else if (EditorUtility.IsDirty(clip)) // curve added/removed, or clip added/removed
             {
-                state.rebuildGraph |= timelineClip!=null || hasPlayable  ;
+                state.rebuildGraph |= timelineClip != null || hasPlayable;
             }
         }
 
@@ -223,8 +227,17 @@ namespace UnityEditor.Timeline
             {
                 var mod = modifications[i];
 
-                // check if an Avatar Mask has been modified
-                if (mod.previousValue != null && mod.previousValue.target is AvatarMask)
+                if (mod.currentValue != null && mod.currentValue.target is IMarker currentMarker)
+                {
+                    if (currentMarker.parent != null && currentMarker.parent.timelineAsset == state.editSequence.asset)
+                    {
+                        if (mod.currentValue.target is INotification)
+                            TimelineEditor.Refresh(RefreshReason.ContentsModified);
+                        else
+                            TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
+                    }
+                }
+                else if (mod.previousValue != null && mod.previousValue.target is AvatarMask) // check if an Avatar Mask has been modified
                 {
                     rebuildGraph = state.editSequence.asset != null &&
                         state.editSequence.asset.flattenedTracks

@@ -225,6 +225,34 @@ namespace UnityEditor.Timeline
                 director = inspectedDirector
             };
         }
+
+        /// <summary>
+        /// Converts time from the master timeline to the current inspected timeline.
+        /// </summary>
+        /// <param name="masterTime">Time in the referential of the main timeline</param>
+        /// <returns>Time in the referential of the sub-timeline that is currently show.
+        /// Returns <paramref name="masterTime"/> if there is no sub-timeline or if no timeline is shown.</returns>
+        public static double GetInspectedTimeFromMasterTime(double masterTime)
+        {
+            ISequenceState editSequence = state?.editSequence;
+            if (editSequence == null)
+                return masterTime;
+            return state.editSequence.ToLocalTime(masterTime);
+        }
+
+        /// <summary>
+        /// Converts time from the current inspected timeline to the master timeline.
+        /// </summary>
+        /// <param name="inspectedTime">Time in the referential of the sub-timeline</param>
+        /// <returns>Time in the referential of the main timeline.
+        /// Returns <paramref name="inspectedTime"/> if there if no timeline is shown.</returns>
+        public static double GetMasterTimeFromInspectedTime(double inspectedTime)
+        {
+            ISequenceState editSequence = state?.editSequence;
+            if (editSequence == null)
+                return inspectedTime;
+            return editSequence.ToGlobalTime(inspectedTime);
+        }
     }
 
     /// <summary>

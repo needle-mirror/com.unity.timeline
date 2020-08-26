@@ -108,7 +108,6 @@ namespace UnityEditor.Timeline
         public GUIStyle timeReferenceButton;
         public GUIStyle trackButtonSuite;
         public GUIStyle previewButtonDisabled;
-        public GUIStyle markerHeaderMuteButton;
 
         static internal DirectorStyles s_Instance;
 
@@ -284,7 +283,6 @@ namespace UnityEditor.Timeline
             timeReferenceButton = GetGUIStyle("timeReferenceButton");
             trackButtonSuite = GetGUIStyle("trackButtonSuite");
             previewButtonDisabled = GetGUIStyle("previewButtonDisabled");
-            markerHeaderMuteButton = GetGUIStyle("markerHeaderMuteButton");
 
             playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = L10n.Tr("Toggle play range markers.") };
 
