@@ -32,6 +32,11 @@ namespace UnityEditor.Timeline
             return pickedElements.OfType<ILayerable>().OrderBy(x => x.zOrder).LastOrDefault() as T;
         }
 
+        public static IEnumerable<T> PickedAllElementsOfType<T>() where T : class, ILayerable
+        {
+            return pickedElements.OfType<T>().OrderBy(x => x.zOrder);
+        }
+
         public static T FirstPickedElementOfType<T>() where T : class, IBounds
         {
             return pickedElements.FirstOrDefault(e => e is T) as T;

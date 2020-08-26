@@ -111,14 +111,18 @@ namespace UnityEditor.Timeline
                 AnimationUtility.SyncEditorCurves(clip); // deleted keys are not synced when this is sent out, so duration could be incorrect
                 state.UpdateRootPlayableDuration(state.editSequence.duration);
 
+                bool isRecording = TimelineRecording.IsRecordingAnimationTrack;
+                PlayableDirector masterDirector = TimelineEditor.masterDirector;
+                bool isGraphValid = masterDirector != null && masterDirector.playableGraph.IsValid();
+
                 // don't evaluate if this is caused by recording on an animation track, the extra evaluation can cause hiccups
                 // Prevent graphs to be resurrected  by a changed clip.
-                if (!TimelineRecording.IsRecordingAnimationTrack && TimelineEditor.masterDirector.playableGraph.IsValid())
+                if (!isRecording && isGraphValid)
                     state.Evaluate();
             }
             else if (EditorUtility.IsDirty(clip)) // curve added/removed, or clip added/removed
             {
-                state.rebuildGraph |= timelineClip!=null || hasPlayable  ;
+                state.rebuildGraph |= timelineClip != null || hasPlayable;
             }
         }
 

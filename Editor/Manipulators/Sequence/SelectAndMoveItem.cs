@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -52,7 +53,7 @@ namespace UnityEditor.Timeline
 
         public static ISelectable HandleSingleSelection(Event evt)
         {
-            var item = PickerUtils.PickedLayerableOfType<ISelectable>();
+            ISelectable item = PickerUtils.PickedAllElementsOfType<ISelectable>().FirstOrDefault(i => i.CanSelect());
 
             if (item != null)
             {
@@ -63,7 +64,7 @@ namespace UnityEditor.Timeline
                 if (evt.modifiers == EventModifiers.Shift)
                 {
                     if (!selected)
-                        RangeSelectItems((item as TimelineItemGUI).item);
+                        RangeSelectItems((item as TimelineItemGUI)?.item);
                 }
                 else
                 {
@@ -271,7 +272,7 @@ namespace UnityEditor.Timeline
             return m_CycleMarkersPending;
         }
 
-        bool HandleSingleSelection(Event evt)
+        static bool HandleSingleSelection(Event evt)
         {
             return ItemSelection.HandleSingleSelection(evt) != null;
         }

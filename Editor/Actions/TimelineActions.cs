@@ -417,7 +417,13 @@ namespace UnityEditor.Timeline
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
     class FrameAllAction : TimelineAction
     {
-        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+        public override ActionValidity Validate(ActionContext context)
+        {
+            if (context.timeline != null && !context.timeline.flattenedTracks.Any())
+                return ActionValidity.NotApplicable;
+
+            return ActionValidity.Valid;
+        }
 
         public override bool Execute(ActionContext actionContext)
         {
@@ -453,13 +459,8 @@ namespace UnityEditor.Timeline
                 endTime = Mathf.Max(endTime, (float)(trackEnd));
             }
 
-            if (startTime != float.MinValue)
-            {
-                FrameSelectedAction.FrameRange(startTime, endTime);
-                return true;
-            }
-
-            return false;
+            FrameSelectedAction.FrameRange(startTime, endTime);
+            return true;
         }
     }
 
@@ -486,7 +487,7 @@ namespace UnityEditor.Timeline
                 // start == end
                 // keep the zoom level constant, only pan the time area to center the item
                 var currentRange = TimelineEditor.visibleTimeRange.y - TimelineEditor.visibleTimeRange.x;
-                TimelineEditor.visibleTimeRange = new Vector2(Math.Max(-WindowConstants.timeAreaShownRangePadding, startTime - currentRange / 2), startTime + currentRange / 2);
+                TimelineEditor.visibleTimeRange = new Vector2(startTime - currentRange / 2, startTime + currentRange / 2);
             }
 
             TimelineZoomManipulator.InvalidateWheelZoom();

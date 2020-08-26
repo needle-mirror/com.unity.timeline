@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.3] - 2020-08-26
+
+### Fixed
+- Fixed incorrect selection when clicking on a clip's blend. (1178052)
+- Fixed issue where an exception was thrown when drawing an Audio clip's waveform when that clip wasn't in the AssetDatabase. ([1268868](https://issuetracker.unity3d.com/product/unity/issues/guid/1268868/))
+- When choosing `Add Signal Emitter from Signal Asset`, closing the Object Selector window will not add an empty Signal Emitter. ([1261553](https://issuetracker.unity3d.com/product/unity/issues/guid/1261553/))
+- Fixed issue where an error would appear when editing keys in the Animation window if the Timeline window is opened. (1269829)
+- Fixed issue where the `Frame All` operation would continually increase the zoom value when only empty tracks are added to the timeline ([1273540](https://issuetracker.unity3d.com/product/unity/issues/guid/1273540/)).
+
 ## [1.4.2] - 2020-08-04
 
 ### Fixed

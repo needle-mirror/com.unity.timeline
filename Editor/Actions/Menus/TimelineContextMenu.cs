@@ -349,13 +349,17 @@ namespace UnityEditor.Timeline
                     var isSceneReference = objectReference.isSceneReference;
                     GenericMenu.MenuFunction menuCallback = () =>
                     {
-                        var dataType = markerItemType;
-                        ObjectSelector.get.Show(null, dataType, null, isSceneReference, null, (obj) => addMarkerCommand(markerItemType, obj), null);
-                        ObjectSelector.get.titleContent = EditorGUIUtility.TrTextContent(string.Format(Styles.typeSelectorTemplate, TypeUtility.GetDisplayName(dataType)));
+                        Type assetDataType = objectReference.type;
+                        ObjectSelector.get.titleContent = EditorGUIUtility.TrTextContent(string.Format(Styles.typeSelectorTemplate, TypeUtility.GetDisplayName(assetDataType)));
+                        ObjectSelector.get.Show(null, assetDataType, null, isSceneReference, null, obj =>
+                        {
+                            if (obj != null)
+                                addMarkerCommand(markerItemType, obj);
+                        }, null);
                     };
 
                     menu.Add(
-                        new MenuActionItem()
+                        new MenuActionItem
                         {
                             category = TimelineHelpers.GetItemCategoryName(markerItemType),
                             entryName = string.Format(Styles.addItemFromAssetTemplate, TypeUtility.GetDisplayName(markerType), TypeUtility.GetDisplayName(objectReference.type)),

@@ -66,12 +66,6 @@ namespace UnityEditor.Timeline
             if (handle.clipGUI.clip.parentTrack != null && handle.clipGUI.clip.parentTrack.lockedInHierarchy)
                 return false;
 
-            if (ItemSelection.CanClearSelection(evt))
-                SelectionManager.Clear();
-
-            if (!SelectionManager.Contains(handle.clipGUI.clip))
-                SelectionManager.Add(handle.clipGUI.clip);
-
             m_TrimClipHandler = handle;
 
             m_IsCaptured = true;
