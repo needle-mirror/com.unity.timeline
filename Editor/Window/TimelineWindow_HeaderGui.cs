@@ -8,8 +8,8 @@ namespace UnityEditor.Timeline
     {
         static readonly GUIContent[] k_TimeReferenceGUIContents =
         {
-            EditorGUIUtility.TrTextContent("Local", "Display time based on the current timeline."),
-            EditorGUIUtility.TrTextContent("Global", "Display time based on the master timeline.")
+            L10n.TextContent("Local", "Display time based on the current timeline."),
+            L10n.TextContent("Global", "Display time based on the master timeline.")
         };
 
         TimelineMarkerHeaderGUI m_MarkerHeaderGUI;
@@ -178,23 +178,23 @@ namespace UnityEditor.Timeline
 
         internal void SetShowMarkerHeader(bool newValue)
         {
-            if (state.showMarkerHeader == newValue)
+            TimelineAsset asset = state.editSequence.asset;
+            if (state.showMarkerHeader == newValue || asset == null)
                 return;
 
-            TimelineUndo.PushUndo(state.editSequence.viewModel, "Toggle Show Markers");
-            state.editSequence.viewModel.showMarkerHeader = newValue;
-            if (!newValue)
+            string undoOperation = L10n.Tr("Toggle Show Markers");
+            if (newValue)
             {
-                var asset = state.editSequence.asset;
-                if (asset != null && asset.markerTrack != null)
-                {
-                    SelectionManager.Remove(asset.markerTrack);
-                    foreach (var marker in asset.markerTrack.GetMarkers())
-                    {
-                        SelectionManager.Remove(marker);
-                    }
-                }
+                //Create the marker track if it does not exist
+                TimelineUndo.PushUndo(asset, undoOperation);
+                asset.CreateMarkerTrack();
             }
+            else
+            {
+                SelectionManager.Remove(asset.markerTrack);
+            }
+
+            asset.markerTrack.SetShowTrackMarkers(newValue);
         }
 
         static void EditModeToolbarGUI(TimelineMode mode)

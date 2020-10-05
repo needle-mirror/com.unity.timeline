@@ -1,23 +1,96 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
-    static class AnimationTrackExtensions
+    /// <summary>
+    /// Extension Methods for AnimationTracks that require the Unity Editor, and may require the Timeline containing the Animation Track to be currently loaded in the Timeline Editor Window.
+    /// </summary>
+    public static class AnimationTrackExtensions
     {
-        public static void ConvertToClipMode(this AnimationTrack track)
+        /// <summary>
+        /// Determines whether the Timeline window can enable recording mode on an AnimationTrack.
+        /// For a track to support recording, it needs to have a valid scene binding,
+        /// its offset mode should not be Auto and needs to be currently visible in the Timeline Window.
+        /// </summary>
+        /// <param name="track">The track to query.</param>
+        /// <returns>True if recording can start, False otherwise.</returns>
+        public static bool CanStartRecording(this AnimationTrack track)
+        {
+            if (track == null)
+            {
+                throw new ArgumentNullException(nameof(track));
+            }
+            if (TimelineEditor.state == null)
+            {
+                return false;
+            }
+
+            var director = TimelineEditor.inspectedDirector;
+            var animTrack = TimelineUtility.GetSceneReferenceTrack(track) as AnimationTrack;
+            return animTrack != null && animTrack.trackOffset != TrackOffset.Auto &&
+                TimelineEditor.inspectedAsset == animTrack.timelineAsset &&
+                director != null && TimelineUtility.GetSceneGameObject(director, animTrack) != null;
+        }
+
+        /// <summary>
+        /// Method that allows querying if a track is current enabled for animation recording.
+        /// </summary>
+        /// <param name="track">The track to query.</param>
+        /// <returns>True if currently recording and False otherwise.</returns>
+        public static bool IsRecording(this AnimationTrack track)
+        {
+            if (track == null)
+            {
+                throw new ArgumentNullException(nameof(track));
+            }
+            return TimelineEditor.state != null && TimelineEditor.state.IsArmedForRecord(track);
+        }
+
+        /// <summary>
+        /// Method that enables animation recording for an AnimationTrack.
+        /// </summary>
+        /// <param name="track">The AnimationTrack which will be put in recording mode.</param>
+        /// <returns>True if track was put successfully in recording mode, False otherwise. </returns>
+        public static bool StartRecording(this AnimationTrack track)
+        {
+            if (!CanStartRecording(track))
+            {
+                return false;
+            }
+            TimelineEditor.state.ArmForRecord(track);
+            return true;
+        }
+
+        /// <summary>
+        /// Disables recording mode of an AnimationTrack.
+        /// </summary>
+        /// <param name="track">The AnimationTrack which will be taken out of recording mode.</param>
+        /// <returns>True if track was put taken out of recording recording mode, False otherwise. </returns>
+        public static void StopRecording(this AnimationTrack track)
+        {
+            if (!IsRecording(track) || TimelineEditor.state == null)
+            {
+                return;
+            }
+
+            TimelineEditor.state.UnarmForRecord(track);
+        }
+
+        internal static void ConvertToClipMode(this AnimationTrack track)
         {
             if (!track.CanConvertToClipMode())
                 return;
 
-            UndoExtensions.RegisterTrack(track, "Convert To Clip");
+            UndoExtensions.RegisterTrack(track, L10n.Tr("Convert To Clip"));
 
             if (!track.infiniteClip.empty)
             {
                 var animClip = track.infiniteClip;
-                TimelineUndo.PushUndo(animClip, "Convert To Clip");
-                UndoExtensions.RegisterTrack(track, "Convert To Clip");
+                TimelineUndo.PushUndo(animClip, L10n.Tr("Convert To Clip"));
+                UndoExtensions.RegisterTrack(track, L10n.Tr("Convert To Clip"));
                 var start = AnimationClipCurveCache.Instance.GetCurveInfo(animClip).keyTimes.FirstOrDefault();
                 animClip.ShiftBySeconds(-start);
 
@@ -56,12 +129,12 @@ namespace UnityEditor.Timeline
             EditorUtility.SetDirty(track);
         }
 
-        public static void ConvertFromClipMode(this AnimationTrack track, TimelineAsset timeline)
+        internal static void ConvertFromClipMode(this AnimationTrack track, TimelineAsset timeline)
         {
             if (!track.CanConvertFromClipMode())
                 return;
 
-            UndoExtensions.RegisterTrack(track, "Convert From Clip");
+            UndoExtensions.RegisterTrack(track, L10n.Tr("Convert From Clip"));
 
             var clip = track.clips[0];
             var delta = (float)clip.start;
@@ -90,7 +163,7 @@ namespace UnityEditor.Timeline
                 animClip.ScaleTime(scale);
             }
 
-            TimelineUndo.PushUndo(animClip, "Convert From Clip");
+            TimelineUndo.PushUndo(animClip, L10n.Tr("Convert From Clip"));
             animClip.ShiftBySeconds(delta);
 
             // manually delete the clip
@@ -106,7 +179,7 @@ namespace UnityEditor.Timeline
             EditorUtility.SetDirty(track);
         }
 
-        public static bool CanConvertToClipMode(this AnimationTrack track)
+        internal static bool CanConvertToClipMode(this AnimationTrack track)
         {
             if (track == null || track.inClipMode)
                 return false;
@@ -115,7 +188,7 @@ namespace UnityEditor.Timeline
 
         // Requirements to go from clip mode
         //  - one clip, recordable, and animation clip belongs to the same asset as the track
-        public static bool CanConvertFromClipMode(this AnimationTrack track)
+        internal static bool CanConvertFromClipMode(this AnimationTrack track)
         {
             if ((track == null) ||
                 (!track.inClipMode) ||

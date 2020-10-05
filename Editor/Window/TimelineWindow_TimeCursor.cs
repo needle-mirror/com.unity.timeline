@@ -67,8 +67,6 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            state.isClipSnapping = false;
-
             m_PlayHead.drawLine = drawline;
             m_PlayHead.drawHead = drawHead;
             m_PlayHead.Draw(sequenceContentRect, state, state.editSequence.time);

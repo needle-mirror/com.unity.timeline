@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
             if (currentlySelectedGo != null && !TimelineUtility.IsPrefabOrAsset(currentlySelectedGo) && existingAsset == null)
             {
                 showCreateButton = true;
-                textContent = new GUIContent(String.Format(DirectorStyles.createTimelineOnSelection.text, currentlySelectedGo.name, "a Director component and a Timeline asset"));
+                textContent = new GUIContent(String.Format(DirectorStyles.createTimelineOnSelection.text, currentlySelectedGo.name, L10n.Tr("a Director component and a Timeline asset")));
             }
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical();
@@ -77,7 +77,7 @@ namespace UnityEditor.Timeline
                 GUILayout.BeginHorizontal();
                 var textSize = GUI.skin.label.CalcSize(textContent);
                 GUILayout.Space((textSize.x / 2.0f) - (WindowConstants.createButtonWidth / 2.0f));
-                if (GUILayout.Button("Create", GUILayout.Width(WindowConstants.createButtonWidth)))
+                if (GUILayout.Button(L10n.Tr("Create"), GUILayout.Width(WindowConstants.createButtonWidth)))
                 {
                     var message = DirectorStyles.createNewTimelineText.text + " '" + currentlySelectedGo.name + "'";
                     var defaultName = currentlySelectedGo.name.EndsWith(DirectorStyles.newTimelineDefaultNameSuffix, StringComparison.OrdinalIgnoreCase)
@@ -97,7 +97,7 @@ namespace UnityEditor.Timeline
                         }
 
                         existingDirector.playableAsset = newAsset;
-                        SetCurrentTimeline(existingDirector);
+                        SetTimeline(existingDirector);
                         windowState.previewMode = false;
                     }
 
@@ -112,57 +112,7 @@ namespace UnityEditor.Timeline
             GUILayout.FlexibleSpace();
         }
 
-        public enum OverlayDataTypes
-        {
-            None,
-            BackgroundColor,
-            BackgroundTexture,
-            TextBox
-        }
-
-        public struct OverlayData
-        {
-            public OverlayDataTypes types { get; private set; }
-            public Rect rect { get; internal set; }
-            public string text { get; private set; }
-            public Texture2D texture { get; private set; }
-            public Color color { get; private set; }
-            public GUIStyle backgroundTextStyle { get; private set; }
-            public GUIStyle textStyle { get; private set; }
-
-            public static OverlayData CreateColorOverlay(Rect rectangle, Color backgroundColor)
-            {
-                OverlayData data = new OverlayData();
-                data.rect = rectangle;
-                data.color = backgroundColor;
-                data.types = OverlayDataTypes.BackgroundColor;
-                return data;
-            }
-
-            public static OverlayData CreateTextureOverlay(Rect rectangle, Texture2D backTexture)
-            {
-                OverlayData data = new OverlayData();
-                data.rect = rectangle;
-                data.texture = backTexture;
-                data.types = OverlayDataTypes.BackgroundTexture;
-                return data;
-            }
-
-            public static OverlayData CreateTextBoxOverlay(Rect rectangle, string msg, GUIStyle textstyle, Color textcolor, Color bgTextColor, GUIStyle bgTextStyle)
-            {
-                OverlayData data = new OverlayData();
-                data.rect = rectangle;
-                data.text = msg;
-                data.textStyle = textstyle;
-                data.textStyle.normal.textColor = textcolor;
-                data.backgroundTextStyle = bgTextStyle;
-                data.backgroundTextStyle.normal.textColor = bgTextColor;
-                data.types = OverlayDataTypes.TextBox;
-                return data;
-            }
-        }
-
-        internal List<OverlayData> OverlayDrawData = new List<OverlayData>();
+        internal List<OverlayDrawer> OverlayDrawData = new List<OverlayDrawer>();
 
         void DrawTracksGUI(Rect clientRect, TimelineModeGUIState trackState)
         {
@@ -181,30 +131,11 @@ namespace UnityEditor.Timeline
                     foreach (var overlayData in OverlayDrawData)
                     {
                         using (new GUIViewportScope(sequenceContentRect))
-                            DrawOverlay(overlayData);
+                            overlayData.Draw();
                     }
                 }
             }
             GUILayout.EndVertical();
-        }
-
-        void DrawOverlay(OverlayData overlayData)
-        {
-            Rect overlayRect = GUIClip.Clip(overlayData.rect);
-            if (overlayData.types == OverlayDataTypes.BackgroundColor)
-            {
-                EditorGUI.DrawRect(overlayRect, overlayData.color);
-            }
-            else if (overlayData.types == OverlayDataTypes.BackgroundTexture)
-            {
-                Graphics.DrawTextureRepeated(overlayRect, overlayData.texture);
-            }
-            else if (overlayData.types == OverlayDataTypes.TextBox)
-            {
-                using (new GUIColorOverride(overlayData.backgroundTextStyle.normal.textColor))
-                    GUI.Box(overlayRect, GUIContent.none, overlayData.backgroundTextStyle);
-                Graphics.ShadowLabel(overlayRect, GUIContent.Temp(overlayData.text), overlayData.textStyle, overlayData.textStyle.normal.textColor, Color.black);
-            }
         }
 
         void RefreshInlineCurves()

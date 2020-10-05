@@ -802,7 +802,7 @@ namespace UnityEngine.Timeline
             if (!AnimatesRootTransform())
                 return mixer;
 
-            var rootTrack = isSubTrack ? (AnimationTrack) parent : this;
+            var rootTrack = isSubTrack ? (AnimationTrack)parent : this;
             return rootTrack.ApplyTrackOffset(graph, mixer, go, mode);
         }
 

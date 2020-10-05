@@ -83,27 +83,6 @@ namespace UnityEditor.Timeline
             return gameObject;
         }
 
-        public static void SetSceneGameObject(PlayableDirector director, TrackAsset asset, GameObject go)
-        {
-            if (director == null || asset == null)
-                return;
-
-            asset = GetSceneReferenceTrack(asset);
-            var bindings = asset.outputs;
-            if (bindings.Count() == 0)
-                return;
-
-            var binding = bindings.First();
-            if (binding.outputTargetType == typeof(GameObject))
-            {
-                BindingUtility.Bind(director, asset, go);
-            }
-            else
-            {
-                BindingUtility.Bind(director, asset, TimelineHelpers.AddRequiredComponent(go, asset));
-            }
-        }
-
         public static PlayableDirector[] GetDirectorsInSceneUsingAsset(PlayableAsset asset)
         {
             const HideFlags hideFlags =

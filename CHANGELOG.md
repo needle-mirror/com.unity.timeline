@@ -1,6 +1,61 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.0-pre.2] - 2020-10-05
+
+### Changed
+- Updated promotion job to add promotion context.
+
+## [1.5.0-pre.1] - 2020-09-25
+
+### Changed
+- Changed version number to fit with Package Lifecycle V2.
+
+## [1.5.0-preview.5] - 2020-08-26
+
+### Fixed
+- Fixed issue where `KeyAllAnimated` was available when right-clicking on markers and tracks that were not in record mode. (1270304)
+
+### Changed
+- Timeline marker track is now selectable.
+
+### Added
+ - The Timeline window will automatically rebuild the graph when a notifications's properties are changed.
+ - The Timeline window will be automatically refreshed when a marker's properties are changed.
+ - Added `TimelineEditor.GetInspectedTimeFromMasterTime` and `TimelineEditor.GetMasterTimeFromInspectedTime` to convert time from master to inspected timeline and vice versa when using sub-timelines.
+
+## [1.5.0-preview.4] - 2020-08-04
+
+### Added
+- Added Japanese translation.
+
+## [1.5.0-preview.3] - 2020-07-17
+
+### Fixed
+- Fixed a bug affecting the conversion between seconds and frames in the inspector.
+
+## [1.5.0-preview.2] - 2020-06-15
+
+### Added
+- Added two methods in `TrackEditor` to control how an object is bound to a track: `IsBindingAssignableFrom` and `GetBindingFrom`.
+
+### Changed
+- The binding field on a track header will change its background color when dragging a valid object on it.
+
+## [1.5.0-preview.1] - 2020-06-12
+
+### Added
+
+- During recording, there are new ways to key animated properties:
+  - A new Inspector context menu has been added (`Key All Animated`) that sets a key to all currently animated properties.
+  - It is possible to make a multi-selection of tracks to set a keyframe to all currently animated properties. If no track is selected, all recording tracks are keyed.
+  - If properties are selected in the curve editor, only those properties are keyed.
+- `TimelineEditor.GetWindow` and `TimelineEditor.GetOrCreateWindow` to get the current Timeline window or create a Timeline window.
+- `TimelineEditorWindow.SetCurrentTimeline` to change which timeline asset is opened in the Timeline window.
+- `TimelineEditorWindow.lock` to lock or unlock the Timeline window.
+- `TrackExtensions.GetCollapsed`, `TrackExtensions.SetCollapsed`, `TrackExtensions.IsVisibleRecursive` to get and change the visibility state of a track.
+- `AnimationTrackExtensions.IsRecording`, `AnimationTrackExtensions.SetRecording`, `AnimationTrackExtensions.SupportsRecording` to get or change the recording state of an Animation track.
+
 ## [1.4.3] - 2020-08-26
 
 ### Fixed

@@ -10,8 +10,8 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent AvatarMaskActiveTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Enable Avatar Mask");
-            public static readonly GUIContent AvatarMaskInactiveTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Disable Avatar Mask");
+            public static readonly GUIContent AvatarMaskActiveTooltip = L10n.TextContent(string.Empty, "Enable Avatar Mask");
+            public static readonly GUIContent AvatarMaskInactiveTooltip = L10n.TextContent(string.Empty, "Disable Avatar Mask");
         }
 
         public override void DrawTrackHeaderButton(Rect rect, WindowState state)

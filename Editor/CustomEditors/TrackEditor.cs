@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -250,8 +249,7 @@ namespace UnityEditor.Timeline
             if (track == null)
                 return null;
 
-            System.Type result = null;
-            if (m_BindingCache.TryGetValue(track, out result))
+            if (m_BindingCache.TryGetValue(track, out var result))
                 return result;
 
             result = track.outputs.Select(x => x.outputTargetType).FirstOrDefault();
@@ -276,9 +274,118 @@ namespace UnityEditor.Timeline
         {
         }
 
-        private static bool HasFlag(TrackBindingErrors errors, TrackBindingErrors flag)
+        static bool HasFlag(TrackBindingErrors errors, TrackBindingErrors flag)
         {
             return (errors & flag) != 0;
+        }
+
+        /// <summary>
+        /// Override this method to validate if a binding for <paramref name="track"/>
+        /// can be determined from <paramref name="candidate"/>.
+        ///
+        /// The default implementation of this method will return true if
+        /// - <paramref name="candidate"/> is not null or,
+        /// - <paramref name="candidate"/> is not part of a Prefab Asset or,
+        /// - <paramref name="candidate"/> is a Component that can be bound to <paramref name="track"/>
+        /// </summary>
+        /// <param name="candidate"></param>
+        /// <param name="track">TBD</param>
+        /// <returns>True if a binding can be determined from <paramref name="candidate"/>.</returns>
+        /// <seealso cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
+        /// <seealso cref="UnityEngine.Timeline.TrackAsset"/>
+        public virtual bool IsBindingAssignableFrom(UnityEngine.Object candidate, TrackAsset track)
+        {
+            var action = BindingUtility.GetBindingAction(GetBindingType(track), candidate);
+            return action != BindingUtility.BindingAction.DoNotBind;
+        }
+
+        /// <summary>
+        /// Override this method to determine which object to bind to <paramref name="track"/>.
+        /// A binding object should be determined from <paramref name="candidate"/>.
+        ///
+        /// By default, the `TrackBindingType` attribute from <paramref name="track"/> will be used to determine the binding.
+        /// </summary>
+        /// <param name="candidate">The source object from which a track binding should be determined.</param>
+        /// <param name="track">The track to bind an object to.</param>
+        /// <returns>The object to bind to <paramref name="track"/>.</returns>
+        /// <seealso cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
+        /// <seealso cref="UnityEngine.Timeline.TrackAsset"/>
+        public virtual UnityEngine.Object GetBindingFrom(UnityEngine.Object candidate, TrackAsset track)
+        {
+            Type bindingType = GetBindingType(track);
+            BindingUtility.BindingAction action = BindingUtility.GetBindingAction(bindingType, candidate);
+            return BindingUtility.GetBinding(action, candidate, bindingType);
+        }
+    }
+
+    static class TrackEditorExtension
+    {
+        public static bool SupportsBindingAssign(this TrackEditor editor)
+        {
+            return TypeUtility.HasOverrideMethod(editor.GetType(), nameof(TrackEditor.GetBindingFrom));
+        }
+
+        public static void OnCreate_Safe(this TrackEditor editor, TrackAsset track, TrackAsset copiedFrom)
+        {
+            try
+            {
+                editor.OnCreate(track, copiedFrom);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        public static TrackDrawOptions GetTrackOptions_Safe(this TrackEditor editor, TrackAsset track, UnityEngine.Object binding)
+        {
+            try
+            {
+                return editor.GetTrackOptions(track, binding);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return CustomTimelineEditorCache.GetDefaultTrackEditor().GetTrackOptions(track, binding);
+            }
+        }
+
+        public static UnityEngine.Object GetBindingFrom_Safe(this TrackEditor editor, UnityEngine.Object candidate, TrackAsset track)
+        {
+            try
+            {
+                return editor.GetBindingFrom(candidate, track);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return candidate;
+            }
+        }
+
+        public static bool IsBindingAssignableFrom_Safe(this TrackEditor editor, UnityEngine.Object candidate, TrackAsset track)
+        {
+            try
+            {
+                return editor.IsBindingAssignableFrom(candidate, track);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return false;
+            }
+        }
+
+        public static void OnTrackChanged_Safe(this TrackEditor editor, TrackAsset track)
+        {
+            try
+            {
+                editor.OnTrackChanged(track);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 }

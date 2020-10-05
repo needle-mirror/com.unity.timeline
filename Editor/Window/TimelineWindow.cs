@@ -10,7 +10,7 @@ using UnityEngine.Timeline;
 namespace UnityEditor.Timeline
 {
     [EditorWindowTitle(title = "Timeline", useTypeNameAsIconName = true)]
-    partial class TimelineWindow : EditorWindow, IHasCustomMenu
+    partial class TimelineWindow : TimelineEditorWindow, IHasCustomMenu
     {
         [Serializable]
         public class TimelineWindowPreferences
@@ -52,7 +52,7 @@ namespace UnityEditor.Timeline
 
         public WindowState state { get; private set; }
 
-        public bool locked
+        public override bool locked
         {
             get
             {
@@ -294,7 +294,7 @@ namespace UnityEditor.Timeline
                 if (!isSceneStillLoaded)
                 {
                     if (!locked)
-                        ClearCurrentTimeline();
+                        ClearTimeline();
                     m_CurrentSceneHashCode = SceneManager.GetActiveScene().GetHashCode();
                 }
             }
@@ -308,7 +308,7 @@ namespace UnityEditor.Timeline
                 // detect if the sequence was removed under our feet
                 if (m_LastFrameHadSequence && state.editSequence.asset == null)
                 {
-                    ClearCurrentTimeline();
+                    ClearTimeline();
                 }
                 m_LastFrameHadSequence = state.editSequence.asset != null;
 
@@ -329,7 +329,7 @@ namespace UnityEditor.Timeline
                         var selectedDirector = selectedGameObject != null ? selectedGameObject.GetComponent<PlayableDirector>() : null;
                         if (selectedDirector != null)
                         {
-                            SetCurrentTimeline(selectedDirector);
+                            SetTimeline(selectedDirector);
                         }
                     }
                 }
@@ -340,12 +340,12 @@ namespace UnityEditor.Timeline
                     {
                         if (!locked)
                         {
-                            SetCurrentTimeline(state.editSequence.director);
+                            SetTimeline(state.editSequence.director);
                         }
                         else
                         {
                             // Keep locked on the current timeline but set the current director to null since it's not the timeline owner anymore
-                            SetCurrentTimeline(state.editSequence.asset);
+                            SetTimeline(state.editSequence.asset);
                         }
                     }
                 }
@@ -504,7 +504,7 @@ namespace UnityEditor.Timeline
                 return false;
 
             ShowWindow();
-            instance.SetCurrentTimeline(assetDoubleClicked);
+            instance.SetTimeline(assetDoubleClicked);
 
             return true;
         }

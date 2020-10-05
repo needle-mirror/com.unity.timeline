@@ -42,5 +42,7 @@ namespace UnityEditor.Timeline
         public const float playControlsWidth = 300;
 
         public const int autoPanPaddingInPixels = 50;
+
+        public const float overlayTextPadding = 40.0f;
     }
 }

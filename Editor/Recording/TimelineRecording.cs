@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -141,19 +143,6 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static bool CanRecord(SerializedProperty property, WindowState state)
-        {
-            if (IsPlayableAssetProperty(property))
-                return AnimatedParameterUtility.IsTypeAnimatable(property.propertyType);
-
-            if (GetRecordingTrack(property, state) == null)
-                return false;
-
-            s_TempPropertyModifications.Clear();
-            GatherModifications(property, s_TempPropertyModifications);
-            return s_TempPropertyModifications.Any();
-        }
-
         public static void AddKey(SerializedProperty prop, WindowState state)
         {
             s_TempPropertyModifications.Clear();
@@ -260,22 +249,23 @@ namespace UnityEditor.Timeline
             return true;
         }
 
-        public static bool HasCurve(IEnumerable<PropertyModification> modifications, UnityEngine.Object target,
+        public static bool HasCurve(IList<PropertyModification> modifications, UnityEngine.Object target,
             WindowState state)
         {
-            return GetKeyTimes(target, modifications, state).Any();
+            return GetKeyTimes(modifications, state).Any();
         }
 
-        public static bool HasKey(IEnumerable<PropertyModification> modifications, UnityEngine.Object target,
+        public static bool HasKey(IList<PropertyModification> modifications,
             WindowState state)
         {
             AnimationClip clip;
             double keyTime;
             bool inRange;
-            if (!GetClipAndRelativeTime(target, state, out clip, out keyTime, out inRange))
+
+            if (!GetClipAndRelativeTime(modifications[0].target, state, out clip, out keyTime, out inRange))
                 return false;
 
-            return GetKeyTimes(target, modifications, state).Any(t => (CurveEditUtility.KeyCompare((float)state.editSequence.time, (float)t, clip.frameRate) == 0));
+            return GetKeyTimes(modifications, state).Any(t => (CurveEditUtility.KeyCompare((float)state.editSequence.time, (float)t, clip.frameRate) == 0));
         }
 
         // Checks if a key already exists for this property
@@ -314,7 +304,7 @@ namespace UnityEditor.Timeline
             if (!GetClipAndRelativeTime(target, state, out clip, out keyTime, out inRange) || !inRange)
                 return;
             var refreshPreview = false;
-            TimelineUndo.PushUndo(clip, "Remove Key");
+            TimelineUndo.PushUndo(clip, L10n.Tr("Remove Key"));
             foreach (var mod in modifications)
             {
                 EditorCurveBinding temp;
@@ -351,18 +341,30 @@ namespace UnityEditor.Timeline
             }
         }
 
-        static HashSet<double> GetKeyTimes(UnityEngine.Object target, IEnumerable<PropertyModification> modifications, WindowState state)
+        static HashSet<double> GetKeyTimes(IList<PropertyModification> modifications, WindowState state)
         {
             var keyTimes = new HashSet<double>();
 
             AnimationClip animationClip;
             double keyTime;
             bool inRange;
+
+            var component = modifications[0].target as Component;
+            var target = modifications[0].target;
+            if (component != null)
+            {
+                var track = GetTrackForGameObject(component.gameObject, state);
+                var go = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, track);
+                if (go != null)
+                {
+                    target = go.transform;
+                }
+            }
+
             GetClipAndRelativeTime(target, state, out animationClip, out keyTime, out inRange);
             if (animationClip == null)
                 return keyTimes;
 
-            var component = target as Component;
             var playableAsset = target as IPlayableAsset;
             var info = AnimationClipCurveCache.Instance.GetCurveInfo(animationClip);
 
@@ -423,10 +425,10 @@ namespace UnityEditor.Timeline
             return keyTimes;
         }
 
-        public static void NextKey(UnityEngine.Object target, IEnumerable<PropertyModification> modifications, WindowState state)
+        public static void NextKey(UnityEngine.Object target, IList<PropertyModification> modifications, WindowState state)
         {
             const double eps = 1e-5;
-            var keyTimes = GetKeyTimes(target, modifications, state);
+            var keyTimes = GetKeyTimes(modifications, state);
             if (keyTimes.Count == 0)
                 return;
             var nextKeys = keyTimes.Where(x => x > state.editSequence.time + eps);
@@ -436,10 +438,10 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static void PrevKey(UnityEngine.Object target, IEnumerable<PropertyModification> modifications, WindowState state)
+        public static void PrevKey(UnityEngine.Object target, IList<PropertyModification> modifications, WindowState state)
         {
             const double eps = 1e-5;
-            var keyTimes = GetKeyTimes(target, modifications, state);
+            var keyTimes = GetKeyTimes(modifications, state);
             if (keyTimes.Count == 0)
                 return;
             var prevKeys = keyTimes.Where(x => x < state.editSequence.time - eps);
@@ -457,7 +459,7 @@ namespace UnityEditor.Timeline
             if (!GetClipAndRelativeTime(target, state, out clip, out keyTime, out inRange))
                 return;
 
-            TimelineUndo.PushUndo(clip, "Remove Curve");
+            TimelineUndo.PushUndo(clip, L10n.Tr("Remove Curve"));
             foreach (var mod in modifications)
             {
                 EditorCurveBinding temp;
@@ -471,6 +473,108 @@ namespace UnityEditor.Timeline
             }
 
             state.ResetPreviewMode();
+        }
+
+        public static void KeyAllProperties(Component target, WindowState state)
+        {
+            var go = target is Component component ? component.gameObject : null;
+            GetClipAndRelativeTime(target, state, out var animationClip, out _, out _);
+
+            var info = AnimationClipCurveCache.Instance.GetCurveInfo(animationClip);
+            if (animationClip != null && info.curves.Length > 0)
+            {
+                KeyProperties(go, state, info.bindings);
+            }
+        }
+
+        public static void KeyProperties(GameObject go, WindowState state, IList<EditorCurveBinding> bindings)
+        {
+            var allKeyedProperties = new List<PropertyModification>();
+            var rotationPaths = new HashSet<string>();
+            for (var i = 0; i < bindings.Count; ++i)
+            {
+                // Skip the euler and key quaternion+hint
+                if (CurveEditUtility.IsRotationKey(bindings[i]))
+                {
+                    rotationPaths.Add(bindings[i].path);
+                    continue;
+                }
+
+                AnimationUtility.GetFloatValue(go, bindings[i], out var val);
+                var compo = GetTargetFromEditorBinding(go, bindings[i]);
+                allKeyedProperties.Add(new PropertyModification
+                {
+                    target = compo, value = val.ToString(EditorGUI.kFloatFieldFormatString),
+                    propertyPath = bindings[i].propertyName
+                });
+            }
+
+            foreach (var path in rotationPaths)
+            {
+                foreach (var binding in GetRotationBindings(path))
+                {
+                    var compo = GetTargetFromEditorBinding(go, binding);
+                    var readBinding = binding;
+                    switch (binding.propertyName)
+                    {
+                        case kLocalEulerHint + ".x":
+                            readBinding = EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".x");
+                            break;
+                        case kLocalEulerHint + ".y":
+                            readBinding = EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".y");
+                            break;
+                        case kLocalEulerHint + ".z":
+                            readBinding = EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".z");
+                            break;
+                    }
+
+                    AnimationUtility.GetFloatValue(go, readBinding, out var val);
+                    allKeyedProperties.Add(new PropertyModification
+                    {
+                        target = compo, value = val.ToString(EditorGUI.kFloatFieldFormatString),
+                        propertyPath = binding.propertyName
+                    });
+                }
+            }
+
+            AddKey(allKeyedProperties, state);
+            state.Refresh();
+        }
+
+        static IEnumerable<EditorCurveBinding> GetRotationBindings(string path)
+        {
+            return new[]
+            {
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".x"),
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".y"),
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".z"),
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalRotation + ".w"),
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalEulerHint + ".x"),
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalEulerHint + ".y"),
+                EditorCurveBinding.FloatCurve(path, typeof(Transform), kLocalEulerHint + ".z"),
+            };
+        }
+
+        static Component GetTargetFromEditorBinding(GameObject root, EditorCurveBinding binding)
+        {
+            GameObject go = null;
+            if (string.IsNullOrEmpty(binding.path))
+            {
+                go = root;
+            }
+
+            var childTransform = root.transform.Find(binding.path);
+            if (childTransform != null)
+            {
+                go = childTransform.gameObject;
+            }
+
+            if (go != null)
+            {
+                return go.GetComponent(binding.type);
+            }
+
+            return null;
         }
 
         public static IEnumerable<GameObject> GetRecordableGameObjects(WindowState state)

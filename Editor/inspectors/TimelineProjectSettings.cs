@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
+#if !UNITY_2020_2_OR_NEWER
+using L10n = UnityEditor.Timeline.L10n;
+#endif
 
 /// <summary>
 /// Store the settings for Timeline that will be stored with the Unity Project.
@@ -19,13 +22,13 @@ public class TimelineProjectSettings : ScriptableSingleton<TimelineProjectSettin
 
     internal static string[] framerateLabels = new string[]
     {
-        "Film (24)",
-        "PAL (25)",
-        "NTSC (29.97)",
-        "Film (30)",
-        "Film (50)",
-        "Film (60)",
-        "Custom"
+        L10n.Tr("Film (24)"),
+        L10n.Tr("PAL (25)"),
+        L10n.Tr("NTSC (29.97)"),
+        L10n.Tr("Film (30)"),
+        L10n.Tr("Film (50)"),
+        L10n.Tr("Film (60)"),
+        L10n.Tr("Custom")
     };
 
     internal static float[] framerateValues = new float[]
@@ -66,9 +69,9 @@ class TimelineProjectSettingsProvider : SettingsProvider
 
     private class Styles
     {
-        public static readonly GUIContent DefaultFramerateLabel = EditorGUIUtility.TrTextContent("Default Framerate", "Framerate value used for new Timeline Assets.");
-        public static readonly GUIContent CustomFramerateLabel = EditorGUIUtility.TrTextContent("Custom Framerate", "Custom framerate value used for new Timeline Assets.");
-        public static readonly GUIContent TimelineAssetLabel = EditorGUIUtility.TrTextContent("Timeline Asset", "");
+        public static readonly GUIContent DefaultFramerateLabel = L10n.TextContent("Default Framerate", "Framerate value used for new Timeline Assets.");
+        public static readonly GUIContent CustomFramerateLabel = L10n.TextContent("Custom Framerate", "Custom framerate value used for new Timeline Assets.");
+        public static readonly GUIContent TimelineAssetLabel = L10n.TextContent("Timeline Asset", "");
     }
 
     public TimelineProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)

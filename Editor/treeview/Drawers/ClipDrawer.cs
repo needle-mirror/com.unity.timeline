@@ -116,8 +116,8 @@ namespace UnityEditor.Timeline
             public static readonly Texture2D iconWarn = EditorGUIUtility.LoadIconRequired("console.warnicon.inactive.sml");
             public static readonly string HoldText = L10n.Tr("HOLD");
             public static readonly Texture2D s_IconNoRecord = EditorGUIUtility.LoadIcon("console.erroricon.sml");
-            public static readonly GUIContent s_ClipNotRecorable = EditorGUIUtility.TrTextContent("", "This clip is not recordable");
-            public static readonly GUIContent s_ClipNoRecordInBlend = EditorGUIUtility.TrTextContent("", "Recording in blends in prohibited");
+            public static readonly GUIContent s_ClipNotRecorable = L10n.TextContent("", "This clip is not recordable");
+            public static readonly GUIContent s_ClipNoRecordInBlend = L10n.TextContent("", "Recording in blends in prohibited");
         }
 
         const float k_ClipSwatchLineThickness = 4.0f;

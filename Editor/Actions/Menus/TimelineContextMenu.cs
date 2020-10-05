@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
 
@@ -21,15 +20,6 @@ namespace UnityEditor.Timeline
             public static readonly string trackSubGroup                  = L10n.Tr("Track Sub-Group");
             public static readonly string addTrackLayer                  = L10n.Tr("Add Layer");
             public static readonly string layerName                      = L10n.Tr("Layer {0}");
-        }
-
-        public static void ShowMarkerHeaderContextMenu(Vector2? mousePosition, WindowState state)
-        {
-            var menu = new GenericMenu();
-            List<MenuActionItem> items = new List<MenuActionItem>(100);
-            BuildMarkerHeaderContextMenu(items, mousePosition, state);
-            ActionManager.BuildMenu(menu, items);
-            menu.ShowAsContext();
         }
 
         public static void ShowNewTracksContextMenu(ICollection<TrackAsset> tracks, WindowState state)
@@ -152,22 +142,6 @@ namespace UnityEditor.Timeline
                     }
                 );
             }
-        }
-
-        public static void BuildMarkerHeaderContextMenu(List<MenuActionItem> menu, Vector2? mousePosition, WindowState state)
-        {
-            ActionManager.GetMenuEntries(ActionManager.TimelineActions, null, menu, MenuFilter.MarkerHeader);
-
-            var timeline = state.editSequence.asset;
-            var time = TimelineHelpers.GetCandidateTime(mousePosition);
-            var enabled = timeline.markerTrack == null || !timeline.markerTrack.lockedInHierarchy;
-
-            var addMarkerCommand = new Action<Type, Object>
-                (
-                (type, obj) => AddSingleMarkerCallback(type, time, timeline, state.editSequence.director, obj)
-                );
-
-            AddMarkerMenuCommands(menu, new TrackAsset[] {timeline.markerTrack}, addMarkerCommand, enabled);
         }
 
         public static void BuildTrackContextMenu(List<MenuActionItem> items, Vector2? mousePosition)
@@ -401,24 +375,6 @@ namespace UnityEditor.Timeline
                 var marker = TimelineHelpers.CreateMarkerOnTrack(markerType, obj, target, time);
                 SelectionManager.Add(marker);
             }
-            TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
-        }
-
-        static void AddSingleMarkerCallback(Type markerType, double time, TimelineAsset timeline, PlayableDirector director, Object assignableObject)
-        {
-            timeline.CreateMarkerTrack();
-            var markerTrack = timeline.markerTrack;
-
-            SelectionManager.Clear();
-            var marker = TimelineHelpers.CreateMarkerOnTrack(markerType, assignableObject, markerTrack, time);
-            SelectionManager.Add(marker);
-
-            if (typeof(INotification).IsAssignableFrom(markerType) && director != null)
-            {
-                if (director != null && director.GetGenericBinding(markerTrack) == null)
-                    director.SetGenericBinding(markerTrack, director.gameObject);
-            }
-
             TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
         }
     }

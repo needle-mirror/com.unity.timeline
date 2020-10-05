@@ -9,9 +9,9 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent ErrorText = EditorGUIUtility.TrTextContent("Track cannot be loaded.", "Please fix any compile errors in the script for this track");
+            public static readonly GUIContent ErrorText = L10n.TextContent("Track cannot be loaded.", "Please fix any compile errors in the script for this track");
             public static readonly Texture2D IconWarn = EditorGUIUtility.LoadIconRequired("console.warnicon.inactive.sml");
-            public static readonly GUIContent RemoveTrack = EditorGUIUtility.TrTextContent("Delete");
+            public static readonly GUIContent RemoveTrack = L10n.TextContent("Delete");
 
             public static readonly Color WarningBoxBackgroundColor = new Color(115.0f / 255.0f, 115.0f / 255.0f, 115.0f / 255.0f); // approved for both skins
             public static readonly Color WarningBoxHighlightColor = new Color(229 / 255.0f, 208 / 255.0f, 54 / 255.0f); // brigher than standard warning color for contrast

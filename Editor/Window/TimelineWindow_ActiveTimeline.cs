@@ -8,17 +8,22 @@ namespace UnityEditor.Timeline
     {
         private TimelineAsset m_PreviousMasterSequence;
 
-        public void ClearCurrentTimeline()
+        public override void ClearTimeline()
         {
             SetCurrentTimeline(null, null, null, true);
         }
 
-        public void SetCurrentTimeline(TimelineAsset seq)
+        public override void SetTimeline(TimelineAsset seq)
         {
             SetCurrentTimeline(seq, null, null);
         }
 
-        public void SetCurrentTimeline(PlayableDirector director, TimelineClip hostClip = null)
+        public override void SetTimeline(PlayableDirector director)
+        {
+            SetCurrentTimeline(director, null);
+        }
+
+        public void SetCurrentTimeline(PlayableDirector director, TimelineClip hostClip)
         {
             var asset = director != null ? director.playableAsset as TimelineAsset : null;
             SetCurrentTimeline(asset, director, hostClip);

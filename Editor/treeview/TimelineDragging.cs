@@ -88,13 +88,6 @@ namespace UnityEditor
             DragAndDrop.StartDrag(title);
         }
 
-        public static bool IsDraggingEvent()
-        {
-            return Event.current.type == EventType.DragUpdated ||
-                Event.current.type == EventType.DragExited ||
-                Event.current.type == EventType.DragPerform;
-        }
-
         public static bool ResolveType(IEnumerable<System.Type> types, Action<Type> onComplete, string formatString)
         {
             if (!types.Any() || onComplete == null)
@@ -300,7 +293,7 @@ namespace UnityEditor
 
             // if we are over a target track, defer to track binding system (implemented in TrackGUIs), unless we are a groupTrack
             if (targetTrack != null && (targetTrack as GroupTrack) == null)
-                return DragAndDropVisualMode.None;
+                return DragAndDropVisualMode.Rejected;
 
             if (targetTrack != null && targetTrack.lockedInHierarchy)
                 return DragAndDropVisualMode.Rejected;
@@ -311,7 +304,7 @@ namespace UnityEditor
 
             if (perform)
             {
-                System.Action<Type> onResolve = trackType =>
+                Action<Type> onResolve = trackType =>
                 {
                     foreach (var obj in objectsBeingDropped)
                     {
@@ -325,8 +318,7 @@ namespace UnityEditor
                                 else
                                     timeline.MoveLastTrackBefore(insertBefore);
                             }
-
-                            TimelineHelpers.Bind(newTrack, obj, director);
+                            BindingUtility.BindWithEditorValidation(director, newTrack, obj);
                         }
                     }
                     TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
@@ -607,63 +599,31 @@ namespace UnityEditor
             return DragAndDropVisualMode.Move;
         }
 
-        public static void HandleBindingDragAndDrop(TrackAsset dropTarget, Type requiredBindingType)
+        public static void OnTrackBindingDragUpdate(TrackAsset dropTarget)
         {
-            var objectBeingDragged = DragAndDrop.objectReferences[0];
-
-            var action = BindingUtility.GetBindingAction(requiredBindingType, objectBeingDragged);
-            DragAndDrop.visualMode = action == BindingAction.DoNotBind
-                ? DragAndDropVisualMode.Rejected
-                : DragAndDropVisualMode.Link;
-
-            if (action == BindingAction.DoNotBind || Event.current.type != EventType.DragPerform)
-                return;
-
-            var director = TimelineEditor.inspectedDirector;
-
-            switch (action)
+            if (DragAndDrop.objectReferences.Length == 0)
             {
-                case BindingAction.BindDirectly:
-                {
-                    BindingUtility.Bind(director, dropTarget, objectBeingDragged);
-                    break;
-                }
-                case BindingAction.BindToExistingComponent:
-                {
-                    var gameObjectBeingDragged = objectBeingDragged as GameObject;
-                    Debug.Assert(gameObjectBeingDragged != null, "The object being dragged was detected as being a GameObject");
-
-                    BindingUtility.Bind(director, dropTarget, gameObjectBeingDragged.GetComponent(requiredBindingType));
-                    break;
-                }
-                case BindingAction.BindToMissingComponent:
-                {
-                    var gameObjectBeingDragged = objectBeingDragged as GameObject;
-                    Debug.Assert(gameObjectBeingDragged != null, "The object being dragged was detected as being a GameObject");
-
-                    var typeNameOfComponent = requiredBindingType.ToString().Split(".".ToCharArray()).Last();
-                    var bindMenu = new GenericMenu();
-
-                    bindMenu.AddItem(
-                        EditorGUIUtility.TextContent("Create " + typeNameOfComponent + " on " + gameObjectBeingDragged.name),
-                        false,
-                        nullParam => BindingUtility.Bind(director, dropTarget, Undo.AddComponent(gameObjectBeingDragged, requiredBindingType)),
-                        null);
-
-                    bindMenu.AddSeparator("");
-                    bindMenu.AddItem(EditorGUIUtility.TrTextContent("Cancel"), false, userData => {}, null);
-                    bindMenu.ShowAsContext();
-
-                    break;
-                }
-                default:
-                {
-                    //no-op
-                    return;
-                }
+                OnRejectTrackBindingDragUpdate();
+                return;
             }
 
-            DragAndDrop.AcceptDrag();
+            var trackEditor = CustomTimelineEditorCache.GetTrackEditor(dropTarget);
+            var isDragValid = trackEditor.IsBindingAssignableFrom_Safe(DragAndDrop.objectReferences[0], dropTarget);
+            if (isDragValid)
+                OnAcceptTrackBindingDragUpdate();
+            else
+                OnRejectTrackBindingDragUpdate();
+        }
+
+        static void OnAcceptTrackBindingDragUpdate()
+        {
+            DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+        }
+
+        static void OnRejectTrackBindingDragUpdate()
+        {
+            DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
+            DragAndDrop.activeControlID = 0;
         }
 
         static bool ValidDrag(TreeViewItem target, List<TreeViewItem> draggedItems)

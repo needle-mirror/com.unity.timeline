@@ -24,7 +24,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in clipsByTracks)
             {
-                UndoExtensions.RegisterTrack(track.Key, "Tile");
+                UndoExtensions.RegisterTrack(track.Key, L10n.Tr("Tile"));
             }
 
             foreach (var track in clipsByTracks)
@@ -61,7 +61,7 @@ namespace UnityEditor.Timeline
             if (clip.end < trimTime)
                 return false;
 
-            UndoExtensions.RegisterClip(clip, "Trim Clip Start");
+            UndoExtensions.RegisterClip(clip, L10n.Tr("Trim Clip Start"));
 
             // Note: We are NOT using edit modes in this case because we want the same result
             // regardless of the selected EditMode: split at cursor and delete left part
@@ -91,7 +91,7 @@ namespace UnityEditor.Timeline
             if (clip.end < trimTime)
                 return false;
 
-            UndoExtensions.RegisterClip(clip, "Trim Clip End");
+            UndoExtensions.RegisterClip(clip, L10n.Tr("Trim Clip End"));
             TrimClipWithEditMode(clip, TrimEdge.End, trimTime);
 
             return true;
@@ -100,7 +100,7 @@ namespace UnityEditor.Timeline
         public static bool MatchDuration(IEnumerable<TimelineClip> clips)
         {
             double referenceDuration = clips.First().duration;
-            UndoExtensions.RegisterClips(clips, "Match Clip Duration");
+            UndoExtensions.RegisterClips(clips, L10n.Tr("Match Clip Duration"));
             foreach (var clip in clips)
             {
                 var newEnd = clip.start + referenceDuration;
@@ -122,7 +122,7 @@ namespace UnityEditor.Timeline
                 if (clip.end <= splitTime)
                     continue;
 
-                UndoExtensions.RegisterClip(clip, "Split Clip");
+                UndoExtensions.RegisterClip(clip, L10n.Tr("Split Clip"));
 
                 TimelineClip newClip = TimelineHelpers.Clone(clip, director, director, clip.start);
 
@@ -235,7 +235,7 @@ namespace UnityEditor.Timeline
             if (clip.asset == null)
                 return false;
 
-            UndoExtensions.RegisterClip(clip, "Reset Clip Editing");
+            UndoExtensions.RegisterClip(clip, L10n.Tr("Reset Clip Editing"));
 
             clip.clipIn = 0.0;
 
@@ -263,7 +263,7 @@ namespace UnityEditor.Timeline
             if (clip.asset == null)
                 return false;
 
-            UndoExtensions.RegisterClip(clip, "Match Clip Content");
+            UndoExtensions.RegisterClip(clip, L10n.Tr("Match Clip Content"));
 
             var newStartCandidate = clip.start - clip.clipIn / clip.timeScale;
             var newStart = newStartCandidate < 0.0 ? 0.0 : newStartCandidate;
@@ -346,7 +346,7 @@ namespace UnityEditor.Timeline
 
             var newEnd = clip.start + firstLoopDuration + loopDuration * numCompletedLoops;
 
-            UndoExtensions.RegisterClip(clip, "Trim Clip Last Loop");
+            UndoExtensions.RegisterClip(clip, L10n.Tr("Trim Clip Last Loop"));
 
             TrimClipWithEditMode(clip, TrimEdge.End, newEnd);
         }
@@ -357,7 +357,7 @@ namespace UnityEditor.Timeline
             {
                 if (clip.SupportsSpeedMultiplier())
                 {
-                    UndoExtensions.RegisterClip(clip, "Double Clip Speed");
+                    UndoExtensions.RegisterClip(clip, L10n.Tr("Double Clip Speed"));
                     clip.timeScale = clip.timeScale * 2.0f;
                 }
             }
@@ -371,7 +371,7 @@ namespace UnityEditor.Timeline
             {
                 if (clip.SupportsSpeedMultiplier())
                 {
-                    UndoExtensions.RegisterClip(clip, "Half Clip Speed");
+                    UndoExtensions.RegisterClip(clip, L10n.Tr("Half Clip Speed"));
                     clip.timeScale = clip.timeScale * 0.5f;
                 }
             }
@@ -385,7 +385,7 @@ namespace UnityEditor.Timeline
             {
                 if (clip.timeScale != 1.0)
                 {
-                    UndoExtensions.RegisterClip(clip, "Reset Clip Speed");
+                    UndoExtensions.RegisterClip(clip, L10n.Tr("Reset Clip Speed"));
                     clip.timeScale = 1.0;
                 }
             }

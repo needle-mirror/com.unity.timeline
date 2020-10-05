@@ -18,7 +18,7 @@ namespace UnityEditor.Timeline
 
             public void SaveCurve(AnimationWindowCurve curve)
             {
-                Undo.RegisterCompleteObjectUndo(activeAnimationClip, "Edit Curve");
+                Undo.RegisterCompleteObjectUndo(activeAnimationClip, L10n.Tr("Edit Curve"));
                 AnimationWindowUtility.SaveCurve(activeAnimationClip, curve);
             }
 

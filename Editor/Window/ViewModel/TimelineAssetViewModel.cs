@@ -69,7 +69,6 @@ namespace UnityEditor.Timeline
         public Vector2 timeAreaPlayRange = NoPlayRangeSet;
         public double windowTime;
         public float verticalScroll = DefaultVerticalScroll;
-        public bool showMarkerHeader;
         public float sequencerHeaderWidth = WindowConstants.defaultHeaderWidth;
 
         public Dictionary<TrackAsset, TrackViewModelData> tracksViewModelData = new Dictionary<TrackAsset, TrackViewModelData>();

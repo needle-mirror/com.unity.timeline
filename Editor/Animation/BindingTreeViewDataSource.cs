@@ -4,6 +4,9 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEditor.Timeline;
 using UnityEngine;
+#if !UNITY_2020_2_OR_NEWER
+using L10n = UnityEditor.Timeline.L10n;
+#endif
 
 namespace UnityEditorInternal
 {
@@ -107,7 +110,7 @@ namespace UnityEditorInternal
                             newNode.children = new List<TreeViewItem>();
 
                         var binding = r.bindings[b];
-                        string propDisplayName = PropertyName(binding) + (binding.isPhantom ? " (Default Value)" : string.Empty);
+                        string propDisplayName = PropertyName(binding) + (binding.isPhantom ? L10n.Tr(" (Default Value)") : string.Empty);
                         var bindingNode = new CurveTreeViewNode(binding.GetHashCode(), newNode, propDisplayName, new[] { binding });
                         newNode.children.Add(bindingNode);
                     }

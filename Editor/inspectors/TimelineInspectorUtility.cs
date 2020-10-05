@@ -27,8 +27,8 @@ namespace UnityEditor.Timeline
     {
         internal static class Styles
         {
-            public static readonly GUIContent SecondsPrefix = EditorGUIUtility.TrTextContent("s", "Seconds");
-            public static readonly GUIContent FramesPrefix = EditorGUIUtility.TrTextContent("f", "Frames");
+            public static readonly GUIContent SecondsPrefix = L10n.TextContent("s", "Seconds");
+            public static readonly GUIContent FramesPrefix = L10n.TextContent("f", "Frames");
         }
 
         public static void TimeField(SerializedProperty property, GUIContent label, bool readOnly, double frameRate, double minValue, double maxValue, ref InputEvent inputEvent)

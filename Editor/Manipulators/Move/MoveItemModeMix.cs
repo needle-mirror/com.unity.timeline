@@ -23,7 +23,7 @@ namespace UnityEditor.Timeline
                         !EditModeUtils.IsInfiniteTrack(targetTrack);
                     var track = compatible ? targetTrack : null;
 
-                    UndoExtensions.RegisterTrack(track, "Move Items");
+                    UndoExtensions.RegisterTrack(track, L10n.Tr("Move Items"));
                     EditModeUtils.SetParentTrack(itemsGroup.items, track);
                 }
                 else

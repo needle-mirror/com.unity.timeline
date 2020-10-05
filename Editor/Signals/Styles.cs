@@ -4,19 +4,19 @@ namespace UnityEditor.Timeline.Signals
 {
     static class Styles
     {
-        public static readonly GUIContent RetroactiveLabel = EditorGUIUtility.TrTextContent("Retroactive", "Use retroactive to emit this signal even if playback starts afterwards.");
-        public static readonly GUIContent EmitOnceLabel = EditorGUIUtility.TrTextContent("Emit Once", "Emit the signal once during loops.");
-        public static readonly GUIContent EmitSignalLabel = EditorGUIUtility.TrTextContent("Emit Signal", "Select which Signal Asset to emit.");
-        public static readonly GUIContent ObjectLabel = EditorGUIUtility.TrTextContent("Receiver Component on", "The Signal Receiver Component on the bound GameObject.");
+        public static readonly GUIContent RetroactiveLabel = L10n.TextContent("Retroactive", "Use retroactive to emit this signal even if playback starts afterwards.");
+        public static readonly GUIContent EmitOnceLabel = L10n.TextContent("Emit Once", "Emit the signal once during loops.");
+        public static readonly GUIContent EmitSignalLabel = L10n.TextContent("Emit Signal", "Select which Signal Asset to emit.");
+        public static readonly GUIContent ObjectLabel = L10n.TextContent("Receiver Component on", "The Signal Receiver Component on the bound GameObject.");
 
-        public static readonly GUIContent CreateNewSignal = EditorGUIUtility.TrTextContent("Create Signal…");
-        public static readonly GUIContent AddSignalReceiverComponent = EditorGUIUtility.TrTextContent("Add Signal Receiver", "Creates a Signal Receiver component on the track binding and the reaction for the current signal.");
-        public static readonly GUIContent EmptySignalList = EditorGUIUtility.TrTextContent("None");
-        public static readonly GUIContent AddReactionButton = EditorGUIUtility.TrTextContent("Add Reaction");
+        public static readonly GUIContent CreateNewSignal = L10n.TextContent("Create Signal...");
+        public static readonly GUIContent AddSignalReceiverComponent = L10n.TextContent("Add Signal Receiver", "Creates a Signal Receiver component on the track binding and the reaction for the current signal.");
+        public static readonly GUIContent EmptySignalList = L10n.TextContent("None");
+        public static readonly GUIContent AddReactionButton = L10n.TextContent("Add Reaction");
 
-        public static readonly GUIContent NewSignalWindowTitle = EditorGUIUtility.TrTextContent("Create Signal Key");
-        public static readonly GUIContent NewSignalDefaultName = EditorGUIUtility.TrTextContent("New Signal");
-        public static readonly GUIContent NewSignalWindowMessage = EditorGUIUtility.TrTextContent("Create Signal Key");
+        public static readonly GUIContent NewSignalWindowTitle = L10n.TextContent("Create Signal Key");
+        public static readonly GUIContent NewSignalDefaultName = L10n.TextContent("New Signal");
+        public static readonly GUIContent NewSignalWindowMessage = L10n.TextContent("Create Signal Key");
 
         public static readonly string SignalListDuplicateOption = L10n.Tr("Duplicate");
         public static readonly string SignalListDeleteOption = L10n.Tr("Delete");

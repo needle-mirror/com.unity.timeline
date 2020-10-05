@@ -8,16 +8,16 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent s_LockedAndMuted = EditorGUIUtility.TrTextContent("Locked / Muted");
-            public static readonly GUIContent s_LockedAndPartiallyMuted = EditorGUIUtility.TrTextContent("Locked / Partially Muted");
-            public static readonly GUIContent s_Locked = EditorGUIUtility.TrTextContent("Locked");
-            public static readonly GUIContent s_Muted = EditorGUIUtility.TrTextContent("Muted");
-            public static readonly GUIContent s_PartiallyMuted = EditorGUIUtility.TrTextContent("Partially Muted");
+            public static readonly GUIContent s_LockedAndMuted = L10n.TextContent("Locked / Muted");
+            public static readonly GUIContent s_LockedAndPartiallyMuted = L10n.TextContent("Locked / Partially Muted");
+            public static readonly GUIContent s_Locked = L10n.TextContent("Locked");
+            public static readonly GUIContent s_Muted = L10n.TextContent("Muted");
+            public static readonly GUIContent s_PartiallyMuted = L10n.TextContent("Partially Muted");
 
-            public static readonly GUIContent trackMuteBtnOnTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Umute");
-            public static readonly GUIContent trackMuteBtnOffTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Mute");
-            public static readonly GUIContent trackLockBtnOnTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Unlock");
-            public static readonly GUIContent trackLockBtnOffTooltip = EditorGUIUtility.TrTextContent(string.Empty, "Lock");
+            public static readonly GUIContent trackMuteBtnOnTooltip = L10n.TextContent(string.Empty, "Umute");
+            public static readonly GUIContent trackMuteBtnOffTooltip = L10n.TextContent(string.Empty, "Mute");
+            public static readonly GUIContent trackLockBtnOnTooltip = L10n.TextContent(string.Empty, "Unlock");
+            public static readonly GUIContent trackLockBtnOffTooltip = L10n.TextContent(string.Empty, "Lock");
 
             public static readonly Texture2D lockBg = DirectorStyles.GetBackgroundImage(DirectorStyles.Instance.trackLockOverlay);
         }
@@ -94,7 +94,9 @@ namespace UnityEditor.Timeline
                 if (track.muted && !TimelineUtility.IsParentMuted(track))
                 {
                     Rect bgRect = expandedRect;
-                    TimelineWindow.instance.OverlayDrawData.Add(TimelineWindow.OverlayData.CreateColorOverlay(GUIClip.Unclip(bgRect), DirectorStyles.Instance.customSkin.colorTrackDarken));
+                    TimelineWindow.instance.OverlayDrawData.Add(OverlayDrawer.CreateColorOverlay(
+                        GUIClip.Unclip(bgRect),
+                        DirectorStyles.Instance.customSkin.colorTrackDarken));
                     needStateBox = true;
                 }
 
@@ -102,7 +104,9 @@ namespace UnityEditor.Timeline
                 if (!needStateBox && track.locked && !TimelineUtility.IsLockedFromGroup(track))
                 {
                     Rect bgRect = expandedRect;
-                    TimelineWindow.instance.OverlayDrawData.Add(TimelineWindow.OverlayData.CreateTextureOverlay(GUIClip.Unclip(bgRect), Styles.lockBg));
+                    TimelineWindow.instance.OverlayDrawData.Add(OverlayDrawer.CreateTextureOverlay(
+                        GUIClip.Unclip(bgRect),
+                        Styles.lockBg));
                     needStateBox = true;
                 }
 
@@ -113,9 +117,8 @@ namespace UnityEditor.Timeline
             }
         }
 
-        void DrawTrackStateBox(Rect trackRect, TrackAsset track)
+        static void DrawTrackStateBox(Rect trackRect, TrackAsset track)
         {
-            const float k_LockTextPadding = 40f;
             var styles = DirectorStyles.Instance;
 
             bool locked = track.locked && !TimelineUtility.IsLockedFromGroup(track);
@@ -142,14 +145,15 @@ namespace UnityEditor.Timeline
             if (content == null)
                 return;
 
-            var textRect = trackRect;
-            textRect.width = styles.fontClip.CalcSize(content).x + k_LockTextPadding;
-            textRect.x += (trackRect.width - textRect.width) / 2f;
-            textRect.height -= 4f;
-            textRect.y += 2f;
+            Rect textRect = Graphics.CalculateTextBoxSize(trackRect, styles.fontClip, content, WindowConstants.overlayTextPadding);
 
-
-            TimelineWindow.instance.OverlayDrawData.Add(TimelineWindow.OverlayData.CreateTextBoxOverlay(GUIClip.Unclip(textRect), content.text, styles.fontClip, Color.white, styles.customSkin.colorLockTextBG, styles.displayBackground));
+            TimelineWindow.instance.OverlayDrawData.Add(
+                 OverlayDrawer.CreateTextBoxOverlay(
+                     GUIClip.Unclip(textRect),
+                     content.text, styles.fontClip,
+                     Color.white,
+                     styles.customSkin.colorLockTextBG,
+                     styles.displayBackground));
         }
 
         protected void DrawMuteButton(Rect rect, WindowState state)

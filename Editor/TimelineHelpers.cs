@@ -61,7 +61,7 @@ namespace UnityEditor.Timeline
                             {
                                 var destTableObj = destTable as UnityEngine.Object;
                                 if (destTableObj != null)
-                                    TimelineUndo.PushUndo(destTableObj, "Create Clip");
+                                    TimelineUndo.PushUndo(destTableObj, L10n.Tr("Create Clip"));
                                 destTable.SetReferenceValue(destKey, target);
                             }
                         }
@@ -80,7 +80,7 @@ namespace UnityEditor.Timeline
                 throw new InvalidCastException("could not cast instantiated object into IPlayableAsset");
             }
             CloneExposedReferences(clone, sourceTable, destTable);
-            TimelineUndo.RegisterCreatedObjectUndo(clone, "Create clip");
+            TimelineUndo.RegisterCreatedObjectUndo(clone, L10n.Tr("Create clip"));
 
             return clone;
         }
@@ -108,7 +108,7 @@ namespace UnityEditor.Timeline
             newClip.name = AnimationTrackRecorder.GetUniqueRecordedClipName(owner, clip.name);
 
             SaveAnimClipIntoObject(newClip, owner);
-            TimelineUndo.RegisterCreatedObjectUndo(newClip, "Create clip");
+            TimelineUndo.RegisterCreatedObjectUndo(newClip, L10n.Tr("Create clip"));
 
             return newClip;
         }
@@ -172,7 +172,7 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            newTrack.SetCollapsed(trackAsset.GetCollapsed());
+            newTrack.SetCollapsed(trackAsset.IsCollapsed());
 
             // calling code is responsible for adding to asset, adding to sequence, and parenting,
             // and duplicating subtracks
@@ -448,7 +448,7 @@ namespace UnityEditor.Timeline
 
         public static string GetTrackMenuName(System.Type trackType)
         {
-            return TypeUtility.GetDisplayName(trackType);
+            return L10n.Tr(TypeUtility.GetDisplayName(trackType));
         }
 
         // retrieve the duration of a single loop, taking into account speed
@@ -818,31 +818,6 @@ namespace UnityEditor.Timeline
             selector(clickedItem);
         }
 
-        public static void Bind(TrackAsset track, Object obj, PlayableDirector director)
-        {
-            if (director != null && track != null)
-            {
-                var bindType = TypeUtility.GetTrackBindingAttribute(track.GetType());
-                if (bindType == null || bindType.type == null)
-                    return;
-
-                if (obj == null || bindType.type.IsInstanceOfType(obj))
-                {
-                    TimelineUndo.PushUndo(director, "Bind Track");
-                    director.SetGenericBinding(track, obj);
-                }
-                else if (obj is GameObject && typeof(Component).IsAssignableFrom(bindType.type))
-                {
-                    var component = (obj as GameObject).GetComponent(bindType.type);
-                    if (component == null)
-                        component = Undo.AddComponent(obj as GameObject, bindType.type);
-
-                    TimelineUndo.PushUndo(director, "Bind Track");
-                    director.SetGenericBinding(track, component);
-                }
-            }
-        }
-
         /// <summary>
         /// Shared code for adding a clip to a track
         /// </summary>
@@ -910,14 +885,7 @@ namespace UnityEditor.Timeline
                     parent.SetCollapsed(false);
 
                 var editor = CustomTimelineEditorCache.GetTrackEditor(track);
-                try
-                {
-                    editor.OnCreate(track, null);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                editor.OnCreate_Safe(track, null);
                 TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
             }
 

@@ -8,7 +8,7 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent PostPlaybackStateText = EditorGUIUtility.TrTextContent("Post-playback state");
+            public static readonly GUIContent PostPlaybackStateText = L10n.TextContent("Post-playback state");
         }
 
         SerializedProperty m_PostPlaybackProperty;

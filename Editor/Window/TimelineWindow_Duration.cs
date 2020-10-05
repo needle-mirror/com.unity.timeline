@@ -32,7 +32,7 @@ namespace UnityEditor.Timeline
             {
                 m_TimelineDuration = new TimeAreaItem(styles.endmarker, OnTrackDurationDrag)
                 {
-                    tooltip = "End of sequence marker",
+                    tooltip = L10n.Tr("End of sequence marker"),
                     boundOffset = new Vector2(0.0f, -DirectorStyles.kDurationGuiThickness)
                 };
             }
@@ -112,7 +112,7 @@ namespace UnityEditor.Timeline
                 // this is the first call to the drag
                 if (m_TimelineDuration.firstDrag)
                 {
-                    UndoExtensions.RegisterTimeline(state.editSequence.asset, "Change Duration");
+                    UndoExtensions.RegisterTimeline(state.editSequence.asset, L10n.Tr("Change Duration"));
                 }
 
                 state.editSequence.asset.fixedDuration = newTime;

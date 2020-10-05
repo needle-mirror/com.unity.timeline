@@ -113,7 +113,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in tracks.Where(t => !TimelineUtility.IsLockedFromGroup(t)))
             {
-                TimelineUndo.PushUndo(track, "Lock Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Lock Tracks"));
                 track.locked = shouldlock;
             }
             TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
@@ -128,7 +128,6 @@ namespace UnityEditor.Timeline
         static readonly string k_UnlockText = L10n.Tr("Unlock");
 
         public string menuName { get; private set; }
-
 
         void UpdateMenuName(IEnumerable<TrackAsset> tracks)
         {
@@ -147,6 +146,10 @@ namespace UnityEditor.Timeline
         public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
             UpdateMenuName(tracks);
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
+
+            if (!tracks.Any())
+                return ActionValidity.NotApplicable;
             if (tracks.Any(TimelineUtility.IsLockedFromGroup))
                 return ActionValidity.Invalid;
             return ActionValidity.Valid;
@@ -165,7 +168,7 @@ namespace UnityEditor.Timeline
                 if (track as GroupTrack == null)
                     SetLockState(track.GetChildTracks().ToArray(), shouldLock);
 
-                TimelineUndo.PushUndo(track, "Lock Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Lock Tracks"));
                 track.locked = shouldLock;
             }
 
@@ -279,7 +282,7 @@ namespace UnityEditor.Timeline
 
             foreach (var track in tracks.Where(t => !TimelineUtility.IsParentMuted(t)))
             {
-                TimelineUndo.PushUndo(track, "Mute Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Mute Tracks"));
                 track.muted = shouldMute;
             }
 
@@ -328,7 +331,7 @@ namespace UnityEditor.Timeline
             {
                 if (track as GroupTrack == null)
                     Mute(track.GetChildTracks().ToArray(), shouldMute);
-                TimelineUndo.PushUndo(track, "Mute Tracks");
+                TimelineUndo.PushUndo(track, L10n.Tr("Mute Tracks"));
                 track.muted = shouldMute;
             }
 
@@ -348,6 +351,8 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
+
             // disable preview mode so deleted tracks revert to default state
             // Case 956129: Disable preview mode _before_ deleting the tracks, since clip data is still needed
             TimelineEditor.state.previewMode = false;
@@ -375,8 +380,8 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
             TimelineEditor.clipboard.CopyTracks(tracks);
-
             return true;
         }
     }
@@ -387,6 +392,7 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(IEnumerable<TrackAsset> tracks)
         {
+            tracks = tracks.RemoveTimelineMarkerTrackFromList(TimelineEditor.inspectedAsset);
             if (tracks.Any())
             {
                 SelectionManager.RemoveTimelineSelection();
@@ -406,7 +412,7 @@ namespace UnityEditor.Timeline
                     var binding = TimelineEditor.inspectedDirector.GetGenericBinding(track);
                     if (binding != null)
                     {
-                        TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, "Duplicate");
+                        TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, L10n.Tr("Duplicate"));
                         TimelineEditor.inspectedDirector.SetGenericBinding(newTrack, binding);
                     }
                 }

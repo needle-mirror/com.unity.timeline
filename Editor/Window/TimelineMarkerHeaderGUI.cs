@@ -9,6 +9,8 @@ namespace UnityEditor.Timeline
 {
     class TimelineMarkerHeaderGUI : IRowGUI, ILayerable
     {
+        static readonly GUIContent k_Muted = L10n.TextContent("Muted");
+
         int m_TrackHash;
         TimelineAsset timeline { get; }
         WindowState state { get; }
@@ -21,8 +23,8 @@ namespace UnityEditor.Timeline
             public Rect contentRect;
             public GUIStyle trackHeaderFont;
             public Color colorTrackFont;
-            public bool showLockButton;
-            public bool showMuteButton;
+            public bool isMuted;
+            public bool isSelected;
         }
 
         public TimelineMarkerHeaderGUI(TimelineAsset asset, WindowState state)
@@ -32,19 +34,13 @@ namespace UnityEditor.Timeline
             this.state = state;
         }
 
-        public TrackAsset asset { get { return timeline.markerTrack; } }
+        public TrackAsset asset => timeline.markerTrack;
         public Rect boundingRect { get; private set; }
-        public bool locked { get { return !state.showMarkerHeader; } }
 
-        public bool showMarkers
-        {
-            get { return state.showMarkerHeader; }
-        }
-
-        public bool muted
-        {
-            get { return timeline.markerTrack != null && timeline.markerTrack.muted; }
-        }
+        public bool showMarkers => state.showMarkerHeader;
+        public bool muted => timeline.markerTrack != null && timeline.markerTrack.muted;
+        public bool locked => timeline.markerTrack.locked;
+        public LayerZOrder zOrder => m_ZOrder;
 
         Rect IRowGUI.ToWindowSpace(Rect rect)
         {
@@ -55,19 +51,19 @@ namespace UnityEditor.Timeline
         public void Draw(Rect markerHeaderRect, Rect markerContentRect, WindowState state)
         {
             boundingRect = markerContentRect;
-            var data = new DrawData()
+            var data = new DrawData
             {
                 headerRect = markerHeaderRect,
                 contentRect = markerContentRect,
                 trackHeaderFont = DirectorStyles.Instance.trackHeaderFont,
                 colorTrackFont = DirectorStyles.Instance.customSkin.colorTrackFont,
-                showLockButton = locked,
-                showMuteButton = muted
+                isMuted = muted,
+                isSelected = IsSelected()
             };
 
             if (state.showMarkerHeader)
             {
-                DrawMarkerDrawer(data, state);
+                DrawMarkerDrawer(data);
                 if (Event.current.type == EventType.Repaint)
                     state.spacePartitioner.AddBounds(this, boundingRect);
             }
@@ -75,7 +71,7 @@ namespace UnityEditor.Timeline
             if (asset != null && Hash() != m_TrackHash)
                 Rebuild();
 
-            var rect = state.showMarkerHeader ? markerContentRect : state.timeAreaRect;
+            Rect rect = state.showMarkerHeader ? markerContentRect : state.timeAreaRect;
             using (new GUIViewportScope(rect))
             {
                 if (m_Layer != null)
@@ -83,6 +79,9 @@ namespace UnityEditor.Timeline
 
                 HandleDragAndDrop();
             }
+
+            if (state.showMarkerHeader && data.isMuted)
+                DrawMuteOverlay(data);
         }
 
         public void Rebuild()
@@ -121,21 +120,22 @@ namespace UnityEditor.Timeline
             return timeline.markerTrack == null ? 0 : timeline.markerTrack.Hash();
         }
 
-        static void DrawMarkerDrawer(DrawData data, WindowState state)
+        static void DrawMarkerDrawer(DrawData data)
         {
             DrawMarkerDrawerHeaderBackground(data);
-            DrawMarkerDrawerHeader(data, state);
+            DrawMarkerDrawerHeader(data);
             DrawMarkerDrawerContentBackground(data);
         }
 
         static void DrawMarkerDrawerHeaderBackground(DrawData data)
         {
-            var backgroundColor = DirectorStyles.Instance.customSkin.markerHeaderDrawerBackgroundColor;
-            var bgRect = data.headerRect;
-            EditorGUI.DrawRect(bgRect, backgroundColor);
+            Color backgroundColor = data.isSelected
+                ? DirectorStyles.Instance.customSkin.colorSelection
+                : DirectorStyles.Instance.customSkin.markerHeaderDrawerBackgroundColor;
+            EditorGUI.DrawRect(data.headerRect, backgroundColor);
         }
 
-        static void DrawMarkerDrawerHeader(DrawData data, WindowState state)
+        static void DrawMarkerDrawerHeader(DrawData data)
         {
             var textStyle = data.trackHeaderFont;
             textStyle.normal.textColor = data.colorTrackFont;
@@ -150,45 +150,57 @@ namespace UnityEditor.Timeline
             var y = data.headerRect.y + (data.headerRect.height - buttonSize) / 2.0f;
             var buttonRect = new Rect(x, y, buttonSize, buttonSize);
 
-            DrawTrackDropDownMenu(buttonRect, state);
-            buttonRect.x -= 16.0f;
+            DrawTrackDropDownMenu(buttonRect);
+            buttonRect.x -= 21.0f;
 
-            if (data.showMuteButton)
-            {
-                DrawMuteButton(buttonRect);
-                buttonRect.x -= 16.0f;
-            }
-
-            if (data.showLockButton)
-            {
-                DrawLockButton(buttonRect);
-            }
+            DrawMuteButton(buttonRect, data);
         }
 
         static void DrawMarkerDrawerContentBackground(DrawData data)
         {
-            var trackBackgroundColor = DirectorStyles.Instance.customSkin.markerDrawerBackgroundColor;
+            Color trackBackgroundColor = DirectorStyles.Instance.customSkin.markerDrawerBackgroundColor;
+            if (data.isSelected)
+                trackBackgroundColor = DirectorStyles.Instance.customSkin.colorTrackBackgroundSelected;
             EditorGUI.DrawRect(data.contentRect, trackBackgroundColor);
         }
 
-        static void DrawLockButton(Rect rect)
+        static void DrawMuteOverlay(DrawData data)
         {
-            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.trackLockButton))
-                Invoker.InvokeWithSelected<ToggleShowMarkersOnTimeline>();
+            DirectorStyles styles = TimelineWindow.styles;
+
+            var colorOverlay = OverlayDrawer.CreateColorOverlay(GUIClip.Unclip(data.contentRect), styles.customSkin.colorTrackDarken);
+            colorOverlay.Draw();
+
+            Rect textRect = Graphics.CalculateTextBoxSize(data.contentRect, styles.fontClip, k_Muted, WindowConstants.overlayTextPadding);
+            var boxOverlay = OverlayDrawer.CreateTextBoxOverlay(
+                GUIClip.Unclip(textRect),
+                k_Muted.text,
+                styles.fontClip,
+                Color.white,
+                styles.customSkin.colorLockTextBG,
+                styles.displayBackground);
+            boxOverlay.Draw();
         }
 
-        static void DrawTrackDropDownMenu(Rect rect, WindowState state)
+        static void DrawTrackDropDownMenu(Rect rect)
         {
             if (GUI.Button(rect, GUIContent.none, DirectorStyles.Instance.trackOptions))
-                SequencerContextMenu.ShowMarkerHeaderContextMenu(null, state);
+            {
+                SelectionManager.SelectOnly(TimelineEditor.inspectedAsset.markerTrack);
+                SequencerContextMenu.ShowTrackContextMenu(null);
+            }
         }
 
-        static void DrawMuteButton(Rect rect)
+        static void DrawMuteButton(Rect rect, DrawData data)
         {
-            if (GUI.Button(rect, GUIContent.none, TimelineWindow.styles.markerHeaderMuteButton))
-                Invoker.InvokeWithSelected<ToggleMuteMarkersOnTimeline>();
+            bool muted = GUI.Toggle(rect, data.isMuted, string.Empty, TimelineWindow.styles.trackMuteButton);
+            if (muted != data.isMuted)
+                new[] {TimelineEditor.inspectedAsset.markerTrack}.Invoke<MuteTrack>();
         }
 
-        public LayerZOrder zOrder => m_ZOrder;
+        bool IsSelected()
+        {
+            return SelectionManager.Contains(asset);
+        }
     }
 }

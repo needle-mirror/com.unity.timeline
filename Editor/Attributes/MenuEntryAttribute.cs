@@ -3,16 +3,6 @@ using UnityEngine;
 
 namespace UnityEditor.Timeline.Actions
 {
-    [Flags]
-    enum MenuFilter
-    {
-        None = 0,
-        Item = 1 << 0,
-        Track = 1 << 1,
-        MarkerHeader = 1 << 2,
-        Default = Item | Track
-    }
-
     /// <summary>
     /// Use this attribute to add a menu item to a context menu.
     /// Used to indicate path and priority that are auto added to the menu
@@ -49,7 +39,6 @@ namespace UnityEditor.Timeline.Actions
         internal readonly int priority;
         internal readonly string name;
         internal readonly string subMenuPath;
-        internal readonly MenuFilter filter;
 
         /// <summary>
         /// Constructor for Menu Entry Attribute to define information about the menu item for an action.
@@ -59,11 +48,8 @@ namespace UnityEditor.Timeline.Actions
         /// The lower the priority, the higher the menu item will be in the context menu.
         /// </param>
         /// <seealso cref="MenuPriority"/>
-        public MenuEntryAttribute(string path = default, int priority = MenuPriority.defaultPriority) : this(path, priority, MenuFilter.Default) {}
-
-        internal MenuEntryAttribute(string path, int priority, MenuFilter filter)
+        public MenuEntryAttribute(string path = default, int priority = MenuPriority.defaultPriority)
         {
-            this.filter = filter;
             path = path ?? string.Empty;
             path = L10n.Tr(path);
             this.priority = priority;
@@ -79,14 +65,6 @@ namespace UnityEditor.Timeline.Actions
                 name = path;
                 subMenuPath = string.Empty;
             }
-        }
-    }
-
-    static class MenuFilterExtensions
-    {
-        public static bool ShouldFilterOut(this MenuFilter filter, MenuEntryAttribute attr)
-        {
-            return (filter & attr.filter) != filter;
         }
     }
 }

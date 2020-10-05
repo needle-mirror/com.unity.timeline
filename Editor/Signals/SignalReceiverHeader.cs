@@ -9,7 +9,7 @@ namespace UnityEditor.Timeline.Signals
 
         protected override void AddColumnHeaderContextMenuItems(GenericMenu menu)
         {
-            menu.AddItem(EditorGUIUtility.TrTextContent("Resize to Fit"), false, ResizeToFit);
+            menu.AddItem(L10n.TextContent("Resize to Fit"), false, ResizeToFit);
         }
     }
 }

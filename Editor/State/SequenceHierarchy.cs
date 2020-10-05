@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
             if (hostClip == null)
                 AddToCurrentUndoGroup(this); // Merge with selection undo
             else
-                TimelineUndo.PushUndo(this, "Edit Sub-Timeline");
+                TimelineUndo.PushUndo(this, L10n.Tr("Edit Sub-Timeline"));
 
             Add_Internal(asset, director, hostClip);
 
@@ -75,7 +75,7 @@ namespace UnityEditor.Timeline
         {
             if (m_Sequences.Count == 0) return;
 
-            TimelineUndo.PushUndo(this, "Go to Sub-Timeline");
+            TimelineUndo.PushUndo(this, L10n.Tr("Go to Sub-Timeline"));
 
             Remove_Internal();
 
@@ -91,7 +91,7 @@ namespace UnityEditor.Timeline
         {
             if (expectedCount < 0 || m_Sequences.Count <= expectedCount) return;
 
-            TimelineUndo.PushUndo(this, "Go to Sub-Timeline");
+            TimelineUndo.PushUndo(this, L10n.Tr("Go to Sub-Timeline"));
 
             RemoveUntilCount_Internal(expectedCount);
 

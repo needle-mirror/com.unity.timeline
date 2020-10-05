@@ -65,6 +65,7 @@ namespace UnityEditor.Timeline
             public const string moveRight = "Timeline/MoveRight";
             public const string moveUp = "Timeline/MoveUp";
             public const string moveDown = "Timeline/MoveDown";
+            public const string keyAllAnimated = "Timeline/KeyAllAnimated";
 
             [UsedImplicitly, ShortcutManagement.Shortcut(play, typeof(TimelineWindow), KeyCode.Space)]
             static void Play(ShortcutManagement.ShortcutArguments args)
@@ -252,7 +253,7 @@ namespace UnityEditor.Timeline
             return ((TimelineWindow)args.context).state;
         }
 
-        static void SendEventToInvokeShortcut(string timelineShortcutId, object context)
+        internal static void SendEventToInvokeShortcut(string timelineShortcutId, object context)
         {
             var e = new Event
             {

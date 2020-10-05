@@ -4,6 +4,9 @@ using UnityEditor.Timeline;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.UIElements;
+#if !UNITY_2020_2_OR_NEWER
+using L10n = UnityEditor.Timeline.L10n;
+#endif
 
 /// <summary>
 /// Store the editor preferences for Timeline.
@@ -88,19 +91,19 @@ class TimelinePreferencesProvider : SettingsProvider
 
     static string[] timeUnitsList = new string[]
     {
-        "Seconds",
-        "Frames"
+        L10n.Tr("Seconds"),
+        L10n.Tr("Frames")
     };
 
     private class Styles
     {
-        public static readonly GUIContent TimeUnitLabel = EditorGUIUtility.TrTextContent("Time Unit", "Define the time unit for the timeline window (Frames or Seconds).");
-        public static readonly GUIContent ShowAudioWaveformLabel = EditorGUIUtility.TrTextContent("Show Audio Waveforms", "Draw the waveforms for all audio clips.");
-        public static readonly GUIContent AudioScrubbingLabel = EditorGUIUtility.TrTextContent("Allow Audio Scrubbing", "Allow the users to hear audio while scrubbing on audio clip.");
-        public static readonly GUIContent SnapToFrameLabel = EditorGUIUtility.TrTextContent("Snap To Frame", "Enable Snap to Frame to manipulate clips and align them on frames.");
-        public static readonly GUIContent EdgeSnapLabel = EditorGUIUtility.TrTextContent("Edge Snap", "Enable the ability to snap clips on the edge of another clip.");
-        public static readonly GUIContent PlaybackScrollModeLabel = EditorGUIUtility.TrTextContent("Playback Scrolling Mode", "Define scrolling behavior during playback.");
-        public static readonly GUIContent EditorSettingLabel = EditorGUIUtility.TrTextContent("Timeline Editor Settings", "");
+        public static readonly GUIContent TimeUnitLabel = L10n.TextContent("Time Unit", "Define the time unit for the timeline window (Frames or Seconds).");
+        public static readonly GUIContent ShowAudioWaveformLabel = L10n.TextContent("Show Audio Waveforms", "Draw the waveforms for all audio clips.");
+        public static readonly GUIContent AudioScrubbingLabel = L10n.TextContent("Allow Audio Scrubbing", "Allow the users to hear audio while scrubbing on audio clip.");
+        public static readonly GUIContent SnapToFrameLabel = L10n.TextContent("Snap To Frame", "Enable Snap to Frame to manipulate clips and align them on frames.");
+        public static readonly GUIContent EdgeSnapLabel = L10n.TextContent("Edge Snap", "Enable the ability to snap clips on the edge of another clip.");
+        public static readonly GUIContent PlaybackScrollModeLabel = L10n.TextContent("Playback Scrolling Mode", "Define scrolling behavior during playback.");
+        public static readonly GUIContent EditorSettingLabel = L10n.TextContent("Timeline Editor Settings", "");
     }
 
     public TimelinePreferencesProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)

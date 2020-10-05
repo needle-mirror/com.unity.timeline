@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.SceneManagement;
+using UnityEditor.ShortcutManagement;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
@@ -37,6 +39,29 @@ namespace UnityEditor.Timeline
             EditorSceneManager.sceneSaved += OnSceneSaved;
             ObjectFactory.componentWasAdded += OnComponentWasAdded;
             PrefabUtility.prefabInstanceUpdated += OnPrefabApplied;
+            EditorApplication.globalEventHandler += GlobalEventHandler;
+        }
+
+        // This callback is needed because the Animation window registers "Animation/Key Selected" as a global hotkey
+        // and we want  to also react to the key.
+        void GlobalEventHandler()
+        {
+            if (instance == null  || !state.previewMode)
+            {
+                return;
+            }
+
+            var keyBinding = ShortcutManager.instance.GetShortcutBinding("Animation/Key Selected");
+            if (keyBinding.Equals(ShortcutBinding.empty))
+            {
+                return;
+            }
+
+            var evtCombo = KeyCombination.FromKeyboardInput(Event.current);
+            if (keyBinding.keyCombinationSequence.Contains(evtCombo))
+            {
+                Invoker.InvokeWithSelected<KeyAllAnimated>();
+            }
         }
 
         void OnEditorQuit()
@@ -57,6 +82,7 @@ namespace UnityEditor.Timeline
             EditorSceneManager.sceneSaved -= OnSceneSaved;
             ObjectFactory.componentWasAdded -= OnComponentWasAdded;
             PrefabUtility.prefabInstanceUpdated -= OnPrefabApplied;
+            EditorApplication.globalEventHandler -= GlobalEventHandler;
         }
 
         // Called when a prefab change is applied to the scene.
@@ -201,8 +227,17 @@ namespace UnityEditor.Timeline
             {
                 var mod = modifications[i];
 
-                // check if an Avatar Mask has been modified
-                if (mod.previousValue != null && mod.previousValue.target is AvatarMask)
+                if (mod.currentValue != null && mod.currentValue.target is IMarker currentMarker)
+                {
+                    if (currentMarker.parent != null && currentMarker.parent.timelineAsset == state.editSequence.asset)
+                    {
+                        if (mod.currentValue.target is INotification)
+                            TimelineEditor.Refresh(RefreshReason.ContentsModified);
+                        else
+                            TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
+                    }
+                }
+                else if (mod.previousValue != null && mod.previousValue.target is AvatarMask) // check if an Avatar Mask has been modified
                 {
                     rebuildGraph = state.editSequence.asset != null &&
                         state.editSequence.asset.flattenedTracks

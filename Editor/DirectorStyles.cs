@@ -21,7 +21,7 @@ namespace UnityEditor.Timeline
         public static readonly GUIContent noTimelinesInScene = TrTextContent("No timeline found in the scene");
         public static readonly GUIContent createNewTimelineText = TrTextContent("Create a new Timeline and Director Component for Game Object");
         public static readonly GUIContent previewContent = TrTextContent("Preview", "Enable/disable scene preview mode");
-        public static readonly GUIContent previewDisabledContent = EditorGUIUtility.TrTextContentWithIcon("Preview", "Scene preview is disabled for this TimelineAsset", MessageType.Info);
+        public static readonly GUIContent previewDisabledContent = L10n.TextContentWithIcon("Preview", "Scene preview is disabled for this TimelineAsset", MessageType.Info);
         public static readonly GUIContent mixOff = TrIconContent("TimelineEditModeMixOFF", "Mix Mode (1)");
         public static readonly GUIContent mixOn = TrIconContent("TimelineEditModeMixON", "Mix Mode (1)");
         public static readonly GUIContent rippleOff = TrIconContent("TimelineEditModeRippleOFF", "Ripple Mode (2)");
@@ -35,17 +35,17 @@ namespace UnityEditor.Timeline
         public static readonly GUIContent signalTrackIcon = IconContent("TimelineSignal");
 
         //Unity Default Resources
-        public static readonly GUIContent playContent = EditorGUIUtility.TrIconContent("Animation.Play", "Play the timeline (Space)");
-        public static readonly GUIContent gotoBeginingContent = EditorGUIUtility.TrIconContent("Animation.FirstKey", "Go to the beginning of the timeline (Shift+<)");
-        public static readonly GUIContent gotoEndContent = EditorGUIUtility.TrIconContent("Animation.LastKey", "Go to the end of the timeline (Shift+>)");
-        public static readonly GUIContent nextFrameContent = EditorGUIUtility.TrIconContent("Animation.NextKey", "Go to the next frame");
-        public static readonly GUIContent previousFrameContent = EditorGUIUtility.TrIconContent("Animation.PrevKey", "Go to the previous frame");
-        public static readonly GUIContent newContent = EditorGUIUtility.IconContent("CreateAddNew", "Add new tracks.");
-        public static readonly GUIContent optionsCogIcon = EditorGUIUtility.TrIconContent("_Popup", "Options");
+        public static readonly GUIContent playContent = L10n.IconContent("Animation.Play", "Play the timeline (Space)");
+        public static readonly GUIContent gotoBeginingContent = L10n.IconContent("Animation.FirstKey", "Go to the beginning of the timeline (Shift+<)");
+        public static readonly GUIContent gotoEndContent = L10n.IconContent("Animation.LastKey", "Go to the end of the timeline (Shift+>)");
+        public static readonly GUIContent nextFrameContent = L10n.IconContent("Animation.NextKey", "Go to the next frame");
+        public static readonly GUIContent previousFrameContent = L10n.IconContent("Animation.PrevKey", "Go to the previous frame");
+        public static readonly GUIContent newContent = L10n.IconContent("CreateAddNew", "Add new tracks.");
+        public static readonly GUIContent optionsCogIcon = L10n.IconContent("_Popup", "Options");
         public static readonly GUIContent animationTrackIcon = EditorGUIUtility.IconContent("AnimationClip Icon");
         public static readonly GUIContent audioTrackIcon = EditorGUIUtility.IconContent("AudioSource Icon");
         public static readonly GUIContent playableTrackIcon = EditorGUIUtility.IconContent("cs Script Icon");
-        public static readonly GUIContent timelineSelectorArrow = EditorGUIUtility.TrIconContent("icon dropdown", "Timeline Selector");
+        public static readonly GUIContent timelineSelectorArrow = L10n.IconContent("icon dropdown", "Timeline Selector");
 
         public GUIContent playrangeContent;
 
@@ -108,7 +108,6 @@ namespace UnityEditor.Timeline
         public GUIStyle timeReferenceButton;
         public GUIStyle trackButtonSuite;
         public GUIStyle previewButtonDisabled;
-        public GUIStyle markerHeaderMuteButton;
 
         static internal DirectorStyles s_Instance;
 
@@ -284,9 +283,8 @@ namespace UnityEditor.Timeline
             timeReferenceButton = GetGUIStyle("timeReferenceButton");
             trackButtonSuite = GetGUIStyle("trackButtonSuite");
             previewButtonDisabled = GetGUIStyle("previewButtonDisabled");
-            markerHeaderMuteButton = GetGUIStyle("markerHeaderMuteButton");
 
-            playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = "Toggle play range markers." };
+            playrangeContent = new GUIContent(GetBackgroundImage(playrange)) { tooltip = L10n.Tr("Toggle play range markers.") };
 
             fontClipLoop = new GUIStyle(fontClip) { fontStyle = FontStyle.Bold };
         }
@@ -298,7 +296,7 @@ namespace UnityEditor.Timeline
 
         public static GUIContent TrIconContent(string iconName, string tooltip = null)
         {
-            return EditorGUIUtility.TrIconContent(iconName == null ? null : ResolveIcon(iconName), tooltip);
+            return L10n.IconContent(iconName == null ? null : ResolveIcon(iconName), tooltip);
         }
 
         public static GUIContent IconContent(string iconName)
@@ -308,12 +306,12 @@ namespace UnityEditor.Timeline
 
         public static GUIContent TrTextContentWithIcon(string text, string tooltip, string iconName)
         {
-            return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, iconName == null ? null : ResolveIcon(iconName));
+            return L10n.TextContentWithIcon(text, tooltip, iconName == null ? null : ResolveIcon(iconName));
         }
 
         public static GUIContent TrTextContent(string text, string tooltip = null)
         {
-            return EditorGUIUtility.TrTextContent(text, tooltip);
+            return L10n.TextContent(text, tooltip);
         }
 
         public static Texture2D LoadIcon(string iconName)

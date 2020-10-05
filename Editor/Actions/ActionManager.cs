@@ -28,14 +28,14 @@ namespace UnityEditor.Timeline.Actions
             return list.FirstOrDefault(x => x.GetType() == typeof(T));
         }
 
-        public static void GetMenuEntries(IReadOnlyList<TimelineAction> actions, Vector2? mousePos, List<MenuActionItem> menuItems, MenuFilter filter = MenuFilter.Default)
+        public static void GetMenuEntries(IReadOnlyList<TimelineAction> actions, Vector2? mousePos, List<MenuActionItem> menuItems)
         {
             var globalContext = TimelineEditor.CurrentContext(mousePos);
             foreach (var action in actions)
             {
                 try
                 {
-                    BuildMenu(action, globalContext, menuItems, filter);
+                    BuildMenu(action, globalContext, menuItems);
                 }
                 catch (Exception e)
                 {
@@ -44,7 +44,7 @@ namespace UnityEditor.Timeline.Actions
             }
         }
 
-        public static void GetMenuEntries(IReadOnlyList<TrackAction> actions, List<MenuActionItem> menuItems, MenuFilter filter = MenuFilter.Track)
+        public static void GetMenuEntries(IReadOnlyList<TrackAction> actions, List<MenuActionItem> menuItems)
         {
             var tracks = SelectionManager.SelectedTracks();
             if (!tracks.Any())
@@ -54,7 +54,7 @@ namespace UnityEditor.Timeline.Actions
             {
                 try
                 {
-                    BuildMenu(action, tracks, menuItems, filter);
+                    BuildMenu(action, tracks, menuItems);
                 }
                 catch (Exception e)
                 {
@@ -63,7 +63,7 @@ namespace UnityEditor.Timeline.Actions
             }
         }
 
-        public static void GetMenuEntries(IReadOnlyList<ClipAction> actions, List<MenuActionItem> menuItems, MenuFilter filter = MenuFilter.Item)
+        public static void GetMenuEntries(IReadOnlyList<ClipAction> actions, List<MenuActionItem> menuItems)
         {
             var clips = SelectionManager.SelectedClips();
             bool any = clips.Any();
@@ -77,7 +77,7 @@ namespace UnityEditor.Timeline.Actions
                     if (action is EditSubTimeline editSubTimelineAction)
                         editSubTimelineAction.AddMenuItem(menuItems);
                     else if (any)
-                        BuildMenu(action, clips, menuItems, filter);
+                        BuildMenu(action, clips, menuItems);
                 }
                 catch (Exception e)
                 {
@@ -86,7 +86,7 @@ namespace UnityEditor.Timeline.Actions
             }
         }
 
-        public static void GetMenuEntries(IReadOnlyList<MarkerAction> actions, List<MenuActionItem> menuItems, MenuFilter filter = MenuFilter.Item)
+        public static void GetMenuEntries(IReadOnlyList<MarkerAction> actions, List<MenuActionItem> menuItems)
         {
             var markers = SelectionManager.SelectedMarkers();
             if (!markers.Any())
@@ -96,7 +96,7 @@ namespace UnityEditor.Timeline.Actions
             {
                 try
                 {
-                    BuildMenu(action, markers, menuItems, filter);
+                    BuildMenu(action, markers, menuItems);
                 }
                 catch (Exception e)
                 {
@@ -105,30 +105,30 @@ namespace UnityEditor.Timeline.Actions
             }
         }
 
-        static void BuildMenu(TimelineAction action, ActionContext context, List<MenuActionItem> menuItems, MenuFilter filter)
+        static void BuildMenu(TimelineAction action, ActionContext context, List<MenuActionItem> menuItems)
         {
-            BuildMenu(action, action.Validate(context), () => ExecuteTimelineAction(action, context), menuItems, filter);
+            BuildMenu(action, action.Validate(context), () => ExecuteTimelineAction(action, context), menuItems);
         }
 
-        static void BuildMenu(TrackAction action, IEnumerable<TrackAsset> tracks, List<MenuActionItem> menuItems, MenuFilter filter)
+        static void BuildMenu(TrackAction action, IEnumerable<TrackAsset> tracks, List<MenuActionItem> menuItems)
         {
-            BuildMenu(action, action.Validate(tracks), () => ExecuteTrackAction(action, tracks), menuItems, filter);
+            BuildMenu(action, action.Validate(tracks), () => ExecuteTrackAction(action, tracks), menuItems);
         }
 
-        static void BuildMenu(ClipAction action, IEnumerable<TimelineClip> clips, List<MenuActionItem> menuItems, MenuFilter filter)
+        static void BuildMenu(ClipAction action, IEnumerable<TimelineClip> clips, List<MenuActionItem> menuItems)
         {
-            BuildMenu(action, action.Validate(clips), () => ExecuteClipAction(action, clips), menuItems, filter);
+            BuildMenu(action, action.Validate(clips), () => ExecuteClipAction(action, clips), menuItems);
         }
 
-        static void BuildMenu(MarkerAction action, IEnumerable<IMarker> markers, List<MenuActionItem> menuItems, MenuFilter filter)
+        static void BuildMenu(MarkerAction action, IEnumerable<IMarker> markers, List<MenuActionItem> menuItems)
         {
-            BuildMenu(action,  action.Validate(markers), () => ExecuteMarkerAction(action, markers), menuItems, filter);
+            BuildMenu(action,  action.Validate(markers), () => ExecuteMarkerAction(action, markers), menuItems);
         }
 
-        static void BuildMenu(IAction action, ActionValidity validity, GenericMenu.MenuFunction executeFunction, List<MenuActionItem> menuItems, MenuFilter filter, bool isChecked = false)
+        static void BuildMenu(IAction action, ActionValidity validity, GenericMenu.MenuFunction executeFunction, List<MenuActionItem> menuItems)
         {
             var menuAttribute = action.GetType().GetCustomAttribute<MenuEntryAttribute>(false);
-            if (menuAttribute == null || filter.ShouldFilterOut(menuAttribute))
+            if (menuAttribute == null)
                 return;
 
             if (validity == ActionValidity.NotApplicable)

@@ -10,7 +10,7 @@ namespace UnityEditor.Timeline
     // Utility class for editing animation clips from serialized properties
     static class CurveEditUtility
     {
-        static bool IsRotationKey(EditorCurveBinding binding)
+        public static bool IsRotationKey(EditorCurveBinding binding)
         {
             return binding.propertyName.Contains("localEulerAnglesRaw");
         }

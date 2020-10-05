@@ -122,10 +122,10 @@ namespace UnityEditor.Timeline
             if (m_ProxyIsRebuilding > 0)
                 return;
 
-            Undo.RegisterCompleteObjectUndo(m_OriginalOwner.asset, "Edit Clip Curve");
+            Undo.RegisterCompleteObjectUndo(m_OriginalOwner.asset, L10n.Tr("Edit Clip Curve"));
 
             if (m_OriginalOwner.curves != null)
-                Undo.RegisterCompleteObjectUndo(m_OriginalOwner.curves, "Edit Clip Curve");
+                Undo.RegisterCompleteObjectUndo(m_OriginalOwner.curves, L10n.Tr("Edit Clip Curve"));
 
             foreach (var curve in updatedCurves)
             {
@@ -199,7 +199,7 @@ namespace UnityEditor.Timeline
             if (prop == null)
                 return;
 
-            Undo.RegisterCompleteObjectUndo(prop.serializedObject.targetObject, "Edit Clip Curve");
+            Undo.RegisterCompleteObjectUndo(prop.serializedObject.targetObject, L10n.Tr("Edit Clip Curve"));
             prop.serializedObject.UpdateIfRequiredOrScript();
             CurveEditUtility.SetFromKeyValue(prop, updatedCurve.keys[0].value);
             prop.serializedObject.ApplyModifiedProperties();

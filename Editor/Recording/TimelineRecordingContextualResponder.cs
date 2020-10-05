@@ -16,9 +16,17 @@ namespace UnityEditor.Timeline
 
         //Unsupported stuff
         public bool HasAnyCandidates() { return false; }
-        public bool HasAnyCurves() {return false; }
+
+        public bool HasAnyCurves()
+        {
+            return false;
+        }
+
         public void AddCandidateKeys() {}
-        public void AddAnimatedKeys() {}
+
+        public void AddAnimatedKeys()
+        {
+        }
 
         public bool IsAnimatable(PropertyModification[] modifications)
         {
@@ -58,7 +66,7 @@ namespace UnityEditor.Timeline
             if (modifications.Length == 0 || modifications[0].target == null)
                 return false;
 
-            return TimelineRecording.HasKey(modifications, modifications[0].target, state);
+            return TimelineRecording.HasKey(modifications, state);
         }
 
         public bool CandidateExists(PropertyModification[] modifications)

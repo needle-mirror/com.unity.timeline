@@ -53,8 +53,8 @@ namespace UnityEditor.Timeline
         static void AddMarkerToParent(ScriptableObject marker, TrackAsset parent)
         {
             TimelineCreateUtilities.SaveAssetIntoObject(marker, parent);
-            TimelineUndo.RegisterCreatedObjectUndo(marker, "Duplicate Marker");
-            UndoExtensions.RegisterTrack(parent, "Duplicate Marker");
+            TimelineUndo.RegisterCreatedObjectUndo(marker, L10n.Tr("Duplicate Marker"));
+            UndoExtensions.RegisterTrack(parent, L10n.Tr("Duplicate Marker"));
 
             if (parent != null)
             {
