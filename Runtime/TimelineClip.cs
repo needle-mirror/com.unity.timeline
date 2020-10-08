@@ -650,18 +650,20 @@ namespace UnityEngine.Timeline
         }
 
         /// <summary>
-        /// Given a time, returns whether it falls within the clips extrapolation
+        /// Given a time, returns whether it falls within the clip's extrapolation
         /// </summary>
         /// <param name="sequenceTime">The time relative to the timeline</param>
+        /// <returns>True if <paramref name="sequenceTime"/> is within the clip extrapolation</returns>
         public bool IsExtrapolatedTime(double sequenceTime)
         {
             return IsPreExtrapolatedTime(sequenceTime) || IsPostExtrapolatedTime(sequenceTime);
         }
 
         /// <summary>
-        /// Given a time, returns whether it falls within the clip pre-extrapolation
+        /// Given a time, returns whether it falls within the clip's pre-extrapolation
         /// </summary>
         /// <param name="sequenceTime">The time relative to the timeline</param>
+        /// <returns>True if <paramref name="sequenceTime"/> is within the clip pre-extrapolation</returns>
         public bool IsPreExtrapolatedTime(double sequenceTime)
         {
             return preExtrapolationMode != ClipExtrapolation.None &&
@@ -669,9 +671,10 @@ namespace UnityEngine.Timeline
         }
 
         /// <summary>
-        /// Given a time, returns whether it falls within the clip post-extrapolation
+        /// Given a time, returns whether it falls within the clip's post-extrapolation
         /// </summary>
         /// <param name="sequenceTime">The time relative to the timeline</param>
+        /// <returns>True if <paramref name="sequenceTime"/> is within the clip post-extrapolation</returns>
         public bool IsPostExtrapolatedTime(double sequenceTime)
         {
             return postExtrapolationMode != ClipExtrapolation.None &&
@@ -779,11 +782,13 @@ namespace UnityEngine.Timeline
             m_AnimationCurves = TimelineCreateUtilities.CreateAnimationClipForTrack(string.IsNullOrEmpty(curvesClipName) ? kDefaultCurvesName : curvesClipName, parentTrack, true);
         }
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
         }
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_Version < k_LatestVersion)

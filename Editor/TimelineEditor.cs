@@ -212,7 +212,7 @@ namespace UnityEditor.Timeline
     /// <remarks>
     /// Use the <c>|</c> operator to combine flags.
     /// <example>
-    /// <c>TimelineEditor.Refresh(RefreshReason.ContentsModified | RefreshReason.SceneNeedsUpdate);</c>
+    /// <code source="../DocCodeExamples/TimelineEditorExamples.cs" region="declare-refreshReason" title="refreshReason"/>
     /// </example>
     /// </remarks>
     [Flags]

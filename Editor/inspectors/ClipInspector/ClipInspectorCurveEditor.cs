@@ -9,8 +9,6 @@ namespace UnityEditor.Timeline
     class ClipInspectorCurveEditor
     {
         CurveEditor m_CurveEditor;
-
-        AnimationCurve[] m_Curves;
         CurveWrapper[] m_CurveWrappers;
 
         const float k_HeaderHeight = 30;
@@ -47,6 +45,8 @@ namespace UnityEditor.Timeline
                 vSlider = false,
                 hRangeLocked = false,
                 vRangeLocked = false,
+                undoRedoSelection = true,
+
 
                 hTickStyle = new TickStyle
                 {
@@ -95,7 +95,7 @@ namespace UnityEditor.Timeline
             if (!InitStyles())
                 return;
 
-            if (m_Curves == null || m_Curves.Length == 0)
+            if (m_CurveWrappers == null || m_CurveWrappers.Length == 0)
                 return;
 
             // regions
@@ -251,39 +251,31 @@ namespace UnityEditor.Timeline
             return propertyName;
         }
 
-        public void SetCurves(AnimationCurve[] curves, EditorCurveBinding[] bindings)
+        public void SetCurve(AnimationCurve curve)
         {
-            m_Curves = curves;
-            if (m_Curves != null && m_Curves.Length > 0)
+            if (m_CurveWrappers == null || m_CurveWrappers.Length != 1)
             {
-                m_CurveWrappers = new CurveWrapper[m_Curves.Length];
-                for (int i = 0; i < m_Curves.Length; i++)
+                m_CurveWrappers = new CurveWrapper[1];
+                var cw = new CurveWrapper
                 {
-                    var cw = new CurveWrapper
-                    {
-                        renderer = new NormalCurveRenderer(m_Curves[i]),
-                        readOnly = false,
-                        color = EditorGUI.kCurveColor,
-                        id = curves[i].GetHashCode(),
-                        hidden = false,
-                        regionId = -1
-                    };
+                    renderer = new NormalCurveRenderer(curve),
+                    readOnly = false,
+                    color = EditorGUI.kCurveColor,
+                    id = 0xFEED,
+                    hidden = false,
+                    regionId = -1
+                };
 
-                    cw.renderer.SetWrap(WrapMode.Clamp, WrapMode.Clamp);
-                    cw.renderer.SetCustomRange(0, 1);
-
-                    if (bindings != null)
-                    {
-                        cw.binding = bindings[i];
-                        cw.color = CurveUtility.GetPropertyColor(bindings[i].propertyName);
-                        cw.id = bindings[i].GetHashCode();
-                    }
-
-                    m_CurveWrappers[i] = cw;
-                }
+                cw.renderer.SetWrap(WrapMode.Clamp, WrapMode.Clamp);
+                cw.renderer.SetCustomRange(0, 1);
+                m_CurveWrappers[0] = cw;
 
                 UpdateSelectionColors();
                 m_CurveEditor.animationCurves = m_CurveWrappers;
+            }
+            else
+            {
+                m_CurveWrappers[0].renderer = new NormalCurveRenderer(curve);
             }
         }
 
@@ -309,15 +301,14 @@ namespace UnityEditor.Timeline
         public void SetSelected(AnimationCurve curve)
         {
             m_CurveEditor.SelectNone();
-            for (int i = 0; i < m_Curves.Length; i++)
+            if (m_CurveWrappers != null && m_CurveWrappers.Length > 0)
             {
-                if (curve == m_Curves[i])
+                if (m_CurveWrappers[0].renderer.GetCurve() == curve)
                 {
-                    m_CurveWrappers[i].selected = CurveWrapper.SelectionMode.Selected;
-                    m_CurveEditor.AddSelection(new CurveSelection(m_CurveWrappers[i].id, 0));
+                    m_CurveWrappers[0].selected = CurveWrapper.SelectionMode.Selected;
+                    m_CurveEditor.AddSelection(new CurveSelection(m_CurveWrappers[0].id, 0));
                 }
             }
-
             UpdateSelectionColors();
         }
 

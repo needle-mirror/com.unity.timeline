@@ -41,6 +41,11 @@ namespace UnityEditor.Timeline
             endTime = _endTime;
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns>Returns <c>true</c> if <paramref name="obj"/> and this instance are the same type and represent the same value.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ClipBackgroundRegion))
@@ -49,6 +54,11 @@ namespace UnityEditor.Timeline
             return Equals((ClipBackgroundRegion)obj);
         }
 
+        /// <summary>
+        /// Compares this object with another <c>ClipBackgroundRegion</c>.
+        /// </summary>
+        /// <param name="other">The object to compare with.</param>
+        /// <returns>Returns true if <c>this</c> and <paramref name="other"/> are equal.</returns>
         public bool Equals(ClipBackgroundRegion other)
         {
             return position.Equals(other.position) &&
@@ -56,6 +66,10 @@ namespace UnityEditor.Timeline
                 endTime == other.endTime;
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return HashUtility.CombineHash(
@@ -65,11 +79,23 @@ namespace UnityEditor.Timeline
             );
         }
 
+        /// <summary>
+        /// Compares two <c>ClipBackgroundRegion</c> objects.
+        /// </summary>
+        /// <param name="region1">The first object.</param>
+        /// <param name="region2">The second object.</param>
+        /// <returns>Returns true if they are equal.</returns>
         public static bool operator==(ClipBackgroundRegion region1, ClipBackgroundRegion region2)
         {
             return region1.Equals(region2);
         }
 
+        /// <summary>
+        /// Compares two <c>ClipBackgroundRegion</c> objects.
+        /// </summary>
+        /// <param name="region1">The first object.</param>
+        /// <param name="region2">The second object.</param>
+        /// <returns>Returns true if they are not equal.</returns>
         public static bool operator!=(ClipBackgroundRegion region1, ClipBackgroundRegion region2)
         {
             return !region1.Equals(region2);
@@ -111,6 +137,11 @@ namespace UnityEditor.Timeline
             set { m_Icons = value;}
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns>Returns <c>true</c> if <paramref name="obj"/> and this instance are the same type and represent the same value.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ClipDrawOptions))
@@ -119,6 +150,11 @@ namespace UnityEditor.Timeline
             return Equals((ClipDrawOptions)obj);
         }
 
+        /// <summary>
+        /// Compares this object with another <c>ClipDrawOptions</c>.
+        /// </summary>
+        /// <param name="other">The object to compare with.</param>
+        /// <returns>Returns true if <c>this</c> and <paramref name="other"/> are equal.</returns>
         public bool Equals(ClipDrawOptions other)
         {
             return errorText == other.errorText &&
@@ -127,6 +163,10 @@ namespace UnityEditor.Timeline
                 System.Linq.Enumerable.SequenceEqual(icons, other.icons);
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return HashUtility.CombineHash(
@@ -137,17 +177,28 @@ namespace UnityEditor.Timeline
             );
         }
 
+        /// <summary>
+        /// Compares two <c>ClipDrawOptions</c> objects.
+        /// </summary>
+        /// <param name="options1">The first object.</param>
+        /// <param name="options2">The second object.</param>
+        /// <returns>Returns true if they are equal.</returns>
         public static bool operator==(ClipDrawOptions options1, ClipDrawOptions options2)
         {
             return options1.Equals(options2);
         }
 
+        /// <summary>
+        /// Compares two <c>ClipDrawOptions</c> objects.
+        /// </summary>
+        /// <param name="options1">The first object.</param>
+        /// <param name="options2">The second object.</param>
+        /// <returns>Returns true if they are not equal.</returns>
         public static bool operator!=(ClipDrawOptions options1, ClipDrawOptions options2)
         {
             return !options1.Equals(options2);
         }
     }
-
 
     /// <summary>
     /// Use this class to customize clip types in the TimelineEditor.

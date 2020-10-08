@@ -374,7 +374,7 @@ namespace UnityEditor.Timeline
                     EditorGUI.DrawRect(lineRect, lineColor);
                 }
 
-                if (drawHead)
+                if (drawHead && Event.current.type == EventType.Repaint)
                 {
                     Color c = GUI.color;
                     GUI.color = headColor;

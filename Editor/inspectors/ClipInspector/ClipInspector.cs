@@ -80,6 +80,14 @@ namespace UnityEditor.Timeline
             }
         }
 
+        enum PreviewCurveState
+        {
+            None = 0,
+            MixIn = 1,
+            MixOut = 2
+        }
+
+
         SerializedProperty m_DisplayNameProperty;
         SerializedProperty m_BlendInDurationProperty;
         SerializedProperty m_BlendOutDurationProperty;
@@ -121,7 +129,6 @@ namespace UnityEditor.Timeline
         Editor m_SelectedPlayableAssetsInspector;
 
         ClipInspectorCurveEditor m_ClipCurveEditor;
-        AnimationCurve[] m_PreviewCurves; // the curves we are currently previewing.
         CurvePresetLibrary m_CurvePresets;
 
         bool m_IsClipAssetInspectorExpanded = true;
@@ -130,7 +137,12 @@ namespace UnityEditor.Timeline
 
         ClipInspectorSelectionInfo m_SelectionInfo;
 
+        // the state of the mixin curve preview
+        PreviewCurveState m_PreviewCurveState;
+
         const double k_TimeScaleSensitivity = 0.003;
+
+
 
         bool hasMultipleSelection
         {
@@ -225,6 +237,8 @@ namespace UnityEditor.Timeline
 
         public void OnEnable()
         {
+            Undo.undoRedoPerformed += OnUndoRedoPerformed;
+
             m_ClipCurveEditor = new ClipInspectorCurveEditor();
 
             m_SelectionCache = new List<EditorClipSelection>();
@@ -256,6 +270,11 @@ namespace UnityEditor.Timeline
 
             m_MultiselectionHeaderTitle = m_SelectionCache.Count + " " + Styles.MultipleSelectionTitle.text;
             m_ClipAssetTitle.text = PlayableAssetSectionTitle();
+        }
+
+        void OnDisable()
+        {
+            Undo.undoRedoPerformed -= OnUndoRedoPerformed;
         }
 
         void DrawClipProperties()
@@ -510,12 +529,12 @@ namespace UnityEditor.Timeline
 
         public override bool HasPreviewGUI()
         {
-            return m_PreviewCurves != null;
+            return m_PreviewCurveState != PreviewCurveState.None;
         }
 
         public override void OnInteractivePreviewGUI(Rect r, GUIStyle background)
         {
-            if (m_PreviewCurves != null && m_ClipCurveEditor != null)
+            if (m_PreviewCurveState != PreviewCurveState.None && m_ClipCurveEditor != null)
             {
                 SetCurveEditorTrackHead();
                 m_ClipCurveEditor.OnGUI(r, m_CurvePresets);
@@ -546,20 +565,21 @@ namespace UnityEditor.Timeline
         {
             if (Event.current.type == EventType.MouseDown)
             {
-                m_PreviewCurves = null;
                 if (m_ClipCurveEditor != null)
                     m_ClipCurveEditor.SetUpdateCurveCallback(null);
+                m_PreviewCurveState = PreviewCurveState.None;
             }
         }
 
         // Callback when the mixin/mixout properties are clicked on
         void OnMixCurveSelected(string title, CurvePresetLibrary library, SerializedProperty curveSelected, bool easeIn)
         {
+            m_PreviewCurveState = easeIn ? PreviewCurveState.MixIn : PreviewCurveState.MixOut;
+
             m_CurvePresets = library;
             var animationCurve = curveSelected.animationCurveValue;
-            m_PreviewCurves = new[] { animationCurve };
             m_ClipCurveEditor.headerString = title;
-            m_ClipCurveEditor.SetCurves(m_PreviewCurves, null);
+            m_ClipCurveEditor.SetCurve(animationCurve);
             m_ClipCurveEditor.SetSelected(animationCurve);
             if (easeIn)
                 m_ClipCurveEditor.SetUpdateCurveCallback(MixInCurveUpdated);
@@ -573,7 +593,7 @@ namespace UnityEditor.Timeline
         {
             curve.keys = CurveEditUtility.SanitizeCurveKeys(curve.keys, true);
             m_MixInCurveProperty.animationCurveValue = curve;
-            serializedObject.ApplyModifiedProperties();
+            ApplyModifiedProperties();
             var editorClip = target as EditorClip;
             if (editorClip != null)
                 editorClip.lastHash = editorClip.GetHashCode();
@@ -584,7 +604,7 @@ namespace UnityEditor.Timeline
         {
             curve.keys = CurveEditUtility.SanitizeCurveKeys(curve.keys, false);
             m_MixOutCurveProperty.animationCurveValue = curve;
-            serializedObject.ApplyModifiedProperties();
+            ApplyModifiedProperties();
             var editorClip = target as EditorClip;
             if (editorClip != null)
                 editorClip.lastHash = editorClip.GetHashCode();
@@ -790,5 +810,20 @@ namespace UnityEditor.Timeline
         {
             return TimelineWindow.instance.state.editSequence.isReadOnly;
         }
+
+        void OnUndoRedoPerformed()
+        {
+            if (m_PreviewCurveState == PreviewCurveState.None)
+                return;
+
+            // if an undo is performed the curves need to be updated in the curve editor, as the reference to them is no longer valid
+            // case 978673
+            if (m_ClipCurveEditor != null)
+            {
+                serializedObject.Update();
+                m_ClipCurveEditor.SetCurve(m_PreviewCurveState == PreviewCurveState.MixIn ? m_MixInCurveProperty.animationCurveValue : m_MixOutCurveProperty.animationCurveValue);
+            }
+        }
+
     }
 }

@@ -453,10 +453,17 @@ namespace UnityEditor.Timeline
                 if (t == null)
                     continue;
 
-                double trackStart, trackEnd;
-                t.GetItemRange(out trackStart, out trackEnd);
-                startTime = Mathf.Min(startTime, (float)trackStart);
-                endTime = Mathf.Max(endTime, (float)(trackEnd));
+                // time range based on track's curves and clips.
+                double trackStart, trackEnd, trackDuration;
+                t.GetSequenceTime(out trackStart, out trackDuration);
+                trackEnd = trackStart + trackDuration;
+
+                // take track's markers into account
+                double itemsStart, itemsEnd;
+                ItemsUtils.GetItemRange(t, out itemsStart, out itemsEnd);
+
+                startTime = Mathf.Min(startTime, (float)trackStart, (float)itemsStart);
+                endTime = Mathf.Max(endTime, (float)(trackEnd), (float)itemsEnd);
             }
 
             FrameSelectedAction.FrameRange(startTime, endTime);
@@ -688,7 +695,7 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.CollapseGroup();
+            return KeyboardNavigation.CollapseGroup(actionContext.tracks);
         }
     }
 
@@ -700,7 +707,7 @@ namespace UnityEditor.Timeline
 
         public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.UnCollapseGroup();
+            return KeyboardNavigation.UnCollapseGroup(actionContext.tracks);
         }
     }
 

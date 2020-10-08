@@ -87,7 +87,7 @@ namespace UnityEditor.Timeline
 
                 m_ClipTime = clipTime;
                 recordClip = activeClip;
-                startTime = TimeUtility.ToFrames(recordClip.ToLocalTimeUnbound(state.editSequence.time), clip.frameRate);
+                startTime = recordClip.ToLocalTimeUnbound(state.editSequence.time) * clip.frameRate;
                 m_needRebuildRects = clip.empty;
 
                 animationClip = clip;

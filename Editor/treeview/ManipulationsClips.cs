@@ -10,7 +10,7 @@ namespace UnityEditor.Timeline
             if (evt.button != 0)
                 return false;
 
-            var guiClip = PickerUtils.PickedLayerableOfType<TimelineClipGUI>();
+            var guiClip = PickerUtils.TopmostPickedItem() as TimelineClipGUI;
 
             if (guiClip == null)
                 return false;
@@ -40,7 +40,7 @@ namespace UnityEditor.Timeline
             if (evt.alt)
                 return false;
 
-            var selectable = PickerUtils.PickedLayerableOfType<ISelectable>();
+            var selectable = PickerUtils.TopmostPickedItem() as ISelectable;
 
             if (selectable != null && selectable.IsSelected())
             {

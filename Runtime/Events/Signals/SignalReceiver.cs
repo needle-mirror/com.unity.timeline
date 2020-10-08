@@ -21,6 +21,9 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Called when a notification is sent.
         /// </summary>
+        /// <param name="origin">The playable that sent the notification.</param>
+        /// <param name="notification">The received notification. Only notifications of type <see cref="SignalEmitter"/> will be processed.</param>
+        /// <param name="context">User defined data that depends on the type of notification. Uses this to pass necessary information that can change with each invocation.</param>
         public void OnNotify(Playable origin, INotification notification, object context)
         {
             var signal = notification as SignalEmitter;

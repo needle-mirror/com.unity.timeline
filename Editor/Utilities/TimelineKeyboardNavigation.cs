@@ -150,7 +150,7 @@ namespace UnityEditor.Timeline
             var itemFullyInView = items.Where(x => x.end >= timeRange.x && x.end <= timeRange.y &&
                 x.start >= timeRange.x && x.start <= timeRange.y);
             var itemToSelect = itemFullyInView.FirstOrDefault() ?? items.FirstOrDefault();
-            if (itemToSelect != null)
+            if (itemToSelect != null && !itemToSelect.parentTrack.lockedInHierarchy)
             {
                 SelectionManager.SelectOnly(itemToSelect);
                 return true;
@@ -158,34 +158,44 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool CollapseGroup()
+        public static bool CollapseGroup(IEnumerable<TrackAsset> tracks)
         {
-            if (TrackHeadActive())
+            if (!TrackHeadActive())
+                return false;
+
+            var didCollapse = false;
+
+            foreach (TrackAsset track in tracks)
             {
-                var quit = false;
-                foreach (var track in SelectionManager.SelectedTracks())
+                if (!track.GetChildTracks().Any())
+                    continue;
+
+                if (!track.GetCollapsed())
                 {
-                    if (!track.GetChildTracks().Any())
-                        continue;
-                    if (!quit && !track.GetCollapsed())
-                        quit = true;
+                    didCollapse = true;
                     track.SetCollapsed(true);
                 }
-                if (quit)
-                {
-                    TimelineEditor.Refresh(RefreshReason.ContentsModified);
-                    return true;
-                }
-
-                var selectedTrack = SelectionManager.SelectedTracks().LastOrDefault();
-                var parent = selectedTrack != null ? selectedTrack.parent as TrackAsset : null;
-                if (parent)
-                {
-                    SelectionManager.SelectOnly(parent);
-                    FrameTrackHeader(GetVisibleTracks().First(x => x.track == parent));
-                    return true;
-                }
             }
+
+            if (didCollapse)
+            {
+                TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
+                return true;
+            }
+
+            return SelectAndShowParentTrack(tracks.LastOrDefault());
+        }
+
+        static bool SelectAndShowParentTrack(TrackAsset track)
+        {
+            TrackAsset parent = track != null ? track.parent as TrackAsset : null;
+            if (parent)
+            {
+                SelectionManager.SelectOnly(parent);
+                FrameTrackHeader(GetVisibleTracks().First(x => x.track == parent));
+                return true;
+            }
+
             return false;
         }
 
@@ -198,7 +208,7 @@ namespace UnityEditor.Timeline
 
                 var item = items.Last();
                 var prev = item.PreviousItem(clipOnly);
-                if (prev != null)
+                if (prev != null && !prev.parentTrack.lockedInHierarchy)
                 {
                     if (shift)
                     {
@@ -226,7 +236,7 @@ namespace UnityEditor.Timeline
 
                 var item = items.Last();
                 var next = item.NextItem(clipOnly);
-                if (next != null)
+                if (next != null && !next.parentTrack.lockedInHierarchy)
                 {
                     if (shift)
                     {
@@ -243,46 +253,54 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool UnCollapseGroup()
+        public static bool UnCollapseGroup(IEnumerable<TrackAsset> tracks)
         {
-            if (TrackHeadActive())
-            {
-                var quit = false;
-                foreach (var track in SelectionManager.SelectedTracks())
-                {
-                    if (!track.GetChildTracks().Any()) continue;
+            if (!TrackHeadActive())
+                return false;
 
-                    if (!quit && track.GetCollapsed())
-                        quit = true;
+            var didUncollapse = false;
+            foreach (TrackAsset track in tracks)
+            {
+                if (!track.GetChildTracks().Any())
+                    continue;
+
+                if (track.GetCollapsed())
+                {
+                    didUncollapse = true;
                     track.SetCollapsed(false);
                 }
-
-                if (quit)
-                {
-                    TimelineEditor.Refresh(RefreshReason.ContentsModified);
-                    return true;
-                }
-
-                // Transition to Clip area
-                var visibleTracks = GetVisibleTracks().Select(x => x.track).ToList();
-                var idx = visibleTracks.IndexOf(SelectionManager.SelectedTracks().Last());
-                ITimelineItem item = null;
-                for (var i = idx; i < visibleTracks.Count; ++i)
-                {
-                    var items = visibleTracks[i].GetItems().OfType<ClipItem>();
-                    if (!items.Any())
-                        continue;
-                    item = items.First();
-                    break;
-                }
-
-                if (item != null)
-                {
-                    SelectionManager.SelectOnly(item);
-                    TimelineHelpers.FrameItems(new[] {item});
-                    return true;
-                }
             }
+
+            if (didUncollapse)
+            {
+                TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
+                return true;
+            }
+
+            return SelectFirstClipStartingFrom(tracks.Last());
+        }
+
+        static bool SelectFirstClipStartingFrom(TrackAsset track)
+        {
+            List<TrackAsset> visibleTracks = GetVisibleTracks().Select(x => x.track).ToList();
+            int idx = visibleTracks.IndexOf(track);
+            ITimelineItem item = null;
+            for (int i = idx; i < visibleTracks.Count; ++i)
+            {
+                var items = visibleTracks[i].GetItems().OfType<ClipItem>();
+                if (!items.Any() || visibleTracks[i].lockedInHierarchy)
+                    continue;
+                item = items.First();
+                break;
+            }
+
+            if (item != null)
+            {
+                SelectionManager.SelectOnly(item);
+                TimelineHelpers.FrameItems(new[] { item });
+                return true;
+            }
+
             return false;
         }
 
@@ -317,7 +335,7 @@ namespace UnityEditor.Timeline
                 while (prevTrack != null)
                 {
                     var selectionItem = GetClosestItem(prevTrack, refItem);
-                    if (selectionItem == null)
+                    if (selectionItem == null || prevTrack.lockedInHierarchy)
                     {
                         prevTrack = prevTrack.PreviousTrack();
                         continue;
@@ -367,7 +385,7 @@ namespace UnityEditor.Timeline
                 while (nextTrack != null)
                 {
                     var selectionItem = GetClosestItem(nextTrack, refItem);
-                    if (selectionItem == null)
+                    if (selectionItem == null || nextTrack.lockedInHierarchy)
                     {
                         nextTrack = nextTrack.NextTrack();
                         continue;

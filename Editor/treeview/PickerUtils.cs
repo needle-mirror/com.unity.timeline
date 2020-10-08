@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,14 +28,24 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static T PickedLayerableOfType<T>() where T : class, ILayerable
+        public static ILayerable TopmostPickedItem()
         {
-            return pickedElements.OfType<ILayerable>().OrderBy(x => x.zOrder).LastOrDefault() as T;
+            return PickedItemsSortedByZOrderOfType<ILayerable>().FirstOrDefault();
         }
 
-        public static IEnumerable<T> PickedAllElementsOfType<T>() where T : class, ILayerable
+        public static T TopmostPickedItemOfType<T>() where T : class, ILayerable
         {
-            return pickedElements.OfType<T>().OrderBy(x => x.zOrder);
+            return PickedItemsSortedByZOrderOfType<T>().FirstOrDefault();
+        }
+
+        public static T TopmostPickedItemOfType<T>(Func<T, bool> predicate) where T : class, ILayerable
+        {
+            return PickedItemsSortedByZOrderOfType<T>().FirstOrDefault(predicate);
+        }
+
+        static IEnumerable<T> PickedItemsSortedByZOrderOfType<T>() where T: class, ILayerable
+        {
+            return pickedElements.OfType<T>().OrderByDescending(x => x.zOrder);
         }
 
         public static T FirstPickedElementOfType<T>() where T : class, IBounds

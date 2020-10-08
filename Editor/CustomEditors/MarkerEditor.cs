@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEditor.Timeline;
-using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -45,6 +43,11 @@ namespace UnityEditor.Timeline
         /// </remarks>
         public string errorText { get; set; }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns>Returns <c>true</c> if <paramref name="obj"/> and this instance are the same type and represent the same value.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is MarkerDrawOptions))
@@ -53,12 +56,21 @@ namespace UnityEditor.Timeline
             return Equals((MarkerDrawOptions)obj);
         }
 
+        /// <summary>
+        /// Compares this object with another <c>MarkerDrawOptions</c>.
+        /// </summary>
+        /// <param name="other">The object to compare with.</param>
+        /// <returns>Returns true if <c>this</c> and <paramref name="other"/> are equal.</returns>
         public bool Equals(MarkerDrawOptions other)
         {
             return errorText == other.errorText &&
                 tooltip == other.tooltip;
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return HashUtility.CombineHash(
@@ -67,11 +79,23 @@ namespace UnityEditor.Timeline
             );
         }
 
+        /// <summary>
+        /// Compares two <c>MarkerDrawOptions</c> objects.
+        /// </summary>
+        /// <param name="options1">The first object.</param>
+        /// <param name="options2">The second object.</param>
+        /// <returns>Returns true if they are equal.</returns>
         public static bool operator==(MarkerDrawOptions options1, MarkerDrawOptions options2)
         {
             return options1.Equals(options2);
         }
 
+        /// <summary>
+        /// Compares two <c>MarkerDrawOptions</c> objects.
+        /// </summary>
+        /// <param name="options1">The first object.</param>
+        /// <param name="options2">The second object.</param>
+        /// <returns>Returns true if they are not equal.</returns>
         public static bool operator!=(MarkerDrawOptions options1, MarkerDrawOptions options2)
         {
             return !options1.Equals(options2);
@@ -105,6 +129,10 @@ namespace UnityEditor.Timeline
         public double endTime { get; private set; }
 
         /// <summary>Constructor</summary>
+        /// <paramref name="_markerRegion"><inheritdoc cref="markerRegion"/></paramref>
+        /// <paramref name="_timelineRegion"><inheritdoc cref="timelineRegion"/></paramref>
+        /// <paramref name="_startTime"><inheritdoc cref="startTime"/></paramref>
+        /// <paramref name="_endTime"><inheritdoc cref="endTime"/></paramref>
         public MarkerOverlayRegion(Rect _markerRegion, Rect _timelineRegion, double _startTime, double _endTime)
         {
             markerRegion = _markerRegion;
@@ -113,6 +141,11 @@ namespace UnityEditor.Timeline
             endTime = _endTime;
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns>Returns <c>true</c> if <paramref name="obj"/> and this instance are the same type and represent the same value.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is MarkerOverlayRegion))
@@ -121,6 +154,11 @@ namespace UnityEditor.Timeline
             return Equals((MarkerOverlayRegion)obj);
         }
 
+        /// <summary>
+        /// Compares this object with another <c>MarkerOverlayRegion</c>.
+        /// </summary>
+        /// <param name="other">The object to compare with.</param>
+        /// <returns>Returns true if <c>this</c> and <paramref name="other"/> are equal.</returns>
         public bool Equals(MarkerOverlayRegion other)
         {
             return markerRegion == other.markerRegion &&
@@ -129,6 +167,10 @@ namespace UnityEditor.Timeline
                 endTime == other.endTime;
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return HashUtility.CombineHash(
@@ -139,11 +181,23 @@ namespace UnityEditor.Timeline
             );
         }
 
+        /// <summary>
+        /// Compares two <c>MarkerOverlayRegion</c> objects.
+        /// </summary>
+        /// <param name="region1">The first object.</param>
+        /// <param name="region2">The second object.</param>
+        /// <returns>Returns true if they are equal.</returns>
         public static bool operator==(MarkerOverlayRegion region1, MarkerOverlayRegion region2)
         {
             return region1.Equals(region2);
         }
 
+        /// <summary>
+        /// Compares two <c>MarkerOverlayRegion</c> objects.
+        /// </summary>
+        /// <param name="region1">The first object.</param>
+        /// <param name="region2">The second object.</param>
+        /// <returns>Returns true if they are not equal.</returns>
         public static bool operator!=(MarkerOverlayRegion region1, MarkerOverlayRegion region2)
         {
             return !region1.Equals(region2);

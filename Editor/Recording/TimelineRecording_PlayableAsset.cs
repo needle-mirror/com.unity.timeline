@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -79,8 +80,8 @@ namespace UnityEditor.Timeline
                 return false;
 
             // grab the value from the current modification
-            float fValue = 0;
-            if (!float.TryParse(mod.currentValue.value, out fValue))
+            float fValue;
+            if (!ExpressionEvaluator.Evaluate(mod.currentValue.value, out fValue))
             {
                 // case 916913 -- 'Add Key' menu item will passes 'True' or 'False' (instead of 1, 0)
                 // so we need a special case to parse the boolean string

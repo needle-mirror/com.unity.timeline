@@ -375,15 +375,16 @@ namespace UnityEditor
 
             var markerTypes = objectsBeingDropped.SelectMany(o => TypeUtility.MarkerTypesWithFieldForObject(o)).Distinct();
 
-            // Markers support all tracks
-            if (!markerTypes.Any())
+            // No tracks or markers support this object
+            if (!(markerTypes.Any() || validTrackTypes.Any()))
             {
-                // No tracks support this object
-                if (!validTrackTypes.Any())
-                    return DragAndDropVisualMode.Rejected;
-
-                // no tracks for this object
-                if (targetTrack != null && !validTrackTypes.Contains(targetTrack.GetType()))
+                return DragAndDropVisualMode.Rejected;
+            }
+            // track is not compatible with marker
+            if (targetTrack != null && markerTypes.Any(o => !TypeUtility.DoesTrackSupportMarkerType(targetTrack, o)))
+            {
+                // track is not compatible with object
+                if (!validTrackTypes.Contains(targetTrack.GetType()))
                     return DragAndDropVisualMode.Rejected;
             }
 

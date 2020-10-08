@@ -28,7 +28,7 @@ namespace UnityEditor.Timeline
         {
             if (evt.modifiers != ManipulatorsUtils.actionModifier)
                 return false;
-            return MouseDownInternal(evt, state, PickerUtils.PickedLayerableOfType<TimelineClipHandle>());
+            return MouseDownInternal(evt, state, PickerUtils.TopmostPickedItem() as TimelineClipHandle);
         }
 
         protected bool MouseDownInternal(Event evt, WindowState state, TimelineClipHandle handle)

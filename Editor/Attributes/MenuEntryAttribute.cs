@@ -19,26 +19,7 @@ namespace UnityEditor.Timeline.Actions
     /// (examples can be found on <see href="https://docs.unity3d.com/ScriptReference/MenuItem.html"/>).
     /// </summary>
     /// <example>
-    /// <code>
-    /// [MenuEntry("Simple Menu Action")]
-    /// class SimpleMenuAction : TimelineAction
-    /// {
-    ///     public override ActionValidity Validate(ActionContext actionContext) { return ActionValidity.Valid; }
-    ///     public override bool Execute(ActionContext actionContext) { return true; }
-    /// }
-    /// [MenuEntry("Menu Action with priority", 9999)]
-    /// class MenuActionWithPriority : TimelineAction
-    /// {
-    ///     public override ActionValidity Validate(ActionContext actionContext) { return ActionValidity.Valid; }
-    ///     public override bool Execute(ActionContext actionContext) { return true; }
-    /// }
-    /// [MenuEntry("My Menu/Menu Action inside submenu")]
-    /// class MenuActionInsideSubMenu : TimelineAction
-    /// {
-    ///     public override ActionValidity Validate(ActionContext actionContext) { return ActionValidity.Valid; }
-    ///     public override bool Execute(ActionContext actionContext) { return true; }
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-menuEntryAttribute" title="menuEntryAttr"/>
     /// </example>
     /// <remarks>
     /// Unlike Menu item, MenuEntryAttribute doesn't handle shortcuts in the menu name. See <see cref="TimelineShortcutAttribute"/>.

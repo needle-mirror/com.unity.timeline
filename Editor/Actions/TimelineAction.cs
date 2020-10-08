@@ -7,33 +7,12 @@ namespace UnityEditor.Timeline.Actions
     /// <remarks>
     /// To add an action as a menu item in the Timeline context menu, add <see cref="MenuEntryAttribute"/> on the action class.
     /// To make an action to react to a shortcut, use the Shortcut Manager API with <see cref="TimelineShortcutAttribute"/>.
-    /// <seealso cref="ShortcutManagement.ShortcutAttribute"/>
+    /// <seealso cref="UnityEditor.ShortcutManagement.ShortcutAttribute"/>
     /// <seealso cref="ActiveInModeAttribute"/>
     /// </remarks>
     /// <example>
     /// Simple Timeline Action example (with context menu and shortcut support).
-    ///
-    /// <code>
-    /// public class SampleTimelineAction : TimelineAction
-    /// {
-    ///     public abstract ActionValidity Validate(ActionContext context)
-    ///     {
-    ///         return ActionValidity.Valid;
-    ///     }
-    ///
-    ///     public override bool Execute(ActionContext context)
-    ///     {
-    ///         Debug.Log("Test Action");
-    ///         return true;
-    ///     }
-    ///
-    ///     [TimelineShortcut("SampleTimelineAction", KeyCode.K), UsedImplicitly]
-    ///     public static void HandleShortCut(ShortcutArguments args)
-    ///     {
-    ///         Action.InvokeWithSelected<![CDATA[<SampleTimelineAction>]]>();
-    ///     }
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/ActionExamples.cs" region="declare-sampleTimelineAction" title="SampleTimelineAction"/>
     /// </example>
     [ActiveInMode(TimelineModes.Default)]
     public abstract class TimelineAction : IAction

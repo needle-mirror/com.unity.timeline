@@ -75,14 +75,7 @@ namespace UnityEngine.Timeline
     /// Specifies the type of object that should be bound to a TrackAsset.
     /// </summary>
     /// <example>
-    /// <code>
-    /// using UnityEngine;
-    /// using UnityEngine.Timeline;
-    /// [TrackBindingType(typeof(Light), TrackBindingFlags.AllowCreateComponent)]
-    /// public class LightTrack : TrackAsset
-    /// {
-    /// }
-    /// </code>
+    /// <code source="../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-sampleTrackBindingAttr" title="SampleTrackBindingAttr"/>
     /// </example>
     /// <remarks>
     /// Use this attribute when creating Custom Tracks to specify the type of object the track requires a binding to.
@@ -91,7 +84,7 @@ namespace UnityEngine.Timeline
     public class TrackBindingTypeAttribute : Attribute
     {
         /// <summary>
-        /// The type of binding for the associate track
+        /// The type of binding for the associate track.
         /// </summary>
         public readonly Type type;
 
@@ -100,12 +93,21 @@ namespace UnityEngine.Timeline
         /// </summary>
         public readonly TrackBindingFlags flags;
 
+        /// <summary>
+        /// Creates a new TrackBindingTypeAttribute.
+        /// </summary>
+        /// <param name="type"><inheritdoc cref="TrackBindingTypeAttribute.type"/></param>
         public TrackBindingTypeAttribute(Type type)
         {
             this.type = type;
             this.flags = TrackBindingFlags.All;
         }
 
+        /// <summary>
+        /// Creates a new TrackBindingTypeAttribute.
+        /// </summary>
+        /// <param name="type"><inheritdoc cref="TrackBindingTypeAttribute.type"/></param>
+        /// <param name="flags"><inheritdoc cref="TrackBindingTypeAttribute.flags"/></param>
         public TrackBindingTypeAttribute(Type type, TrackBindingFlags flags)
         {
             this.type = type;
@@ -159,8 +161,7 @@ namespace UnityEngine.Timeline
     /// </summary>
     /// Specify the style to use to draw a Marker.
     /// <example>
-    /// [CustomStyle("MyStyle")]
-    /// public class MyMarker : UnityEngine.Timeline.Marker {}
+    /// <code source="../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-customStyleMarkerAttr" title="CustomStyleMarkerAttr"/>
     /// </example>
     /// How to create a custom style rule:
     /// 1) Create a 'common.uss' USS file in an Editor folder in a StyleSheets/Extensions folder hierarchy.
@@ -172,6 +173,7 @@ namespace UnityEngine.Timeline
     ///
     /// 2)In the USS file, create a styling rule to customize the appearance of the marker.
     /// <example>
+    /// <code>
     /// MyStyle
     /// {
     ///   /* Specify the appearance of the marker in the collapsed state here. */
@@ -186,6 +188,7 @@ namespace UnityEngine.Timeline
     /// {
     ///   /* Specify the appearance of the marker in the selected state here. */
     /// }
+    /// </code>
     /// </example>
     /// <seealso cref="UnityEngine.Timeline.Marker"/>
     [AttributeUsage(AttributeTargets.Class)]
@@ -196,7 +199,10 @@ namespace UnityEngine.Timeline
         /// </summary>
         public readonly string ussStyle;
 
-        /// <param name="ussStyle">The name of the USS style.</param>
+        /// <summary>
+        /// Creates a new CustomStyleAttribute.
+        /// </summary>
+        /// <param name="ussStyle"><inheritdoc cref="CustomStyleAttribute.ussStyle"/></param>
         public CustomStyleAttribute(string ussStyle)
         {
             this.ussStyle = ussStyle;

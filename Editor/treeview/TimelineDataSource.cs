@@ -122,6 +122,7 @@ namespace UnityEditor.Timeline
                 if (parentItem.children == null)
                     parentItem.children = new List<TreeViewItem>();
                 parentItem.children.Add(newItem);
+                SetExpanded(newItem, trackAsset.GetCollapsed());
             }
             else
             {

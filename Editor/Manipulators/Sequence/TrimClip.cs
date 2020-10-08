@@ -59,7 +59,7 @@ namespace UnityEditor.Timeline
 
         protected override bool MouseDown(Event evt, WindowState state)
         {
-            var handle = PickerUtils.PickedLayerableOfType<TimelineClipHandle>();
+            var handle = PickerUtils.TopmostPickedItem() as TimelineClipHandle;
             if (handle == null)
                 return false;
 

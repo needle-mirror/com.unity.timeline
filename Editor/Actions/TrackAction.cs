@@ -9,33 +9,12 @@ namespace UnityEditor.Timeline.Actions
     /// </summary>
     /// <example>
     /// Simple track Action example (with context menu and shortcut support).
-    /// <code>
-    /// [MenuEntry("Custom Actions/Sample track Action")]
-    /// public class SampleTrackAction : TrackAction
-    /// {
-    ///     public abstract ActionValidity Validate(<![CDATA[IEnumerable<TrackAsset>]]> items)
-    ///     {
-    ///        return ActionValidity.Valid;
-    ///     }
-    ///
-    ///     public override bool Execute(<![CDATA[IEnumerable<TrackAsset>]]> items)
-    ///     {
-    ///         Debug.Log("Test Action");
-    ///         return true;
-    ///     }
-    ///
-    ///     [TimelineShortcut("SampleTrackAction", KeyCode.K), UsedImplicitly]
-    ///     public static void HandleShortCut(ShortcutArguments args)
-    ///     {
-    ///         Action.InvokeWithSelectedTracks<![CDATA[<SampleTrackAction>]]> ();
-    ///     }
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/ActionExamples.cs" region="declare-sampleTrackAction" title="SampleTrackAction"/>
     /// </example>
     /// <remarks>
     /// To add an action as a menu item in the Timeline context menu, add <see cref="MenuEntryAttribute"/> on the action class.
     /// To make an action to react to a shortcut, use the Shortcut Manager API with <see cref="TimelineShortcutAttribute"/>.
-    /// <seealso cref="ShortcutManagement.ShortcutAttribute"/>
+    /// <seealso cref="UnityEditor.ShortcutManagement.ShortcutAttribute"/>
     /// </remarks>
     [ActiveInMode(TimelineModes.Default)]
     public abstract class TrackAction : IAction
