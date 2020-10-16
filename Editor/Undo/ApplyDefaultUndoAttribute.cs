@@ -14,23 +14,7 @@ namespace UnityEditor.Timeline.Actions
     ///
     /// <example>
     /// Simple track Action example (with context menu and shortcut support).
-    /// <code>
-    /// [ApplyDefaultUndo]
-    /// public class SetNameToTypeAction : TrackAction
-    /// {
-    ///     public abstract ActionValidity Validate(<![CDATA[IEnumerable<TrackAsset>]]> items)
-    ///     {
-    ///         return ActionValidity.Valid;
-    ///     }
-    ///
-    ///     public override bool Execute(<![CDATA[IEnumerable<TrackAsset>]]> items)
-    ///     {
-    ///         foreach (var track in items)
-    ///             track.name = track.GetType().name;
-    ///         return true;
-    ///     }
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-applyDefaultUndoAttr" title="ApplyDefaultUndoAttr"/>
     /// </example>
     /// </summary>
     /// <seealso cref="TimelineAction"/>

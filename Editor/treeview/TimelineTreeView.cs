@@ -84,7 +84,7 @@ namespace UnityEditor.Timeline
 
         void SelectionChangedCallback(int[] ids)
         {
-            if (Event.current.button == 1 && PickerUtils.PickedLayerableOfType<ISelectable>() != null)
+            if (Event.current.button == 1 && PickerUtils.TopmostPickedItem() is ISelectable)
                 return;
 
             if (Event.current.command || Event.current.control || Event.current.shift)

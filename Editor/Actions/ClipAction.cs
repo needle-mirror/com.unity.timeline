@@ -9,33 +9,12 @@ namespace UnityEditor.Timeline.Actions
     /// </summary>
     /// <example>
     /// Simple Clip Action example (with context menu and shortcut support).
-    /// <code>
-    /// [MenuEntry("Custom Actions/Sample Clip Action")]
-    /// public class SampleClipAction : ClipAction
-    /// {
-    ///     public abstract ActionValidity Validate(<![CDATA[IEnumerable<TimelineClip>]]>)
-    ///     {
-    ///         return ActionValidity.Valid;
-    ///     }
-    ///
-    ///     public override bool Execute(<![CDATA[IEnumerable<TimelineClip>]]> items)
-    ///     {
-    ///         Debug.Log("Test Action");
-    ///         return true;
-    ///     }
-    ///
-    ///     [TimelineShortcut("SampleClipAction", KeyCode.K), UsedImplicitly]
-    ///     public static void HandleShortCut(ShortcutArguments args)
-    ///     {
-    ///         Action.InvokeWithSelectedClips<![CDATA[<SampleClipAction>]]>();
-    ///     }
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/ActionExamples.cs" region="declare-sampleClipAction" title="SampleClipAction"/>
     /// </example>
     /// <remarks>
     /// To add an action as a menu item in the Timeline context menu, add <see cref="MenuEntryAttribute"/> on the action class.
     /// To make an action to react to a shortcut, use the Shortcut Manager API with <see cref="TimelineShortcutAttribute"/>.
-    /// <seealso cref="ShortcutManagement.ShortcutAttribute"/>
+    /// <seealso cref="UnityEditor.ShortcutManagement.ShortcutAttribute"/>
     /// </remarks>
     [ActiveInMode(TimelineModes.Default)]
     public abstract class ClipAction : IAction

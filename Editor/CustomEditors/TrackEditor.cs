@@ -37,6 +37,11 @@ namespace UnityEditor.Timeline
         /// </remarks>
         public Texture2D icon { get; set; }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns>Returns <c>true</c> if <paramref name="obj"/> and this instance are the same type and represent the same value.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is TrackDrawOptions))
@@ -45,6 +50,11 @@ namespace UnityEditor.Timeline
             return Equals((TrackDrawOptions)obj);
         }
 
+        /// <summary>
+        /// Compares this object with another <c>TrackDrawOptions</c>.
+        /// </summary>
+        /// <param name="other">The object to compare with.</param>
+        /// <returns>Returns true if <c>this</c> and <paramref name="other"/> are equal.</returns>
         public bool Equals(TrackDrawOptions other)
         {
             return errorText == other.errorText &&
@@ -53,6 +63,10 @@ namespace UnityEditor.Timeline
                 icon == other.icon;
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return HashUtility.CombineHash(
@@ -63,11 +77,23 @@ namespace UnityEditor.Timeline
             );
         }
 
+        /// <summary>
+        /// Compares two <c>TrackDrawOptions</c> objects.
+        /// </summary>
+        /// <param name="options1">The first object.</param>
+        /// <param name="options2">The second object.</param>
+        /// <returns>Returns true if they are equal.</returns>
         public static bool operator==(TrackDrawOptions options1, TrackDrawOptions options2)
         {
             return options1.Equals(options2);
         }
 
+        /// <summary>
+        /// Compares two <c>TrackDrawOptions</c> objects.
+        /// </summary>
+        /// <param name="options1">The first object.</param>
+        /// <param name="options2">The second object.</param>
+        /// <returns>Returns true if they are not equal.</returns>
         public static bool operator!=(TrackDrawOptions options1, TrackDrawOptions options2)
         {
             return !options1.Equals(options2);

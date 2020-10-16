@@ -83,10 +83,8 @@ namespace UnityEditor.Timeline
     class TimelineZoomManipulator : Manipulator
     {
         Vector2 m_MouseDownPos = Vector2.zero;
-        Vector2 m_InitialShownRange = Vector2.zero;
         float m_FocalTime;
         float m_LastMouseMoveX = -1;
-        float m_ZoomFactor = 1;
         bool m_WheelUsedLast;
 
         TimelineZoomManipulator() {}
@@ -105,19 +103,20 @@ namespace UnityEditor.Timeline
         {
             const float kMinRange = 0.05f; // matches zoomable area.
 
-            var s = zoomFactor;
-            if (s <= 0) return;
+            if (zoomFactor <= 0)
+                return;
 
             var t = Mathf.Max(focalTime, refRange.x);
-            var x = (refRange.x + t * (s - 1)) / s;
-            var y = (refRange.y + t * (s - 1)) / s;
+            var x =(refRange.x + t * (zoomFactor - 1)) / zoomFactor;
+            var y = (refRange.y + t * (zoomFactor - 1)) / zoomFactor;
 
-            // don't set it if we reach the limit or panning happens
-            if (Math.Abs(x - y) > kMinRange)
-            {
+            var newRange = Mathf.Abs(x - y) < kMinRange? refRange:new Vector2(
+                Mathf.Max(x, -WindowConstants.timeAreaShownRangePadding),
+                Mathf.Min(y, WindowState.kMaxShownTime));
+
+            if(newRange != refRange)
                 // Zoomable area does not protect 100% against crazy values
-                TimelineEditor.visibleTimeRange = new Vector2(Math.Max(x, -WindowConstants.timeAreaShownRangePadding), Math.Min(y, WindowState.kMaxShownTime));
-            }
+                TimelineEditor.visibleTimeRange = newRange;
         }
 
         internal static void InvalidateWheelZoom()
@@ -129,7 +128,6 @@ namespace UnityEditor.Timeline
         {
             m_MouseDownPos = evt.mousePosition;
             m_FocalTime = state.PixelToTime(m_MouseDownPos.x);
-            m_InitialShownRange = state.timeAreaShownRange;
             return false;
         }
 
@@ -148,20 +146,10 @@ namespace UnityEditor.Timeline
             {
                 m_LastMouseMoveX = evt.mousePosition.x;
                 m_FocalTime = state.PixelToTime(m_LastMouseMoveX);
-                m_InitialShownRange = state.timeAreaShownRange;
-                m_ZoomFactor = 1;
             }
 
-            var newZoom = m_ZoomFactor * (-evt.delta.y * 0.02f + 1);
-            newZoom = Mathf.Clamp(newZoom, 1e-7f, 1e7f);
-
-            var lastRange = state.timeAreaShownRange;
-            DoZoom(newZoom, m_InitialShownRange, m_FocalTime);
-
-            // if we hit a limit, don't change the zoom
-            //  this prevents accumulating when zoom doesn't change
-            if (lastRange != state.timeAreaShownRange)
-                m_ZoomFactor = newZoom;
+            var zoomFactor = -evt.delta.y * 0.02f + 1;
+            DoZoom(zoomFactor, state.timeAreaShownRange, m_FocalTime);
 
             m_WheelUsedLast = true;
             return true;
@@ -176,8 +164,8 @@ namespace UnityEditor.Timeline
             var delta = Math.Abs(mouseMoveLength.x) > Math.Abs(mouseMoveLength.y)
                 ? mouseMoveLength.x
                 : -mouseMoveLength.y;
-            m_ZoomFactor = PixelToZoom(delta);
-            DoZoom(m_ZoomFactor, m_InitialShownRange, m_FocalTime);
+            var zoomFactor = PixelToZoom(delta);
+            DoZoom(zoomFactor, state.timeAreaShownRange, m_FocalTime);
 
             m_WheelUsedLast = false;
             return true;

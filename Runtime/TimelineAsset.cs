@@ -209,6 +209,7 @@ namespace UnityEngine.Timeline
         /// <remarks>
         /// A root track refers to all tracks that occur at the root of the timeline. These are the outmost level GroupTracks, and output tracks that do not belong to any group.
         /// </remarks>
+        /// <returns>Root track at the specified index.</returns>
         public TrackAsset GetRootTrack(int index)
         {
             UpdateRootTrackCache();
@@ -363,14 +364,16 @@ namespace UnityEngine.Timeline
             return timeline.IsValid() ? timeline : Playable.Null;
         }
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
         }
 
-        // resets cache on an Undo
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
+            // resets cache on an Undo
             Invalidate(); // resets cache on an Undo
             if (m_Version < k_LatestVersion)
             {

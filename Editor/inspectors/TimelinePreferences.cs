@@ -32,6 +32,10 @@ public class TimelinePreferences : ScriptableSingleton<TimelinePreferences>
     /// </summary>
     [SerializeField]
     bool m_AudioScrubbing;
+
+    /// <summary>
+    /// Enables audio scrubbing when moving the playhead.
+    /// </summary>
     public bool audioScrubbing
     {
         get { return m_AudioScrubbing; }
@@ -45,6 +49,7 @@ public class TimelinePreferences : ScriptableSingleton<TimelinePreferences>
             }
         }
     }
+
     /// <summary>
     /// Enable Snap to Frame to manipulate clips and align them on frames.
     /// </summary>

@@ -122,7 +122,6 @@ namespace UnityEditor.Timeline
             newClip.start = time;
             var track = newClip.parentTrack;
             track.SortClips();
-            TrackExtensions.ComputeBlendsFromOverlaps(track.clips);
             return newClip;
         }
 

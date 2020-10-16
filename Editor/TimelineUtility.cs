@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -135,9 +136,9 @@ namespace UnityEditor.Timeline
             switch (property.propertyType)
             {
                 case SerializedPropertyType.Integer:
-                    return property.intValue.ToString();
+                    return property.intValue.ToString(CultureInfo.InvariantCulture);
                 case SerializedPropertyType.Float:
-                    return property.floatValue.ToString();
+                    return property.floatValue.ToString(CultureInfo.InvariantCulture);
                 case SerializedPropertyType.String:
                     return property.stringValue;
                 case SerializedPropertyType.Boolean:
@@ -145,15 +146,15 @@ namespace UnityEditor.Timeline
                 case SerializedPropertyType.Color:
                     return property.colorValue.ToString();
                 case SerializedPropertyType.ArraySize:
-                    return property.intValue.ToString();
+                    return property.intValue.ToString(CultureInfo.InvariantCulture);
                 case SerializedPropertyType.Enum:
-                    return property.intValue.ToString();
+                    return property.intValue.ToString(CultureInfo.InvariantCulture);
                 case SerializedPropertyType.ObjectReference:
                     return string.Empty;
                 case SerializedPropertyType.LayerMask:
-                    return property.intValue.ToString();
+                    return property.intValue.ToString(CultureInfo.InvariantCulture);
                 case SerializedPropertyType.Character:
-                    return property.intValue.ToString();
+                    return property.intValue.ToString(CultureInfo.InvariantCulture);
                 case SerializedPropertyType.AnimationCurve:
                     return property.animationCurveValue.ToString();
                 case SerializedPropertyType.Gradient:

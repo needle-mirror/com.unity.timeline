@@ -12,8 +12,6 @@ namespace UnityEngine.Timeline
     [Obsolete("For best performance use PlayableAsset and PlayableBehaviour.")]
     public class BasicPlayableBehaviour : ScriptableObject, IPlayableAsset, IPlayableBehaviour
     {
-        public BasicPlayableBehaviour() {}
-
         /// <summary>
         /// The playback duration in seconds of the instantiated Playable.
         /// </summary>

@@ -15,11 +15,13 @@ namespace UnityEngine.Timeline
         [SerializeField, Obsolete("Use m_RotationEuler Instead", false), HideInInspector]
         private Quaternion m_Rotation = Quaternion.identity;  // deprecated. now saves in euler angles
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
         }
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_Version < k_LatestVersion)

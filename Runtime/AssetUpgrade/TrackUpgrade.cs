@@ -21,11 +21,19 @@ namespace UnityEngine.Timeline
         [SerializeField, HideInInspector, FormerlySerializedAs("m_animClip")]
         internal AnimationClip m_AnimClip;
 
+        /// <summary>
+        /// Called before a track is serialized.
+        /// </summary>
         protected virtual void OnBeforeTrackSerialize() {}
+
+        /// <summary>
+        /// Called after a track has been deserialized.
+        /// </summary>
         protected virtual void OnAfterTrackDeserialize() {}
 
         internal virtual void OnUpgradeFromVersion(int oldVersion) {}
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
@@ -44,6 +52,7 @@ namespace UnityEngine.Timeline
             OnBeforeTrackSerialize();
         }
 
+        /// <inheritdoc/>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             // Clear the clip cache when a deserialize is performed, or

@@ -249,7 +249,7 @@ namespace UnityEditor.Timeline.Actions
         }
 
         /// <summary>
-        ///  Custom clip action menu item priority.
+        /// Custom clip action menu item priority.
         /// </summary>
         public static class CustomClipActionSection
         {
@@ -275,6 +275,9 @@ namespace UnityEditor.Timeline.Actions
             public const int customClipAction = start + 900;
         }
 
+        /// <summary>
+        /// Priorities for menu entries to create Timeline items.
+        /// </summary>
         public static class AddItem
         {
             /// <summary>

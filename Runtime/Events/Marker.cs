@@ -25,6 +25,7 @@ namespace UnityEngine.Timeline
             set { m_Time = Math.Max(value, 0); }
         }
 
+        /// <inheritdoc/>
         void IMarker.Initialize(TrackAsset parentTrack)
         {
             // We only really want to update the parent when the object is first deserialized
@@ -46,6 +47,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Override this method to receive a callback when the marker is initialized.
         /// </summary>
+        /// <paramref name="aPent">The track that contains the marker.</paramref>
         public virtual void OnInitialize(TrackAsset aPent)
         {
         }

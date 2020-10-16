@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 
@@ -9,31 +8,19 @@ namespace UnityEngine.Timeline
     /// <summary>
     /// A PlayableAsset representing a track inside a timeline.
     /// </summary>
+    ///
     /// <remarks>
     /// Derive from TrackAsset to implement custom timeline tracks. TrackAsset derived classes support the following attributes:
-    ///
     /// <seealso cref="UnityEngine.Timeline.HideInMenuAttribute"/>
     /// <seealso cref="UnityEngine.Timeline.TrackColorAttribute"/>
     /// <seealso cref="UnityEngine.Timeline.TrackClipTypeAttribute"/>
     /// <seealso cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.displaynameattribute">DisplayNameAttribute</seealso>
+    /// <seealso cref="System.ComponentModel.DisplayNameAttribute"/>
     /// </remarks>
+    ///
     /// <example>
-    /// <code>
-    /// using UnityEngine;
-    /// using UnityEngine.Timeline;
-    ///
-    /// [DisplayName("Custom Lighting Track")]
-    /// [TrackColor(1,0,0)]
-    /// [TrackBindingType(typeof(Light))]
-    /// [TrackClipType(typeof(PointLightClip))]
-    /// [TrackClipType(typeof(SpotLightClip))]
-    /// public class LightTrack : TrackAsset
-    /// {
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/TrackAssetExamples.cs" region="declare-trackAssetExample" title="TrackAssetExample"/>
     /// </example>
-    ///
     [Serializable]
     [IgnoreOnPlayableTrack]
     public abstract partial class TrackAsset : PlayableAsset, IPropertyPreview, ICurvesOwner
@@ -486,6 +473,9 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Overrides PlayableAsset.CreatePlayable(). Not used in Timeline.
         /// </summary>
+        /// <paramref name="graph"><inheritdoc/></paramref>
+        /// <paramref name="go"><inheritdoc/></paramref>
+        /// <returns><inheritDoc/></returns>
         public sealed override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
             return Playable.Null;
@@ -526,7 +516,7 @@ namespace UnityEngine.Timeline
         /// <typeparam name="T">A PlayableAsset derived type</typeparam>
         /// <returns>Returns a TimelineClip whose asset is of type T</returns>
         /// <remarks>
-        /// Throws an InvalidOperationException if the specified type is not supported by the track.
+        /// Throws <exception cref="System.InvalidOperationException"/> if <typeparamref name="T"/> is not supported by the track.
         /// Supported types are determined by TrackClip attributes that decorate the TrackAsset derived class
         /// </remarks>
         public TimelineClip CreateClip<T>() where T : ScriptableObject, IPlayableAsset
@@ -543,7 +533,7 @@ namespace UnityEngine.Timeline
         /// This method will delete a clip and any assets owned by the clip.
         /// </remarks>
         /// <exception>
-        /// Throws <cref>System.InvalidOperationException</cref> if <paramref name="clip"/> is not a child of the TrackAsset.
+        /// Throws <exception cref="System.InvalidOperationException"/> if <paramref name="clip"/> is not a child of the TrackAsset.
         /// </exception>
         public bool DeleteClip(TimelineClip clip)
         {
@@ -562,7 +552,7 @@ namespace UnityEngine.Timeline
         /// <remarks>
         /// All markers that implement IMarker and inherit from <see cref="UnityEngine.ScriptableObject"/> are supported.
         /// Markers that implement the INotification interface cannot be added to tracks that do not support notifications.
-        /// CreateMarker will throw an <code>InvalidOperationException</code> with tracks that do not support notifications if <code>type</code> implements the INotification interface.
+        /// CreateMarker will throw <exception cref="System.InvalidOperationException"/> with tracks that do not support notifications if <paramref name="type"/> implements the INotification interface.
         /// </remarks>
         /// <seealso cref="UnityEngine.Timeline.Marker"/>
         /// <seealso cref="UnityEngine.Timeline.TrackAsset.supportsNotifications"/>
@@ -575,10 +565,11 @@ namespace UnityEngine.Timeline
         /// Creates a marker of the requested type, at a specific time, and adds the marker to the current asset.
         /// </summary>
         /// <param name="time">The time where the marker is created.</param>
+        /// <typeparamref name="T">The type of marker to create.</typeparamref>
         /// <returns>Returns the instance of the created marker.</returns>
         /// <remarks>
         /// All markers that implement IMarker and inherit from <see cref="UnityEngine.ScriptableObject"/> are supported.
-        /// CreateMarker will throw an <code>InvalidOperationException</code> with tracks that do not support notifications if <code>T</code> implements the INotification interface.
+        /// CreateMarker will throw <exception cref="System.InvalidOperationException"/> with tracks that do not support notifications if <typeparamref name="T"/> implements the INotification interface.
         /// </remarks>
         /// <seealso cref="UnityEngine.Timeline.Marker"/>
         /// <seealso cref="UnityEngine.Timeline.TrackAsset.supportsNotifications"/>

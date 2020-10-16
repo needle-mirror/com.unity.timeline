@@ -1,12 +1,27 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.1-pre.1] - 2020-10-16
+
+### Fixed
+- Updated minor version number to avoid problems with the package manager window.
+
+## [1.5.0-pre.2] - 2020-10-05
+
+### Changed
+- Updated promotion job to add promotion context.
+
+## [1.5.0-pre.1] - 2020-09-25
+
+### Changed
+- Changed version number to fit with Package Lifecycle V2.
+
 ## [1.5.0-preview.5] - 2020-08-26
 
 ### Fixed
 - Fixed issue where `KeyAllAnimated` was available when right-clicking on markers and tracks that were not in record mode. (1270304)
 
-### Changed 
+### Changed
 - Timeline marker track is now selectable.
 
 ### Added
@@ -45,6 +60,24 @@ All notable changes to this package will be documented in this file. The format 
 - `TimelineEditorWindow.lock` to lock or unlock the Timeline window.
 - `TrackExtensions.GetCollapsed`, `TrackExtensions.SetCollapsed`, `TrackExtensions.IsVisibleRecursive` to get and change the visibility state of a track.
 - `AnimationTrackExtensions.IsRecording`, `AnimationTrackExtensions.SetRecording`, `AnimationTrackExtensions.SupportsRecording` to get or change the recording state of an Animation track.
+
+## [1.4.4] - 2020-10-09
+
+### Fixed
+- Disable drag and drop of Signal asset on Control Track. ([1222760](https://issuetracker.unity3d.com/product/unity/issues/guid/1222760/))
+- Fixed system locale causing issues when keying float values on custom clips. ([1190877](https://issuetracker.unity3d.com/product/unity/issues/guid/1190877/))
+- Fixed issue where recording to a clip would place keys on the frame. ([1274892](https://issuetracker.unity3d.com/product/unity/issues/guid/1274892/))
+- Fixed keyboard clip selection from locked tracks. ([1233612](https://issuetracker.unity3d.com/product/unity/issues/guid/1233612/))
+- Fixed issue where the Timeline window would stay locked even when no timeline asset is shown. ([1278598](https://issuetracker.unity3d.com/product/unity/issues/guid/1278598/))
+- Fixed issue where invoking `SelectLeft` or `SelectRight` shortcuts on a group track, the group would not collapse or expand. ([1279379](https://issuetracker.unity3d.com/product/unity/issues/guid/1279379/))
+- Fixed  Blend Curve Editor from the clip's inspector that was not responding correctly to undo and redo commands. (978673)
+- Fixed issue where the `Frame All` action would not frame keys outside of clips when the curve display is collapsed.  ([1273725](https://issuetracker.unity3d.com/product/unity/issues/guid/1273725/), #295)
+- Scrolling the horizontal scrollbar of the timeline to the right edge will no longer prevent the user from dragging left again. ([1127199](https://issuetracker.unity3d.com/product/unity/issues/guid/1127199/), #301)
+- Splitting a clip with an ease in or out value now ensures ease duration stays on correct side of split. ([1279350](https://issuetracker.unity3d.com/product/unity/issues/guid/1279350/))
+- Fixed delay when zooming in after reaching Timeline window's maximum and then zooming back. ([1214228](https://issuetracker.unity3d.com/product/unity/issues/guid/1214228/))
+- Prevent creation of presets with Group Tracks. ([1281056](https://issuetracker.unity3d.com/product/unity/issues/guid/1281056))
+- Fixed issue where markers placed on top of clips could not be selected. ([1284807](https://issuetracker.unity3d.com/product/unity/issues/guid/1284807), #314)
+- Fixed issue where multiple markers placed on top of each other could not be selected. ([1284801](https://issuetracker.unity3d.com/product/unity/issues/guid/1284801), #314)
 
 ## [1.4.3] - 2020-08-26
 

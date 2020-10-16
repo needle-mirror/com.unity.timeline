@@ -82,11 +82,13 @@ namespace UnityEditor.Timeline
         public void SetStart(double time, bool affectTimeScale)
         {
             ClipModifier.SetStart(m_Clip, time, affectTimeScale);
+            m_Clip.ConformEaseValues();
         }
 
         public void SetEnd(double time, bool affectTimeScale)
         {
             ClipModifier.SetEnd(m_Clip, time, affectTimeScale);
+            m_Clip.ConformEaseValues();
         }
 
         public void Delete()

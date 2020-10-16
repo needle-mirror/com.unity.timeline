@@ -56,6 +56,10 @@ namespace UnityEditor.Timeline
         void RestoreLastSelection(bool forceRebuild)
         {
             state.SetCurrentSequencePath(m_SequencePath, forceRebuild);
+
+            //case 1201405 and 1278598: unlock the window if there is no valid asset, since the lock button is disabled
+            if (m_LockTracker.isLocked && state.editSequence.asset == null)
+                m_LockTracker.isLocked = false;
         }
 
         void SetCurrentSelection(Object obj)

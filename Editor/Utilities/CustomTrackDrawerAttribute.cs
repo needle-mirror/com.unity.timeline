@@ -19,10 +19,7 @@ namespace UnityEditor.Timeline
     /// Use this attribute on a class that extends ClipEditor, TrackEditor, or MarkerEditor to specify either the PlayableAsset, Marker, or TrackAsset derived classes for associated customization.
     /// </remarks>
     /// <example>
-    /// [CustomTimelineEditor(typeof(LightControlClip))]
-    /// class LightControlClipEditor : ClipEditor
-    /// {
-    /// }
+    /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-customTimelineEditorAttr" title="customTimelineEditorAttr"/>
     /// </example>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public sealed class CustomTimelineEditorAttribute : Attribute

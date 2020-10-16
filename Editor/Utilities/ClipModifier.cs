@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.Playables;
 
@@ -66,6 +65,7 @@ namespace UnityEditor.Timeline
             // Note: We are NOT using edit modes in this case because we want the same result
             // regardless of the selected EditMode: split at cursor and delete left part
             SetStart(clip, trimTime, false);
+            clip.ConformEaseValues();
 
             return true;
         }
@@ -125,6 +125,9 @@ namespace UnityEditor.Timeline
                 UndoExtensions.RegisterClip(clip, L10n.Tr("Split Clip"));
 
                 TimelineClip newClip = TimelineHelpers.Clone(clip, director, director, clip.start);
+
+                clip.easeInDuration = 0;
+                newClip.easeOutDuration = 0;
 
                 SetStart(clip, splitTime, false);
                 SetEnd(newClip, splitTime, false);
@@ -203,7 +206,6 @@ namespace UnityEditor.Timeline
 
             clip.start = time;
             clip.duration = duration;
-            clip.ConformEaseValues();
         }
 
         public static void SetEnd(TimelineClip clip, double time, bool affectTimeScale)
@@ -217,7 +219,6 @@ namespace UnityEditor.Timeline
             }
 
             clip.duration = duration;
-            clip.ConformEaseValues();
         }
 
         public static bool ResetEditing(IEnumerable<TimelineClip> clips)

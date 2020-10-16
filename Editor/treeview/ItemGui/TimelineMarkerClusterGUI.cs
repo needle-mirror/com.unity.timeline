@@ -126,7 +126,7 @@ namespace UnityEditor.Timeline
             if (!SelectionManager.SelectedMarkers().Any())
                 return false;
 
-            var cluster = PickerUtils.PickedLayerableOfType<TimelineMarkerClusterGUI>();
+            var cluster = PickerUtils.TopmostPickedItemOfType<TimelineMarkerClusterGUI>();
 
             if (cluster == null)
                 return false;
@@ -137,7 +137,7 @@ namespace UnityEditor.Timeline
 
         public static void CycleMarkers()
         {
-            var cluster = PickerUtils.PickedLayerableOfType<TimelineMarkerClusterGUI>();
+            var cluster = PickerUtils.TopmostPickedItemOfType<TimelineMarkerClusterGUI>();
 
             if (cluster == null)
                 return;

@@ -43,6 +43,7 @@ namespace UnityEngine.Timeline
             return handle;
         }
 
+        /// <inheritdoc/>
         public override void OnPlayableDestroy(Playable playable)
         {
 #if UNITY_EDITOR

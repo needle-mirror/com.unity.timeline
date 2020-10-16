@@ -550,6 +550,8 @@ namespace UnityEngine.Timeline
             return ApplyTrackOffset(graph, mixer, go, mode);
         }
 
+        /// <inheritdoc cref="ILayerable.CreateLayerMixer"/>
+        /// <returns>Returns <c>Playable.Null</c></returns>
         Playable ILayerable.CreateLayerMixer(PlayableGraph graph, GameObject go, int inputCount)
         {
             return Playable.Null;

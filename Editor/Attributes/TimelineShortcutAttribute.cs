@@ -8,23 +8,7 @@ namespace UnityEditor.Timeline.Actions
     /// </summary>
     /// <example>
     /// TimelineShortcutAttribute needs to be added to a static method.
-    /// <code>
-    /// public class TestAction : TimelineAction
-    /// {
-    ///     public override ActionValidity Validate(ActionContext _) { return ActionValidity.Valid; }
-    ///     public override bool Execute(ActionContext _)
-    ///     {
-    ///         Debug.Log("Action executed.");
-    ///         return true;
-    ///     }
-    ///
-    ///     [TimelineShortcut("Test Action", KeyCode.K, ShortcutModifiers.Shift | ShortcutModifiers.Alt), UsedImplicitly]
-    ///     public static void HandleShortCut(ShortcutArguments args)
-    ///     {
-    ///         Action.InvokeWithSelected<![CDATA[<TestAction>]]>();
-    ///     }
-    /// }
-    /// </code>
+    /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-timelineShortcutAttr" title="TimelineShortcutAttr"/>
     /// </example>
     public class TimelineShortcutAttribute : ShortcutManagement.ShortcutAttribute
     {

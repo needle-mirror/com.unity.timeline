@@ -35,7 +35,12 @@ namespace UnityEngine.Timeline
             Inactive
         }
 
+        /// <summary>
+        /// The GameObject to control.
+        /// </summary>
         public GameObject gameObject = null;
+
+        /// <inheritdoc cref="ActivationControlPlayable.PostPlaybackState"/>
         public PostPlaybackState postPlayback = PostPlaybackState.Revert;
         InitialState m_InitialState;
 

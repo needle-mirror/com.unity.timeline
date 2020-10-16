@@ -53,7 +53,7 @@ namespace UnityEditor.Timeline
 
         public static ISelectable HandleSingleSelection(Event evt)
         {
-            ISelectable item = PickerUtils.PickedAllElementsOfType<ISelectable>().FirstOrDefault(i => i.CanSelect());
+            var item = PickerUtils.TopmostPickedItemOfType<ISelectable>(i => i.CanSelect());
 
             if (item != null)
             {
@@ -127,7 +127,7 @@ namespace UnityEditor.Timeline
         {
             if (!m_Dragged)
             {
-                var item = PickerUtils.PickedLayerableOfType<ISelectable>();
+                var item = PickerUtils.TopmostPickedItem() as ISelectable;
 
                 if (item == null)
                     return false;

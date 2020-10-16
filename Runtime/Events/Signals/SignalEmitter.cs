@@ -4,7 +4,7 @@ using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
-    /// <inheritdoc cref="UnityEngine.Timeline.IMarker" />
+    /// <inheritdoc cref="UnityEngine.Timeline.IMarker"/>
     /// <summary>
     /// Marker that emits a signal to a SignalReceiver.
     /// </summary>
