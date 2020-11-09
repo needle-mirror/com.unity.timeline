@@ -116,11 +116,11 @@ namespace UnityEditor.Timeline
         public static TimelineClip Clone(TimelineClip clip, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable, double time, PlayableAsset newOwner = null)
         {
             if (newOwner == null)
-                newOwner = clip.parentTrack;
+                newOwner = clip.GetParentTrack();
 
             TimelineClip newClip = DuplicateClip(clip, sourceTable, destTable, newOwner);
             newClip.start = time;
-            var track = newClip.parentTrack;
+            var track = newClip.GetParentTrack();
             track.SortClips();
             return newClip;
         }
@@ -156,7 +156,7 @@ namespace UnityEditor.Timeline
             foreach (var clip in trackAsset.clips)
             {
                 var newClip = DuplicateClip(clip, sourceTable, destTable, assetOwner);
-                newClip.parentTrack = newTrack;
+                newClip.SetParentTrack_Internal(newTrack);
             }
 
             newTrack.ClearMarkers();
@@ -262,7 +262,7 @@ namespace UnityEditor.Timeline
 
             // perform fix ups for what Instantiate cannot properly detect
             SelectionManager.Remove(newClip);
-            newClip.parentTrack = null;
+            newClip.SetParentTrack_Internal(null);
             newClip.curves = null; // instantiate might copy the reference, we need to clear it
 
             // curves are explicitly owned by the clip
@@ -307,9 +307,9 @@ namespace UnityEditor.Timeline
 
             foreach (var clip in clips)
             {
-                var newParent = newOwner == null ? clip.parentTrack : newOwner;
+                var newParent = newOwner == null ? clip.GetParentTrack() : newOwner;
                 var newClip = DuplicateClip(clip, sourceTable, destTable, newParent);
-                newClip.parentTrack = null;
+                newClip.SetParentTrack_Internal(null);
                 newClips[i++] = newClip;
             }
 
@@ -320,10 +320,10 @@ namespace UnityEditor.Timeline
         {
             var newClip = Clone(clip, sourceTable, destTable, newOwner);
 
-            var track = clip.parentTrack;
+            var track = clip.GetParentTrack();
             if (track != null)
             {
-                newClip.parentTrack = track;
+                newClip.SetParentTrack_Internal(track);
                 track.AddClip(newClip);
             }
 
@@ -824,7 +824,7 @@ namespace UnityEditor.Timeline
         {
             var playableAsset = newClip.asset as IPlayableAsset;
 
-            newClip.parentTrack = null;
+            newClip.SetParentTrack_Internal(null);
             newClip.timeScale = 1.0;
             newClip.mixInCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
             newClip.mixOutCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);

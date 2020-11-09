@@ -23,10 +23,10 @@ namespace UnityEditor.Timeline
         static bool IsValidClip(TimelineClip clip, PlayableDirector director)
         {
             return clip != null &&
-                clip.parentTrack != null &&
+                clip.GetParentTrack() != null &&
                 (clip.asset as AnimationPlayableAsset) != null &&
-                clip.parentTrack.clips.Any(x => x.start < clip.start) &&
-                TimelineUtility.GetSceneGameObject(director, clip.parentTrack) != null;
+                clip.GetParentTrack().clips.Any(x => x.start < clip.start) &&
+                TimelineUtility.GetSceneGameObject(director, clip.GetParentTrack()) != null;
         }
 
         public override ActionValidity Validate(IEnumerable<TimelineClip> clips)
@@ -58,10 +58,10 @@ namespace UnityEditor.Timeline
         static bool IsValidClip(TimelineClip clip, PlayableDirector director)
         {
             return clip != null &&
-                clip.parentTrack != null &&
+                clip.GetParentTrack() != null &&
                 (clip.asset as AnimationPlayableAsset) != null &&
-                clip.parentTrack.clips.Any(x => x.start > clip.start) &&
-                TimelineUtility.GetSceneGameObject(director, clip.parentTrack) != null;
+                clip.GetParentTrack().clips.Any(x => x.start > clip.start) &&
+                TimelineUtility.GetSceneGameObject(director, clip.GetParentTrack()) != null;
         }
 
         public override ActionValidity Validate(IEnumerable<TimelineClip> clips)

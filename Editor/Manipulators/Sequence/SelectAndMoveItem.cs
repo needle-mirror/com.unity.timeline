@@ -22,7 +22,6 @@ namespace UnityEditor.Timeline
             if (ItemSelection.CanClearSelection(evt))
             {
                 SelectionManager.Clear();
-                return true;
             }
 
             return false;

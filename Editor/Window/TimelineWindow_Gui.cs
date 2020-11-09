@@ -24,8 +24,6 @@ namespace UnityEditor.Timeline
             Lines
         }
 
-        [SerializeField] float m_HierarchySplitterPerc = WindowConstants.hierarchySplitterDefaultPercentage;
-
         static internal readonly TimelineMode s_ActiveMode = new TimelineActiveMode();
         static internal readonly TimelineMode s_EditAssetMode = new TimelineAssetEditionMode();
         static internal readonly TimelineMode s_InactiveMode = new TimelineInactiveMode();
@@ -33,11 +31,13 @@ namespace UnityEditor.Timeline
         static internal readonly TimelineMode s_PrefabOutOfContextMode = new TimelineAssetEditionMode();
         static internal readonly TimelineMode s_ReadonlyMode = new TimelineReadOnlyMode();
 
-        int m_SplitterCaptured;
+        private static readonly GUIContent MenuItemFrames = L10n.TextContent("Frames");
+        private static readonly GUIContent MenuItemTimecode = L10n.TextContent("Timecode");
+        private static readonly GUIContent MenuItemSeconds = L10n.TextContent("Seconds");
+
         float m_VerticalScrollBarSize, m_HorizontalScrollBarSize;
 
         List<MarkerOverlay> m_OverlayQueue = new List<MarkerOverlay>(100);
-
 
         float headerHeight
         {
@@ -74,6 +74,14 @@ namespace UnityEditor.Timeline
         public Rect sequenceHeaderRect
         {
             get { return new Rect(0.0f, WindowConstants.markerRowYPosition, state.sequencerHeaderWidth, position.height - WindowConstants.timeAreaYPosition); }
+        }
+
+        public Rect headerSplitterRect
+        {
+            get
+            {
+                return new Rect(state.sequencerHeaderWidth - WindowConstants.headerSplitterWidth / 2.0f, WindowConstants.timeAreaYPosition, WindowConstants.headerSplitterWidth, clientArea.height);
+            }
         }
 
         public Rect sequenceContentRect
@@ -128,11 +136,9 @@ namespace UnityEditor.Timeline
 
         void DoLayout()
         {
-            var rawType = Event.current.rawType; // TODO: rawType seems to be broken after calling Use(), use this Hack and remove it once it's fixed.
             var mousePosition = Event.current.mousePosition; // mousePosition is also affected by this bug and does not reflect the original position after a Use()
 
             Initialize();
-            HandleSplitterResize();
 
             var processManipulators = Event.current.type != EventType.Repaint && Event.current.type != EventType.Layout;
 
@@ -152,17 +158,21 @@ namespace UnityEditor.Timeline
                 if (state.editSequence.asset != null)
                     m_PostTreeViewControl.HandleManipulatorsEvents(state);
             }
-
-            m_RectangleSelect.OnGUI(state, rawType, mousePosition);
-            m_RectangleZoom.OnGUI(state, rawType, mousePosition);
         }
 
         void SplitterGUI()
         {
             if (!state.IsEditingAnEmptyTimeline())
             {
-                var splitterLineRect = new Rect(state.sequencerHeaderWidth - 1.0f, WindowConstants.timeAreaYPosition + 2.0f, 2.0f, clientArea.height);
-                EditorGUI.DrawRect(splitterLineRect, DirectorStyles.Instance.customSkin.colorTopOutline3);
+                var splitterVisualRect = new Rect(state.sequencerHeaderWidth - WindowConstants.headerSplitterWidth / 2.0f,
+                    WindowConstants.timeAreaYPosition + 2.0f,
+                    WindowConstants.headerSplitterVisualWidth,
+                    clientArea.height);
+
+                EditorGUI.DrawRect(splitterVisualRect, DirectorStyles.Instance.customSkin.colorTopOutline3);
+
+                if (GUIUtility.hotControl == 0)
+                    EditorGUIUtility.AddCursorRect(headerSplitterRect, MouseCursor.SplitResizeLeftRight);
             }
         }
 
@@ -179,6 +189,9 @@ namespace UnityEditor.Timeline
             if (Event.current.type != EventType.Repaint)
                 return;
 
+            if (m_OverlayQueue.Count == 0)
+                return;
+
             // the rect containing the time area plus the time ruler
             var screenRect = new Rect(
                 state.sequencerHeaderWidth,
@@ -186,6 +199,7 @@ namespace UnityEditor.Timeline
                 position.width - state.sequencerHeaderWidth - (treeView != null && treeView.showingVerticalScrollBar ? WindowConstants.sliderWidth : 0),
                 position.height - WindowConstants.timeAreaYPosition - horizontalScrollbarHeight);
 
+            var trackOffset = trackRect.y - screenRect.y;
             var startTime = state.PixelToTime(screenRect.xMin);
             var endTime = state.PixelToTime(screenRect.xMax);
 
@@ -198,7 +212,7 @@ namespace UnityEditor.Timeline
                         uiState |= MarkerUIStates.Collapsed;
                     if (entry.isSelected)
                         uiState |= MarkerUIStates.Selected;
-                    var region = new MarkerOverlayRegion(GUIClip.Clip(entry.rect), screenRect, startTime, endTime);
+                    var region = new MarkerOverlayRegion(GUIClip.Clip(entry.rect), screenRect, startTime, endTime, trackOffset);
                     try
                     {
                         entry.editor.DrawOverlay(entry.marker, uiState, region);
@@ -340,45 +354,6 @@ namespace UnityEditor.Timeline
             }
         }
 
-        void HandleSplitterResize()
-        {
-            state.mainAreaWidth = position.width;
-
-            if (state.editSequence.asset == null)
-                return;
-
-            // Sequencer Header Splitter : The splitter has 6 pixels wide,center it around m_State.sequencerHeaderWidth. That's why there's this -3.
-            Rect sequencerHeaderSplitterRect = new Rect(state.sequencerHeaderWidth - 3.0f, 0.0f, 6.0f, clientArea.height);
-            EditorGUIUtility.AddCursorRect(sequencerHeaderSplitterRect, MouseCursor.SplitResizeLeftRight);
-
-            if (Event.current.type == EventType.MouseDown)
-            {
-                if (sequencerHeaderSplitterRect.Contains(Event.current.mousePosition))
-                    m_SplitterCaptured = 1;
-            }
-
-            if (m_SplitterCaptured > 0)
-            {
-                if (Event.current.type == EventType.MouseUp)
-                {
-                    m_SplitterCaptured = 0;
-                    Event.current.Use();
-                }
-
-                if (Event.current.type == EventType.MouseDrag)
-                {
-                    if (m_SplitterCaptured == 1)
-                    {
-                        var percInc = Event.current.delta.x / position.width;
-                        m_HierarchySplitterPerc = Mathf.Clamp(m_HierarchySplitterPerc + percInc, WindowConstants.minHierarchySplitter, WindowConstants.maxHierarchySplitter);
-                        state.sequencerHeaderWidth += Event.current.delta.x;
-                    }
-
-                    Event.current.Use();
-                }
-            }
-        }
-
         void DrawOptions()
         {
             if (currentMode.headerState.options == TimelineModeGUIState.Hidden || state.editSequence.asset == null)
@@ -394,8 +369,10 @@ namespace UnityEditor.Timeline
                     menu.AddItem(L10n.TextContent("Preferences Page..."), false, () => SettingsWindow.Show(SettingsScope.User, "Preferences/Timeline"));
                     menu.AddSeparator("");
 
-                    menu.AddItem(L10n.TextContent("Seconds"), !state.timeInFrames, ChangeTimeCode, "seconds");
-                    menu.AddItem(L10n.TextContent("Frames"), state.timeInFrames, ChangeTimeCode, "frames");
+                    menu.AddItem(MenuItemFrames, state.timeFormat == TimeFormat.Frames, () => state.timeFormat = TimeFormat.Frames);
+                    menu.AddItem(MenuItemTimecode, state.timeFormat == TimeFormat.Timecode, () => state.timeFormat = TimeFormat.Timecode);
+                    menu.AddItem(MenuItemSeconds, state.timeFormat == TimeFormat.Seconds, () => state.timeFormat = TimeFormat.Seconds);
+
                     menu.AddSeparator("");
 
                     TimeAreaContextMenu.AddTimeAreaMenuItems(menu, state);
@@ -460,19 +437,6 @@ namespace UnityEditor.Timeline
                 }, value);
             }
             return on;
-        }
-
-        void ChangeTimeCode(object obj)
-        {
-            string format = obj.ToString();
-            if (format == "frames")
-            {
-                state.timeInFrames = true;
-            }
-            else
-            {
-                state.timeInFrames = false;
-            }
         }
 
         public void AddUserOverlay(IMarker marker, Rect rect, MarkerEditor editor, bool collapsed, bool selected)

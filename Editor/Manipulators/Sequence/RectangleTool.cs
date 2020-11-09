@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityEditor.Timeline
 {
-    abstract class RectangleTool
+    abstract class RectangleTool : Manipulator
     {
         struct TimelinePoint
         {
@@ -38,115 +38,84 @@ namespace UnityEditor.Timeline
         Rect m_ActiveRect;
 
         protected abstract bool enableAutoPan { get; }
-        protected abstract bool CanStartRectangle(Event evt, Vector2 mousePosition, WindowState state);
+        protected abstract bool CanStartRectangle(Event evt);
         protected abstract bool OnFinish(Event evt, WindowState state, Rect rect);
 
-        int m_Id;
-
-        public void OnGUI(WindowState state, EventType rawType, Vector2 mousePosition)
+        protected override bool MouseDown(Event evt, WindowState state)
         {
-            if (m_Id == 0)
-                m_Id = GUIUtility.GetPermanentControlID();
+            if (state.IsCurrentEditingASequencerTextField())
+                return false;
 
-            if (state == null || state.GetWindow().treeView == null)
-                return;
+            m_ActiveRect = TimelineWindow.instance.sequenceContentRect;
 
-            var evt = Event.current;
+            if (!m_ActiveRect.Contains(evt.mousePosition))
+                return false;
 
-            if (rawType == EventType.MouseDown || evt.type == EventType.MouseDown)
-            {
-                if (state.IsCurrentEditingASequencerTextField())
-                    return;
+            if (!CanStartRectangle(evt))
+                return false;
 
-                m_ActiveRect = TimelineWindow.instance.sequenceContentRect;
+            if (enableAutoPan)
+                m_TimeAreaAutoPanner = new TimeAreaAutoPanner(state);
 
-                if (!m_ActiveRect.Contains(mousePosition))
-                    return;
+            m_StartPoint = new TimelinePoint(state, evt.mousePosition);
+            m_EndPixel = evt.mousePosition;
 
-                if (!CanStartRectangle(evt, mousePosition, state))
-                    return;
+            state.AddCaptured(this);
 
-                if (enableAutoPan)
-                    m_TimeAreaAutoPanner = new TimeAreaAutoPanner(state);
-
-                m_StartPoint = new TimelinePoint(state, mousePosition);
-                m_EndPixel = mousePosition;
-
-                GUIUtility.hotControl = m_Id; //HACK: Because the treeView eats all the events, steal the hotControl if necessary...
-                evt.Use();
-
-                return;
-            }
-
-            switch (evt.GetTypeForControl(m_Id))
-            {
-                case EventType.KeyDown:
-                {
-                    if (GUIUtility.hotControl == m_Id)
-                    {
-                        if (evt.keyCode == KeyCode.Escape)
-                        {
-                            m_TimeAreaAutoPanner = null;
-
-                            GUIUtility.hotControl = 0;
-                            evt.Use();
-                        }
-                    }
-
-                    return;
-                }
-
-                case EventType.MouseDrag:
-                {
-                    if (GUIUtility.hotControl != m_Id)
-                        return;
-
-                    m_EndPixel = mousePosition;
-                    evt.Use();
-
-                    return;
-                }
-
-                case EventType.MouseUp:
-                {
-                    if (GUIUtility.hotControl != m_Id)
-                        return;
-
-                    m_TimeAreaAutoPanner = null;
-
-                    var rect = CurrentRectangle();
-
-                    if (IsValidRect(rect))
-                        OnFinish(evt, state, rect);
-
-                    GUIUtility.hotControl = 0;
-                    evt.Use();
-
-                    return;
-                }
-            }
-
-            if (GUIUtility.hotControl == m_Id)
-            {
-                if (evt.type == EventType.Repaint)
-                {
-                    var r = CurrentRectangle();
-
-                    if (IsValidRect(r))
-                    {
-                        using (new GUIViewportScope(m_ActiveRect))
-                        {
-                            DrawRectangle(r);
-                        }
-                    }
-                }
-
-                if (m_TimeAreaAutoPanner != null)
-                    m_TimeAreaAutoPanner.OnGUI(evt);
-            }
+            return true;
         }
 
-        protected virtual void DrawRectangle(Rect rect)
+        protected override bool KeyDown(Event evt, WindowState state)
+        {
+            if (evt.keyCode == KeyCode.Escape)
+            {
+                m_TimeAreaAutoPanner = null;
+                GUIUtility.hotControl = 0;
+                state.RemoveCaptured(this);
+                return true;
+            }
+            return false;
+        }
+
+        protected override bool MouseDrag(Event evt, WindowState state)
+        {
+            m_EndPixel = evt.mousePosition;
+            return true;
+        }
+
+        protected override bool MouseUp(Event evt, WindowState state)
+        {
+            m_TimeAreaAutoPanner = null;
+
+            Rect rect = CurrentRectangle();
+
+            if (IsValidRect(rect))
+                OnFinish(evt, state, rect);
+
+            state.RemoveCaptured(this);
+
+            return true;
+        }
+
+        public override void Overlay(Event evt, WindowState state)
+        {
+            var r = CurrentRectangle();
+
+            if (evt.type == EventType.Repaint)
+            {
+                if (IsValidRect(r))
+                {
+                    using (new GUIViewportScope(m_ActiveRect))
+                    {
+                        DrawRectangle(r);
+                    }
+                }
+            }
+
+            m_TimeAreaAutoPanner?.OnGUI(evt);
+        }
+
+        static void DrawRectangle(Rect rect)
         {
             EditorStyles.selectionRect.Draw(rect, GUIContent.none, false, false, false, false);
         }

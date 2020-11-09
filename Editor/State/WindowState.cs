@@ -311,10 +311,10 @@ namespace UnityEditor.Timeline
             set { m_Preferences.timeReferenceMode = value; }
         }
 
-        public bool timeInFrames
+        public TimeFormat timeFormat
         {
-            get { return TimelinePreferences.instance.timeUnitInFrame; }
-            set { TimelinePreferences.instance.timeUnitInFrame = value; }
+            get { return TimelinePreferences.instance.timeFormat; }
+            set { TimelinePreferences.instance.timeFormat = value; }
         }
 
         public bool showAudioWaveform

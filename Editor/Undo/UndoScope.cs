@@ -33,8 +33,8 @@ namespace UnityEditor.Timeline
 
         public void AddClip(TimelineClip clip, bool includeAsset)
         {
-            if (clip != null && clip.parentTrack != null)
-                s_ObjectsToUndo.Add(clip.parentTrack);
+            if (clip != null && clip.GetParentTrack() != null)
+                s_ObjectsToUndo.Add(clip.GetParentTrack());
             if (includeAsset && clip != null && clip.asset != null)
                 s_ObjectsToUndo.Add(clip.asset);
         }

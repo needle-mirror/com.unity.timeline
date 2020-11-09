@@ -235,9 +235,6 @@ namespace UnityEngine.Timeline
         /// <remarks>
         /// A track is considered empty when it does not contain a TimelineClip, Marker, or Curve.
         /// </remarks>
-        /// <remarks>
-        /// Empty tracks are not included in the playable graph.
-        /// </remarks>
         public virtual bool isEmpty
         {
             get { return !hasClips && !hasCurves && GetMarkerCount() == 0; }
@@ -473,8 +470,8 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Overrides PlayableAsset.CreatePlayable(). Not used in Timeline.
         /// </summary>
-        /// <paramref name="graph"><inheritdoc/></paramref>
-        /// <paramref name="go"><inheritdoc/></paramref>
+        /// <param name="graph"><inheritdoc/></param>
+        /// <param name="go"><inheritdoc/></param>
         /// <returns><inheritDoc/></returns>
         public sealed override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
@@ -565,7 +562,7 @@ namespace UnityEngine.Timeline
         /// Creates a marker of the requested type, at a specific time, and adds the marker to the current asset.
         /// </summary>
         /// <param name="time">The time where the marker is created.</param>
-        /// <typeparamref name="T">The type of marker to create.</typeparamref>
+        /// <typeparam name="T">The type of marker to create.</typeparam>
         /// <returns>Returns the instance of the created marker.</returns>
         /// <remarks>
         /// All markers that implement IMarker and inherit from <see cref="UnityEngine.ScriptableObject"/> are supported.
@@ -751,7 +748,7 @@ namespace UnityEngine.Timeline
         Playable CreateNotificationsPlayable(PlayableGraph graph, Playable mixerPlayable, GameObject go, Playable timelinePlayable)
         {
             s_BuildData.markerList.Clear();
-            GatherNotificiations(s_BuildData.markerList);
+            GatherNotifications(s_BuildData.markerList);
             var notificationPlayable = NotificationUtilities.CreateNotificationsPlayable(graph, s_BuildData.markerList, go);
             if (notificationPlayable.IsValid())
             {
@@ -771,10 +768,10 @@ namespace UnityEngine.Timeline
         {
             UpdateDuration();
             var mixerPlayable = Playable.Null;
-            if (CanCompileClipsRecursive())
-                mixerPlayable = OnCreateClipPlayableGraph(graph, go, tree);
+            if (CanCreateMixerRecursive())
+                mixerPlayable = CreateMixerPlayableGraph(graph, go, tree);
 
-            var notificationsPlayable = CreateNotificationsPlayable(graph, mixerPlayable, go, timelinePlayable);
+            Playable notificationsPlayable = CreateNotificationsPlayable(graph, mixerPlayable, go, timelinePlayable);
 
             // clear the temporary build data to avoid holding references
             // case 1253974
@@ -811,7 +808,7 @@ namespace UnityEngine.Timeline
 
         void GatherCompilableTracks(IList<TrackAsset> tracks)
         {
-            if (!muted && CanCompileClips())
+            if (!muted && CanCreateTrackMixer())
                 tracks.Add(this);
 
             foreach (var c in GetChildTracks())
@@ -821,18 +818,18 @@ namespace UnityEngine.Timeline
             }
         }
 
-        void GatherNotificiations(List<IMarker> markers)
+        void GatherNotifications(List<IMarker> markers)
         {
             if (!muted && CanCompileNotifications())
                 markers.AddRange(GetMarkers());
             foreach (var c in GetChildTracks())
             {
                 if (c != null)
-                    c.GatherNotificiations(markers);
+                    c.GatherNotifications(markers);
             }
         }
 
-        internal virtual Playable OnCreateClipPlayableGraph(PlayableGraph graph, GameObject go, IntervalTree<RuntimeElement> tree)
+        internal virtual Playable CreateMixerPlayableGraph(PlayableGraph graph, GameObject go, IntervalTree<RuntimeElement> tree)
         {
             if (tree == null)
                 throw new ArgumentException("IntervalTree argument cannot be null", "tree");
@@ -1212,14 +1209,26 @@ namespace UnityEngine.Timeline
             return hasClips || hasCurves;
         }
 
+        /// <summary>
+        /// Whether the track can create a mixer for its own contents.
+        /// </summary>
+        /// <returns>Returns true if the track's mixer should be included in the playable graph.</returns>
+        /// <remarks>A return value of true does not guarantee that the mixer will be included in the playable graph. GroupTracks and muted tracks are never included in the graph</remarks>
+        /// <remarks>A return value of false does not guarantee that the mixer will not be included in the playable graph. If a child track returns true for CanCreateTrackMixer, the parent track will generate the mixer but its own playables will not be included.</remarks>
+        /// <remarks>Override this method to change the conditions for a track to be included in the playable graph.</remarks>
+        public virtual bool CanCreateTrackMixer()
+        {
+            return CanCompileClips();
+        }
+
         internal bool IsCompilable()
         {
-            var isContainer = typeof(GroupTrack).IsAssignableFrom(GetType());
+            bool isContainer = typeof(GroupTrack).IsAssignableFrom(GetType());
 
             if (isContainer)
                 return false;
 
-            var ret = !mutedInHierarchy && (CanCompileClips() || CanCompileNotifications());
+            var ret = !mutedInHierarchy && (CanCreateTrackMixer() || CanCompileNotifications());
             if (!ret)
             {
                 foreach (var t in GetChildTracks())
@@ -1267,6 +1276,11 @@ namespace UnityEngine.Timeline
             return hash;
         }
 
+        /// <summary>
+        /// Gets the hash code for an AnimationClip.
+        /// </summary>
+        /// <param name="clip">The animation clip.</param>
+        /// <returns>A 32-bit signed integer that is the hash code for <paramref name="clip"/>. Returns 0 if <paramref name="clip"/> is null or empty.</returns>
         protected static int GetAnimationClipHash(AnimationClip clip)
         {
             var hash = 0;
@@ -1287,13 +1301,13 @@ namespace UnityEngine.Timeline
             return supportsNotifications && m_Markers.HasNotifications();
         }
 
-        bool CanCompileClipsRecursive()
+        bool CanCreateMixerRecursive()
         {
-            if (CanCompileClips())
+            if (CanCreateTrackMixer())
                 return true;
             foreach (var track in GetChildTracks())
             {
-                if (track.CanCompileClipsRecursive())
+                if (track.CanCreateMixerRecursive())
                     return true;
             }
 

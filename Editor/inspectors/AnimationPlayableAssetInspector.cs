@@ -109,8 +109,8 @@ namespace UnityEditor.Timeline
                             var apa = c.clip.asset as AnimationPlayableAsset;
                             if (apa != null && apa.clip != null && c.clip.displayName == apa.clip.name)
                             {
-                                if (c.clip.parentTrack != null)
-                                    Undo.RegisterCompleteObjectUndo(c.clip.parentTrack, L10n.Tr("Inspector"));
+                                if (c.clip.GetParentTrack() != null)
+                                    Undo.RegisterCompleteObjectUndo(c.clip.GetParentTrack(), L10n.Tr("Inspector"));
                                 c.clip.displayName = newName;
                             }
                         }
@@ -251,7 +251,7 @@ namespace UnityEditor.Timeline
                 m_EditorClip != null && m_EditorClip.clip != null)
             {
                 var obj = TimelineUtility.GetSceneGameObject(m_TimelineWindow.state.editSequence.director,
-                    m_EditorClip.clip.parentTrack);
+                    m_EditorClip.clip.GetParentTrack());
                 m_Binding = obj;
                 if (obj != null)
                     return obj.transform;
@@ -265,7 +265,7 @@ namespace UnityEditor.Timeline
                 return;
 
             AnimationPlayableAsset animationPlayable = m_EditorClip.clip.asset as AnimationPlayableAsset;
-            AnimationTrack track = m_EditorClip.clip.parentTrack as AnimationTrack;
+            AnimationTrack track = m_EditorClip.clip.GetParentTrack() as AnimationTrack;
             Transform transform = GetTransform();
 
             if (transform != null && animationPlayable != null && m_OffsetEditMode != TimelineAnimationUtilities.OffsetEditMode.None && track != null)

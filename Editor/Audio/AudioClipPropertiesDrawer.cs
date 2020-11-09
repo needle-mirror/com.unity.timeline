@@ -44,12 +44,12 @@ namespace UnityEngine.Timeline
 
             var clip = SelectionManager.SelectedClips().FirstOrDefault(c => c.asset == property.serializedObject.targetObject);
 
-            if (clip == null || clip.parentTrack == null)
+            if (clip == null || clip.GetParentTrack() == null)
                 return;
 
             var clipVolume = volumeProp.floatValue;
-            var trackVolume = new SerializedObject(clip.parentTrack).FindProperty("m_TrackProperties.volume").floatValue;
-            var binding = TimelineEditor.inspectedDirector.GetGenericBinding(clip.parentTrack) as AudioSource;
+            var trackVolume = new SerializedObject(clip.GetParentTrack()).FindProperty("m_TrackProperties.volume").floatValue;
+            var binding = TimelineEditor.inspectedDirector.GetGenericBinding(clip.GetParentTrack()) as AudioSource;
 
             if (Math.Abs(clipVolume) < float.Epsilon &&
                 Math.Abs(trackVolume) < float.Epsilon &&

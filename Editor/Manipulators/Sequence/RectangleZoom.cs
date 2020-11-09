@@ -6,7 +6,7 @@ namespace UnityEditor.Timeline
     {
         protected override bool enableAutoPan { get { return true; } }
 
-        protected override bool CanStartRectangle(Event evt, Vector2 mousePosition, WindowState state)
+        protected override bool CanStartRectangle(Event evt)
         {
             return evt.button == 1 && evt.modifiers == (EventModifiers.Alt | EventModifiers.Shift);
         }

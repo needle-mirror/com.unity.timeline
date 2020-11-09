@@ -19,10 +19,7 @@ namespace UnityEditor.Timeline
         public static readonly string EaseOutClipText = L10n.Tr("Ease Out Clip");
         public static readonly string EaseInText = L10n.Tr("Ease In");
         public static readonly string EaseOutText = L10n.Tr("Ease Out");
-        public static readonly string DurationFrameText = L10n.Tr(" Duration {0:0.00;-0.00} frames ");
-        public static readonly string DurationSecText = L10n.Tr(" Duration {0:0.00;-0.00} s ");
-        public static readonly string DeltaFrameText = L10n.Tr("({0:+0.00;-0.00} frames)");
-        public static readonly string DeltaSecText = L10n.Tr("({0:+0.00;-0.00} s)");
+        public static readonly string DurationText = L10n.Tr("Duration: ");
 
         protected override bool MouseDown(Event evt, WindowState state)
         {
@@ -125,27 +122,19 @@ namespace UnityEditor.Timeline
         {
             m_OverlayText.Length = 0;
             m_OverlayText.Append(m_Edges == ManipulateEdges.Left ? EaseInText : EaseOutText);
-            double easeDuration = m_Edges == ManipulateEdges.Left ? m_Clip.easeInDuration : m_Clip.easeOutDuration;
-            double deltaDuration = easeDuration - m_OriginalValue;
-            bool hasDurationDelta = Math.Abs(deltaDuration) > double.Epsilon;
-            if (state.timeInFrames)
+
+            var easeDuration = m_Edges == ManipulateEdges.Left ? m_Clip.easeInDuration : m_Clip.easeOutDuration;
+            var deltaDuration = easeDuration - m_OriginalValue;
+
+            // round to frame so we don't show partial time codes due to no frame snapping
+            if (state.timeFormat == TimeFormat.Timecode)
             {
-                easeDuration *= state.editSequence.frameRate;
-                deltaDuration *= state.editSequence.frameRate;
-                m_OverlayText.AppendFormat(DurationFrameText, easeDuration);
-                if (hasDurationDelta)
-                {
-                    m_OverlayText.AppendFormat(DeltaFrameText, deltaDuration);
-                }
+                easeDuration = TimeUtility.RoundToFrame(easeDuration, state.referenceSequence.frameRate);
+                deltaDuration = TimeUtility.RoundToFrame(deltaDuration, state.referenceSequence.frameRate);
             }
-            else
-            {
-                m_OverlayText.AppendFormat(DurationSecText, easeDuration);
-                if (hasDurationDelta)
-                {
-                    m_OverlayText.AppendFormat(DeltaSecText, deltaDuration);
-                }
-            }
+
+            m_OverlayText.Append(DurationText);
+            m_OverlayText.Append(state.timeFormat.ToTimeStringWithDelta(easeDuration, state.referenceSequence.frameRate, deltaDuration));
         }
     }
 }

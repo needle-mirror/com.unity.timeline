@@ -113,6 +113,9 @@ namespace UnityEditor.Timeline.Actions
         /// </summary>
         public static class ClipEditActionSection
         {
+            /// <summary>
+            /// First Edit Clip menu item priority.
+            /// </summary>
             public const int start = AddTrackMenu.start + separatorAt;
             /// <summary>
             /// Edit Clip In Animation Window menu item priority.

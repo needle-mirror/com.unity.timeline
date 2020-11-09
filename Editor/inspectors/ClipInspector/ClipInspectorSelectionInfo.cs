@@ -55,7 +55,7 @@ namespace UnityEditor.Timeline
             {
                 if (clip == null) continue;
 
-                uniqueParentTracks.Add(clip.parentTrack);
+                uniqueParentTracks.Add(clip.GetParentTrack());
                 selectedAssetTypesAreHomogeneous &= clip.asset.GetType() == firstSelectedClipAssetType;
 
                 UpdateClipCaps(clip);

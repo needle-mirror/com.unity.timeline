@@ -283,7 +283,7 @@ namespace UnityEditor.Timeline
             if (clip == null)
                 return Color.white;
 
-            return TrackResourceCache.GetTrackColor(clip.parentTrack);
+            return TrackResourceCache.GetTrackColor(clip.GetParentTrack());
         }
 
         /// <summary>

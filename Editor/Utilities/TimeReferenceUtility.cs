@@ -44,28 +44,12 @@ namespace UnityEditor.Timeline
             if (state.timeReferenceMode == TimeReferenceMode.Global)
                 time = state.editSequence.ToGlobalTime(time);
 
-            return state.timeInFrames ?
-                TimeUtility.TimeAsFrames(time, state.referenceSequence.frameRate, format) :
-                TimeUtility.TimeAsTimeCode(time, state.referenceSequence.frameRate, format);
+            return state.timeFormat.ToTimeString(time, state.referenceSequence.frameRate, format);
         }
 
         public static double FromTimeString(string timeString)
         {
-            double newTime;
-
-            if (state.timeInFrames)
-            {
-                double newFrameDouble;
-                if (double.TryParse(timeString, out newFrameDouble))
-                    newTime = TimeUtility.FromFrames(newFrameDouble, state.referenceSequence.frameRate);
-                else
-                    newTime = state.editSequence.time;
-            }
-            else
-            {
-                newTime = TimeUtility.ParseTimeCode(timeString, state.referenceSequence.frameRate, -1);
-            }
-
+            double newTime = state.timeFormat.FromTimeString(timeString, state.referenceSequence.frameRate, -1);
             if (newTime >= 0.0)
             {
                 return state.timeReferenceMode == TimeReferenceMode.Global ?

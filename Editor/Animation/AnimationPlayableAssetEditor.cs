@@ -20,7 +20,7 @@ namespace UnityEditor.Timeline
             var asset = clip.asset as AnimationPlayableAsset;
 
             if (asset != null)
-                clipOptions.errorText = GetErrorText(asset, clip.parentTrack as AnimationTrack, clipOptions.errorText);
+                clipOptions.errorText = GetErrorText(asset, clip.GetParentTrack() as AnimationTrack, clipOptions.errorText);
 
             if (clip.recordable)
                 clipOptions.highlightColor = DirectorStyles.Instance.customSkin.colorAnimationRecorded;

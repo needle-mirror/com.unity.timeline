@@ -557,7 +557,7 @@ namespace UnityEngine.Timeline
             return Playable.Null;
         }
 
-        internal override Playable OnCreateClipPlayableGraph(PlayableGraph graph, GameObject go, IntervalTree<RuntimeElement> tree)
+        internal override Playable CreateMixerPlayableGraph(PlayableGraph graph, GameObject go, IntervalTree<RuntimeElement> tree)
         {
             if (isSubTrack)
                 throw new InvalidOperationException("Nested animation tracks should never be asked to create a graph directly");

@@ -184,12 +184,7 @@ namespace UnityEngine.Timeline
             m_EvaluateCallbacks.Add(new AnimationPreviewUpdateCallback(animOutput));
         }
 
-        private static Playable CreatePlayableGraph(PlayableGraph graph, TrackAsset asset, GameObject go, IntervalTree<RuntimeElement> tree, Playable timelinePlayable)
-        {
-            return asset.CreatePlayableGraph(graph, go, tree, timelinePlayable);
-        }
-
-        private Playable CreateTrackPlayable(PlayableGraph graph, Playable timelinePlayable, TrackAsset track, GameObject go, bool createOutputs)
+        Playable CreateTrackPlayable(PlayableGraph graph, Playable timelinePlayable, TrackAsset track, GameObject go, bool createOutputs)
         {
             if (!track.IsCompilable()) // where parents are not compilable (group tracks)
                 return timelinePlayable;
@@ -203,13 +198,13 @@ namespace UnityEngine.Timeline
 
             TrackAsset parentActor = track.parent as TrackAsset;
             var parentPlayable = parentActor != null ? CreateTrackPlayable(graph, timelinePlayable, parentActor, go, createOutputs) : timelinePlayable;
-            var actorPlayable = CreatePlayableGraph(graph, track, go, m_IntervalTree, timelinePlayable);
+            var actorPlayable = track.CreatePlayableGraph(graph, go, m_IntervalTree, timelinePlayable);
             bool connected = false;
 
             if (!actorPlayable.IsValid())
             {
                 // if a track says it's compilable, but returns Playable.Null, that can screw up the whole graph.
-                throw new InvalidOperationException(track.name + "(" + track.GetType() + ") did not produce a valid playable. Use the compilable property to indicate whether the track is valid for processing");
+                throw new InvalidOperationException(track.name + "(" + track.GetType() + ") did not produce a valid playable.");
             }
 
 

@@ -114,9 +114,22 @@ namespace UnityEditor.Timeline
         public Rect markerRegion { get; private set; }
 
         /// <summary>
-        /// TThe area where the overlay is being drawn.
+        /// The area where the overlay is being drawn.
+        ///
+        /// This region extends from the top of the time ruler to the bottom of the window, excluding any scrollbars.
         /// </summary>
         public Rect timelineRegion { get; private set; }
+
+        /// <summary>
+        /// The sub-area of the timelineRegion where the tracks are drawn.
+        ///
+        /// The region extends from the bottom of the time ruler, or the timeline marker region if not hidden.
+        /// Use this region to clip overlays that should not be drawn over the timeline marker region or time ruler.
+        /// </summary>
+        /// <example>
+        /// <code source="../../DocCodeExamples/MarkerEditorExamples.cs" region="declare-trackRegion" title="trackRegion"/>
+        /// </example>
+        public Rect trackRegion => Rect.MinMaxRect(timelineRegion.xMin, timelineRegion.yMin + m_TrackOffset, timelineRegion.xMax, timelineRegion.yMax);
 
         /// <summary>
         /// The start time of the visible region of the window.
@@ -128,17 +141,31 @@ namespace UnityEditor.Timeline
         /// </summary>
         public double endTime { get; private set; }
 
+        private float m_TrackOffset;
+
         /// <summary>Constructor</summary>
-        /// <paramref name="_markerRegion"><inheritdoc cref="markerRegion"/></paramref>
-        /// <paramref name="_timelineRegion"><inheritdoc cref="timelineRegion"/></paramref>
-        /// <paramref name="_startTime"><inheritdoc cref="startTime"/></paramref>
-        /// <paramref name="_endTime"><inheritdoc cref="endTime"/></paramref>
+        /// <param name="_markerRegion">The area where the marker is being drawn.</param>
+        /// <param name="_timelineRegion">The area where the overlay is being drawn.</param>
+        /// <param name="_startTime">The start time of the visible region of the window.</param>
+        /// <param name="_endTime">The end time of the visible region of the window.</param>
         public MarkerOverlayRegion(Rect _markerRegion, Rect _timelineRegion, double _startTime, double _endTime)
+            : this(_markerRegion, _timelineRegion, _startTime, _endTime, 19.0f)
+        {
+        }
+
+        /// <summary>Constructor</summary>
+        /// <param name="_markerRegion">The area where the marker is being drawn.</param>
+        /// <param name="_timelineRegion">The area where the overlay is being drawn.</param>
+        /// <param name="_startTime">The start time of the visible region of the window.</param>
+        /// <param name="_endTime">The end time of the visible region of the window.</param>
+        /// <param name="_trackOffset">The offset from the timelineRegion to the trackRegion</param>
+        public MarkerOverlayRegion(Rect _markerRegion, Rect _timelineRegion, double _startTime, double _endTime, float _trackOffset)
         {
             markerRegion = _markerRegion;
             timelineRegion = _timelineRegion;
             startTime = _startTime;
             endTime = _endTime;
+            m_TrackOffset = _trackOffset;
         }
 
         /// <summary>
@@ -164,7 +191,8 @@ namespace UnityEditor.Timeline
             return markerRegion == other.markerRegion &&
                 timelineRegion == other.timelineRegion &&
                 startTime == other.startTime &&
-                endTime == other.endTime;
+                endTime == other.endTime &&
+                m_TrackOffset == other.m_TrackOffset;
         }
 
         /// <summary>
@@ -177,7 +205,8 @@ namespace UnityEditor.Timeline
                 markerRegion.GetHashCode(),
                 timelineRegion.GetHashCode(),
                 startTime.GetHashCode(),
-                endTime.GetHashCode()
+                endTime.GetHashCode(),
+                m_TrackOffset.GetHashCode()
             );
         }
 

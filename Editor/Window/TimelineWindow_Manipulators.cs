@@ -7,14 +7,12 @@ namespace UnityEditor.Timeline
         readonly Control m_PreTreeViewControl = new Control();
         readonly Control m_PostTreeViewControl = new Control();
 
-        readonly RectangleSelect m_RectangleSelect = new RectangleSelect();
-        readonly RectangleZoom m_RectangleZoom = new RectangleZoom();
-
         void InitializeManipulators()
         {
             // Order is important!
 
             // Manipulators that needs to be processed BEFORE the treeView (mainly anything clip related)
+            m_PreTreeViewControl.AddManipulator(new HeaderSplitterManipulator());
             m_PreTreeViewControl.AddManipulator(new TimelinePanManipulator());
             m_PreTreeViewControl.AddManipulator(new TrackResize());
             m_PreTreeViewControl.AddManipulator(new InlineCurveResize());
@@ -36,6 +34,8 @@ namespace UnityEditor.Timeline
             m_PostTreeViewControl.AddManipulator(new TrackShortcutManipulator());
             m_PostTreeViewControl.AddManipulator(new TimelineShortcutManipulator());
             m_PostTreeViewControl.AddManipulator(new ClearSelection());
+            m_PostTreeViewControl.AddManipulator(new RectangleSelect());
+            m_PostTreeViewControl.AddManipulator(new RectangleZoom());
         }
     }
 }

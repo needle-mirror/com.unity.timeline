@@ -12,11 +12,14 @@ The [Timeline Overview section](tl_about.md) includes details on the relationshi
 
 The [Using Timeline section](wf_about.md) shows how to create Timeline Assets and Timeline instances, record basic animation, animate humanoids, and use other Timeline features.
 
+The [Samples section](smpl_about.md) includes a description of the samples offered by the Timeline package.
+
 # Installing Timeline
 
 Timeline is a Package and is installed through the Packages window in Unity. Consult the [Packages window documentation](https://docs.unity3d.com/Manual/upm-ui.html) for more information.
 
 # Technical details
+
 ## Requirements
 
 This version of Timeline is compatible with the following versions of the Unity Editor:
@@ -36,4 +39,6 @@ The following table indicates the folder structure of the Timeline package:
 
 |Date|Reason|
 |---|---|
+|October 23, 2020|Added documentation for customization samples.|
+|October 22, 2020|Added samples section|
 |October 10, 2018|Document created. Matches package version 0.0.0|

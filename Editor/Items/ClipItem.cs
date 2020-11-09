@@ -19,8 +19,8 @@ namespace UnityEditor.Timeline
 
         public TrackAsset parentTrack
         {
-            get { return m_Clip.parentTrack; }
-            set { m_Clip.parentTrack = value; }
+            get { return m_Clip.GetParentTrack(); }
+            set { m_Clip.SetParentTrack_Internal(value); }
         }
 
         public double start
@@ -94,7 +94,7 @@ namespace UnityEditor.Timeline
         public void Delete()
         {
             EditorClipFactory.RemoveEditorClip(m_Clip);
-            ClipModifier.Delete(m_Clip.parentTrack.timelineAsset, m_Clip);
+            ClipModifier.Delete(m_Clip.GetParentTrack().timelineAsset, m_Clip);
         }
 
         public void TrimStart(double time)

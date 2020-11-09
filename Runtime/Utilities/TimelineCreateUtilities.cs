@@ -11,7 +11,7 @@ namespace UnityEngine.Timeline
         // based off of ObjectNames.GetUniqueName, but can exist in runtime
         public static string GenerateUniqueActorName(List<ScriptableObject> tracks, string name)
         {
-            if (!tracks.Exists(x => ((object)x) != null && x.name == name))
+            if (!tracks.Exists(x => ((object) x) != null && x.name == name))
                 return name;
 
             int numberInParentheses = 0;
@@ -38,7 +38,7 @@ namespace UnityEngine.Timeline
                 if (i > 0)
                 {
                     string result = string.Format("{0} ({1})", baseName, i);
-                    if (!tracks.Exists(x => ((object)x) != null && x.name == result))
+                    if (!tracks.Exists(x => ((object) x) != null && x.name == result))
                         return result;
                 }
             }
@@ -64,6 +64,17 @@ namespace UnityEngine.Timeline
                     AssetDatabase.AddObjectToAsset(childAsset, masterAsset);
 #endif
             }
+        }
+
+        public static void RemoveAssetFromObject(Object childAsset, Object masterAsset)
+        {
+            if (childAsset == null || masterAsset == null)
+                return;
+
+#if UNITY_EDITOR
+            if (AssetDatabase.Contains(childAsset) && AssetDatabase.Contains(masterAsset))
+                AssetDatabase.RemoveObjectFromAsset(childAsset);
+#endif
         }
 
         public static AnimationClip CreateAnimationClipForTrack(string name, TrackAsset track, bool isLegacy)

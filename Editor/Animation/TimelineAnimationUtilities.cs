@@ -30,7 +30,7 @@ namespace UnityEditor.Timeline
         public static TimelineClip GetPreviousClip(TimelineClip clip)
         {
             TimelineClip previousClip = null;
-            foreach (var c in clip.parentTrack.clips)
+            foreach (var c in clip.GetParentTrack().clips)
             {
                 if (c.start < clip.start && (previousClip == null || c.start >= previousClip.start))
                     previousClip = c;
@@ -40,7 +40,7 @@ namespace UnityEditor.Timeline
 
         public static TimelineClip GetNextClip(TimelineClip clip)
         {
-            return clip.parentTrack.clips.Where(c => c.start > clip.start).OrderBy(c => c.start).FirstOrDefault();
+            return clip.GetParentTrack().clips.Where(c => c.start > clip.start).OrderBy(c => c.start).FirstOrDefault();
         }
 
         public struct RigidTransform
@@ -150,7 +150,7 @@ namespace UnityEditor.Timeline
 
         static MatchTargetFields GetMatchFields(TimelineClip clip)
         {
-            var track = clip.parentTrack as AnimationTrack;
+            var track = clip.GetParentTrack() as AnimationTrack;
             if (track == null)
                 return MatchTargetFieldConstants.None;
 
@@ -202,7 +202,7 @@ namespace UnityEditor.Timeline
             // make sure the transform is properly updated before modifying the graph
             director.Evaluate();
 
-            var parentTrack = currentClip.parentTrack as AnimationTrack;
+            var parentTrack = currentClip.GetParentTrack() as AnimationTrack;
 
             var blendIn = currentClip.blendInDuration;
             currentClip.blendInDuration = 0;
@@ -261,7 +261,7 @@ namespace UnityEditor.Timeline
             // make sure the transform is properly updated before modifying the graph
             director.Evaluate();
 
-            var parentTrack = currentClip.parentTrack as AnimationTrack;
+            var parentTrack = currentClip.GetParentTrack() as AnimationTrack;
 
             var blendOut = currentClip.blendOutDuration;
             var blendIn = nextClip.blendInDuration;

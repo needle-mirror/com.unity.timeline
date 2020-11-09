@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Timeline;
@@ -15,12 +16,19 @@ using L10n = UnityEditor.Timeline.L10n;
 public class TimelinePreferences : ScriptableSingleton<TimelinePreferences>
 {
     /// <summary>
-    /// Define the time unit for the timeline window.
-    /// true : frame unit.
-    /// false : seconds unit.
+    /// The time unit used by the Timeline Editor when displaying time values.
     /// </summary>
     [SerializeField]
-    public bool timeUnitInFrame = true;
+    public TimeFormat timeFormat;
+
+    /// <summary>
+    /// Define the time unit for the timeline window.
+    /// true : frame unit.
+    /// false : timecode unit.
+    /// </summary>
+    [NonSerialized, Obsolete("timeUnitInFrame is deprecated. Use timeFormat instead", false)]
+    public bool timeUnitInFrame;
+
     /// <summary>
     /// Draw the waveforms for all audio clips.
     /// </summary>
@@ -89,20 +97,14 @@ class TimelinePreferencesProvider : SettingsProvider
 {
     SerializedObject m_SerializedObject;
     SerializedProperty m_ShowAudioWaveform;
-    SerializedProperty m_TimeUnitInFrame;
+    SerializedProperty m_TimeFormat;
     SerializedProperty m_SnapToFrame;
     SerializedProperty m_EdgeSnap;
     SerializedProperty m_PlaybackScrollMode;
 
-    static string[] timeUnitsList = new string[]
-    {
-        L10n.Tr("Seconds"),
-        L10n.Tr("Frames")
-    };
-
     private class Styles
     {
-        public static readonly GUIContent TimeUnitLabel = L10n.TextContent("Time Unit", "Define the time unit for the timeline window (Frames or Seconds).");
+        public static readonly GUIContent TimeUnitLabel = L10n.TextContent("Time Unit", "Define the time unit for the timeline window (Frames, Timecode or Seconds).");
         public static readonly GUIContent ShowAudioWaveformLabel = L10n.TextContent("Show Audio Waveforms", "Draw the waveforms for all audio clips.");
         public static readonly GUIContent AudioScrubbingLabel = L10n.TextContent("Allow Audio Scrubbing", "Allow the users to hear audio while scrubbing on audio clip.");
         public static readonly GUIContent SnapToFrameLabel = L10n.TextContent("Snap To Frame", "Enable Snap to Frame to manipulate clips and align them on frames.");
@@ -121,7 +123,7 @@ class TimelinePreferencesProvider : SettingsProvider
         TimelinePreferences.instance.Save();
         m_SerializedObject = TimelinePreferences.instance.GetSerializedObject();
         m_ShowAudioWaveform = m_SerializedObject.FindProperty("showAudioWaveform");
-        m_TimeUnitInFrame = m_SerializedObject.FindProperty("timeUnitInFrame");
+        m_TimeFormat = m_SerializedObject.FindProperty("timeFormat");
         m_SnapToFrame = m_SerializedObject.FindProperty("snapToFrame");
         m_EdgeSnap = m_SerializedObject.FindProperty("edgeSnap");
         m_PlaybackScrollMode = m_SerializedObject.FindProperty("playbackScrollMode");
@@ -134,10 +136,7 @@ class TimelinePreferencesProvider : SettingsProvider
         using (new SettingsWindow.GUIScope())
         {
             EditorGUILayout.LabelField(Styles.EditorSettingLabel, EditorStyles.boldLabel);
-
-            int timeUnitIdx = EditorGUILayout.Popup(Styles.TimeUnitLabel, m_TimeUnitInFrame.boolValue ? 1 : 0, timeUnitsList);
-            m_TimeUnitInFrame.boolValue = timeUnitIdx == 1;
-
+            m_TimeFormat.enumValueIndex = EditorGUILayout.Popup(Styles.TimeUnitLabel, m_TimeFormat.enumValueIndex, m_TimeFormat.enumDisplayNames);
             m_PlaybackScrollMode.enumValueIndex = EditorGUILayout.Popup(Styles.PlaybackScrollModeLabel, m_PlaybackScrollMode.enumValueIndex, m_PlaybackScrollMode.enumNames);
             m_ShowAudioWaveform.boolValue = EditorGUILayout.Toggle(Styles.ShowAudioWaveformLabel, m_ShowAudioWaveform.boolValue);
             TimelinePreferences.instance.audioScrubbing = EditorGUILayout.Toggle(Styles.AudioScrubbingLabel, TimelinePreferences.instance.audioScrubbing);

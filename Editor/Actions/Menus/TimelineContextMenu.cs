@@ -66,7 +66,7 @@ namespace UnityEditor.Timeline
 
             var clips = TimelineEditor.selectedClips;
             if (clips.Length > 0)
-                AddMarkerMenuCommands(items, clips.Select(c => c.parentTrack).Distinct().ToList(), TimelineHelpers.GetCandidateTime(mousePosition));
+                AddMarkerMenuCommands(items, clips.Select(c => c.GetParentTrack()).Distinct().ToList(), TimelineHelpers.GetCandidateTime(mousePosition));
         }
 
         public static void BuildNewTracksContextMenu(List<MenuActionItem> menuItems, ICollection<TrackAsset> parentTracks, WindowState state, string format = null)

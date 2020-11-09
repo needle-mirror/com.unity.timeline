@@ -26,7 +26,7 @@ namespace UnityEditor.Timeline
                 if (clip.curves != null)
                     m_AnimationClipToTimelineClip[clip.curves] = clip;
 
-                UpdatePlayableLookup(clip.parentTrack.timelineAsset, clip, go, p);
+                UpdatePlayableLookup(clip.GetParentTrack().timelineAsset, clip, go, p);
             }
 
             public void UpdatePlayableLookup(TrackAsset track, GameObject go, Playable p)

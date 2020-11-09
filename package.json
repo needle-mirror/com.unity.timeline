@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.5.1-pre.1",
+  "version": "1.5.1-pre.2",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,14 +18,26 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.5.1-pre.1"
+    "com.unity.timeline.tests": "1.5.1-pre.2"
   },
   "upmCi": {
-    "footprint": "2bc26a7bcaf291d7184bb4a5081983666b8c5711"
+    "footprint": "e132adc7b4acc1c221f0f0d361531b04bbc5d0d6"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "d7a3485b1547c1cac19be3c706bd3f7aedb9aa70"
-  }
+    "revision": "3cf5c26881ddacd97b2827eb37a56c6c69f33c55"
+  },
+  "samples": [
+    {
+      "displayName": "Customization Samples",
+      "description": "This sample demonstrates how to create custom timeline tracks, clips, markers and actions.",
+      "path": "Samples~/Customization"
+    },
+    {
+      "displayName": "Gameplay Sequence Demo",
+      "description": "This sample demonstrates how Timeline can be used to create a small in-game moment, using built-in Timeline tracks.",
+      "path": "Samples~/GameplaySequenceDemo"
+    }
+  ]
 }

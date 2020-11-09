@@ -1,5 +1,34 @@
 # Changelog
+
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+
+## [1.5.1-pre.2] - 2020-11-09
+
+### Added
+
+- Added _Gameplay sequence_ sample.
+  - This sample demonstrates how Timeline can be used to create a small in-game moment, using built-in tracks.
+- Added _Customization_ sample.
+  - This sample demonstrates how to create custom tracks, clips, markers and actions.
+- Added API to improve how to get/set a `TimelineClip`'s parent track:
+  - `TimelineClip.GetParentTrack` (replaces obsolete property getter)
+  - `ItemsUtils.SetParentTrack` (extension method thar replaces obsolete property setter)
+- Added a new `Seconds` time display mode and renamed previous Seconds mode to Timecode.
+  - `TimelinePreferences.timeFormat` field,
+  - `UnityEditor.Timeline.TimeFormat` enum.
+- Added API for the user to clip to the track area:
+  - API: Relevant member to `MarkerOverlayRegion`,
+  - API: `MarkerOverlayRegion.trackRegion`,
+  - API: `MarkerOverlayRegion` constructor.
+
+### Changed
+
+- `TimelineClip` property `parentTrack` is now obsolete.
+- `TimelinePreferences.timeUnitInFrames` is now obsolete.
+
+### Fixed
+
+- Fixed issue where the mouse cursor would stay stuck to a resize icon when resizing the track header. ([1076031](https://issuetracker.unity3d.com/product/unity/issues/guid/1076031/))
 
 ## [1.5.1-pre.1] - 2020-10-16
 

@@ -255,24 +255,11 @@ namespace UnityEditor
             }
         }
 
-        class FrameFormatCurveEditorState : ICurveEditorState
+        class CurveEditorState : ICurveEditorState
         {
-            public TimeArea.TimeFormat timeFormat
-            {
-                get { return TimeArea.TimeFormat.Frame; }
-            }
-            public Vector2 timeRange { get { return new Vector2(0, 1); } }
-            public bool rippleTime { get { return false; } }
-        }
-
-        class UnformattedCurveEditorState : ICurveEditorState
-        {
-            public TimeArea.TimeFormat timeFormat
-            {
-                get { return TimeArea.TimeFormat.None; }
-            }
-            public Vector2 timeRange { get { return new Vector2(0, 1); } }
-            public bool rippleTime { get { return false; } }
+            public TimeArea.TimeFormat timeFormat { get; set; }
+            public Vector2 timeRange => new Vector2(0, 1);
+            public bool rippleTime => false;
         }
 
         void UpdateCurveEditorIfNeeded(WindowState state)
@@ -299,11 +286,7 @@ namespace UnityEditor
                 m_LastClipVersion = version;
             }
 
-            if (state.timeInFrames)
-                m_CurveEditor.state = new FrameFormatCurveEditorState();
-            else
-                m_CurveEditor.state = new UnformattedCurveEditorState();
-
+            m_CurveEditor.state = new CurveEditorState() {timeFormat = state.timeFormat.ToTimeAreaFormat()};
             m_CurveEditor.invSnap = state.referenceSequence.frameRate;
         }
 

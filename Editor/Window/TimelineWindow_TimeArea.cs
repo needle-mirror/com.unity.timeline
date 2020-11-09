@@ -55,7 +55,7 @@ namespace UnityEditor.Timeline
             SyncTimeAreaShownRange();
 
             m_TimeArea.BeginViewGUI();
-            m_TimeArea.TimeRuler(rect, state.referenceSequence.frameRate, true, false, 1.0f, state.timeInFrames ? TimeArea.TimeFormat.Frame : TimeArea.TimeFormat.TimeFrame);
+            m_TimeArea.TimeRuler(rect, state.referenceSequence.frameRate, true, false, 1.0f, state.timeFormat.ToTimeAreaFormat());
             m_TimeArea.EndViewGUI();
         }
 

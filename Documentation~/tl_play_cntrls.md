@@ -26,7 +26,7 @@ To move the Timeline Playhead to the previous frame, click the Previous Frame bu
 To preview the Timeline instance in Timeline Playback mode, click the Timeline Play button, or press the Spacebar. Timeline Playback mode does the following:
 
 * Begins playback at the current location of the Timeline Playhead and continues to the end of the Timeline instance. If the Play Range button is enabled, playback is restricted to a specified time range.
-* The Timeline Playhead position moves along the Timeline instance. The Playhead Location field shows the position of the Timeline Playhead in either frames or seconds, depending on the [Timeline settings](tl_settings.md).
+* The Timeline Playhead position moves along the Timeline instance. The Playhead Location field shows the position of the Timeline Playhead in either frames, timecode or seconds, depending on the [Timeline settings](tl_settings.md).
 * To pause playback, click the Timeline Play button again, or press the Spacebar.
 * When playback reaches the end of the Timeline instance, the Wrap Mode determines whether playback should hold, repeat, or do nothing. The Wrap Mode setting is a [Playable Director component](play_director.md) property.
 

@@ -167,7 +167,7 @@ namespace UnityEditor.Timeline
                 else if (animTrack == null)
                 {
                     if (displayBackground.curves == null)
-                        displayBackground.CreateCurves(AnimationTrackRecorder.GetUniqueRecordedClipName(displayBackground.parentTrack, TimelineClip.kDefaultCurvesName));
+                        displayBackground.CreateCurves(AnimationTrackRecorder.GetUniqueRecordedClipName(displayBackground.GetParentTrack(), TimelineClip.kDefaultCurvesName));
 
                     return displayBackground.curves;
                 }

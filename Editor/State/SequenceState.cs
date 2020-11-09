@@ -137,14 +137,6 @@ namespace UnityEditor.Timeline
             return m_CachedEvaluableRange.Value;
         }
 
-        public string TimeAsString(double timeValue, string format = "F2")
-        {
-            if (TimelinePreferences.instance.timeUnitInFrame)
-                return TimeUtility.TimeAsFrames(timeValue, frameRate, format);
-
-            return TimeUtility.TimeAsTimeCode(timeValue, frameRate, format);
-        }
-
         public double ToGlobalTime(double t)
         {
             if (hostClip == null)

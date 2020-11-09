@@ -47,7 +47,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Override this method to receive a callback when the marker is initialized.
         /// </summary>
-        /// <paramref name="aPent">The track that contains the marker.</paramref>
+        /// <param name="aPent">The track that contains the marker.</param>
         public virtual void OnInitialize(TrackAsset aPent)
         {
         }

@@ -117,7 +117,7 @@ namespace UnityEditor.Timeline
 
         TrackAsset IClipCurveEditorOwner.owner
         {
-            get { return clip.parentTrack; }
+            get { return clip.GetParentTrack(); }
         }
 
         public bool supportsSubTimelines
@@ -225,7 +225,7 @@ namespace UnityEditor.Timeline
 
             state.AddEndFrameDelegate((istate, currentEvent) =>
             {
-                clipCurveEditor = new ClipCurveEditor(CurveDataSource.Create(this), TimelineWindow.instance, clip.parentTrack);
+                clipCurveEditor = new ClipCurveEditor(CurveDataSource.Create(this), TimelineWindow.instance, clip.GetParentTrack());
                 return true;
             });
         }
@@ -321,7 +321,7 @@ namespace UnityEditor.Timeline
             if (drawData.clip.asset is AnimationPlayableAsset)
             {
                 var state = TimelineWindow.instance.state;
-                if (state.recording && state.IsArmedForRecord(drawData.clip.parentTrack))
+                if (state.recording && state.IsArmedForRecord(drawData.clip.GetParentTrack()))
                 {
                     ClipDrawer.DrawAnimationRecordBorder(drawData);
                     ClipDrawer.DrawRecordProhibited(drawData);
@@ -377,7 +377,7 @@ namespace UnityEditor.Timeline
 
             GUI.EndClip();
 
-            if (clip.parentTrack != null && !clip.parentTrack.lockedInHierarchy)
+            if (clip.GetParentTrack() != null && !clip.GetParentTrack().lockedInHierarchy)
             {
                 if (selected && supportResize)
                 {
@@ -688,7 +688,7 @@ namespace UnityEditor.Timeline
                         else if (manipulateEdges == ManipulateEdges.Both)
                         {
                             var moveHandler = attractable as MoveItemHandler;
-                            skip = moveHandler != null && moveHandler.movingItems.Any(clips => clips.targetTrack == clip.parentTrack && clip.start >= clips.start);
+                            skip = moveHandler != null && moveHandler.movingItems.Any(clips => clips.targetTrack == clip.GetParentTrack() && clip.start >= clips.start);
                         }
 
                         if (skip)

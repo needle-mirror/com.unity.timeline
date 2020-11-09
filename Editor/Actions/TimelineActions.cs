@@ -303,7 +303,7 @@ namespace UnityEditor.Timeline
 
             // All() returns true when empty
             return context.tracks.All(x => !x.lockedInHierarchy) &&
-                context.clips.All(x => x.parentTrack == null || !x.parentTrack.lockedInHierarchy) &&
+                context.clips.All(x => x.GetParentTrack() == null || !x.GetParentTrack().lockedInHierarchy) &&
                 context.markers.All(x => x.parent == null || !x.parent.lockedInHierarchy);
         }
 
@@ -921,7 +921,7 @@ namespace UnityEditor.Timeline
                 return state.editSequence.asset.flattenedTracks.Where(state.IsArmedForRecord);
 
             List<TrackAsset> parentTracks = context.tracks.ToList();
-            parentTracks.AddRange(context.clips.Select(clip => clip.parentTrack).Distinct());
+            parentTracks.AddRange(context.clips.Select(clip => clip.GetParentTrack()).Distinct());
 
             if (!parentTracks.All(state.IsArmedForRecord))
                 return Enumerable.Empty<TrackAsset>();

@@ -91,7 +91,7 @@ namespace UnityEditor.Timeline
         {
             var clip = state.hostClip;
             Debug.Assert(clip != null);
-            var track = clip.parentTrack;
+            var track = clip.GetParentTrack();
             Debug.Assert(track != null);
             var asset = track.timelineAsset;
             Debug.Assert(asset != null);

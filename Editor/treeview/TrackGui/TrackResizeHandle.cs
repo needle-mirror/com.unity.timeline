@@ -19,11 +19,14 @@ namespace UnityEditor.Timeline
             var rect = new Rect(headerRect.xMin, headerRect.yMax - (0.5f * resizeHandleHeight), headerRect.width, resizeHandleHeight);
             boundingRect = trackGUI.ToWindowSpace(rect);
 
-            var cursorRect = rect;
+            Rect cursorRect = rect;
             cursorRect.height--;
-            EditorGUIUtility.AddCursorRect(cursorRect, MouseCursor.SplitResizeUpDown);
-            if (Event.current.type == EventType.Repaint)
+
+            if (GUIUtility.hotControl == 0)
+            {
+                EditorGUIUtility.AddCursorRect(cursorRect, MouseCursor.SplitResizeUpDown);
                 state.headerSpacePartitioner.AddBounds(this);
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace UnityEditor.Timeline
             {
                 if (m_Clip != null)
                 {
-                    return m_Clip.parentTrack;
+                    return m_Clip.GetParentTrack();
                 }
                 return m_ClipData.track;
             }

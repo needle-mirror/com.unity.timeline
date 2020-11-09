@@ -27,7 +27,7 @@ namespace UnityEditor.Timeline
             clips = clips.OrderBy(x => x.start).ToArray();
             foreach (var clip in clips)
             {
-                var sceneObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.parentTrack);
+                var sceneObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.GetParentTrack());
                 if (sceneObject != null)
                 {
                     TimelineAnimationUtilities.MatchPrevious(clip, sceneObject.transform, TimelineEditor.inspectedDirector);
@@ -46,7 +46,7 @@ namespace UnityEditor.Timeline
             clips = clips.OrderByDescending(x => x.start).ToArray();
             foreach (var clip in clips)
             {
-                var sceneObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.parentTrack);
+                var sceneObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.GetParentTrack());
                 if (sceneObject != null)
                 {
                     TimelineAnimationUtilities.MatchNext(clip, sceneObject.transform, TimelineEditor.inspectedDirector);

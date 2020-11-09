@@ -107,20 +107,20 @@ namespace UnityEngine.Timeline
         /// </remarks>
         public bool DeleteClip(TimelineClip clip)
         {
-            if (clip == null || clip.parentTrack == null)
+            if (clip == null || clip.GetParentTrack() == null)
             {
                 return false;
             }
-            if (this != clip.parentTrack.timelineAsset)
+            if (this != clip.GetParentTrack().timelineAsset)
             {
                 Debug.LogError("Cannot delete a clip from this timeline");
                 return false;
             }
 
-            TimelineUndo.PushUndo(clip.parentTrack, "Delete Clip");
+            TimelineUndo.PushUndo(clip.GetParentTrack(), "Delete Clip");
             if (clip.curves != null)
             {
-                TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.curves);
+                TimelineUndo.PushDestroyUndo(this, clip.GetParentTrack(), clip.curves);
             }
 
             // handle wrapped assets
@@ -134,11 +134,11 @@ namespace UnityEngine.Timeline
                 if (path == UnityEditor.AssetDatabase.GetAssetPath(this))
 #endif
                 {
-                    TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.asset);
+                    TimelineUndo.PushDestroyUndo(this, clip.GetParentTrack(), clip.asset);
                 }
             }
 
-            var clipParentTrack = clip.parentTrack;
+            var clipParentTrack = clip.GetParentTrack();
             clipParentTrack.RemoveClip(clip);
             clipParentTrack.CalculateExtrapolationTimes();
 
@@ -240,7 +240,7 @@ namespace UnityEngine.Timeline
                 return;
 
             if (clip.curves != null)
-                TimelineUndo.PushDestroyUndo(this, clip.parentTrack, clip.curves);
+                TimelineUndo.PushDestroyUndo(this, clip.GetParentTrack(), clip.curves);
 
             if (!clip.recordable)
                 return;

@@ -148,6 +148,9 @@ namespace UnityEngine.Timeline
             }
         }
 
+        /// <summary>
+        /// The capabilities supported by all clips in the timeline.
+        /// </summary>
         public ClipCaps clipCaps
         {
             get

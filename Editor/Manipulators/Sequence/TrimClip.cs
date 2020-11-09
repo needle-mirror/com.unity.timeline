@@ -9,6 +9,9 @@ namespace UnityEditor.Timeline
 {
     class TrimClip : Manipulator
     {
+        private readonly string kDurationText = L10n.Tr("Duration:");
+        private readonly string kSpeedText = L10n.Tr("Speed:");
+
         class TrimClipAttractionHandler : IAttractionHandler
         {
             public void OnAttractedEdge(IAttractable attractable, ManipulateEdges manipulateEdges, AttractedEdge edge, double time)
@@ -52,7 +55,6 @@ namespace UnityEditor.Timeline
         bool m_UndoSaved;
         SnapEngine m_SnapEngine;
 
-        readonly StringBuilder m_OverlayText = new StringBuilder();
         readonly List<string> m_OverlayStrings = new List<string>();
 
         static readonly double kEpsilon = 0.0000001;
@@ -63,7 +65,7 @@ namespace UnityEditor.Timeline
             if (handle == null)
                 return false;
 
-            if (handle.clipGUI.clip.parentTrack != null && handle.clipGUI.clip.parentTrack.lockedInHierarchy)
+            if (handle.clipGUI.clip.GetParentTrack() != null && handle.clipGUI.clip.GetParentTrack().lockedInHierarchy)
                 return false;
 
             m_TrimClipHandler = handle;
@@ -187,59 +189,16 @@ namespace UnityEditor.Timeline
         {
             m_OverlayStrings.Clear();
 
-            m_OverlayText.Length = 0;
-
             var differenceDuration = handle.clipGUI.clip.duration - m_OriginalDuration;
-            bool hasDurationDelta = Math.Abs(differenceDuration) > kEpsilon;
-
-            if (state.timeInFrames)
-            {
-                var durationInFrame = handle.clipGUI.clip.duration * state.referenceSequence.frameRate;
-                m_OverlayText.Append("duration: ").Append(durationInFrame.ToString("f2")).Append(" frames");
-
-                if (hasDurationDelta)
-                {
-                    m_OverlayText.Append(" (");
-
-                    if (differenceDuration > 0.0)
-                        m_OverlayText.Append("+");
-
-                    var valueInFrame = differenceDuration * state.referenceSequence.frameRate;
-                    m_OverlayText.Append(valueInFrame.ToString("f2")).Append(" frames)");
-                }
-            }
-            else
-            {
-                m_OverlayText.Append("duration: ").Append(handle.clipGUI.clip.duration.ToString("f2")).Append("s");
-
-                if (hasDurationDelta)
-                {
-                    m_OverlayText.Append(" (");
-
-                    if (differenceDuration > 0.0)
-                        m_OverlayText.Append("+");
-
-                    m_OverlayText.Append(differenceDuration.ToString("f2")).Append("s)");
-                }
-            }
-
-            m_OverlayStrings.Add(m_OverlayText.ToString());
-
-            m_OverlayText.Length = 0;
+            m_OverlayStrings.Add($"{kDurationText} {state.timeFormat.ToTimeStringWithDelta(handle.clipGUI.clip.duration, state.referenceSequence.frameRate, differenceDuration)}");
 
             var differenceSpeed = m_OriginalTimeScale - handle.clipGUI.clip.timeScale;
             if (Math.Abs(differenceSpeed) > kEpsilon)
             {
-                m_OverlayText.Append("speed: ").Append(handle.clipGUI.clip.timeScale.ToString("p2"));
-
-                m_OverlayText.Append(" (");
-
-                if (differenceSpeed > 0.0)
-                    m_OverlayText.Append("+");
-
-                m_OverlayText.Append(differenceSpeed.ToString("p2")).Append(")");
-
-                m_OverlayStrings.Add(m_OverlayText.ToString());
+                var sign = differenceSpeed > 0 ? "+" : "";
+                var timeScale = handle.clipGUI.clip.timeScale.ToString("f2");
+                var deltaSpeed = differenceSpeed.ToString("p2");
+                m_OverlayStrings.Add($"{kSpeedText} {timeScale} ({sign}{deltaSpeed}) ");
             }
         }
     }

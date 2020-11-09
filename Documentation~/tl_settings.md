@@ -6,9 +6,9 @@ Use the Timeline Settings to choose the Timeline window and Timeline Asset setti
 
 _Click the Cog icon in the Timeline window to view the Timeline Settings menu_
 
-## Seconds or Frames
+## Time Unit
 
-Select either **Seconds** or **Frames** to set the Timeline window to display time as either seconds or frames.
+Select either **Frames**, **Timecode** or **Seconds** to set the Timeline window to display time in that format. Timecode will display the time in seconds with sub-second values displayed in frames.
 
 ## Duration Mode
 
@@ -54,10 +54,11 @@ Enable **Snap to Frame** to manipulate clips, preview Timeline instances, drag t
 
 _Disable **Snap to Frame** to position clips and drag the playhead between frames_
 
-For example, when **Snap to Frame** is disabled and you drag the Timeline Playhead, it moves the playhead between frames. The format of [Playhead Location](tl_play_cntrls.md#playheadlocation) displays differently depending on whether the Timeline window is set to **Seconds** or **Frames**:
+For example, when **Snap to Frame** is disabled and you drag the Timeline Playhead, it moves the playhead between frames. The format of [Playhead Location](tl_play_cntrls.md#playheadlocation) displays differently depending on whether the Timeline window is set to **Seconds**, **Timecode** or **Frames**:
 
 * When the Timeline window is set to **Frames**, the Playhead Location shows frames and subframes. For example, 8 frames and 34 subframes displays as 8.34.
-* When the Timeline window is set to **Seconds**, the Playhead Location shows seconds, frames, and subframes. For example, 6 seconds, 17 frames, and 59 subframes displays as 6:17 [.59].
+* When the Timeline window is set to **Timecode**, the Playhead Location shows seconds, frames, and subframes. For example, 6 seconds, 17 frames, and 59 subframes displays as 6:17 [.59].
+* When the Timeline window is set to **Seconds**, the Playhead Location shows seconds. For example, 6.5 seconds displays as 6:50.
 
 Manipulating clips, previewing Timeline instances, and positioning the playhead at the subframes level is useful when attempting to synchronize animation and effects with audio. Many high-end audio processing software products create audio waveforms with subframe accuracy.
 

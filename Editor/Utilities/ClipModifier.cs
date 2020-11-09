@@ -18,7 +18,7 @@ namespace UnityEditor.Timeline
             if (clips.Count() < 2)
                 return false;
 
-            var clipsByTracks = clips.GroupBy(x => x.parentTrack)
+            var clipsByTracks = clips.GroupBy(x => x.GetParentTrack())
                 .Select(track => new {track.Key, Items = track.OrderBy(c => c.start)});
 
             foreach (var track in clipsByTracks)
@@ -133,7 +133,7 @@ namespace UnityEditor.Timeline
                 SetEnd(newClip, splitTime, false);
 
                 // Sort produced by cloning clips on top of each other is unpredictable (it varies between mono runtimes)
-                clip.parentTrack.SortClips();
+                clip.GetParentTrack().SortClips();
 
                 result = true;
             }

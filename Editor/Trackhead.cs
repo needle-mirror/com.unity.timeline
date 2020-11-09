@@ -157,7 +157,7 @@ namespace UnityEditor.Timeline
             {
                 var c = allClips[i];
 
-                if (c != null && c.clip != null && c.clip.parentTrack.lockedInHierarchy == false && selector(c.clip))
+                if (c != null && c.clip != null && c.clip.GetParentTrack().lockedInHierarchy == false && selector(c.clip))
                 {
                     SelectionManager.Add(c.clip);
                 }

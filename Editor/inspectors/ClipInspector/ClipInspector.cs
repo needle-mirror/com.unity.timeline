@@ -676,10 +676,10 @@ namespace UnityEditor.Timeline
                 foreach (var obj in serializedObject.targetObjects)
                 {
                     var editorClip = obj as EditorClip;
-                    if (editorClip != null && editorClip.clip != null && editorClip.clip.parentTrack != null)
+                    if (editorClip != null && editorClip.clip != null && editorClip.clip.GetParentTrack() != null)
                     {
                         editorClip.clip.MarkDirty();
-                        EditorUtility.SetDirty(editorClip.clip.parentTrack);
+                        EditorUtility.SetDirty(editorClip.clip.GetParentTrack());
                     }
                 }
             }
@@ -707,7 +707,7 @@ namespace UnityEditor.Timeline
 
         bool IsTimelineAssetValidForEditorClip(EditorClip editorClip)
         {
-            var trackAsset = editorClip.clip.parentTrack;
+            var trackAsset = editorClip.clip.GetParentTrack();
             if (trackAsset == null)
                 return false;
 
@@ -803,7 +803,7 @@ namespace UnityEditor.Timeline
             if (!TimelineUtility.IsCurrentSequenceValid() || IsCurrentSequenceReadOnly())
                 return true;
 
-            return targets.OfType<EditorClip>().Any(t => t.clip.parentTrack != null && t.clip.parentTrack.lockedInHierarchy);
+            return targets.OfType<EditorClip>().Any(t => t.clip.GetParentTrack() != null && t.clip.GetParentTrack().lockedInHierarchy);
         }
 
         static bool IsCurrentSequenceReadOnly()

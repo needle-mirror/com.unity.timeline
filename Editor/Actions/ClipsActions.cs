@@ -27,7 +27,7 @@ namespace UnityEditor.Timeline
 
             GameObject gameObject = null;
             if (TimelineEditor.inspectedDirector != null)
-                gameObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.parentTrack);
+                gameObject = TimelineUtility.GetSceneGameObject(TimelineEditor.inspectedDirector, clip.GetParentTrack());
 
             var timeController = TimelineAnimationUtilities.CreateTimeController(clip);
             TimelineAnimationUtilities.EditAnimationClipWithTimeController(

@@ -19,7 +19,6 @@ namespace UnityEditor.Timeline
         float frameRate { get; set; }
 
         Range GetEvaluableRange();
-        string TimeAsString(double timeValue, string format = "F2");
         double ToGlobalTime(double t);
         double ToLocalTime(double t);
         void ResetIsReadOnly();
@@ -76,11 +75,6 @@ namespace UnityEditor.Timeline
         public Range GetEvaluableRange()
         {
             return new Range();
-        }
-
-        public string TimeAsString(double timeValue, string format = "F2")
-        {
-            return TimeUtility.TimeAsTimeCode(timeValue, frameRate, format);
         }
 
         public double ToGlobalTime(double t)

@@ -105,7 +105,7 @@ namespace UnityEditor.Timeline
         {
             if (leftItem is MarkerItem && rightItem is MarkerItem)
             {
-                var markerType = ((MarkerItem)leftItem).marker.GetType();
+                var markerType = ((MarkerItem) leftItem).marker.GetType();
                 var gap = TimeReferenceUtility.PixelToTime(StyleManager.UssStyleForType(markerType).fixedWidth) - TimeReferenceUtility.PixelToTime(0);
                 return gap;
             }

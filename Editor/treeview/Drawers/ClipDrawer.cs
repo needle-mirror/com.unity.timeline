@@ -191,10 +191,10 @@ namespace UnityEditor.Timeline
 
         static void DrawClipBorder(ClipDrawData drawData)
         {
-            var animTrack = drawData.clip.parentTrack as AnimationTrack;
+            var animTrack = drawData.clip.GetParentTrack() as AnimationTrack;
             var selectionBorder = ClipBorder.Selection();
 
-            if (TimelineWindow.instance.state.recording && animTrack == null && drawData.clip.parentTrack.IsRecordingToClip(drawData.clip))
+            if (TimelineWindow.instance.state.recording && animTrack == null && drawData.clip.GetParentTrack().IsRecordingToClip(drawData.clip))
             {
                 DrawClipSelectionBorder(drawData.clipCenterSection, selectionBorder, drawData.clipBlends);
                 return;
@@ -617,7 +617,7 @@ namespace UnityEditor.Timeline
 
         public static void DrawAnimationRecordBorder(ClipDrawData drawData)
         {
-            if (!drawData.clip.parentTrack.IsRecordingToClip(drawData.clip))
+            if (!drawData.clip.GetParentTrack().IsRecordingToClip(drawData.clip))
                 return;
 
             var time = new DiscreteTime(TimelineWindow.instance.state.editSequence.time);

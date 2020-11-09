@@ -99,7 +99,7 @@ namespace UnityEngine.Timeline
         internal TimelineClip(TrackAsset parent)
         {
             // parent clip into track
-            parentTrack = parent;
+            SetParentTrack_Internal(parent);
         }
 
         [SerializeField] double m_Start;
@@ -279,14 +279,17 @@ namespace UnityEngine.Timeline
 
         Object ICurvesOwner.assetOwner
         {
-            get { return parentTrack; }
+            get { return GetParentTrack(); }
         }
 
         TrackAsset ICurvesOwner.targetTrack
         {
-            get { return parentTrack; }
+            get { return GetParentTrack(); }
         }
 
+        /// <summary>
+        /// underlyingAsset property is obsolete. Use asset property instead
+        /// </summary>
         [Obsolete("underlyingAsset property is obsolete. Use asset property instead", true)]
         public Object underlyingAsset
         {
@@ -297,22 +300,38 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Returns the TrackAsset to which this clip is attached.
         /// </summary>
+        [Obsolete("parentTrack is deprecated and will be removed in a future release. Use " + nameof(GetParentTrack) + "() and " + nameof(TimelineClipExtensions) + "::"  +  nameof(TimelineClipExtensions.MoveToTrack) + "() or " + nameof(TimelineClipExtensions) + "::"  +  nameof(TimelineClipExtensions.TryMoveToTrack) + "() instead.", false)]
         public TrackAsset parentTrack
         {
             get { return m_ParentTrack; }
-            set
-            {
-                if (m_ParentTrack == value)
-                    return;
+            set { SetParentTrack_Internal(value);}
+        }
 
-                if (m_ParentTrack != null)
-                    m_ParentTrack.RemoveClip(this);
+        /// <summary>
+        /// Get the TrackAsset to which this clip is attached.
+        /// </summary>
+        /// <returns>the parent TrackAsset</returns>
+        public TrackAsset GetParentTrack()
+        {
+            return m_ParentTrack;
+        }
 
-                m_ParentTrack = value;
+        /// <summary>
+        /// Sets the parent track without performing any validation. To ensure a valid change use TimelineClipExtensions.TrySetParentTrack(TrackAsset) instead.
+        /// </summary>
+        /// <param name="newParentTrack"></param>
+        internal void SetParentTrack_Internal(TrackAsset newParentTrack)
+        {
+            if (m_ParentTrack == newParentTrack)
+                return;
 
-                if (m_ParentTrack != null)
-                    m_ParentTrack.AddClip(this);
-            }
+            if (m_ParentTrack != null)
+                m_ParentTrack.RemoveClip(this);
+
+            m_ParentTrack = newParentTrack;
+
+            if (m_ParentTrack != null)
+                m_ParentTrack.AddClip(this);
         }
 
         /// <summary>
@@ -333,6 +352,9 @@ namespace UnityEngine.Timeline
             set { m_EaseOutDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseOutDuration), duration)) : 0; }
         }
 
+        /// <summary>
+        /// eastOutTime property is obsolete use easeOutTime property instead
+        /// </summary>
         [Obsolete("Use easeOutTime instead (UnityUpgradable) -> easeOutTime", true)]
         public double eastOutTime
         {
@@ -472,6 +494,9 @@ namespace UnityEngine.Timeline
             internal set { m_Recordable = value; }
         }
 
+        /// <summary>
+        /// exposedParameter is deprecated and will be removed in a future release
+        /// </summary>
         [Obsolete("exposedParameter is deprecated and will be removed in a future release", true)]
         public List<string> exposedParameters
         {
@@ -779,7 +804,7 @@ namespace UnityEngine.Timeline
             if (m_AnimationCurves != null)
                 return;
 
-            m_AnimationCurves = TimelineCreateUtilities.CreateAnimationClipForTrack(string.IsNullOrEmpty(curvesClipName) ? kDefaultCurvesName : curvesClipName, parentTrack, true);
+            m_AnimationCurves = TimelineCreateUtilities.CreateAnimationClipForTrack(string.IsNullOrEmpty(curvesClipName) ? kDefaultCurvesName : curvesClipName, GetParentTrack(), true);
         }
 
         /// <inheritdoc/>
@@ -803,7 +828,7 @@ namespace UnityEngine.Timeline
         /// <returns></returns>
         public override string ToString()
         {
-            return UnityString.Format("{0} ({1:F2}, {2:F2}):{3:F2} | {4}", displayName, start, end, clipIn, parentTrack);
+            return UnityString.Format("{0} ({1:F2}, {2:F2}):{3:F2} | {4}", displayName, start, end, clipIn, GetParentTrack());
         }
 
         /// <summary>

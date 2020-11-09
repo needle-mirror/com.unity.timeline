@@ -283,8 +283,8 @@ namespace UnityEditor.Timeline
             var selectedClips = Selection.GetFiltered<EditorClip>(SelectionMode.Unfiltered).Select(x => x.clip);
             foreach (var selectedClip in selectedClips)
             {
-                var parent = selectedClip.parentTrack;
-                if (selectedClip.parentTrack != null)
+                var parent = selectedClip.GetParentTrack();
+                if (selectedClip.GetParentTrack() != null)
                 {
                     if (!parent.clips.Contains(selectedClip))
                     {
