@@ -206,11 +206,7 @@ namespace UnityEditor.Timeline
                 }
 
                 if (type.IsArray)
-                {
-                    if (segment != "Array")
-                        type = type.GetElementType();
-                    continue;
-                }
+                    return false;
 
                 var fieldInfo = type.GetField(segment, bindingFlags);
 
@@ -222,6 +218,10 @@ namespace UnityEditor.Timeline
                 }
 
                 type = fieldInfo.FieldType;
+
+                // only value types are supported
+                if (!type.IsValueType && !typeof(IPlayableBehaviour).IsAssignableFrom(type))
+                    return false;
             }
 
             return true;

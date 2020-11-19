@@ -18,6 +18,10 @@ namespace UnityEngine.Timeline
         bool m_ApplyOffsets;
  #pragma warning restore 649
 
+        /// <summary>
+        /// Translation offset of a track in infinite mode.
+        /// This property is obsolete. Use <see cref="UnityEngine.Timeline.AnimationTrack.infiniteClipOffsetPosition"/> instead.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("openClipOffsetPosition has been deprecated. Use infiniteClipOffsetPosition instead. (UnityUpgradable) -> infiniteClipOffsetPosition", true)]
         public Vector3 openClipOffsetPosition
@@ -26,6 +30,10 @@ namespace UnityEngine.Timeline
             set { infiniteClipOffsetPosition = value; }
         }
 
+        /// <summary>
+        /// Rotation offset of a track in infinite mode.
+        /// This property is obsolete. Use <see cref="UnityEngine.Timeline.AnimationTrack.infiniteClipOffsetRotation"/> instead.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("openClipOffsetRotation has been deprecated. Use infiniteClipOffsetRotation instead. (UnityUpgradable) -> infiniteClipOffsetRotation", true)]
         public Quaternion openClipOffsetRotation
@@ -34,6 +42,10 @@ namespace UnityEngine.Timeline
             set { infiniteClipOffsetRotation = value; }
         }
 
+        /// <summary>
+        /// Euler angle representation of the rotation offset of the track when in infinite mode.
+        /// This property is obsolete. Use <see cref="UnityEngine.Timeline.AnimationTrack.infiniteClipOffsetEulerAngles"/> instead.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("openClipOffsetEulerAngles has been deprecated. Use infiniteClipOffsetEulerAngles instead. (UnityUpgradable) -> infiniteClipOffsetEulerAngles", true)]
         public Vector3 openClipOffsetEulerAngles
@@ -42,6 +54,10 @@ namespace UnityEngine.Timeline
             set { infiniteClipOffsetEulerAngles = value; }
         }
 
+        /// <summary>
+        /// Saved state of pre-extrapolation for clips converted to infinite mode.
+        /// This property is obsolete. Use <see cref="UnityEngine.Timeline.AnimationTrack.infiniteClipPreExtrapolation"/> instead.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("openClipPreExtrapolation has been deprecated. Use infiniteClipPreExtrapolation instead. (UnityUpgradable) -> infiniteClipPreExtrapolation", true)]
         public TimelineClip.ClipExtrapolation openClipPreExtrapolation
@@ -50,6 +66,10 @@ namespace UnityEngine.Timeline
             set { infiniteClipPreExtrapolation = value; }
         }
 
+        /// <summary>
+        /// Saved state of post-extrapolation for clips converted to infinite mode.
+        /// This property is obsolete. Use <see cref="UnityEngine.Timeline.AnimationTrack.infiniteClipPostExtrapolation"/> instead.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("openClipPostExtrapolation has been deprecated. Use infiniteClipPostExtrapolation instead. (UnityUpgradable) -> infiniteClipPostExtrapolation", true)]
         public TimelineClip.ClipExtrapolation openClipPostExtrapolation

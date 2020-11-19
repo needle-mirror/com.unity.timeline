@@ -16,7 +16,7 @@ namespace UnityEditor.Timeline
             return modifications.Any(x => GetTarget(x) as IPlayableAsset != null);
         }
 
-        internal static UndoPropertyModification[] ProcessPlayableAssetModification(UndoPropertyModification[] modifications, WindowState state)
+        internal static UndoPropertyModification[] ProcessPlayableAssetModification(UndoPropertyModification[] modifications, WindowState state, bool allowAdd)
         {
             // can't record without a director since the asset being modified might be a scene instance
             if (state == null || state.editSequence.director == null)
@@ -25,20 +25,19 @@ namespace UnityEditor.Timeline
             var remaining = new List<UndoPropertyModification>();
             foreach (UndoPropertyModification mod in modifications)
             {
-                if (!ProcessPlayableAssetModification(mod, state))
+                if (!ProcessPlayableAssetModification(mod, state, allowAdd))
                     remaining.Add(mod);
             }
 
             if (remaining.Count != modifications.Length)
             {
-                state.rebuildGraph = true;
-                state.GetWindow().Repaint();
+                TimelineEditor.Refresh(RefreshReason.ContentsModified);
             }
 
             return remaining.ToArray();
         }
 
-        static bool ProcessPlayableAssetModification(UndoPropertyModification mod, WindowState state)
+        static bool ProcessPlayableAssetModification(UndoPropertyModification mod, WindowState state, bool allowAdd)
         {
             var target = GetTarget(mod) as IPlayableAsset;
             if (target == null)
@@ -48,7 +47,7 @@ namespace UnityEditor.Timeline
             if (curvesOwner == null || !curvesOwner.HasAnyAnimatableParameters())
                 return false;
 
-            return ProcessPlayableAssetRecording(mod, state, curvesOwner);
+            return ProcessPlayableAssetRecording(mod, state, curvesOwner, allowAdd);
         }
 
         internal static TimelineClip FindClipWithAsset(TimelineAsset asset, IPlayableAsset target)
@@ -60,12 +59,16 @@ namespace UnityEditor.Timeline
             return clips.FirstOrDefault(x => x != null && x.asset != null && target == x.asset as IPlayableAsset);
         }
 
-        static bool ProcessPlayableAssetRecording(UndoPropertyModification mod, WindowState state, ICurvesOwner curvesOwner)
+        static bool ProcessPlayableAssetRecording(UndoPropertyModification mod, WindowState state, ICurvesOwner curvesOwner, bool allowAdd)
         {
             if (mod.currentValue == null)
                 return false;
 
             if (!curvesOwner.IsParameterAnimatable(mod.currentValue.propertyPath))
+                return false;
+
+            // only animate items with existing curves
+            if (!allowAdd && !curvesOwner.IsParameterAnimated(mod.currentValue.propertyPath))
                 return false;
 
             var localTime = state.editSequence.time;

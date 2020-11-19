@@ -742,7 +742,7 @@ namespace UnityEditor.Timeline
 
         public void EvaluateImmediate()
         {
-            if (masterSequence.director != null)
+            if (masterSequence.director != null && masterSequence.director.isActiveAndEnabled)
             {
                 if (!EditorApplication.isPlaying && !previewMode)
                     GatherProperties(masterSequence.director);
@@ -937,11 +937,11 @@ namespace UnityEditor.Timeline
 
         void OnCurrentDirectorWillChange()
         {
+            if (ignorePreview)
+                return;
+
             SynchronizeViewModelTime(editSequence);
-
-            if (!ignorePreview)
-                Stop();
-
+            Stop();
             rebuildGraph = true; // needed for asset previews
         }
 

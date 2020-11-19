@@ -129,10 +129,10 @@ namespace UnityEditor.Timeline
         public double endTime { get; private set; }
 
         /// <summary>Constructor</summary>
-        /// <paramref name="_markerRegion"><inheritdoc cref="markerRegion"/></paramref>
-        /// <paramref name="_timelineRegion"><inheritdoc cref="timelineRegion"/></paramref>
-        /// <paramref name="_startTime"><inheritdoc cref="startTime"/></paramref>
-        /// <paramref name="_endTime"><inheritdoc cref="endTime"/></paramref>
+        /// <param name="_markerRegion"><inheritdoc cref="MarkerOverlayRegion.markerRegion"/></param>
+        /// <param name="_timelineRegion"><inheritdoc cref="MarkerOverlayRegion.timelineRegion"/></param>
+        /// <param name="_startTime"><inheritdoc cref="MarkerOverlayRegion.startTime"/></param>
+        /// <param name="_endTime"><inheritdoc cref="MarkerOverlayRegion.endTime"/></param>
         public MarkerOverlayRegion(Rect _markerRegion, Rect _timelineRegion, double _startTime, double _endTime)
         {
             markerRegion = _markerRegion;

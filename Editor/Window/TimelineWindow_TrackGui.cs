@@ -206,14 +206,5 @@ namespace UnityEditor.Timeline
                 Graphics.ShadowLabel(overlayRect, GUIContent.Temp(overlayData.text), overlayData.textStyle, overlayData.textStyle.normal.textColor, Color.black);
             }
         }
-
-        void RefreshInlineCurves()
-        {
-            foreach (var trackGUI in allTracks.OfType<TimelineTrackGUI>())
-            {
-                if (trackGUI.inlineCurveEditor != null)
-                    trackGUI.inlineCurveEditor.Refresh();
-            }
-        }
     }
 }

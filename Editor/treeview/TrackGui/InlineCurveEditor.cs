@@ -185,20 +185,6 @@ namespace UnityEditor.Timeline
             UpdateViewModel();
         }
 
-        public void Refresh()
-        {
-            if (m_LastSelectionWasClip)
-                RefreshInlineCurves(m_LastSelectedClipGUI);
-            else
-                RefreshInlineCurves(m_TrackGUI);
-        }
-
-        static void RefreshInlineCurves(IClipCurveEditorOwner guiItem)
-        {
-            if (guiItem.clipCurveEditor != null && guiItem.clipCurveEditor.dataSource != null)
-                guiItem.clipCurveEditor.dataSource.RebuildCurves();
-        }
-
         void DrawCurveEditorForTrack(Rect headerRect, Rect trackRect, WindowState state)
         {
             if (m_TrackGUI.clipCurveEditor == null)

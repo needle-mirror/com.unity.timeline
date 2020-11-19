@@ -473,8 +473,8 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Overrides PlayableAsset.CreatePlayable(). Not used in Timeline.
         /// </summary>
-        /// <paramref name="graph"><inheritdoc/></paramref>
-        /// <paramref name="go"><inheritdoc/></paramref>
+        /// <param name="graph"><inheritdoc/></param>
+        /// <param name="go"><inheritdoc/></param>
         /// <returns><inheritDoc/></returns>
         public sealed override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
@@ -565,7 +565,7 @@ namespace UnityEngine.Timeline
         /// Creates a marker of the requested type, at a specific time, and adds the marker to the current asset.
         /// </summary>
         /// <param name="time">The time where the marker is created.</param>
-        /// <typeparamref name="T">The type of marker to create.</typeparamref>
+        /// <typeparam name="T">The type of marker to create.</typeparam>
         /// <returns>Returns the instance of the created marker.</returns>
         /// <remarks>
         /// All markers that implement IMarker and inherit from <see cref="UnityEngine.ScriptableObject"/> are supported.
@@ -1267,6 +1267,11 @@ namespace UnityEngine.Timeline
             return hash;
         }
 
+        /// <summary>
+        /// Gets the hash code for an AnimationClip.
+        /// </summary>
+        /// <param name="clip">The animation clip.</param>
+        /// <returns>A 32-bit signed integer that is the hash code for <paramref name="clip"/>. Returns 0 if <paramref name="clip"/> is null or empty.</returns>
         protected static int GetAnimationClipHash(AnimationClip clip)
         {
             var hash = 0;

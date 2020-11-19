@@ -26,6 +26,17 @@ namespace UnityEditor.Timeline
             return content;
         }
 
+        public static Texture2D GetTrackIconForType(System.Type trackType)
+        {
+            if (trackType == null || !typeof(TrackAsset).IsAssignableFrom(trackType))
+                return null;
+
+            GUIContent content;
+            if (!s_TrackIconCache.TryGetValue(trackType, out content) || content.image == null)
+                return s_DefaultIcon.image as Texture2D;
+            return content.image as Texture2D;
+        }
+
         public static Color GetTrackColor(TrackAsset track)
         {
             if (track == null)

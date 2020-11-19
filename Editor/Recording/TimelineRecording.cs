@@ -14,7 +14,7 @@ namespace UnityEditor.Timeline
         internal static UndoPropertyModification[] ProcessUndoModification(UndoPropertyModification[] modifications, WindowState state)
         {
             if (HasAnyPlayableAssetModifications(modifications))
-                return ProcessPlayableAssetModification(modifications, state);
+                return ProcessPlayableAssetModification(modifications, state, false);
             return ProcessMonoBehaviourModification(modifications, state);
         }
 
@@ -167,7 +167,9 @@ namespace UnityEditor.Timeline
         public static void AddKey(IEnumerable<PropertyModification> modifications, WindowState state)
         {
             var undos = modifications.Select(PropertyModificationToUndoPropertyModification).ToArray();
-            ProcessUndoModification(undos, state);
+            if (HasAnyPlayableAssetModifications(undos))
+                ProcessPlayableAssetModification(undos, state, true);
+            ProcessMonoBehaviourModification(undos, state);
         }
 
         static UndoPropertyModification PropertyModificationToUndoPropertyModification(PropertyModification prop)
@@ -225,7 +227,7 @@ namespace UnityEditor.Timeline
             if (playableAsset != null)
             {
                 var curvesOwner = AnimatedParameterUtility.ToCurvesOwner(playableAsset, state.editSequence.asset);
-                if (curvesOwner != null && state.IsTrackRecordable(curvesOwner.targetTrack))
+                if (curvesOwner != null)
                 {
                     if (curvesOwner.curves == null)
                         curvesOwner.CreateCurves(curvesOwner.GetUniqueRecordedClipName());

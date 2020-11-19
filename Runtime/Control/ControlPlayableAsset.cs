@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
@@ -14,6 +15,7 @@ namespace UnityEngine.Timeline
         const int k_MaxRandInt = 10000;
         static readonly List<PlayableDirector> k_EmptyDirectorsList = new List<PlayableDirector>(0);
         static readonly List<ParticleSystem> k_EmptyParticlesList = new List<ParticleSystem>(0);
+        static readonly HashSet<ParticleSystem> s_SubEmitterCollector = new HashSet<ParticleSystem>();
 
         /// <summary>
         /// GameObject in the scene to control, or the parent of the instantiated prefab.
@@ -138,7 +140,7 @@ namespace UnityEngine.Timeline
             if (sourceObject != null)
             {
                 var directors = updateDirector ? GetComponent<PlayableDirector>(sourceObject) : k_EmptyDirectorsList;
-                var particleSystems = updateParticle ? GetParticleSystemRoots(sourceObject) : k_EmptyParticlesList;
+                var particleSystems = updateParticle ? GetControllableParticleSystems(sourceObject) : k_EmptyParticlesList;
 
                 // update the duration and loop values (used for UI purposes) here
                 // so they are tied to the latest gameObject bound
@@ -163,7 +165,7 @@ namespace UnityEngine.Timeline
                     SearchHierarchyAndConnectDirector(directors, graph, playables, prefabGameObject != null);
 
                 if (updateParticle)
-                    SearchHiearchyAndConnectParticleSystem(particleSystems, graph, playables);
+                    SearchHierarchyAndConnectParticleSystem(particleSystems, graph, playables);
 
                 if (updateITimeControl)
                     SearchHierarchyAndConnectControlableScripts(GetControlableScripts(sourceObject), graph, playables);
@@ -203,7 +205,7 @@ namespace UnityEngine.Timeline
                 outplayables.Add(activation);
         }
 
-        void SearchHiearchyAndConnectParticleSystem(IEnumerable<ParticleSystem> particleSystems, PlayableGraph graph,
+        void SearchHierarchyAndConnectParticleSystem(IEnumerable<ParticleSystem> particleSystems, PlayableGraph graph,
             List<Playable> outplayables)
         {
             foreach (var particleSystem in particleSystems)
@@ -316,31 +318,51 @@ namespace UnityEngine.Timeline
             m_SupportLoop = supportsLoop;
         }
 
-        IList<ParticleSystem> GetParticleSystemRoots(GameObject go)
+        IList<ParticleSystem> GetControllableParticleSystems(GameObject go)
         {
-            if (searchHierarchy)
+            var roots = new List<ParticleSystem>();
+
+            // searchHierarchy will look for particle systems on child objects.
+            // once a particle system is found, all child particle systems are controlled with playables
+            // unless they are subemitters
+
+            if (searchHierarchy || go.GetComponent<ParticleSystem>() != null)
             {
-                // We only want the parent systems as they will handle all the child systems.
-                var roots = new List<ParticleSystem>();
-                GetParticleSystemRoots(go.transform, roots);
-                return roots;
+                GetControllableParticleSystems(go.transform, roots, s_SubEmitterCollector);
+                s_SubEmitterCollector.Clear();
             }
-            return GetComponent<ParticleSystem>(go);
+
+            return roots;
+
         }
 
-        static void GetParticleSystemRoots(Transform t, ICollection<ParticleSystem> roots)
+        static void GetControllableParticleSystems(Transform t, ICollection<ParticleSystem> roots, HashSet<ParticleSystem> subEmitters)
         {
             var ps = t.GetComponent<ParticleSystem>();
             if (ps != null)
             {
-                // its a root
-                roots.Add(ps);
-                return;
+                if (!subEmitters.Contains(ps))
+                {
+                    roots.Add(ps);
+                    CacheSubEmitters(ps, subEmitters);
+                }
             }
 
             for (int i = 0; i < t.childCount; ++i)
             {
-                GetParticleSystemRoots(t.GetChild(i), roots);
+                GetControllableParticleSystems(t.GetChild(i), roots, subEmitters);
+            }
+        }
+
+        static void CacheSubEmitters(ParticleSystem ps, HashSet<ParticleSystem> subEmitters)
+        {
+            if (ps == null)
+                return;
+
+            for (int i = 0; i < ps.subEmitters.subEmittersCount; i++)
+            {
+                subEmitters.Add(ps.subEmitters.GetSubEmitterSystem(i));
+                // don't call this recursively. subEmitters are only simulated one level deep.
             }
         }
 

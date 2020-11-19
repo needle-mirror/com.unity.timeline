@@ -57,6 +57,9 @@ namespace UnityEditor.Timeline
 
         internal static UndoPropertyModification[] ProcessMonoBehaviourModification(UndoPropertyModification[] modifications, WindowState state)
         {
+            if (!state.recording)
+                return modifications;
+
             if (state == null || state.editSequence.director == null)
                 return modifications;
 

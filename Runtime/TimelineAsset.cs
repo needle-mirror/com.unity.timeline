@@ -148,6 +148,9 @@ namespace UnityEngine.Timeline
             }
         }
 
+        /// <summary>
+        /// The capabilities supported by all clips in the timeline.
+        /// </summary>
         public ClipCaps clipCaps
         {
             get
@@ -385,6 +388,13 @@ namespace UnityEngine.Timeline
         {
             if (m_Tracks == null)
                 m_Tracks = new List<ScriptableObject>();
+
+            #if UNITY_EDITOR
+            // case 1280331 -- embedding the timeline asset inside a prefab will create a temporary non-persistent version of an asset
+            // setting the track parents to this will change persistent tracks
+            if (!UnityEditor.EditorUtility.IsPersistent(this))
+                return;
+            #endif
 
             // validate the array. DON'T remove Unity null objects, just actual null objects
             for (int i = m_Tracks.Count - 1; i >= 0; i--)

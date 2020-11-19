@@ -60,6 +60,7 @@ namespace UnityEditor.Timeline
                 property.propertyType == SerializedPropertyType.Integer ||
                 property.propertyType == SerializedPropertyType.Enum;
 
+            TimelineUndo.PushUndo(curvesOwner.curves, "Set Key");
             CurveEditUtility.AddKeyFrameToCurve(curve, time, curvesOwner.curves.frameRate, value, isStepped);
             AnimationUtility.SetEditorCurve(curvesOwner.curves, binding, curve);
 

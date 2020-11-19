@@ -287,6 +287,9 @@ namespace UnityEngine.Timeline
             get { return parentTrack; }
         }
 
+        /// <summary>
+        /// underlyingAsset property is obsolete. Use asset property instead
+        /// </summary>
         [Obsolete("underlyingAsset property is obsolete. Use asset property instead", true)]
         public Object underlyingAsset
         {
@@ -333,6 +336,9 @@ namespace UnityEngine.Timeline
             set { m_EaseOutDuration = clipCaps.HasAny(ClipCaps.Blending) ? Math.Max(0, Math.Min(SanitizeTimeValue(value, m_EaseOutDuration), duration)) : 0; }
         }
 
+        /// <summary>
+        /// eastOutTime property is obsolete use easeOutTime property instead
+        /// </summary>
         [Obsolete("Use easeOutTime instead (UnityUpgradable) -> easeOutTime", true)]
         public double eastOutTime
         {
@@ -472,6 +478,9 @@ namespace UnityEngine.Timeline
             internal set { m_Recordable = value; }
         }
 
+        /// <summary>
+        /// exposedParameter is deprecated and will be removed in a future release
+        /// </summary>
         [Obsolete("exposedParameter is deprecated and will be removed in a future release", true)]
         public List<string> exposedParameters
         {
