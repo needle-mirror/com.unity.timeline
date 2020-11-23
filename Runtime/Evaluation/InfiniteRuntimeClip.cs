@@ -42,5 +42,11 @@ namespace UnityEngine.Timeline
         {
             m_Playable.SetTime(localTime);
         }
+
+        public override void DisableAt(double localTime, double rootDuration, FrameData frameData)
+        {
+            m_Playable.SetTime(localTime);
+            enable = false;
+        }
     }
 }

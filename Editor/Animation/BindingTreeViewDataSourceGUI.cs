@@ -2,6 +2,8 @@ using System.Linq;
 using UnityEditor.IMGUI.Controls;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
@@ -12,11 +14,14 @@ namespace UnityEditor.Timeline
         static readonly Color s_KeyColorForNonCurves = new Color(0.7f, 0.7f, 0.7f, 0.5f);
         static readonly Color s_ChildrenCurveLabelColor = new Color(1.0f, 1.0f, 1.0f, 0.7f);
         static readonly Color s_PhantomPropertyLabelColor = new Color(0.0f, 0.8f, 0.8f, 1f);
+        static readonly Texture2D s_DefaultScriptTexture = EditorGUIUtility.LoadIcon("cs Script Icon");
+        static readonly Texture2D s_TrackDefault = EditorGUIUtility.LoadIcon("UnityEngine/ScriptableObject Icon");
 
         public BindingTreeViewGUI(TreeViewController treeView)
             : base(treeView, true)
         {
             k_IconWidth = 13.0f;
+            iconOverlayGUI += OnItemIconOverlay;
         }
 
         public override void OnRowGUI(Rect rowRect, TreeViewItem node, int row, bool selected, bool focused)
@@ -78,10 +83,31 @@ namespace UnityEditor.Timeline
             if (node == null)
                 return null;
 
-            if (node.bindings == null || node.bindings.Length == 0)
+            var type = node.iconType;
+            if (type == null)
                 return null;
 
-            return AssetPreview.GetMiniTypeThumbnail(node.bindings[0].type);
+            // track type icon
+            if (typeof(TrackAsset).IsAssignableFrom(type))
+            {
+                var icon = TrackResourceCache.GetTrackIconForType(type);
+                return icon == s_TrackDefault ? s_DefaultScriptTexture : icon;
+            }
+
+            // custom clip icons always use the script texture
+            if (typeof(PlayableAsset).IsAssignableFrom(type))
+                return s_DefaultScriptTexture;
+
+            // this will return null for MonoBehaviours without a custom icon.
+            // use the scripting icon instead
+            return AssetPreview.GetMiniTypeThumbnail(type) ?? s_DefaultScriptTexture;
+        }
+
+        static void OnItemIconOverlay(TreeViewItem item, Rect rect)
+        {
+            var curveNodeItem = item as CurveTreeViewNode;
+            if (curveNodeItem != null && curveNodeItem.iconOverlay != null)
+                GUI.Label(rect, curveNodeItem.iconOverlay);
         }
     }
 }

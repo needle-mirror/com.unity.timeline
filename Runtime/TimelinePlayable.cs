@@ -258,22 +258,15 @@ namespace UnityEngine.Timeline
             foreach (var c in m_CurrentListOfActiveClips)
             {
                 c.intervalBit = m_ActiveBit;
-                if (frameData.timeLooped)
-                    c.Reset();
             }
 
             // all previously active clips having a different intervalBit flag are not
             // in the current intersection, therefore are considered becoming disabled at this frame
-            var timelineEnd = playable.GetDuration();
+            var timelineEnd = (double)new DiscreteTime(playable.GetDuration());
             foreach (var c in m_ActiveClips)
             {
                 if (c.intervalBit != m_ActiveBit)
-                {
-                    var clipEnd = (double)DiscreteTime.FromTicks(c.intervalEnd);
-                    var time = frameData.timeLooped ? Math.Min(clipEnd, timelineEnd) : Math.Min(localTime, clipEnd);
-                    c.EvaluateAt(time, frameData);
-                    c.enable = false;
-                }
+                    c.DisableAt(localTime, timelineEnd, frameData);
             }
 
             m_ActiveClips.Clear();

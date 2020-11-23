@@ -12,6 +12,7 @@ namespace UnityEngine.Timeline
     [TrackBindingType(typeof(GameObject))]
     [HideInMenu]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(MarkerTrack))]
     public class MarkerTrack : TrackAsset
     {
         /// <inheritdoc/>

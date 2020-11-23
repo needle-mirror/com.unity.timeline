@@ -99,8 +99,10 @@ namespace UnityEditor.Timeline
                     return false;
             }
 
-            if (hasUsedShortcut)
-                return !anySourceLocked; // copy/paste to same track
+            // pasting to items to their source track, if items from multiple tracks are selected
+            // and no track is in the selection items will each be pasted to their respective track.
+            if (targetTrack == null || itemsGroups.All(x => x.targetTrack == targetTrack))
+                return !anySourceLocked;
 
             if (hasItemsCopiedFromMultipleTracks)
             {

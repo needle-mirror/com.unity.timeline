@@ -13,6 +13,7 @@ namespace UnityEngine.Timeline
     /// When a SignalEmitter emits a signal, the SignalReceiver invokes the corresponding reaction.
     /// <seealso cref="UnityEngine.Timeline.SignalEmitter"/>
     /// <seealso cref="UnityEngine.Timeline.SignalAsset"/>
+    [TimelineHelpURL(typeof(SignalReceiver))]
     public class SignalReceiver : MonoBehaviour, INotificationReceiver
     {
         [SerializeField]

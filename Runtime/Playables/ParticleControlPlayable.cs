@@ -8,12 +8,11 @@ namespace UnityEngine.Timeline
     /// </summary>
     public class ParticleControlPlayable : PlayableBehaviour
     {
-        const float kUnsetTime = -1;
-        float m_LastTime = kUnsetTime;
+        const float kUnsetTime = float.MaxValue;
+        float m_LastPlayableTime = kUnsetTime;
+        float m_LastParticleTime = kUnsetTime;
         uint m_RandomSeed = 1;
 
-        // particleSystem.time can not be relied on for an accurate time. It does not advance until a delta threshold is reached(fixedUpdate) and until the start delay has elapsed.
-        float m_SystemTime;
 
         /// <summary>
         /// Creates a Playable with a ParticleControlPlayable behaviour attached
@@ -46,8 +45,7 @@ namespace UnityEngine.Timeline
         {
             m_RandomSeed = Math.Max(1, randomSeed);
             particleSystem = ps;
-            m_SystemTime = 0;
-            SetRandomSeed();
+            SetRandomSeed(particleSystem, m_RandomSeed);
 
             #if UNITY_EDITOR
             if (!Application.isPlaying && UnityEditor.PrefabUtility.IsPartOfPrefabInstance(ps))
@@ -70,25 +68,26 @@ namespace UnityEngine.Timeline
         {
             // When the instance is updated from, this will cause the next evaluate to resimulate.
             if (UnityEditor.PrefabUtility.GetRootGameObject(particleSystem) == go)
-                m_LastTime = kUnsetTime;
+                m_LastPlayableTime = kUnsetTime;
         }
 
         #endif
 
-        void SetRandomSeed()
+        static void SetRandomSeed(ParticleSystem particleSystem, uint randomSeed)
         {
+            if (particleSystem == null)
+                return;
+
             particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            var systems = particleSystem.gameObject.GetComponentsInChildren<ParticleSystem>();
-            uint seed = m_RandomSeed;
-            foreach (var ps in systems)
+            if (particleSystem.useAutoRandomSeed)
             {
-                // don't overwrite user set random seeds
-                if (ps.useAutoRandomSeed)
-                {
-                    ps.useAutoRandomSeed = false;
-                    ps.randomSeed = seed;
-                    seed++;
-                }
+                particleSystem.useAutoRandomSeed = false;
+                particleSystem.randomSeed = randomSeed;
+            }
+
+            for (int i = 0; i < particleSystem.subEmitters.subEmittersCount; i++)
+            {
+                SetRandomSeed(particleSystem.subEmitters.GetSubEmitterSystem(i), ++randomSeed);
             }
         }
 
@@ -100,58 +99,23 @@ namespace UnityEngine.Timeline
         public override void PrepareFrame(Playable playable, FrameData data)
         {
             if (particleSystem == null || !particleSystem.gameObject.activeInHierarchy)
-                return;
-
-            float localTime = (float)playable.GetTime();
-            bool shouldUpdate = Mathf.Approximately(m_LastTime, kUnsetTime) ||
-                !Mathf.Approximately(m_LastTime, localTime);
-            if (shouldUpdate)
             {
-                float epsilon = Time.fixedDeltaTime * 0.5f;
-                float simTime = localTime;
-                float expectedDelta = simTime - m_LastTime;
-
-                //  The first iteration includes the start delay. Evaluate(particleSystem.randomSeed) is how the particle system generates the random value internally.
-                float startDelay = particleSystem.main.startDelay.Evaluate(particleSystem.randomSeed);
-                float particleSystemDurationLoop0 = particleSystem.main.duration + startDelay;
-
-                // The particle system time does not include the start delay so we need to remove this for our own system time.
-                float expectedSystemTime = simTime > particleSystemDurationLoop0 ? m_SystemTime : m_SystemTime - startDelay;
-
-                // if it's not looping, then the system time won't advance past the end of the duration
-                if (!particleSystem.main.loop)
-                    expectedSystemTime = Math.Min(expectedSystemTime, particleSystem.main.duration);
-
-
-                // conditions for restart
-                bool restart = (simTime < m_LastTime) || // time went backwards
-                    (simTime < epsilon) || // time is set to 0
-                    Mathf.Approximately(m_LastTime, kUnsetTime) || // object disabled
-                    (expectedDelta > particleSystem.main.duration) || // large jump (bug workaround)
-                    !(Mathf.Abs(expectedSystemTime - particleSystem.time) < Time.maximumParticleDeltaTime); // particle system isn't where we left it
-                if (restart)
-                {
-                    // work around for a bug where simulate(simTime, true, true) doesn't work on loops
-                    particleSystem.Simulate(0, true, true);
-                    particleSystem.Simulate(simTime, true, false);
-                    m_SystemTime = simTime;
-                }
-                else
-                {
-                    // ps.time will wrap, so we need to account for that in computing delta time
-                    float particleSystemDuration = simTime > particleSystemDurationLoop0 ? particleSystem.main.duration : particleSystemDurationLoop0;
-                    float fracTime = simTime % particleSystemDuration;
-                    float deltaTime = fracTime - m_SystemTime;
-
-                    if (deltaTime < -epsilon) // detect wrapping of ps.time
-                        deltaTime = fracTime + particleSystemDurationLoop0 - m_SystemTime;
-
-                    particleSystem.Simulate(deltaTime, true, false);
-                    m_SystemTime += deltaTime;
-                }
-
-                m_LastTime = localTime;
+                // case 1212943
+                m_LastPlayableTime = kUnsetTime;
+                return;
             }
+
+            var time = (float)playable.GetTime();
+            var particleTime = particleSystem.time;
+
+            // if particle system time has changed externally, a re-sync is needed
+            if (m_LastPlayableTime > time || !Mathf.Approximately(particleTime, m_LastParticleTime))
+                Simulate(time, true);
+            else if (m_LastPlayableTime < time)
+                Simulate(time - m_LastPlayableTime, false);
+
+            m_LastPlayableTime = time;
+            m_LastParticleTime = particleSystem.time;
         }
 
         /// <summary>
@@ -161,7 +125,7 @@ namespace UnityEngine.Timeline
         /// <param name="info">A FrameData structure that contains information about the current frame context.</param>
         public override void OnBehaviourPlay(Playable playable, FrameData info)
         {
-            m_LastTime = kUnsetTime;
+            m_LastPlayableTime = kUnsetTime;
         }
 
         /// <summary>
@@ -171,7 +135,28 @@ namespace UnityEngine.Timeline
         /// <param name="info">A FrameData structure that contains information about the current frame context.</param>
         public override void OnBehaviourPause(Playable playable, FrameData info)
         {
-            m_LastTime = kUnsetTime;
+            m_LastPlayableTime = kUnsetTime;
+        }
+
+        private void Simulate(float time, bool restart)
+        {
+            const bool withChildren = false;
+            const bool fixedTimeStep = false;
+            float maxTime = Time.maximumDeltaTime;
+
+            if (restart)
+                particleSystem.Simulate(0, withChildren, true, fixedTimeStep);
+
+            // simulating by too large a time-step causes sub-emitters not to work, and loops not to
+            // simulate correctly
+            while (time > maxTime)
+            {
+                particleSystem.Simulate(maxTime, withChildren, false, fixedTimeStep);
+                time -= maxTime;
+            }
+
+            if (time > 0)
+                particleSystem.Simulate(time, withChildren, false, fixedTimeStep);
         }
     }
 }

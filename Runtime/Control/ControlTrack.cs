@@ -9,6 +9,7 @@ namespace UnityEngine.Timeline
     /// </summary>
     [TrackClipType(typeof(ControlPlayableAsset), false)]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(ControlTrack))]
     public class ControlTrack : TrackAsset
     {
 #if UNITY_EDITOR

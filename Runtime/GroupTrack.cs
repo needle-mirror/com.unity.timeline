@@ -11,6 +11,7 @@ namespace UnityEngine.Timeline
     [TrackClipType(typeof(TrackAsset))]
     [SupportsChildTracks]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(GroupTrack))]
     public class GroupTrack : TrackAsset
     {
         internal override bool CanCompileClips()

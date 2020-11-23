@@ -137,14 +137,5 @@ namespace UnityEditor.Timeline
             }
             GUILayout.EndVertical();
         }
-
-        void RefreshInlineCurves()
-        {
-            foreach (var trackGUI in allTracks.OfType<TimelineTrackGUI>())
-            {
-                if (trackGUI.inlineCurveEditor != null)
-                    trackGUI.inlineCurveEditor.Refresh();
-            }
-        }
     }
 }

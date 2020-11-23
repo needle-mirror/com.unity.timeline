@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
 {
@@ -130,14 +132,13 @@ namespace UnityEditor.Timeline
             if (m_CurveDataSource == null || m_Selection == null)
                 return;
 
-            var bindings = new List<EditorCurveBinding>();
+            var bindings = new HashSet<EditorCurveBinding>(AnimationPreviewUtilities.EditorCurveBindingComparer.Instance);
             foreach (int s in m_Selection)
             {
                 var item = (CurveTreeViewNode)m_TreeView.FindItem(s);
                 if (item != null && item.bindings != null)
-                    bindings.AddRange(item.bindings);
+                    bindings.UnionWith(item.bindings);
             }
-
             var wrappers = m_CurveDataSource.GenerateWrappers(bindings);
             m_CurveEditor.animationCurves = wrappers.ToArray();
         }

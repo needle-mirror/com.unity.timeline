@@ -107,5 +107,10 @@ namespace UnityEngine.Timeline
                 m_Started = true;
             }
         }
+
+        public override void DisableAt(double localTime, double rootDuration, FrameData frameData)
+        {
+            enable = false;
+        }
     }
 }

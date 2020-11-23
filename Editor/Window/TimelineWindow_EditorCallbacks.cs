@@ -39,6 +39,7 @@ namespace UnityEditor.Timeline
             EditorSceneManager.sceneSaved += OnSceneSaved;
             ObjectFactory.componentWasAdded += OnComponentWasAdded;
             PrefabUtility.prefabInstanceUpdated += OnPrefabApplied;
+            EditorApplication.pauseStateChanged += OnPlayModePause;
             EditorApplication.globalEventHandler += GlobalEventHandler;
         }
 
@@ -82,7 +83,15 @@ namespace UnityEditor.Timeline
             EditorSceneManager.sceneSaved -= OnSceneSaved;
             ObjectFactory.componentWasAdded -= OnComponentWasAdded;
             PrefabUtility.prefabInstanceUpdated -= OnPrefabApplied;
+            EditorApplication.pauseStateChanged -= OnPlayModePause;
             EditorApplication.globalEventHandler -= GlobalEventHandler;
+        }
+
+        void OnPlayModePause(PauseState state)
+        {
+            // in PlayMode, if the timeline is playing, a constant repaint cycle occurs. Pausing the editor
+            // breaks the cycle, so this will restart it
+            Repaint();
         }
 
         // Called when a prefab change is applied to the scene.
@@ -169,9 +178,6 @@ namespace UnityEditor.Timeline
         UndoPropertyModification[] PostprocessAnimationRecordingModifications(UndoPropertyModification[] modifications)
         {
             DirtyModifiedObjects(modifications);
-
-            if (!state.recording)
-                return modifications;
 
             var remaining = TimelineRecording.ProcessUndoModification(modifications, state);
             // if we've changed, we need to repaint the sequence window to show clip length changes

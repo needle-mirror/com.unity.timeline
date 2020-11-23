@@ -143,7 +143,6 @@ namespace UnityEditor.Timeline
         const double k_TimeScaleSensitivity = 0.003;
 
 
-
         bool hasMultipleSelection
         {
             get { return targets.Length > 1; }
@@ -484,8 +483,6 @@ namespace UnityEditor.Timeline
 
         void DrawExtrapolationOptions()
         {
-            EditorGUI.BeginChangeCheck();
-
             // PreExtrapolation
             var preExtrapolationTime =  m_PreExtrapolationTimeProperty.doubleValue;
             bool hasPreExtrap = preExtrapolationTime > 0.0;
@@ -505,15 +502,6 @@ namespace UnityEditor.Timeline
                 using (new GUIMixedValueScope(m_PostExtrapolationTimeProperty.hasMultipleDifferentValues))
                     EditorGUILayout.DoubleField(m_PostExtrapolationTimeProperty.doubleValue, EditorStyles.label);
                 EditorGUILayout.EndHorizontal();
-            }
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                // if these options change the interval tree may need to be rebuilt.
-                if (TimelineWindow.IsEditingTimelineAsset(m_TimelineAsset) && TimelineWindow.instance.state != null)
-                {
-                    TimelineWindow.instance.state.Refresh();
-                }
             }
         }
 
@@ -824,6 +812,5 @@ namespace UnityEditor.Timeline
                 m_ClipCurveEditor.SetCurve(m_PreviewCurveState == PreviewCurveState.MixIn ? m_MixInCurveProperty.animationCurveValue : m_MixOutCurveProperty.animationCurveValue);
             }
         }
-
     }
 }

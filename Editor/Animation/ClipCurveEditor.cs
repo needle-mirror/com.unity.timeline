@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Timeline;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -10,6 +9,9 @@ namespace UnityEditor
 {
     class ClipCurveEditor
     {
+        static readonly GUIContent s_RemoveCurveContent = new GUIContent(L10n.Tr("Remove Curve"));
+        static readonly GUIContent s_RemoveCurvesContent = new GUIContent(L10n.Tr("Remove Curves"));
+
         internal readonly CurveEditor m_CurveEditor;
         static readonly CurveEditorSettings s_CurveEditorSettings = new CurveEditorSettings
         {
@@ -42,8 +44,9 @@ namespace UnityEditor
         readonly CurveDataSource m_DataSource;
 
         float m_LastFrameRate = 30.0f;
-        int m_LastClipVersion = -1;
-        int m_LastCurveCount = -1;
+
+        UInt64 m_LastClipVersion = UInt64.MaxValue;
+
         TrackViewModelData m_ViewModel;
         bool m_ShouldRestoreShownArea;
 
@@ -110,6 +113,7 @@ namespace UnityEditor
             get { return m_DataSource; }
         }
 
+        // called when curves are edited
         internal void OnCurvesUpdated()
         {
             if (m_DataSource == null)
@@ -127,22 +131,9 @@ namespace UnityEditor
             if (curvesToUpdate.Count == 0)
                 return;
 
-            AnimationClip clip = m_DataSource.animationClip;
-
             // something changed, manage the undo properly.
-            Undo.RegisterCompleteObjectUndo(clip, L10n.Tr("Edit Clip Curve"));
-
-            foreach (CurveWrapper c in curvesToUpdate)
-            {
-                if (c.curve.keys.Any())
-                    AnimationUtility.SetEditorCurve(clip, c.binding, c.curve);
-                else
-                    RemovePropertiesByIds(new[] { c.binding.GetHashCode()}, false);
-
-                c.changed = false;
-            }
-
-            m_DataSource.UpdateCurves(curvesToUpdate);
+            m_DataSource.ApplyCurveChanges(curvesToUpdate);
+            m_LastClipVersion = m_DataSource.GetClipVersion();
         }
 
         public void DrawHeader(Rect headerRect)
@@ -170,89 +161,49 @@ namespace UnityEditor
             GenerateContextMenu(obj);
         }
 
-        public void GenerateContextMenu(int obj = -1)
+        void GenerateContextMenu(int obj = -1)
         {
             if (Event.current.type != EventType.ContextClick)
                 return;
 
-            GenericMenu menu = new GenericMenu();
-            GUIContent removePropertyContent = new GUIContent(L10n.Tr("Remove Properties"));
-            menu.AddItem(removePropertyContent, false, RemoveSelectedProperties);
-            menu.ShowAsContext();
+            var selectedCurves = GetSelectedProperties().ToArray();
+            if (selectedCurves.Length > 0)
+            {
+                var menu = new GenericMenu();
+                var content = selectedCurves.Length == 1 ? s_RemoveCurveContent : s_RemoveCurvesContent;
+                menu.AddItem(content,
+                    false,
+                    () => RemoveCurves(selectedCurves)
+                );
+                menu.ShowAsContext();
+            }
         }
 
-        internal IEnumerable<EditorCurveBinding> GetSelectedProperties()
+        public IEnumerable<EditorCurveBinding> GetSelectedProperties(bool useForcedGroups = false)
         {
-            var ret = new HashSet<EditorCurveBinding>();
+            var bindings = new HashSet<EditorCurveBinding>();
             var bindingTree = m_BindingHierarchy.treeViewController.data as BindingTreeViewDataSource;
             foreach (var selectedId in m_BindingHierarchy.treeViewController.GetSelection())
             {
                 var node = bindingTree.FindItem(selectedId) as CurveTreeViewNode;
                 if (node == null)
                     continue;
-                foreach (var editorCurveBinding in node.bindings)
-                {
-                    ret.Add(editorCurveBinding);
-                }
-            }
 
-            return ret;
+                var curveNodeParent = node.parent as CurveTreeViewNode;
+                if (useForcedGroups && node.forceGroup && curveNodeParent != null)
+                    bindings.UnionWith(curveNodeParent.bindings);
+                else
+                    bindings.UnionWith(node.bindings);
+            }
+            return bindings;
         }
 
-        internal void RemoveSelectedProperties()
+        public void RemoveCurves(IEnumerable<EditorCurveBinding> bindings)
         {
-            RemovePropertiesByIds(m_BindingHierarchy.treeViewController.GetSelection());
-        }
-
-        internal void RemovePropertiesByIds(IEnumerable<int> ids, bool removeCompleteGroup = true)
-        {
-            List<EditorCurveBinding> bindingsToRemove = new List<EditorCurveBinding>();
-            foreach (int selectedId in ids)
-            {
-                BindingTreeViewDataSource bindingTree = m_BindingHierarchy.treeViewController.data as BindingTreeViewDataSource;
-                CurveTreeViewNode node = bindingTree.FindItem(selectedId) as CurveTreeViewNode;
-                if (node == null)
-                    continue;
-                foreach (EditorCurveBinding editorCurveBinding in node.bindings)
-                {
-                    if (bindingsToRemove.Contains(editorCurveBinding))
-                        continue;
-                    CurveTreeViewNode currentNode = node;
-                    do
-                    {
-                        //check if property is part of a group
-                        bool isRoot = currentNode.depth == 0;
-                        bool isGroup = currentNode.displayName == BindingTreeViewDataSource.GroupName(editorCurveBinding);
-                        if (!isRoot && !isGroup && removeCompleteGroup)
-                            currentNode = currentNode.parent as CurveTreeViewNode;
-                        else
-                        {
-                            if (!AnimationWindowUtility.ForceGrouping(editorCurveBinding))
-                                bindingsToRemove.Add(editorCurveBinding);
-                            else //Group to remove
-                                bindingsToRemove.AddRange(currentNode.bindings);
-                            break;
-                        }
-                    }
-                    while (currentNode != null);
-                }
-            }
-
-            RemoveProperty(bindingsToRemove);
+            m_DataSource.RemoveCurves(bindings);
             m_BindingHierarchy.RefreshTree();
             TimelineWindow.instance.state.CalculateRowRects();
-        }
-
-        void RemoveProperty(IEnumerable<EditorCurveBinding> bindings)
-        {
-            foreach (EditorCurveBinding binding in bindings)
-            {
-                Undo.RegisterCompleteObjectUndo(m_DataSource.animationClip, "Remove Property");
-                if (binding.isPPtrCurve)
-                    AnimationUtility.SetObjectReferenceCurve(m_DataSource.animationClip, binding, null);
-                else
-                    AnimationUtility.SetEditorCurve(m_DataSource.animationClip, binding, null);
-            }
+            m_LastClipVersion = m_DataSource.GetClipVersion();
         }
 
         class CurveEditorState : ICurveEditorState
@@ -264,27 +215,20 @@ namespace UnityEditor
 
         void UpdateCurveEditorIfNeeded(WindowState state)
         {
-            if ((Event.current.type != EventType.Layout) || (m_DataSource == null) || (m_BindingHierarchy == null) || (m_DataSource.animationClip == null))
+            if ((Event.current.type != EventType.Layout) || (m_DataSource == null) || (m_BindingHierarchy == null))
                 return;
 
-            AnimationClipCurveInfo curveInfo = AnimationClipCurveCache.Instance.GetCurveInfo(m_DataSource.animationClip);
-            int version = curveInfo.version;
-            if (version != m_LastClipVersion)
-            {
-                // tree has changed
-                if (m_LastCurveCount != curveInfo.curves.Length)
-                {
-                    m_BindingHierarchy.RefreshTree();
-                    m_LastCurveCount = curveInfo.curves.Length;
-                }
-                else
-                {
-                    // update just the curves
-                    m_BindingHierarchy.RefreshCurves();
-                }
-                m_CurveEditor.InvalidateSelectionBounds();
-                m_LastClipVersion = version;
-            }
+            // check if the curves have changed externally
+            var curveChange = m_DataSource.UpdateExternalChanges(ref m_LastClipVersion);
+            if (curveChange == CurveChangeType.None)
+                return;
+
+            if (curveChange == CurveChangeType.CurveAddedOrRemoved)
+                m_BindingHierarchy.RefreshTree();
+            else // curve modified
+                m_BindingHierarchy.RefreshCurves();
+
+            m_CurveEditor.InvalidateSelectionBounds();
 
             m_CurveEditor.state = new CurveEditorState() {timeFormat = state.timeFormat.ToTimeAreaFormat()};
             m_CurveEditor.invSnap = state.referenceSequence.frameRate;

@@ -35,6 +35,7 @@ namespace UnityEditor.Timeline
             public static readonly string AvatarMaskWarning = L10n.Tr("Applying an Avatar Mask to the base track may not properly mask Root Motion or Humanoid bones from an Animator Controller or other Timeline track.");
 
             public static readonly GUIContent RecordingOffsets = L10n.TextContent("Recorded Offsets", "Offsets applied to recorded position and rotation keys");
+            public static readonly GUIContent RecordingIkApplied = L10n.TextContent("Apply Foot IK", "Applies Foot IK to recorded Animation.");
 
             public static readonly GUIContent[] OffsetContents;
             public static readonly GUIContent[] OffsetInheritContents;
@@ -72,6 +73,7 @@ namespace UnityEditor.Timeline
 
         SerializedProperty m_RecordedOffsetPositionProperty;
         SerializedProperty m_RecordedOffsetEulerProperty;
+        SerializedProperty m_RecordedApplyFootIK;
 
         Vector3            m_lastPosition;
         Vector3            m_lastRotation;
@@ -102,7 +104,7 @@ namespace UnityEditor.Timeline
                 DrawRootTransformOffset();
 
                 EditorGUI.BeginChangeCheck();
-                DrawRecordedOffsetProperties();
+                DrawRecordedProperties();
                 DrawAvatarProperties();
                 if (EditorGUI.EndChangeCheck())
                     RebuildGraph();
@@ -362,6 +364,7 @@ namespace UnityEditor.Timeline
             m_ApplyAvatarMaskProperty = serializedObject.FindProperty("m_ApplyAvatarMask");
             m_RecordedOffsetPositionProperty = serializedObject.FindProperty("m_InfiniteClipOffsetPosition");
             m_RecordedOffsetEulerProperty = serializedObject.FindProperty("m_InfiniteClipOffsetEulerAngles");
+            m_RecordedApplyFootIK = serializedObject.FindProperty("m_InfiniteClipApplyFootIK");
 
             m_lastPosition = m_TrackPositionProperty.vector3Value;
             m_lastRotation = m_TrackRotationProperty.vector3Value;
@@ -416,7 +419,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public void DrawRecordedOffsetProperties()
+        public void DrawRecordedProperties()
         {
             // only show if this applies to all targets
             foreach (var track in targets)
@@ -436,6 +439,9 @@ namespace UnityEditor.Timeline
             EditorGUILayout.PropertyField(m_RecordedOffsetEulerProperty, Styles.RotationTitle);
             EditorGUILayout.EndHorizontal();
             EditorGUI.indentLevel--;
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(m_RecordedApplyFootIK, Styles.RecordingIkApplied);
             EditorGUILayout.Space();
         }
 

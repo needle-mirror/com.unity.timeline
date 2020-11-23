@@ -12,6 +12,7 @@ namespace UnityEngine.Timeline
     [TrackClipType(typeof(AudioPlayableAsset), false)]
     [TrackBindingType(typeof(AudioSource))]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(AudioTrack))]
     public class AudioTrack : TrackAsset
     {
         [SerializeField]

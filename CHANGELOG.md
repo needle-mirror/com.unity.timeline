@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.1-pre.3] - 2020-11-23
+
+### Fixed
+
+- Fixed case where an animation event at time 0 would not fire on a timeline loop. ([1184106](https://issuetracker.unity3d.com/product/unity/issues/guid/1184106))
+- Fixed issue where Timeline objects (ie. TrackAsset, ControlTrack, SignalAsset, etc.) would have incorrect links to the documentation pages (available starting from Unity 2021.1). ([1082941](https://issuetracker.unity3d.com/product/unity/issues/guid/1082941))
+
 ## [1.5.1-pre.2] - 2020-11-09
 
 ### Added
@@ -89,6 +96,32 @@ All notable changes to this package will be documented in this file. The format 
 - `TimelineEditorWindow.lock` to lock or unlock the Timeline window.
 - `TrackExtensions.GetCollapsed`, `TrackExtensions.SetCollapsed`, `TrackExtensions.IsVisibleRecursive` to get and change the visibility state of a track.
 - `AnimationTrackExtensions.IsRecording`, `AnimationTrackExtensions.SetRecording`, `AnimationTrackExtensions.SupportsRecording` to get or change the recording state of an Animation track.
+
+## [1.4.5] - 2020-11-19
+
+### Fixed
+
+- Fixed issue where changing a clip's extrapolation values would clear the current clip selection. ([936046](https://issuetracker.unity3d.com/product/unity/issues/guid/936046))
+- Fixed multiple issues related to the curves view:
+  - Fixed curve removal not functioning with `PlayableAsset`s (clips & tracks curves). ([1231002](https://issuetracker.unity3d.com/product/unity/issues/guid/1231002))
+  - Fixed inconsistent icon display on curves.
+  - Fixed incorrect ordering of properties. Properties now have a object/type/property ordering.
+  - Fixed unnecessary grouping of fields.
+  - Changed context menu from `Remove Properties` to `Remove Curves` to better reflect the change in functionality between curves for GameObjects and curves for `PlayableAssets`.
+  - Fixed behaviour where removing a single field in a `Position`, `Rotation` or `Scale` group would remove the entire group.
+- Fixed case where pausing in Playmode and switching the active director in editor could pause the director. ([1263707](https://issuetracker.unity3d.com/product/unity/issues/guid/1263707))
+- Material properties are now displayed by their shader name in the curves view when possible. ([1115961](https://issuetracker.unity3d.com/product/unity/issues/guid/1115961))
+- Fixed issue where a signal could be pasted on a track that doesn't support notifications. ([1283763](https://issuetracker.unity3d.com/product/unity/issues/guid/1283763))
+- Fixed issue where a clip could be paseted on an incompatible track. ([1283763](https://issuetracker.unity3d.com/product/unity/issues/guid/1283763))
+- Fixed errors when leaving prefab mode when a timeline is opened. ([1280331](https://issuetracker.unity3d.com/product/unity/issues/guid/1280331))
+- No preview will be shown when the PlayableDirector is disabled. ([1286198](https://issuetracker.unity3d.com/product/unity/issues/guid/1286198))
+- Fixed issue where an infinite clip's `Foot Ik` property was not visible in the Inspector when selecting its track. ([1279824](https://issuetracker.unity3d.com/product/unity/issues/guid/1279824))
+- Fixed issue where child particle systems were not controlled correctly when they are not subemitters. ([1212943](https://issuetracker.unity3d.com/product/unity/issues/guid/1212943))
+- Fixed inconsistent recording behaviour on audio tracks and `PlayableAssets`. Default values are changed when a value is not recorded, and the key added/updated when a value is already animated. ([1283453](https://issuetracker.unity3d.com/product/unity/issues/guid/1283453))
+- Fixed issue where the curves view for tracks and `PlayableAsset`s would not update when changed externally (such as from the Animation window).
+- Fixed `Add Key`/`Remove Key` context menus not being properly enabled in some cases when using tracks and `PlayableAsset`s.
+- Fixed simulation of subemitters when scrubbing a timeline. ([1142781](https://issuetracker.unity3d.com/product/unity/issues/guid/1142781))
+- Fixed choppy playback of particles with a large fixed time step. ([1262234](https://issuetracker.unity3d.com/product/unity/issues/guid/1262234))
 
 ## [1.4.4] - 2020-10-09
 

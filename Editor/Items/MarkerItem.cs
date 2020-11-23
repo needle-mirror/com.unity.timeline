@@ -42,7 +42,7 @@ namespace UnityEditor.Timeline
 
         public bool IsCompatibleWithTrack(TrackAsset track)
         {
-            return true;
+            return TypeUtility.DoesTrackSupportMarkerType(track, m_Marker.GetType());
         }
 
         public void PushUndo(string operation)

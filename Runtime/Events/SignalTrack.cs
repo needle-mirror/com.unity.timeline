@@ -15,5 +15,6 @@ namespace UnityEngine.Timeline
     [TrackBindingType(typeof(SignalReceiver))]
     [TrackColor(0.25f, 0.25f, 0.25f)]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(SignalTrack))]
     public class SignalTrack : MarkerTrack {}
 }

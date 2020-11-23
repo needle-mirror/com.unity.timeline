@@ -4,6 +4,7 @@ using UnityEngine.Timeline;
 namespace UnityEditor.Timeline
 {
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(TimelineClip))]
     class EditorClip : ScriptableObject
     {
         [SerializeField] TimelineClip m_Clip;

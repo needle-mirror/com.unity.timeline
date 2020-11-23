@@ -64,24 +64,6 @@ namespace UnityEditor.Timeline
             }
         }
 
-        List<SerializedProperty> m_AllAnimatableParameters;
-        List<SerializedProperty> allAnimatableParameters
-        {
-            get
-            {
-                var so = AnimatedParameterUtility.GetSerializedPlayableAsset(m_OriginalOwner.asset);
-                if (so == null)
-                    return null;
-
-                so.UpdateIfRequiredOrScript();
-
-                if (m_AllAnimatableParameters == null)
-                    m_AllAnimatableParameters = m_OriginalOwner.GetAllAnimatableParameters().ToList();
-
-                return m_AllAnimatableParameters;
-            }
-        }
-
         public CurvesProxy([NotNull] ICurvesOwner originalOwner)
         {
             m_OriginalOwner = originalOwner;
@@ -117,22 +99,57 @@ namespace UnityEditor.Timeline
             RebuildProxyCurves();
         }
 
-        public void UpdateCurves(List<CurveWrapper> updatedCurves)
+        public void RemoveCurves(IEnumerable<EditorCurveBinding> bindings)
+        {
+            if (m_ProxyIsRebuilding > 0 || !m_OriginalOwner.hasCurves)
+                return;
+
+            Undo.RegisterCompleteObjectUndo(m_OriginalOwner.curves, L10n.Tr("Remove Clip Curve"));
+            foreach (var binding in bindings)
+                AnimationUtility.SetEditorCurve(m_OriginalOwner.curves, binding, null);
+            m_OriginalOwner.SanitizeCurvesData();
+            RebuildProxyCurves();
+        }
+
+        public void UpdateCurves(IEnumerable<CurveWrapper> updatedCurves)
         {
             if (m_ProxyIsRebuilding > 0)
                 return;
 
             Undo.RegisterCompleteObjectUndo(m_OriginalOwner.asset, L10n.Tr("Edit Clip Curve"));
-
             if (m_OriginalOwner.curves != null)
                 Undo.RegisterCompleteObjectUndo(m_OriginalOwner.curves, L10n.Tr("Edit Clip Curve"));
 
+            var requireRebuild = false;
             foreach (var curve in updatedCurves)
             {
+                requireRebuild |= curve.curve.length == 0;
                 UpdateCurve(curve.binding, curve.curve);
             }
 
+            if (requireRebuild)
+                m_OriginalOwner.SanitizeCurvesData();
+
             AnimatedParameterUtility.UpdateSerializedPlayableAsset(m_OriginalOwner.asset);
+        }
+
+        public void ApplyExternalChangesToProxy()
+        {
+            using (new RebuildGuard(this))
+            {
+                if (m_OriginalOwner.curves == null)
+                    return;
+
+                var curveInfo = AnimationClipCurveCache.Instance.GetCurveInfo(m_OriginalOwner.curves);
+                for (int i = 0; i < curveInfo.bindings.Length; i++)
+                {
+                    if (curveInfo.curves[i] != null && curveInfo.curves.Length != 0)
+                    {
+                        if (m_PropertiesMap.TryGetValue(curveInfo.bindings[i], out var prop) && AnimatedParameterUtility.IsParameterAnimatable(prop))
+                            AnimationUtility.SetEditorCurve(m_ProxyCurves, curveInfo.bindings[i], curveInfo.curves[i]);
+                    }
+                }
+            }
         }
 
         void UpdateCurve(EditorCurveBinding binding, AnimationCurve curve)
@@ -142,15 +159,21 @@ namespace UnityEditor.Timeline
             if (curve.length == 0)
             {
                 HandleAllKeysDeleted(binding);
+                return;
             }
-            else if (curve.length == 1)
-            {
+
+            // there is no curve in the animation clip, this is a proxy curve
+            if (IsConstantCurve(binding, curve))
                 HandleConstantCurveValueChanged(binding, curve);
-            }
             else
-            {
                 HandleCurveUpdated(binding, curve);
-            }
+        }
+
+        bool IsConstantCurve(EditorCurveBinding binding, AnimationCurve curve)
+        {
+            if (curve.length != 1)
+                return false;
+            return m_OriginalOwner.curves == null || AnimationUtility.GetEditorCurve(m_OriginalOwner.curves, binding) == null;
         }
 
         void ApplyConstraints(EditorCurveBinding binding, AnimationCurve curve)
@@ -191,6 +214,7 @@ namespace UnityEditor.Timeline
                 m_OriginalOwner.CreateCurves(null);
 
             AnimationUtility.SetEditorCurve(m_OriginalOwner.curves, binding, updatedCurve);
+            AnimationUtility.SetEditorCurve(m_ProxyCurves, binding, updatedCurve);
         }
 
         void HandleConstantCurveValueChanged(EditorCurveBinding binding, AnimationCurve updatedCurve)
@@ -203,6 +227,8 @@ namespace UnityEditor.Timeline
             prop.serializedObject.UpdateIfRequiredOrScript();
             CurveEditUtility.SetFromKeyValue(prop, updatedCurve.keys[0].value);
             prop.serializedObject.ApplyModifiedProperties();
+
+            AnimationUtility.SetEditorCurve(m_ProxyCurves, binding, updatedCurve);
         }
 
         void HandleAllKeysDeleted(EditorCurveBinding binding)
@@ -211,11 +237,8 @@ namespace UnityEditor.Timeline
             {
                 // Remove curve from original asset
                 AnimationUtility.SetEditorCurve(m_OriginalOwner.curves, binding, null);
-                m_OriginalOwner.SanitizeCurvesData();
+                SetProxyCurve(m_PropertiesMap[binding], binding);
             }
-
-            // Ensure proxy still has constant value
-            RebuildProxyCurves();
         }
 
         void RebuildProxyCurves()
@@ -244,12 +267,42 @@ namespace UnityEditor.Timeline
 
                 m_OriginalOwner.SanitizeCurvesData();
                 AnimatedParameterUtility.UpdateSerializedPlayableAsset(m_OriginalOwner.asset);
-
-                foreach (var param in allAnimatableParameters)
+                var parameters = m_OriginalOwner.GetAllAnimatableParameters().ToArray();
+                foreach (var param in parameters)
                     CreateProxyCurve(param, m_ProxyCurves, m_OriginalOwner.asset, param.propertyPath);
 
                 AnimationClipCurveCache.Instance.GetCurveInfo(m_ProxyCurves).dirty = true;
             }
+        }
+
+        // updates the just the proxied values. This can be called when the asset changes, so the proxy values are properly updated
+        public void UpdateProxyCurves()
+        {
+            if (!m_IsAnimatable || m_ProxyCurves == null || m_ProxyCurves.empty)
+                return;
+
+            AnimatedParameterUtility.UpdateSerializedPlayableAsset(m_OriginalOwner.asset);
+            var parameters = m_OriginalOwner.GetAllAnimatableParameters().ToArray();
+            using (new RebuildGuard(this))
+            {
+                if (m_OriginalOwner.hasCurves)
+                {
+                    var bindingInfo = AnimationClipCurveCache.Instance.GetCurveInfo(m_OriginalOwner.curves);
+                    foreach (var param in parameters)
+                    {
+                        var binding = AnimatedParameterUtility.GetCurveBinding(m_OriginalOwner.asset, param.propertyPath);
+                        if (!bindingInfo.bindings.Contains(binding, AnimationPreviewUtilities.EditorCurveBindingComparer.Instance))
+                            SetProxyCurve(param, AnimatedParameterUtility.GetCurveBinding(m_OriginalOwner.asset, param.propertyPath));
+                    }
+                }
+                else
+                {
+                    foreach (var param in parameters)
+                        SetProxyCurve(param, AnimatedParameterUtility.GetCurveBinding(m_OriginalOwner.asset, param.propertyPath));
+                }
+            }
+
+            AnimationClipCurveCache.Instance.GetCurveInfo(m_ProxyCurves).dirty = true;
         }
 
         void CreateProxyCurve(SerializedProperty prop, AnimationClip clip, UnityObject owner, string propertyName)
@@ -266,16 +319,19 @@ namespace UnityEditor.Timeline
             }
             else
             {
-                var curve = new AnimationCurve();
-
-                CurveEditUtility.AddKeyFrameToCurve(
-                    curve, 0.0f, clip.frameRate, CurveEditUtility.GetKeyValue(prop),
-                    prop.propertyType == SerializedPropertyType.Boolean);
-
-                AnimationUtility.SetEditorCurve(clip, binding, curve);
+                SetProxyCurve(prop, binding);
             }
 
             m_PropertiesMap[binding] = prop;
+        }
+
+        void SetProxyCurve(SerializedProperty prop, EditorCurveBinding binding)
+        {
+            var curve = new AnimationCurve();
+            CurveEditUtility.AddKeyFrameToCurve(
+                curve, 0.0f, m_ProxyCurves.frameRate, CurveEditUtility.GetKeyValue(prop),
+                prop.propertyType == SerializedPropertyType.Boolean);
+            AnimationUtility.SetEditorCurve(m_ProxyCurves, binding, curve);
         }
 
         struct RebuildGuard : IDisposable

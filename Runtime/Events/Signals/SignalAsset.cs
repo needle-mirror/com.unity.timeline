@@ -9,6 +9,7 @@ namespace UnityEngine.Timeline
     /// <seealso cref="UnityEngine.Timeline.SignalEmitter"/>
     /// <seealso cref="UnityEngine.Timeline.SignalReceiver"/>
     [AssetFileNameExtension("signal")]
+    [TimelineHelpURL(typeof(SignalAsset))]
     public class SignalAsset : ScriptableObject
     {
         internal static event Action<SignalAsset> OnEnableCallback;

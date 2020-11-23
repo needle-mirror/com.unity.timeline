@@ -168,9 +168,6 @@ namespace UnityEditor.Timeline
             {
                 // selection may have changed while Timeline Editor was looking away
                 RefreshSelection(false);
-
-                // Inline curves may have become out of sync
-                RefreshInlineCurves();
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -81,6 +82,12 @@ namespace UnityEngine.Timeline
         public override void EvaluateAt(double localTime, FrameData frameData)
         {
             enable = true;
+            if (frameData.timeLooped)
+            {
+                // case 1184106 - animation playables require setTime to be called twice to 'reset' event.
+                SetTime(clip.clipIn);
+                SetTime(clip.clipIn);
+            }
 
             float weight = 1.0f;
             if (clip.IsPreExtrapolatedTime(localTime))
@@ -99,12 +106,22 @@ namespace UnityEngine.Timeline
             {
                 SetTime(clipTime);
             }
+
             SetDuration(clip.extrapolatedDuration);
         }
 
-        public override void Reset()
+        public override void DisableAt(double localTime, double rootDuration, FrameData frameData)
         {
-            SetTime(m_Clip.clipIn);
+            var time = Math.Min(localTime, (double) DiscreteTime.FromTicks(intervalEnd));
+            if (frameData.timeLooped)
+                time = Math.Min(time, rootDuration);
+
+            var clipTime = clip.ToLocalTime(time);
+            if (clipTime > -DiscreteTime.tickValue / 2)
+            {
+                 SetTime(clipTime);
+            }
+            enable = false;
         }
     }
 }

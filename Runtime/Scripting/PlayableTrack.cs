@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
@@ -11,6 +10,7 @@ namespace UnityEngine.Timeline
     /// This is a track that can contain PlayableAssets that are found in the project and do not have their own specified track type.
     /// </remarks>
     [Serializable]
+    [TimelineHelpURL(typeof(PlayableTrack))]
     public class PlayableTrack : TrackAsset
     {
         /// <inheritdoc />

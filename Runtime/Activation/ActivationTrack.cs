@@ -10,6 +10,7 @@ namespace UnityEngine.Timeline
     [TrackClipType(typeof(ActivationPlayableAsset))]
     [TrackBindingType(typeof(GameObject))]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(ActivationTrack))]
     public class ActivationTrack : TrackAsset
     {
         [SerializeField]

@@ -73,7 +73,6 @@ namespace UnityEngine.Timeline
         Auto
     }
 
-
     // offset mode
     enum AppliedOffsetMode
     {
@@ -85,7 +84,6 @@ namespace UnityEngine.Timeline
         SceneOffsetEditor, // scene offset mode in editor
         SceneOffsetLegacyEditor,
     }
-
 
     // separate from the enum to hide them from UI elements
     static class MatchTargetFieldConstants
@@ -113,7 +111,6 @@ namespace UnityEngine.Timeline
         }
     }
 
-
     /// <summary>
     /// A Timeline track used for playing back animations on an Animator.
     /// </summary>
@@ -121,6 +118,7 @@ namespace UnityEngine.Timeline
     [TrackClipType(typeof(AnimationPlayableAsset), false)]
     [TrackBindingType(typeof(Animator))]
     [ExcludeFromPreset]
+    [TimelineHelpURL(typeof(AnimationTrack))]
     public partial class AnimationTrack : TrackAsset, ILayerable
     {
         const string k_DefaultInfiniteClipName = "Recorded";
