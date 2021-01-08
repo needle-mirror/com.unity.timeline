@@ -791,13 +791,17 @@ namespace UnityEngine.Timeline
             m_AnimationCurves = TimelineCreateUtilities.CreateAnimationClipForTrack(string.IsNullOrEmpty(curvesClipName) ? kDefaultCurvesName : curvesClipName, parentTrack, true);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called before Unity serializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called after Unity deserializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_Version < k_LatestVersion)

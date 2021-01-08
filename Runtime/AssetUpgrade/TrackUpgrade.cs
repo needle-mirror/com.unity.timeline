@@ -33,7 +33,9 @@ namespace UnityEngine.Timeline
 
         internal virtual void OnUpgradeFromVersion(int oldVersion) {}
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called before Unity serializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Version = k_LatestVersion;
@@ -52,7 +54,9 @@ namespace UnityEngine.Timeline
             OnBeforeTrackSerialize();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Called after Unity deserializes this object.
+        /// </summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             // Clear the clip cache when a deserialize is performed, or

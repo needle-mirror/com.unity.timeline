@@ -207,7 +207,7 @@ namespace UnityEditor.Timeline
             // if we switched from Auto to Fixed, use the auto duration as the new fixed duration so the end marker stay in the same position.
             if (state.editSequence.asset.durationMode == TimelineAsset.DurationMode.BasedOnClips && mode == TimelineAsset.DurationMode.FixedLength)
             {
-                state.editSequence.asset.fixedDuration = state.editSequence.duration;
+                state.editSequence.asset.UpdateFixedDurationWithItemsDuration();
             }
 
             state.editSequence.asset.durationMode = mode;

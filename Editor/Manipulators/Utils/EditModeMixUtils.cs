@@ -10,14 +10,15 @@ namespace UnityEditor.Timeline
         {
             PlacementValidity.InvalidIsWithin,
             PlacementValidity.InvalidStartsInBlend,
-            PlacementValidity.InvalidContainsBlend
+            PlacementValidity.InvalidContainsBlend,
+            PlacementValidity.InvalidOverlapWithNonBlendableClip
         };
 
         public static bool CanInsert(IEnumerable<ItemsPerTrack> itemsGroups)
         {
             foreach (var itemsGroup in itemsGroups)
             {
-                var siblings = ItemsUtils.GetItemsExcept(itemsGroup.targetTrack, itemsGroup.items);
+                List<ITimelineItem> siblings = ItemsUtils.GetItemsExcept(itemsGroup.targetTrack, itemsGroup.items).ToList();
                 foreach (var item in itemsGroup.items)
                 {
                     var placementValidity = GetPlacementValidity(item, siblings);

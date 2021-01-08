@@ -43,7 +43,10 @@ namespace UnityEngine.Timeline
             return handle;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// This function is called when this PlayableBehaviour is destroyed.
+        /// </summary>
+        /// <param name="playable">The Playable that owns the current PlayableBehaviour.</param>
         public override void OnPlayableDestroy(Playable playable)
         {
 #if UNITY_EDITOR

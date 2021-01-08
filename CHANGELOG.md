@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.6] - 2021-01-08
+
+### Fixed
+
+- Create button on timeline panel no longer defaults to an invalid path. ([1289923](https://issuetracker.unity3d.com/product/unity/issues/guid/1289923))
+- Fixed issue where Timeline's bindings field would loses names and bindings when selecting clips. ([1293941](https://issuetracker.unity3d.com/product/unity/issues/guid/1293941))
+- Make Timeline's duration result displayed in the Inspector, when switching from duration mode: Based On Clips to Fixed Length, closer to the actual duration. ([1156920](https://issuetracker.unity3d.com/product/unity/issues/guid/1156920))
+- Copy/Paste of clips in the Timeline Window will no longer paste clips at an invalid time in mix-mode. ([1289925](https://issuetracker.unity3d.com/product/unity/issues/guid/1289925))
+
 ## [1.4.5] - 2020-11-19
 
 ### Fixed

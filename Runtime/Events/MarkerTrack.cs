@@ -4,7 +4,6 @@ using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
-    /// <inheritdoc />
     /// <summary>
     /// Use this track to add Markers bound to a GameObject.
     /// </summary>

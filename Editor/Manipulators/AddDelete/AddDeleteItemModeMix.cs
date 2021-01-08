@@ -13,7 +13,7 @@ namespace UnityEditor.Timeline
 
             if (!EditModeMixUtils.CanInsert(itemsGroups))
             {
-                var validTime = itemsGroups.Select(c => c.targetTrack).Max(parent => parent.duration);
+                var validTime = itemsGroups.Select(c => c.targetTrack).Max(parent => parent.end);
                 ItemsUtils.SetItemsStartTime(itemsGroups, validTime);
             }
         }
