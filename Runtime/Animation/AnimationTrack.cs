@@ -695,7 +695,7 @@ namespace UnityEngine.Timeline
         {
             if (s_DefaultHumanoidClip == null)
             {
-                s_DefaultHumanoidClip = EditorGUIUtility.LoadRequired(k_DefaultHumanoidClipPath) as AnimationClip;
+                s_DefaultHumanoidClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(k_DefaultHumanoidClipPath);
                 if (s_DefaultHumanoidClip == null)
                     Debug.LogError("Could not load default humanoid animation clip for Timeline");
             }

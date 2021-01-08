@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.2.18] - 2021-01-08
+
+### Changed
+
+- Updated package manifest to reflect existing dependencies on `Audio`, `Animation`, `Director` and `Particle system` modules.
+
 ## [1.2.17] - 2020-08-26
 
 ### Fixed
