@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.7] - 2021-02-25
+
+### Fixed
+
+- Fixed rare issue where the time field could not be edited after opening a timeline. ([1312198](https://issuetracker.unity3d.com/product/unity/issues/guid/1312198))
+
 ## [1.4.6] - 2021-01-08
 
 ### Fixed

@@ -378,7 +378,7 @@ namespace UnityEditor.Timeline
                 {
                     Color c = GUI.color;
                     GUI.color = headColor;
-                    GUI.Box(bounds, m_HeaderContent, m_Style);
+                    style.Draw(bounds, m_HeaderContent, false, false, false, false);
                     GUI.color = c;
 
                     if (canMoveHead)

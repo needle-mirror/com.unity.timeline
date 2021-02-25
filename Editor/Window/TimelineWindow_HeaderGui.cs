@@ -226,11 +226,13 @@ namespace UnityEditor.Timeline
         // Draws the box to enter the time field
         void TimeCodeGUI()
         {
+            const string timeFieldHint = "TimelineWindow-TimeCodeGUI";
+
             EditorGUI.BeginChangeCheck();
 
             var currentTime = state.editSequence.asset != null ? TimeReferenceUtility.ToTimeString(state.editSequence.time, "F1") : "0";
             var r = EditorGUILayout.GetControlRect(false, EditorGUI.kSingleLineHeight, EditorStyles.toolbarTextField, GUILayout.Width(WindowConstants.timeCodeWidth));
-            var id = GUIUtility.GetControlID("RenameFieldTextField".GetHashCode(), FocusType.Passive, r);
+            var id = GUIUtility.GetControlID(timeFieldHint.GetHashCode(), FocusType.Keyboard, r);
             var newCurrentTime = EditorGUI.DelayedTextFieldInternal(r, id, GUIContent.none, currentTime, null, EditorStyles.toolbarTextField);
 
             if (EditorGUI.EndChangeCheck())
