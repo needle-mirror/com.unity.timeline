@@ -13,6 +13,7 @@ namespace UnityEditor.Timeline
         double timeScale { get; }
         double duration { get; }
         bool isReadOnly { get; }
+        bool isAssetOnly { get; set; }
         TimelineAssetViewModel viewModel { get; }
         double time { get; set; }
         int frame { get; set; }
@@ -41,6 +42,7 @@ namespace UnityEditor.Timeline
         public double timeScale { get { return 1.0; } }
         public double duration { get { return 0.0; } }
         public bool isReadOnly { get { return false; } }
+        public bool isAssetOnly { get { return false; } set { } }
 
         TimelineAssetViewModel m_ViewModel;
 

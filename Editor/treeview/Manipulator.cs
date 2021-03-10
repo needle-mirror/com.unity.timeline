@@ -21,13 +21,25 @@ namespace UnityEditor.Timeline
 
         public bool HandleEvent(WindowState state)
         {
+            Event currentEvent = Event.current;
+            var type = currentEvent.GetTypeForControl(m_Id);
+            return HandleEvent(type, currentEvent, state);
+        }
+
+        public bool HandleEvent(EventType type, WindowState state)
+        {
+            Event currentEvent = Event.current;
+            return HandleEvent(type, currentEvent, state);
+        }
+
+        bool HandleEvent(EventType type, Event evt, WindowState state)
+        {
             if (m_Id == 0)
                 m_Id =  GUIUtility.GetPermanentControlID();
 
             bool isHandled = false;
-            var evt = Event.current;
 
-            switch (evt.GetTypeForControl(m_Id))
+            switch (type)
             {
                 case EventType.ScrollWheel:
                     isHandled = MouseWheel(evt, state);

@@ -68,7 +68,6 @@ namespace UnityEditor.Timeline
         /// Disables recording mode of an AnimationTrack.
         /// </summary>
         /// <param name="track">The AnimationTrack which will be taken out of recording mode.</param>
-        /// <returns>True if track was put taken out of recording recording mode, False otherwise. </returns>
         public static void StopRecording(this AnimationTrack track)
         {
             if (!IsRecording(track) || TimelineEditor.state == null)

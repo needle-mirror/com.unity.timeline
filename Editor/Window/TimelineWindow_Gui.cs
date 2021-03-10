@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+
+#if UNITY_2021_2_OR_NEWER
+using UnityEditor.SceneManagement;
+#else
 using UnityEditor.Experimental.SceneManagement;
+#endif
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -136,6 +141,7 @@ namespace UnityEditor.Timeline
 
         void DoLayout()
         {
+            EventType rawType = Event.current.rawType;
             var mousePosition = Event.current.mousePosition; // mousePosition is also affected by this bug and does not reflect the original position after a Use()
 
             Initialize();
@@ -157,6 +163,12 @@ namespace UnityEditor.Timeline
             {
                 if (state.editSequence.asset != null)
                     m_PostTreeViewControl.HandleManipulatorsEvents(state);
+            }
+
+            if (state.editSequence.asset != null)
+            {
+                m_RectangleSelect.OnGUI(state, rawType, mousePosition);
+                m_RectangleZoom.OnGUI(state, rawType, mousePosition);
             }
         }
 

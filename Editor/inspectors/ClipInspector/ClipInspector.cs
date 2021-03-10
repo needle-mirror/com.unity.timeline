@@ -632,16 +632,21 @@ namespace UnityEditor.Timeline
 
             if (m_SelectedPlayableAssetsInspector != null)
             {
-                foreach (var selectedItem in m_SelectionCache)
-                    CurvesOwnerInspectorHelper.PreparePlayableAsset(selectedItem);
+                if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
+                {
+                    foreach (var selectedItem in m_SelectionCache)
+                        CurvesOwnerInspectorHelper.PreparePlayableAsset(selectedItem);
+                }
 
                 EditorGUI.BeginChangeCheck();
                 using (new EditorGUI.DisabledScope(IsLocked()))
                 {
                     m_SelectedPlayableAssetsInspector.OnInspectorGUI();
                 }
+
                 if (EditorGUI.EndChangeCheck())
                 {
+
                     MarkClipsDirty();
                     if (TimelineWindow.IsEditingTimelineAsset(m_TimelineAsset) && TimelineWindow.instance.state != null)
                     {

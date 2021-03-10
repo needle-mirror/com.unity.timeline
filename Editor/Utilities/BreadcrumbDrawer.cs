@@ -1,5 +1,11 @@
 using System;
 using System.Collections.Generic;
+
+#if UNITY_2021_2_OR_NEWER
+using UnityEditor.SceneManagement;
+#else
+using UnityEditor.Experimental.SceneManagement;
+#endif
 using UnityEngine;
 
 namespace UnityEditor.Timeline
@@ -203,7 +209,7 @@ namespace UnityEditor.Timeline
                                 var assetPath = AssetDatabase.GetAssetPath(gameObject);
                                 if (!string.IsNullOrEmpty(assetPath))
                                 {
-                                    var stage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.OpenPrefab(assetPath);
+                                    var stage = PrefabStageUtility.OpenPrefab(assetPath);
                                     if (stage != null)
                                         ping = false;
                                 }

@@ -160,7 +160,11 @@ namespace UnityEditor.Timeline
             if (serializedObject == null)
                 return;
 
-            CurvesOwnerInspectorHelper.PreparePlayableAsset(m_TrackCurvesWrapper);
+            if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
+            {
+                CurvesOwnerInspectorHelper.PreparePlayableAsset(m_TrackCurvesWrapper);
+            }
+
             serializedObject.Update();
 
             using (var changeScope = new EditorGUI.ChangeCheckScope())
@@ -181,9 +185,19 @@ namespace UnityEditor.Timeline
             var expanded = true;
             while (property.NextVisible(expanded))
             {
-                // Don't draw script field for built-in types
-                if (m_IsBuiltInType && "m_Script" == property.propertyPath)
+                if ("m_Script" == property.propertyPath)
+                {
+                    // Don't draw script field for built-in types
+                    if (m_IsBuiltInType)
+                        continue;
+
+                    // Disable the script field, as it will break your Timeline if you change it.
+                    EditorGUI.BeginDisabled(true);
+                    EditorGUILayout.PropertyField(property, !expanded);
+                    EditorGUI.EndDisabled();
                     continue;
+                }
+
 
                 EditorGUILayout.PropertyField(property, !expanded);
                 expanded = false;

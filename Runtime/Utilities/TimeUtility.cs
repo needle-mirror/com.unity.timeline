@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace UnityEngine.Timeline
@@ -179,6 +180,44 @@ namespace UnityEngine.Timeline
             }
 
             return frames / frameRate + seconds + minutes * 60 + hours * 3600;
+        }
+        public static double ParseTimeSeconds(string timeCode, double frameRate, double defaultValue)
+        {
+            timeCode = RemoveChar(timeCode, c => char.IsWhiteSpace(c));
+            string[] sections = timeCode.Split(':');
+            if (sections.Length == 0 || sections.Length > 4)
+                return defaultValue;
+
+            int hours = 0;
+            int minutes = 0;
+            double seconds = 0;
+
+            try
+            {
+                // depending on the format of the last numbers
+                // seconds format
+                string lastSection = sections[sections.Length - 1];
+                {
+                    if (!double.TryParse(lastSection, NumberStyles.Integer, CultureInfo.InvariantCulture, out seconds))
+                        if (Regex.Match(lastSection, @"^\d+\.\d+$").Success)
+                            seconds = double.Parse(lastSection);
+                        else
+                            return defaultValue;
+
+                    if (!double.TryParse(lastSection, NumberStyles.Float, CultureInfo.InvariantCulture, out seconds))
+                            return defaultValue;
+
+                    if (sections.Length > 3) return defaultValue;
+                    if (sections.Length > 1) minutes = int.Parse(sections[sections.Length - 2]);
+                    if (sections.Length > 2) hours = int.Parse(sections[sections.Length - 3]);
+                }
+            }
+            catch (FormatException)
+            {
+                return defaultValue;
+            }
+
+            return seconds + minutes * 60 + hours * 3600;
         }
 
         // fixes rounding errors from using single precision for length

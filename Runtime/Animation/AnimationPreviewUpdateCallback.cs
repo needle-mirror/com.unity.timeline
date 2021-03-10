@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine.Animations;
+#if !UNITY_2020_1_OR_NEWER
 using UnityEngine.Experimental.Animations;
+#endif
+
 using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline

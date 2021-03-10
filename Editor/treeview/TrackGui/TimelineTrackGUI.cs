@@ -730,9 +730,9 @@ namespace UnityEditor.Timeline
         {
             var bindingRect = new Rect(
                 rect.xMin,
-                rect.y + (rect.height - WindowConstants.trackHeaderButtonSize) / 2f,
+                rect.y + (rect.height - WindowConstants.trackHeaderBindingHeight) / 2f,
                 Mathf.Min(rect.width, WindowConstants.trackBindingMaxSize) - WindowConstants.trackBindingPadding,
-                WindowConstants.trackHeaderButtonSize);
+                WindowConstants.trackHeaderBindingHeight);
 
             if (m_TrackDrawData.m_Binding.outputTargetType != null && typeof(Object).IsAssignableFrom(m_TrackDrawData.m_Binding.outputTargetType))
             {

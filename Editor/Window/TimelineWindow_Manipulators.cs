@@ -7,6 +7,9 @@ namespace UnityEditor.Timeline
         readonly Control m_PreTreeViewControl = new Control();
         readonly Control m_PostTreeViewControl = new Control();
 
+        readonly RectangleSelect m_RectangleSelect = new RectangleSelect();
+        readonly RectangleZoom m_RectangleZoom = new RectangleZoom();
+
         void InitializeManipulators()
         {
             // Order is important!
@@ -34,8 +37,6 @@ namespace UnityEditor.Timeline
             m_PostTreeViewControl.AddManipulator(new TrackShortcutManipulator());
             m_PostTreeViewControl.AddManipulator(new TimelineShortcutManipulator());
             m_PostTreeViewControl.AddManipulator(new ClearSelection());
-            m_PostTreeViewControl.AddManipulator(new RectangleSelect());
-            m_PostTreeViewControl.AddManipulator(new RectangleZoom());
         }
     }
 }

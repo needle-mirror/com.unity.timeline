@@ -304,6 +304,13 @@ namespace UnityEditor.Timeline
                     state.recording = false;
                     state.previewMode = false;
 
+                    if (locked)
+                    {
+                        //revert lock if the original context was not asset mode
+                        if(!state.masterSequence.isAssetOnly)
+                            locked = false;
+                    }
+
                     if (!locked && m_LastFrameHadSequence)
                     {
                         // the user may be adding a new PlayableDirector to a selected GameObject, make sure the timeline editor is shows the proper director if none is already showing
@@ -312,6 +319,10 @@ namespace UnityEditor.Timeline
                         if (selectedDirector != null)
                         {
                             SetTimeline(selectedDirector);
+                        }
+                        else
+                        {
+                            state.masterSequence.isAssetOnly = true;
                         }
                     }
                 }

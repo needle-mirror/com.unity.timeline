@@ -19,6 +19,8 @@ namespace UnityEditor.Timeline
         public double start { get; }
         public double timeScale { get; }
 
+        public bool isAssetOnly { get; set; }
+
         public double duration
         {
             get
@@ -110,6 +112,7 @@ namespace UnityEditor.Timeline
             this.asset = asset;
             this.director = director;
             this.hostClip = hostClip;
+            isAssetOnly = asset != null && director == null;
 
             start = hostClip == null ? 0.0 : hostClip.start;
             timeScale = hostClip == null ? 1.0 : hostClip.timeScale * parentSequence.timeScale;

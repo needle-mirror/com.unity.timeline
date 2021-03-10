@@ -60,16 +60,27 @@ namespace UnityEditor.Timeline
 
         public static double FromTimeString(this TimeFormat timeFormat, string timeString, double frameRate, double defaultValue)
         {
-            if (timeFormat == TimeFormat.Frames)
+            double time = defaultValue;
+            switch (timeFormat)
             {
-                double time;
-                if (!double.TryParse(timeString, NumberStyles.Any, CultureInfo.InvariantCulture, out time))
-                    return defaultValue;
-                return TimeUtility.FromFrames(time, frameRate);
+                case TimeFormat.Frames:
+                    if (!double.TryParse(timeString, NumberStyles.Any, CultureInfo.InvariantCulture, out time))
+                        return defaultValue;
+                    time = TimeUtility.FromFrames(time, frameRate);
+                    break;
+                case TimeFormat.Seconds:
+                    time = TimeUtility.ParseTimeSeconds(timeString, frameRate, defaultValue);
+                    break;
+                case TimeFormat.Timecode:
+                    time = TimeUtility.ParseTimeCode(timeString, frameRate, defaultValue);
+                    break;
+                default:
+                    time = defaultValue;
+                    break;
+
             }
 
-            // this handles seconds or timecode based on the formatting (. vs :)
-            return TimeUtility.ParseTimeCode(timeString, frameRate, defaultValue);
+            return time;
         }
     }
 }
