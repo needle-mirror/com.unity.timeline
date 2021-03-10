@@ -2,7 +2,22 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.6.0-pre.1] - 2020-01-08
+## [1.6.0-pre.3] - 2021-03-10
+
+### Added
+
+- Added an asterisk to the Timeline Window when the currently edited Timeline Asset is dirty (has unsaved changes). (1024230)
+- Added the `IInspectorChangeHandler` interface to change what happens when a UI component in the inspector is modified. (1283486)
+
+### Changed
+
+- Removed non-working PlayRange options (Loop/Hold) as both were actually mapping to Loop behaviour and always have been.
+
+### Fixed
+
+- Removed warnings with AnimationWindowState snap mode. (1306205)
+
+## [1.6.0-pre.1] - 2021-01-08
 
 ### Added
 
@@ -12,7 +27,31 @@ All notable changes to this package will be documented in this file. The format 
 
 - Removed GC allocations in `PlayableDirector.duration` when a timeline asset is assigned. ([1298818](https://issuetracker.unity3d.com/product/unity/issues/guid/1298818))
 
-## [1.5.2] - 2020-01-08
+## [1.5.4] - 2021-03-10
+
+### Fixed
+
+- Fixed issue where the horizontal scrollbar could not be moved or resized.
+
+## [1.5.3] - 2021-03-05
+
+### Changed
+
+- Disabled edition of Track Asset Inspector Script field as it could break Timeline Assets.
+
+### Fixed
+
+- Fixed issue where the timeline header track would automatically open during a drag and drop operation. ([1305436](https://issuetracker.unity3d.com/product/unity/issues/guid/1305436))
+- Fixed a rare issue where some broken tracks could not be removed. ([1305388](https://issuetracker.unity3d.com/product/unity/issues/guid/1305388))
+- Fixed rare issue where the time field could not be edited after opening a timeline. ([1312198](https://issuetracker.unity3d.com/product/unity/issues/guid/1312198))
+- Fixed cosmetic issue where the duration marker was drawn over the scroll bar.
+- Fixed issue where times without a decimal separator (. or , depending on locale) would not be interpreted correctly by the time field. (1315605)
+- Fixed issue where a selection rectangle could not be made when started inside a track. ([1315840](https://issuetracker.unity3d.com/product/unity/issues/guid/1315840))
+- Performing Undo/Redo will not affect Timeline window selection when the window is locked. (Selecting sub-timelines can still be undone). ([1313515](https://issuetracker.unity3d.com/product/unity/issues/guid/1313515))
+- Fixed an issue where text would be clipped in the track header binding. ([1302401](https://issuetracker.unity3d.com/product/unity/issues/guid/1302401))
+- Fixed issue where clicking in the Timeline window while there is no active timeline would throw an exception.
+
+## [1.5.2] - 2021-01-08
 
 ### Added
 

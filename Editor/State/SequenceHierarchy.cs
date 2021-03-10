@@ -56,6 +56,9 @@ namespace UnityEditor.Timeline
             if (m_SerializedPath == null || m_WindowState == null || m_WindowState.GetWindow() == null)
                 return;
 
+            bool hasDifferentRoot = m_WindowState.GetCurrentSequencePath().selectionRoot != m_SerializedPath.selectionRoot;
+            if (m_WindowState.GetWindow().locked && hasDifferentRoot)
+                return;
             m_WindowState.SetCurrentSequencePath(m_SerializedPath, true);
         }
 

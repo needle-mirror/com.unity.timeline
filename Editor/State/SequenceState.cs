@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -19,6 +21,8 @@ namespace UnityEditor.Timeline
         public double start { get; }
         public double timeScale { get; }
 
+        public bool isAssetOnly { get; set; }
+
         public double duration
         {
             get
@@ -29,6 +33,25 @@ namespace UnityEditor.Timeline
                 var assetDuration = asset.durationMode == TimelineAsset.DurationMode.FixedLength ? asset.fixedDuration : asset.duration;
                 return hostClip == null ? assetDuration : Math.Min(hostClip.duration, assetDuration);
             }
+        }
+
+        [NonSerialized] List<UnityEngine.Object> m_CachedChildAssets;
+        public List<UnityEngine.Object> cachedChildAssets
+        {
+            get
+            {
+                if (m_CachedChildAssets == null && asset != null)
+                {
+                    m_CachedChildAssets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(asset)).ToList();
+                }
+
+                return m_CachedChildAssets;
+            }
+        }
+
+        public void InvalidateChildAssetCache()
+        {
+            m_CachedChildAssets = null;
         }
 
         bool? m_IsReadOnly;
@@ -110,6 +133,7 @@ namespace UnityEditor.Timeline
             this.asset = asset;
             this.director = director;
             this.hostClip = hostClip;
+            isAssetOnly = asset != null && director == null;
 
             start = hostClip == null ? 0.0 : hostClip.start;
             timeScale = hostClip == null ? 1.0 : hostClip.timeScale * parentSequence.timeScale;

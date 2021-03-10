@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Timeline;
-using UnityObject = UnityEngine.Object;
 
 namespace UnityEditor.Timeline
 {
@@ -632,22 +631,26 @@ namespace UnityEditor.Timeline
 
             if (m_SelectedPlayableAssetsInspector != null)
             {
-                foreach (var selectedItem in m_SelectionCache)
-                    CurvesOwnerInspectorHelper.PreparePlayableAsset(selectedItem);
+                if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
+                {
+                    foreach (var selectedItem in m_SelectionCache)
+                        CurvesOwnerInspectorHelper.PreparePlayableAsset(selectedItem);
+                }
 
                 EditorGUI.BeginChangeCheck();
                 using (new EditorGUI.DisabledScope(IsLocked()))
                 {
                     m_SelectedPlayableAssetsInspector.OnInspectorGUI();
                 }
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkClipsDirty();
                     if (TimelineWindow.IsEditingTimelineAsset(m_TimelineAsset) && TimelineWindow.instance.state != null)
                     {
-                        var basicInspector = m_SelectedPlayableAssetsInspector as BasicAssetInspector;
-                        if (basicInspector != null)
-                            basicInspector.ApplyChanges();
+                        var inspectorChangeHandler = m_SelectedPlayableAssetsInspector as IInspectorChangeHandler;
+                        if (inspectorChangeHandler != null)
+                            inspectorChangeHandler.OnPlayableAssetChangedInInspector();
                         else
                             TimelineEditor.Refresh(RefreshReason.ContentsModified);
                     }

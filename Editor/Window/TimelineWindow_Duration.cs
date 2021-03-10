@@ -82,7 +82,7 @@ namespace UnityEditor.Timeline
                 // Draw the TimeAreaItem
                 // Rect trackheadRect = treeviewBounds;
                 //trackheadRect.height = clientArea.height;
-                m_TimelineDuration.Draw(sequenceRect, state, duration);
+                m_TimelineDuration.Draw(sequenceContentRect, state, duration);
             }
 
             // Draw Blue line in timeline indicating the duration...

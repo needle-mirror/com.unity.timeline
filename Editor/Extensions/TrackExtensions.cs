@@ -28,6 +28,7 @@ namespace UnityEditor.Timeline
         /// Sets whether the children of the Track are currently visible in the Timeline Editor.
         /// </summary>
         /// <param name="track">The track asset to collapsed state to modify.</param>
+        /// <param name="collapsed">`true` to collapse children, false otherwise.</param>
         /// <remarks> The track collapsed state is not serialized inside the asset and is lost from one checkout of the project to another. </remarks>>
         public static void SetCollapsed(this TrackAsset track, bool collapsed)
         {
@@ -375,7 +376,7 @@ namespace UnityEditor.Timeline
 
             // this object must be a Unity null, but not actually null;
             object trackAsObject = track;
-            if (trackAsObject == null || track != null) // yes, this is correct
+            if (trackAsObject == null || track as TrackAsset != null) // yes, this is correct
                 throw new ArgumentException("track is not in a broken state");
 
             // this belongs to a parent track

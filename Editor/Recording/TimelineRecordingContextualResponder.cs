@@ -130,13 +130,13 @@ namespace UnityEditor.Timeline
                 return;
 
             TimelineRecording.NextKey(modifications[0].target, modifications, state);
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.SceneNeedsUpdate);
         }
 
         public void GoToPreviousKeyframe(PropertyModification[] modifications)
         {
             TimelineRecording.PrevKey(modifications[0].target, modifications, state);
-            state.Refresh();
+            TimelineEditor.Refresh(RefreshReason.SceneNeedsUpdate);
         }
     }
 }

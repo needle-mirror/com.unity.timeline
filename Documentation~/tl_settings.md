@@ -27,15 +27,6 @@ Select one of the options under **Frame Rate** to set the unit of measurement fo
 
 Timeline supports custom frame rates from 1e-6 to 1000. To set a custom frame rate, you must use the **Frame Rate** property in the [Timeline Asset settings](insp_tl.md). When the Timeline Asset is set to a custom frame rate, the Custom menu item is enabled and is automatically selected for the Timeline instance. The Custom menu item shows the custom frame rate in parentheses.
 
-## Play Range Mode
-
-Select one of the options under **Play Range Mode** to set the behaviour of the Timeline window when the [Play Range button](tl_play_cntrls.md#playrange) is enabled.
-
-* When **Play Range Mode** is set to **Loop**, the Timeline instance plays the defined Play Range repeatedly, until playback is interrupted.
-* When **Play Range Mode** is set to **Hold**, the Timeline instance plays the defined Play Range once and stops at the end of the Play Range.
-
-You can only set a play range when previewing a Timeline instance within the Timeline window. Unity ignores the play range in [Play Mode](https://docs.unity3d.com/Manual/GameView.html).
-
 ## Show Audio Waveforms
 
 Enable **Show Audio Waveforms** to draw the waveforms for all audio clips on all audio tracks. For example, use an audio waveform as a guide when manually positioning an Audio clip of footsteps with the Animation clip of a humanoid walking. Disable **Show Audio Waveform** to hide audio waveforms. **Show Audio Waveforms** is enabled by default.

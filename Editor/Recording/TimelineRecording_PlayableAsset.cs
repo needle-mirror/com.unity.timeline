@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -15,6 +15,7 @@ namespace UnityEditor.Timeline
         {
             return modifications.Any(x => GetTarget(x) as IPlayableAsset != null);
         }
+
 
         internal static UndoPropertyModification[] ProcessPlayableAssetModification(UndoPropertyModification[] modifications, WindowState state, bool allowAdd)
         {

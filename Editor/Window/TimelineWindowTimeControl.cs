@@ -16,6 +16,12 @@ namespace UnityEditor.Timeline
             public TrackAsset track;
         }
 
+#if UNITY_2021_2
+        const AnimationWindowState.SnapMode k_SnapMode = AnimationWindowState.SnapMode.SnapToFrame;
+#else
+        const AnimationWindowState.SnapMode k_SnapMode = AnimationWindowState.SnapMode.SnapToClipFrame;
+#endif
+
         [SerializeField] ClipData m_ClipData;
         [SerializeField] TimelineClip m_Clip;
         [SerializeField] AnimationWindowState m_AnimWindowState;
@@ -158,13 +164,13 @@ namespace UnityEditor.Timeline
         public override void GoToPreviousKeyframe()
         {
             var newTime = AnimationWindowUtility.GetPreviousKeyframeTime(GetCurves(), time.time, m_AnimWindowState.clipFrameRate);
-            GoToTime(m_AnimWindowState.SnapToFrame(newTime, AnimationWindowState.SnapMode.SnapToClipFrame));
+            GoToTime(m_AnimWindowState.SnapToFrame(newTime, k_SnapMode));
         }
 
         public override void GoToNextKeyframe()
         {
             var newTime = AnimationWindowUtility.GetNextKeyframeTime(GetCurves(), time.time, m_AnimWindowState.clipFrameRate);
-            GoToTime(m_AnimWindowState.SnapToFrame(newTime, AnimationWindowState.SnapMode.SnapToClipFrame));
+            GoToTime(m_AnimWindowState.SnapToFrame(newTime, k_SnapMode));
         }
 
         public override void GoToFirstKeyframe()

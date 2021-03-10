@@ -216,7 +216,9 @@ namespace UnityEditor.Timeline
                 {
                     var clip = TimelineRecording.FindClipWithAsset(state.editSequence.asset, playableAsset);
                     if (clip != null)
+                    {
                         clip.MarkDirty();
+                    }
                 }
                 else if (editorClip != null && editorClip.clip != null)
                 {

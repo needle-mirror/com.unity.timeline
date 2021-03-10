@@ -59,8 +59,6 @@ The Timeline ruler highlights the play range and indicates its start and end wit
 
 _Play Range (red circle) enabled with while markers and highlighted area defining range_
 
-Use **Play Range Mode**, in the [Timeline Settings](tl_settings.md), to set whether the play range plays once or repeatedly.
-
 <a name="playheadlocation"></a>
 ## Timeline Playhead and Playhead Location field
 

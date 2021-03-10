@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
@@ -9,10 +10,12 @@ namespace UnityEditor.Timeline
         TimelineAsset asset { get; }
         PlayableDirector director { get; }
         TimelineClip hostClip { get; }
+        List<UnityEngine.Object> cachedChildAssets { get; }
         double start { get; }
         double timeScale { get; }
         double duration { get; }
         bool isReadOnly { get; }
+        bool isAssetOnly { get; set; }
         TimelineAssetViewModel viewModel { get; }
         double time { get; set; }
         int frame { get; set; }
@@ -22,6 +25,7 @@ namespace UnityEditor.Timeline
         double ToGlobalTime(double t);
         double ToLocalTime(double t);
         void ResetIsReadOnly();
+        void InvalidateChildAssetCache();
     }
 
     /**
@@ -37,10 +41,14 @@ namespace UnityEditor.Timeline
         public TimelineAsset asset { get { return null; } }
         public PlayableDirector director { get { return null; } }
         public TimelineClip hostClip { get { return null; } }
+
+        List<UnityEngine.Object> ISequenceState.cachedChildAssets { get { return null; } }
+
         public double start { get { return 0.0; } }
         public double timeScale { get { return 1.0; } }
         public double duration { get { return 0.0; } }
         public bool isReadOnly { get { return false; } }
+        public bool isAssetOnly { get { return false; } set {} }
 
         TimelineAssetViewModel m_ViewModel;
 
@@ -88,6 +96,11 @@ namespace UnityEditor.Timeline
         }
 
         public void ResetIsReadOnly()
+        {
+            // NO-OP
+        }
+
+        public void InvalidateChildAssetCache()
         {
             // NO-OP
         }

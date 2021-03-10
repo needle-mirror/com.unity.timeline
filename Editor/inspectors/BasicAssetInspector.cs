@@ -4,8 +4,9 @@ namespace UnityEditor.Timeline
 {
     // Simple inspector used by built in assets
     //  that only need to hide the script field
-    class BasicAssetInspector : Editor
+    class BasicAssetInspector : Editor, IInspectorChangeHandler
     {
+        bool m_ShouldRebuild;
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
@@ -21,13 +22,18 @@ namespace UnityEditor.Timeline
                 EditorGUILayout.PropertyField(property, true);
             }
 
-            serializedObject.ApplyModifiedProperties();
+            m_ShouldRebuild = serializedObject.ApplyModifiedProperties();
             EditorGUI.EndChangeCheck();
         }
 
-        public virtual void ApplyChanges()
+        public virtual void OnPlayableAssetChangedInInspector()
         {
-            TimelineEditor.Refresh(RefreshReason.ContentsModified);
+            if (m_ShouldRebuild)
+            {
+                TimelineEditor.Refresh(RefreshReason.ContentsModified);
+            }
+
+            m_ShouldRebuild = false;
         }
 
         static bool SkipField(string fieldName)

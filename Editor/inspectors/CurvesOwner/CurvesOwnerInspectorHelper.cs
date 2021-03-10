@@ -12,9 +12,6 @@ namespace UnityEditor.Timeline
         // and reverting values that aren't be recorded later to avoid dirtying the asset
         public static void PreparePlayableAsset(ICurvesOwnerInspectorWrapper wrapper)
         {
-            if (Event.current.type != EventType.Repaint)
-                return;
-
             if (wrapper.serializedPlayableAsset == null)
                 return;
 

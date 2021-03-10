@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
@@ -95,24 +96,36 @@ namespace UnityEditor.Timeline
 
         void HandleDragAndDrop()
         {
-            if (TimelineWindow.instance.state.editSequence.isReadOnly)
+            if (state.editSequence.isReadOnly || !state.showMarkerHeader)
                 return;
 
             if (Event.current == null || Event.current.type != EventType.DragUpdated &&
                 Event.current.type != EventType.DragPerform && Event.current.type != EventType.DragExited)
                 return;
 
-            timeline.CreateMarkerTrack(); // Ensure Marker track is created.
             var objectsBeingDropped = DragAndDrop.objectReferences.OfType<Object>();
             var candidateTime = TimelineHelpers.GetCandidateTime(Event.current.mousePosition);
             var perform = Event.current.type == EventType.DragPerform;
             var director = state.editSequence != null ? state.editSequence.director : null;
             DragAndDrop.visualMode = TimelineDragging.HandleClipPaneObjectDragAndDrop(objectsBeingDropped, timeline.markerTrack, perform,
-                timeline, null, director, candidateTime, TimelineDragging.ResolveType);
+                timeline, null, director, candidateTime, ResolveType);
             if (perform && DragAndDrop.visualMode == DragAndDropVisualMode.Copy)
             {
                 DragAndDrop.AcceptDrag();
             }
+        }
+
+        static bool ResolveType(IEnumerable<Type> types, Action<Type> onComplete, string formatString)
+        {
+            void CreateMarkerTrackOnComplete(Type type)
+            {
+                WindowState state = TimelineWindow.instance.state;
+                state.editSequence.asset.CreateMarkerTrack();
+                state.showMarkerHeader = true;
+                onComplete(type);
+            }
+
+            return TimelineDragging.ResolveType(types, CreateMarkerTrackOnComplete, formatString);
         }
 
         int Hash()

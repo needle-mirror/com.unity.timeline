@@ -7,7 +7,7 @@ namespace UnityEngine.Timeline
     [CustomEditor(typeof(AudioPlayableAsset))]
     class AudioPlayableAssetInspector : BasicAssetInspector
     {
-        public override void ApplyChanges()
+        public override void OnPlayableAssetChangedInInspector()
         {
             // At this point, we are guaranteed that the Timeline window is focused on
             // the correct asset and that a single clip is selected (see ClipInspector)

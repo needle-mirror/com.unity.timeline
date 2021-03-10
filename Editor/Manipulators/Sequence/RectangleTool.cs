@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UnityEditor.Timeline
 {
-    abstract class RectangleTool : Manipulator
+    abstract class RectangleTool
     {
-        struct TimelinePoint
+        readonly struct TimelinePoint
         {
             readonly double m_Time;
             readonly float m_YPos;
@@ -30,6 +30,8 @@ namespace UnityEditor.Timeline
             }
         }
 
+        const float k_HeaderSplitterOverlap = WindowConstants.headerSplitterWidth / 2;
+
         TimeAreaAutoPanner m_TimeAreaAutoPanner;
 
         TimelinePoint m_StartPoint;
@@ -41,78 +43,113 @@ namespace UnityEditor.Timeline
         protected abstract bool CanStartRectangle(Event evt);
         protected abstract bool OnFinish(Event evt, WindowState state, Rect rect);
 
-        protected override bool MouseDown(Event evt, WindowState state)
+        int m_Id;
+
+        public void OnGUI(WindowState state, EventType rawType, Vector2 mousePosition)
         {
-            if (state.IsCurrentEditingASequencerTextField())
-                return false;
+            if (m_Id == 0)
+                m_Id = GUIUtility.GetPermanentControlID();
 
-            m_ActiveRect = TimelineWindow.instance.sequenceContentRect;
+            if (state == null || state.GetWindow().treeView == null)
+                return;
 
-            if (!m_ActiveRect.Contains(evt.mousePosition))
-                return false;
+            var evt = Event.current;
 
-            if (!CanStartRectangle(evt))
-                return false;
-
-            if (enableAutoPan)
-                m_TimeAreaAutoPanner = new TimeAreaAutoPanner(state);
-
-            m_StartPoint = new TimelinePoint(state, evt.mousePosition);
-            m_EndPixel = evt.mousePosition;
-
-            state.AddCaptured(this);
-
-            return true;
-        }
-
-        protected override bool KeyDown(Event evt, WindowState state)
-        {
-            if (evt.keyCode == KeyCode.Escape)
+            if (rawType == EventType.MouseDown || evt.type == EventType.MouseDown)
             {
-                m_TimeAreaAutoPanner = null;
-                GUIUtility.hotControl = 0;
-                state.RemoveCaptured(this);
-                return true;
+                if (state.IsCurrentEditingASequencerTextField())
+                    return;
+
+                m_ActiveRect = TimelineWindow.instance.sequenceContentRect;
+
+                //remove the track header splitter overlap
+                m_ActiveRect.x += k_HeaderSplitterOverlap;
+                m_ActiveRect.width -= k_HeaderSplitterOverlap;
+
+                if (!m_ActiveRect.Contains(mousePosition))
+                    return;
+
+                if (!CanStartRectangle(evt))
+                    return;
+
+                if (enableAutoPan)
+                    m_TimeAreaAutoPanner = new TimeAreaAutoPanner(state);
+
+                m_StartPoint = new TimelinePoint(state, mousePosition);
+                m_EndPixel = mousePosition;
+
+                GUIUtility.hotControl = m_Id; //HACK: Because the treeView eats all the events, steal the hotControl if necessary...
+                evt.Use();
+
+                return;
             }
-            return false;
-        }
 
-        protected override bool MouseDrag(Event evt, WindowState state)
-        {
-            m_EndPixel = evt.mousePosition;
-            return true;
-        }
-
-        protected override bool MouseUp(Event evt, WindowState state)
-        {
-            m_TimeAreaAutoPanner = null;
-
-            Rect rect = CurrentRectangle();
-
-            if (IsValidRect(rect))
-                OnFinish(evt, state, rect);
-
-            state.RemoveCaptured(this);
-
-            return true;
-        }
-
-        public override void Overlay(Event evt, WindowState state)
-        {
-            var r = CurrentRectangle();
-
-            if (evt.type == EventType.Repaint)
+            switch (evt.GetTypeForControl(m_Id))
             {
-                if (IsValidRect(r))
+                case EventType.KeyDown:
                 {
-                    using (new GUIViewportScope(m_ActiveRect))
+                    if (GUIUtility.hotControl == m_Id)
                     {
-                        DrawRectangle(r);
+                        if (evt.keyCode == KeyCode.Escape)
+                        {
+                            m_TimeAreaAutoPanner = null;
+
+                            GUIUtility.hotControl = 0;
+                            evt.Use();
+                        }
                     }
+
+                    return;
+                }
+
+                case EventType.MouseDrag:
+                {
+                    if (GUIUtility.hotControl != m_Id)
+                        return;
+
+                    m_EndPixel = mousePosition;
+                    evt.Use();
+
+                    return;
+                }
+
+                case EventType.MouseUp:
+                {
+                    if (GUIUtility.hotControl != m_Id)
+                        return;
+
+                    m_TimeAreaAutoPanner = null;
+
+                    var rect = CurrentRectangle();
+
+                    if (IsValidRect(rect))
+                        OnFinish(evt, state, rect);
+
+                    GUIUtility.hotControl = 0;
+                    evt.Use();
+
+                    return;
                 }
             }
 
-            m_TimeAreaAutoPanner?.OnGUI(evt);
+            if (GUIUtility.hotControl == m_Id)
+            {
+                if (evt.type == EventType.Repaint)
+                {
+                    var r = CurrentRectangle();
+
+                    if (IsValidRect(r))
+                    {
+                        using (new GUIViewportScope(m_ActiveRect))
+                        {
+                            DrawRectangle(r);
+                        }
+                    }
+                }
+
+                if (m_TimeAreaAutoPanner != null)
+                    m_TimeAreaAutoPanner.OnGUI(evt);
+            }
         }
 
         static void DrawRectangle(Rect rect)

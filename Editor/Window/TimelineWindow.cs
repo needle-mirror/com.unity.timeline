@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
+using Object = UnityEngine.Object;
 
 namespace UnityEditor.Timeline
 {
@@ -15,7 +16,6 @@ namespace UnityEditor.Timeline
         [Serializable]
         public class TimelineWindowPreferences
         {
-            public bool playRangeLoopMode = true;
             public EditMode.EditType editType = EditMode.EditType.Mix;
             public TimeReferenceMode timeReferenceMode = TimeReferenceMode.Local;
         }
@@ -81,6 +81,8 @@ namespace UnityEditor.Timeline
                 RefreshSelection(state != null && !state.recording);
         }
 
+        GUIContent m_InitialWindowTitle;
+        GUIContent m_WindowTitleDirtyAsset;
         void OnEnable()
         {
             if (m_SequencePath == null)
@@ -99,7 +101,12 @@ namespace UnityEditor.Timeline
             }
             s_LastHierarchy = m_SequenceHierarchy;
 
-            titleContent = GetLocalizedTitleContent();
+            m_InitialWindowTitle = GetLocalizedTitleContent();
+            m_WindowTitleDirtyAsset  = new GUIContent(m_InitialWindowTitle);
+            string txt = m_WindowTitleDirtyAsset.text;
+            m_WindowTitleDirtyAsset.text = txt + "*";
+
+            UpdateTitle();
 
             m_PreviewResizer.Init("TimelineWindow");
 
@@ -169,6 +176,7 @@ namespace UnityEditor.Timeline
         void OnStateChange()
         {
             state.UpdateRecordingState();
+            state.editSequence.InvalidateChildAssetCache();
             if (treeView != null && state.editSequence.asset != null)
                 treeView.Reload();
             if (m_MarkerHeaderGUI != null)
@@ -249,7 +257,30 @@ namespace UnityEditor.Timeline
             }
 
             if (Event.current.type == EventType.Repaint)
+            {
                 hierarchyChangedThisFrame = false;
+
+                UpdateTitle();
+            }
+        }
+
+        void UpdateTitle()
+        {
+            bool dirty = false;
+            List<Object> children = state?.editSequence.cachedChildAssets;
+            if (children != null)
+            {
+                foreach (var child in children)
+                {
+                    dirty = EditorUtility.IsDirty(child);
+                    if (dirty)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            titleContent = dirty ? m_WindowTitleDirtyAsset : m_InitialWindowTitle;
         }
 
         static void DetectStylesChange()
@@ -304,6 +335,13 @@ namespace UnityEditor.Timeline
                     state.recording = false;
                     state.previewMode = false;
 
+                    if (locked)
+                    {
+                        //revert lock if the original context was not asset mode
+                        if (!state.masterSequence.isAssetOnly)
+                            locked = false;
+                    }
+
                     if (!locked && m_LastFrameHadSequence)
                     {
                         // the user may be adding a new PlayableDirector to a selected GameObject, make sure the timeline editor is shows the proper director if none is already showing
@@ -312,6 +350,10 @@ namespace UnityEditor.Timeline
                         if (selectedDirector != null)
                         {
                             SetTimeline(selectedDirector);
+                        }
+                        else
+                        {
+                            state.masterSequence.isAssetOnly = true;
                         }
                     }
                 }
