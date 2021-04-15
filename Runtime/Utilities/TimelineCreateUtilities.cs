@@ -84,7 +84,7 @@ namespace UnityEngine.Timeline
 
             SaveAssetIntoObject(curves, timelineAsset);
             curves.hideFlags = trackFlags & ~HideFlags.HideInHierarchy; // Never hide in hierarchy
-
+            
             TimelineUndo.RegisterCreatedObjectUndo(curves, "Create Curves");
 
             return curves;

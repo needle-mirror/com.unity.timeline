@@ -2,6 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_2021_2_OR_NEWER
+using UnityEditor.SceneManagement;
+#else
+using UnityEditor.Experimental.SceneManagement;
+#endif
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
@@ -13,7 +18,7 @@ namespace UnityEditor.Timeline
 
         static TitleMode GetTitleMode(ISequenceState sequence)
         {
-            var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+            var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
             // Top level
             if (sequence.hostClip == null)
             {

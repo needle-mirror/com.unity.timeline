@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.4.8] - 2021-04-15
+
+### Fixed
+
+- Fixed a regression where changes made to clip curves would not be processed until another modification caused a graph rebuild.
+
 ## [1.4.7] - 2021-02-25
 
 ### Fixed

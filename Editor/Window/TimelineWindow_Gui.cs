@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+
+#if UNITY_2021_2_OR_NEWER
+using UnityEditor.SceneManagement;
+#else
 using UnityEditor.Experimental.SceneManagement;
+#endif
 using UnityEngine;
 using UnityEngine.Timeline;
 
