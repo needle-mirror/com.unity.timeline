@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -9,13 +8,17 @@ namespace UnityEditor.Timeline
 {
     class BindingTreeViewGUI : TreeViewGUI
     {
-        static readonly float s_RowRightOffset = 10;
+        const float k_RowRightOffset = 10;
+        const float k_CurveColorIndicatorIconSize = 11;
+        const float k_ColorIndicatorTopMargin = 3;
+
         static readonly float s_ColorIndicatorTopMargin = 3;
         static readonly Color s_KeyColorForNonCurves = new Color(0.7f, 0.7f, 0.7f, 0.5f);
         static readonly Color s_ChildrenCurveLabelColor = new Color(1.0f, 1.0f, 1.0f, 0.7f);
         static readonly Color s_PhantomPropertyLabelColor = new Color(0.0f, 0.8f, 0.8f, 1f);
         static readonly Texture2D s_DefaultScriptTexture = EditorGUIUtility.LoadIcon("cs Script Icon");
         static readonly Texture2D s_TrackDefault = EditorGUIUtility.LoadIcon("UnityEngine/ScriptableObject Icon");
+        public float parentWidth { get; set; }
 
         public BindingTreeViewGUI(TreeViewController treeView)
             : base(treeView, true)
@@ -70,7 +73,11 @@ namespace UnityEditor.Timeline
                 GUI.color = s_KeyColorForNonCurves;
 
             Texture icon = CurveUtility.GetIconCurve();
-            rect = new Rect(rect.xMax - s_RowRightOffset - (icon.width * 0.5f) - 5, rect.yMin + s_ColorIndicatorTopMargin, icon.width, icon.height);
+
+            rect = new Rect(rect.xMax - k_RowRightOffset - (k_CurveColorIndicatorIconSize / 2) - 5,
+                rect.yMin + k_ColorIndicatorTopMargin + (rect.height - EditorGUIUtility.singleLineHeight) / 2,
+                k_CurveColorIndicatorIconSize,
+                k_CurveColorIndicatorIconSize);
 
             GUI.DrawTexture(rect, icon, ScaleMode.ScaleToFit, true, 1);
 
@@ -108,6 +115,13 @@ namespace UnityEditor.Timeline
             var curveNodeItem = item as CurveTreeViewNode;
             if (curveNodeItem != null && curveNodeItem.iconOverlay != null)
                 GUI.Label(rect, curveNodeItem.iconOverlay);
+        }
+
+        public override Vector2 GetTotalSize()
+        {
+            var originalSize = base.GetTotalSize();
+            originalSize.x = Mathf.Max(parentWidth, originalSize.x);
+            return originalSize;
         }
     }
 }

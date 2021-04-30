@@ -16,7 +16,6 @@ namespace UnityEditor.Timeline
             return modifications.Any(x => GetTarget(x) as IPlayableAsset != null);
         }
 
-
         internal static UndoPropertyModification[] ProcessPlayableAssetModification(UndoPropertyModification[] modifications, WindowState state, bool allowAdd)
         {
             // can't record without a director since the asset being modified might be a scene instance
@@ -82,6 +81,9 @@ namespace UnityEditor.Timeline
 
             if (localTime < 0)
                 return false;
+
+            if (state.playing)
+                return true; //absorb undo but don't record during playback
 
             // grab the value from the current modification
             float fValue;

@@ -81,8 +81,6 @@ namespace UnityEditor.Timeline
                 RefreshSelection(state != null && !state.recording);
         }
 
-        GUIContent m_InitialWindowTitle;
-        GUIContent m_WindowTitleDirtyAsset;
         void OnEnable()
         {
             if (m_SequencePath == null)
@@ -101,10 +99,7 @@ namespace UnityEditor.Timeline
             }
             s_LastHierarchy = m_SequenceHierarchy;
 
-            m_InitialWindowTitle = GetLocalizedTitleContent();
-            m_WindowTitleDirtyAsset  = new GUIContent(m_InitialWindowTitle);
-            string txt = m_WindowTitleDirtyAsset.text;
-            m_WindowTitleDirtyAsset.text = txt + "*";
+            titleContent = GetLocalizedTitleContent();
 
             UpdateTitle();
 
@@ -266,6 +261,7 @@ namespace UnityEditor.Timeline
 
         void UpdateTitle()
         {
+#if UNITY_2020_2_OR_NEWER
             bool dirty = false;
             List<Object> children = state?.editSequence.cachedChildAssets;
             if (children != null)
@@ -280,7 +276,8 @@ namespace UnityEditor.Timeline
                 }
             }
 
-            titleContent = dirty ? m_WindowTitleDirtyAsset : m_InitialWindowTitle;
+            hasUnsavedChanges = dirty;
+#endif
         }
 
         static void DetectStylesChange()

@@ -10,7 +10,7 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
-#if !UNITY_2020_1_OR_NEWER
+#if !UNITY_2020_2_OR_NEWER
 using UnityEngine.Experimental.Animations;
 #endif
 using UnityEngine.Animations;
@@ -59,7 +59,6 @@ namespace UnityEditor.Timeline
         readonly SequenceHierarchy m_SequenceHierarchy;
 
         public event Action<WindowState, Event> windowOnGuiStarted;
-        public event Action<WindowState, Event> windowOnGuiFinished;
 
         public event Action<bool> OnPlayStateChange;
         public event System.Action OnDirtyStampChange;
@@ -362,7 +361,6 @@ namespace UnityEditor.Timeline
 
             m_SequenceHierarchy.Clear();
             windowOnGuiStarted = null;
-            windowOnGuiFinished = null;
         }
 
         public void OnSceneSaved()
@@ -624,6 +622,7 @@ namespace UnityEditor.Timeline
                 return Application.isPlaying || shouldIgnorePreview;
             }
         }
+
 
         public TimelineWindow GetWindow()
         {
@@ -1038,12 +1037,6 @@ namespace UnityEditor.Timeline
         {
             if (windowOnGuiStarted != null)
                 windowOnGuiStarted.Invoke(this, evt);
-        }
-
-        internal void InvokeWindowOnGuiFinished(Event evt)
-        {
-            if (windowOnGuiFinished != null)
-                windowOnGuiFinished.Invoke(this, evt);
         }
 
         public void UpdateRootPlayableDuration(double duration)
