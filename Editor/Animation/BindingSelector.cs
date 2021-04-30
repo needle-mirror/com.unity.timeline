@@ -11,6 +11,7 @@ namespace UnityEditor.Timeline
     class BindingSelector
     {
         TreeViewController m_TreeView;
+        private BindingTreeViewGUI m_TreeViewGUI;
         public TreeViewController treeViewController
         {
             get { return m_TreeView; }
@@ -48,6 +49,7 @@ namespace UnityEditor.Timeline
                 return;
 
             m_TreeView.OnEvent();
+            m_TreeViewGUI.parentWidth = targetRect.width;
             m_TreeView.OnGUI(targetRect, GUIUtility.GetControlID(FocusType.Passive));
         }
 
@@ -86,7 +88,8 @@ namespace UnityEditor.Timeline
 
             m_TreeViewDataSource = new BindingTreeViewDataSource(m_TreeView, clip, m_CurveDataSource);
 
-            m_TreeView.Init(rect, m_TreeViewDataSource, new BindingTreeViewGUI(m_TreeView), null);
+            m_TreeViewGUI = new BindingTreeViewGUI(m_TreeView);
+            m_TreeView.Init(rect, m_TreeViewDataSource, m_TreeViewGUI, null);
 
             m_TreeViewDataSource.UpdateData();
 

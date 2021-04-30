@@ -82,6 +82,9 @@ namespace UnityEditor.Timeline
             if (localTime < 0)
                 return false;
 
+            if (state.playing)
+                return true; //absorb undo but don't record during playback
+
             // grab the value from the current modification
             float fValue;
             if (!ExpressionEvaluator.Evaluate(mod.currentValue.value, out fValue))

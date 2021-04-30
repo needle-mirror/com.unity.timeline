@@ -2,6 +2,19 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.5] - 2021-04-30
+
+### Fixed
+
+- Fixed an issue in the Curves view where the color indicator was sized incorrectly on high-res displays. ([1318782](https://issuetracker.unity3d.com/product/unity/issues/guid/1318782))
+- Fixed a rare issue where keyframes were created for Playable Curves when switching to play mode. ([1319124](https://issuetracker.unity3d.com/product/unity/issues/guid/1319124))
+- Fixed an issue where clearing the Unity selection did not refresh the Timeline window. (1320260)
+- Fixed an issue with `IAnimationWindowPreview.StartPreview` not getting called for sub timelines. ([1322571](https://issuetracker.unity3d.com/product/unity/issues/guid/1322571))
+- Fixed an issue where the curve color identifiers would overlap property names when the Timeline window was resized. ([1323591](https://issuetracker.unity3d.com/product/unity/issues/guid/1323591))
+- Fixed a regression where changes made to clip curves would not be processed until another modification caused a graph rebuild.
+- Fixed compilation issue on 2020.1 due to incorrect version checks.
+- Fixed issue where text labels were incorrectly displayed when the mouse pointer was located above a clip.
+
 ## [1.5.4] - 2021-03-10
 
 ### Fixed

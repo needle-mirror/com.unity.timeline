@@ -48,6 +48,14 @@ namespace UnityEditor.Timeline
                 }
             }
 
+            //If not currently editing a Timeline and the selection is empty, clear selection
+            if ( Selection.activeObject == null &&
+                 state.IsEditingAnEmptyTimeline())
+            {
+                SetCurrentSelection(null);
+            }
+
+
             // otherwise, keep the same selection.
             RestoreLastSelection(forceRebuild);
         }

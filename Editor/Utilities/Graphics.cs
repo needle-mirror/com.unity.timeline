@@ -14,10 +14,12 @@ namespace UnityEditor.Timeline
             var shadowRect = rect;
             shadowRect.xMin += 2.0f;
             shadowRect.yMin += 2.0f;
-            style.normal.textColor = Color.black;
+            style.normal.textColor = shadowColor;
+            style.hover.textColor = shadowColor;
             GUI.Label(shadowRect, content, style);
 
             style.normal.textColor = textColor;
+            style.hover.textColor = textColor;
             GUI.Label(rect, content, style);
         }
 

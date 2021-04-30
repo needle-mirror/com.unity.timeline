@@ -75,6 +75,7 @@ namespace UnityEditor.Timeline
         public void CreateCurves(string curvesClipName)
         {
             m_OriginalOwner.CreateCurves(curvesClipName);
+            TimelineEditor.window.state.rebuildGraph = true;
         }
 
         public void ConfigureCurveWrapper(CurveWrapper wrapper)
@@ -211,7 +212,7 @@ namespace UnityEditor.Timeline
         void HandleCurveUpdated(EditorCurveBinding binding, AnimationCurve updatedCurve)
         {
             if (!m_OriginalOwner.hasCurves)
-                m_OriginalOwner.CreateCurves(null);
+                CreateCurves(String.Empty);
 
             AnimationUtility.SetEditorCurve(m_OriginalOwner.curves, binding, updatedCurve);
             AnimationUtility.SetEditorCurve(m_ProxyCurves, binding, updatedCurve);

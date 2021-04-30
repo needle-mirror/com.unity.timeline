@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine.Animations;
-#if !UNITY_2020_1_OR_NEWER
+#if !UNITY_2020_2_OR_NEWER
 using UnityEngine.Experimental.Animations;
 #endif
 
