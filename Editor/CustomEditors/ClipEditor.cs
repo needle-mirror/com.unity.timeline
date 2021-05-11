@@ -108,6 +108,7 @@ namespace UnityEditor.Timeline
     public struct ClipDrawOptions
     {
         private IEnumerable<Texture2D> m_Icons;
+        private bool m_HideClipName;
 
         /// <summary>
         /// Text that indicates if the clip should display an error.
@@ -116,6 +117,18 @@ namespace UnityEditor.Timeline
         /// If the error text is not empty or null, then the clip displays a warning. The error text is used as the tooltip.
         /// </remarks>
         public string errorText { get; set; }
+
+        /// <summary>
+        /// Controls the display of the clip name.
+        /// </summary>
+        /// <remarks>
+        /// Set to true to display the clip name. Set to false to avoid drawing the clip name.
+        /// </remarks>
+        public bool displayClipName
+        {
+            get { return !m_HideClipName; }
+            set { m_HideClipName = !value; }
+        }
 
         /// <summary>
         /// Controls the display of the clip scale indicator.

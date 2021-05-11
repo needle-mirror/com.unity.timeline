@@ -361,28 +361,27 @@ namespace UnityEditor.Timeline
             var hasError = !string.IsNullOrEmpty(errorText);
             var textColor = hasError ? DirectorStyles.kClipErrorColor : color;
             var tooltip = hasError ? errorText : data.ClipDrawOptions.tooltip;
+            var displayTitle = data.ClipDrawOptions.displayClipName;
 
             if (hasError)
-                DrawClipLabel(data.title, availableRect, textColor, k_ClipErrorIcons, null, tooltip);
+                DrawClipLabel(data.title, availableRect, textColor, k_ClipErrorIcons, null, tooltip, displayTitle);
             else
-                DrawClipLabel(data.title, availableRect, textColor, data.leftIcons, data.rightIcons, tooltip);
+                DrawClipLabel(data.title, availableRect, textColor, data.leftIcons, data.rightIcons, tooltip, displayTitle);
         }
 
-        static void DrawClipLabel(string title, Rect availableRect, Color color, string errorText = "")
+        static void DrawClipLabel(string title, Rect availableRect, Color color, string errorText = "", bool displayTitle = true)
         {
             var hasError = !string.IsNullOrEmpty(errorText);
             var textColor = hasError ? DirectorStyles.kClipErrorColor : color;
 
             if (hasError)
-                DrawClipLabel(title, availableRect, textColor, k_ClipErrorIcons, null, errorText);
+                DrawClipLabel(title, availableRect, textColor, k_ClipErrorIcons, null, errorText, displayTitle);
             else
-                DrawClipLabel(title, availableRect, textColor, null, null, errorText);
+                DrawClipLabel(title, availableRect, textColor, null, null, errorText, displayTitle);
         }
 
-        static void DrawClipLabel(string title, Rect availableRect, Color textColor, IconData[] leftIcons, IconData[] rightIcons, string tooltipMessage = "")
+        static void DrawClipLabel(string title, Rect availableRect, Color textColor, IconData[] leftIcons, IconData[] rightIcons, string tooltipMessage = "", bool displayTitle = true)
         {
-            s_TitleContent.text = title;
-            var neededTextWidth = DirectorStyles.Instance.fontClip.CalcSize(s_TitleContent).x;
             var neededIconWidthLeft = 0.0f;
             var neededIconWidthRight = 0.0f;
 
@@ -395,39 +394,49 @@ namespace UnityEditor.Timeline
                     neededIconWidthRight += rightIcons[i].width + k_IconsPadding;
 
             var neededIconWidth = Mathf.Max(neededIconWidthLeft, neededIconWidthRight);
-
-            // Atomic operation: We either show all icons or no icons at all
-            var showIcons = neededTextWidth / 2.0f + neededIconWidth < availableRect.width / 2.0f;
-
-            if (showIcons)
+            float iconPosX = availableRect.center.x;
+            float halfTextWidth = 0;
+            if (displayTitle)
             {
-                if (leftIcons != null)
-                    DrawClipIcons(leftIcons, IconData.Side.Left, neededTextWidth, availableRect);
-
-                if (rightIcons != null)
-                    DrawClipIcons(rightIcons, IconData.Side.Right, neededTextWidth, availableRect);
+                s_TitleContent.text = title;
+                var neededTextWidth = DirectorStyles.Instance.fontClip.CalcSize(s_TitleContent).x;
+                if (neededTextWidth > availableRect.width)
+                    s_TitleContent.text = DirectorStyles.Elipsify(title, availableRect.width, neededTextWidth);
+                halfTextWidth = neededTextWidth / 2.0f;
+            }
+            else
+            {
+                // text is set explicitly to an empty string to avoid drawing the default text on mac.
+                s_TitleContent.text = String.Empty;
+                iconPosX -= neededIconWidth / 2.0f;
             }
 
-            if (neededTextWidth > availableRect.width)
-                s_TitleContent.text = DirectorStyles.Elipsify(title, availableRect.width, neededTextWidth);
+            // Atomic operation: We either show all icons or no icons at all
+            if (halfTextWidth + neededIconWidth < availableRect.width / 2.0f)
+            {
+                if (leftIcons != null)
+                    DrawClipIcons(leftIcons, IconData.Side.Left, iconPosX - halfTextWidth, availableRect.center.y);
 
+                if (rightIcons != null)
+                    DrawClipIcons(rightIcons, IconData.Side.Right, iconPosX + halfTextWidth, availableRect.center.y);
+            }
+
+            //draw label even if empty to display tooltip
             s_TitleContent.tooltip = tooltipMessage;
             DrawClipName(availableRect, s_TitleContent, textColor);
         }
 
-        static void DrawClipIcons(IconData[] icons, IconData.Side side, float labelWidth, Rect availableRect)
+        static void DrawClipIcons(IconData[] icons, IconData.Side side, float positionX, float positionY)
         {
-            var halfText = labelWidth / 2.0f;
-            var offset = halfText + k_IconsPadding;
-
+            float offset = k_IconsPadding;
             foreach (var iconData in icons)
             {
-                offset += iconData.width / 2.0f + k_IconsPadding;
+                offset += (iconData.width / 2.0f + k_IconsPadding);
 
                 var iconRect =
                     new Rect(0.0f, 0.0f, iconData.width, iconData.height)
                 {
-                    center = new Vector2(availableRect.center.x + offset * (int)side, availableRect.center.y)
+                    center = new Vector2(positionX + offset * (int)side, positionY)
                 };
 
                 DrawIcon(iconRect, iconData.tint, iconData.icon);
@@ -533,7 +542,7 @@ namespace UnityEditor.Timeline
             textRect.xMax -= k_ClipLabelPadding;
 
             if (textRect.width > k_ClipLabelMinWidth)
-                DrawClipLabel(clip.displayName, textRect, Color.white, drawOptions.errorText);
+                DrawClipLabel(clip.displayName, textRect, Color.white, drawOptions.errorText, drawOptions.displayClipName);
 
             DrawClipSelectionBorder(clipRect, border, ClipBlends.kNone);
 

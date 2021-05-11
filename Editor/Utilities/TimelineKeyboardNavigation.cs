@@ -158,11 +158,24 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool CollapseGroup(IEnumerable<TrackAsset> tracks)
+        public static bool NavigateLeft(IEnumerable<TrackAsset> tracks)
         {
             if (!TrackHeadActive())
                 return false;
 
+            if (TryCollapse(tracks))
+                return true;
+
+            return SelectAndShowParentTrack(tracks.LastOrDefault());
+        }
+
+        /// <summary>
+        /// Tries to collapse any track from a list of tracks
+        /// </summary>
+        /// <param name="tracks"></param>
+        /// <returns>true if any were collapsed, false otherwise</returns>
+        public static bool TryCollapse(IEnumerable<TrackAsset> tracks)
+        {
             var didCollapse = false;
 
             foreach (TrackAsset track in tracks)
@@ -179,11 +192,33 @@ namespace UnityEditor.Timeline
 
             if (didCollapse)
             {
-                TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
+                TimelineEditor.window.treeView.Reload();
                 return true;
             }
 
-            return SelectAndShowParentTrack(tracks.LastOrDefault());
+            return false;
+        }
+
+        public static bool ToggleCollapseGroup(IEnumerable<TrackAsset> tracks)
+        {
+            if (!TrackHeadActive())
+                return false;
+
+            var didChange = false;
+
+            foreach (TrackAsset track in tracks)
+            {
+                if (!track.GetChildTracks().Any())
+                    continue;
+
+                track.SetCollapsed(!track.IsCollapsed());
+                didChange = true;
+            }
+
+            if (didChange)
+                TimelineEditor.window.treeView.Reload();
+
+            return didChange;
         }
 
         static bool SelectAndShowParentTrack(TrackAsset track)
@@ -192,7 +227,7 @@ namespace UnityEditor.Timeline
             if (parent)
             {
                 SelectionManager.SelectOnly(parent);
-                FrameTrackHeader(GetVisibleTracks().First(x => x.track == parent));
+                FrameTrackHeader(GetVisibleTracks().FirstOrDefault(x => x.track == parent));
                 return true;
             }
 
@@ -253,12 +288,25 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public static bool UnCollapseGroup(IEnumerable<TrackAsset> tracks)
+        public static bool NavigateRight(IEnumerable<TrackAsset> tracks)
         {
             if (!TrackHeadActive())
                 return false;
 
-            var didUncollapse = false;
+            if (TryExpand(tracks))
+                return true;
+
+            return TrySelectFirstChild(tracks);
+        }
+
+        /// <summary>
+        /// Tries to expand from a list of tracks
+        /// </summary>
+        /// <param name="tracks"></param>
+        /// <returns>true if any expanded, false otherwise</returns>
+        public static bool TryExpand(IEnumerable<TrackAsset> tracks)
+        {
+            var didExpand = false;
             foreach (TrackAsset track in tracks)
             {
                 if (!track.GetChildTracks().Any())
@@ -266,38 +314,47 @@ namespace UnityEditor.Timeline
 
                 if (track.IsCollapsed())
                 {
-                    didUncollapse = true;
+                    didExpand = true;
                     track.SetCollapsed(false);
                 }
             }
 
-            if (didUncollapse)
+            if (didExpand)
             {
-                TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
-                return true;
+                TimelineEditor.window.treeView.Reload();
             }
 
-            return SelectFirstClipStartingFrom(tracks.Last());
+            return didExpand;
         }
 
-        static bool SelectFirstClipStartingFrom(TrackAsset track)
+        /// <summary>
+        /// Tries to select the first clip from a list of tracks
+        /// </summary>
+        /// <param name="tracks"></param>
+        /// <returns>true if any expanded, false otherwise</returns>
+        public static bool TrySelectFirstChild(IEnumerable<TrackAsset> tracks)
         {
-            List<TrackAsset> visibleTracks = GetVisibleTracks().Select(x => x.track).ToList();
-            int idx = visibleTracks.IndexOf(track);
-            ITimelineItem item = null;
-            for (int i = idx; i < visibleTracks.Count; ++i)
+            foreach (var track in tracks)
             {
-                var items = visibleTracks[i].GetItems().OfType<ClipItem>();
-                if (!items.Any() || visibleTracks[i].lockedInHierarchy)
+                //Try to navigate in group tracks first
+                if (track is GroupTrack)
+                {
+                    if (track.GetChildTracks().Any())
+                    {
+                        SelectionManager.SelectOnly(track.GetChildTracks().First());
+                        return true;
+                    }
+                    //Group tracks should not halt navigation
                     continue;
-                item = items.First();
-                break;
-            }
+                }
+                //if track is locked or has no clips, do nothing
+                if (track.lockedInHierarchy || !track.clips.Any())
+                    continue;
 
-            if (item != null)
-            {
-                SelectionManager.SelectOnly(item);
-                TimelineHelpers.FrameItems(new[] { item });
+                var firstClip = track.clips.First();
+                SelectionManager.SelectOnly(firstClip);
+                TimelineHelpers.FrameItems(new ITimelineItem[] {firstClip.ToItem()});
+
                 return true;
             }
 

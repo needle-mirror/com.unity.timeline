@@ -13,7 +13,7 @@ namespace UnityEditor.Timeline
             public static string DurationModeText = L10n.Tr("Duration Mode/{0}");
         }
 
-        float m_LastFrameRate;
+        double m_LastFrameRate;
         bool m_TimeAreaDirty = true;
 
         void InitializeTimeArea()
@@ -55,14 +55,14 @@ namespace UnityEditor.Timeline
             SyncTimeAreaShownRange();
 
             m_TimeArea.BeginViewGUI();
-            m_TimeArea.TimeRuler(rect, state.referenceSequence.frameRate, true, false, 1.0f, state.timeFormat.ToTimeAreaFormat());
+            m_TimeArea.TimeRuler(rect, (float)state.referenceSequence.frameRate, true, false, 1.0f, state.timeFormat.ToTimeAreaFormat());
             m_TimeArea.EndViewGUI();
         }
 
         void InitTimeAreaFrameRate()
         {
             m_LastFrameRate = state.referenceSequence.frameRate;
-            m_TimeArea.hTicks.SetTickModulosForFrameRate(m_LastFrameRate);
+            m_TimeArea.hTicks.SetTickModulosForFrameRate((float)m_LastFrameRate);
         }
 
         void SyncTimeAreaShownRange()

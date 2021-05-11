@@ -115,10 +115,20 @@ namespace UnityEngine.Timeline
             if (director == null || !director.isActiveAndEnabled || director.playableAsset == null)
                 return;
 
-            if (m_SyncTime || DetectOutOfSync(playable))
+            if (m_SyncTime || DetectOutOfSync(playable) )
             {
                 UpdateTime(playable);
-                director.Evaluate();
+                if (director.playableGraph.IsValid())
+                {
+                    director.playableGraph.Evaluate();
+#if TIMELINE_FRAMEACCURATE
+                    director.playableGraph.SynchronizeEvaluation(playable.GetGraph());
+#endif
+                }
+                else
+                {
+                    director.Evaluate();
+                }
             }
 
             m_SyncTime = false;
@@ -154,9 +164,24 @@ namespace UnityEngine.Timeline
         {
             bool expectedFinished = (playableTime >= m_AssetDuration) && director.extrapolationMode == DirectorWrapMode.None;
             if (graph.IsPlaying() && !expectedFinished)
+            {
+                if (director.state == PlayState.Playing)
+                    return;
+#if TIMELINE_FRAMEACCURATE
+                if(graph.IsMatchFrameRateEnabled())
+                    director.Play(graph.GetFrameRate());
+                else
+                    director.Play();
+#else
                 director.Play();
+#endif
+            }
             else
+            {
+                if (director.state == PlayState.Paused)
+                    return;
                 director.Pause();
+            }
         }
 
         bool DetectDiscontinuity(Playable playable, FrameData info)
@@ -171,7 +196,7 @@ namespace UnityEngine.Timeline
             {
                 if (director.extrapolationMode == DirectorWrapMode.None)
                     return false;
-                else if (director.extrapolationMode == DirectorWrapMode.Hold)
+                if (director.extrapolationMode == DirectorWrapMode.Hold)
                     expectedTime = m_AssetDuration;
                 else if (m_AssetDuration > float.Epsilon) // loop
                     expectedTime = expectedTime % m_AssetDuration;

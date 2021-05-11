@@ -149,7 +149,7 @@ namespace UnityEditor.Timeline
 
         float currentFrameRate
         {
-            get { return m_TimelineAsset != null ? m_TimelineAsset.editorSettings.fps : TimelineAsset.EditorSettings.kDefaultFps; }
+            get { return m_TimelineAsset != null ? (float)m_TimelineAsset.editorSettings.frameRate:(float)TimelineAsset.EditorSettings.kDefaultFrameRate; }
         }
 
         bool selectionHasIncompatibleCapabilities

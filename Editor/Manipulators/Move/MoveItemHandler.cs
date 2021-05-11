@@ -161,6 +161,7 @@ namespace UnityEditor.Timeline
             m_Grabbing = false;
 
             m_State.Refresh();
+            m_State.analytics.SendManipulationEndedEvent();
         }
 
         public double start { get { return m_ItemsGroup.start; } }

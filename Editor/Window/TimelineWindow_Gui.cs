@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 #if UNITY_2021_2_OR_NEWER
 using UnityEditor.SceneManagement;
@@ -7,6 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEditor.Experimental.SceneManagement;
 #endif
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -39,6 +41,9 @@ namespace UnityEditor.Timeline
         private static readonly GUIContent MenuItemFrames = L10n.TextContent("Frames");
         private static readonly GUIContent MenuItemTimecode = L10n.TextContent("Timecode");
         private static readonly GUIContent MenuItemSeconds = L10n.TextContent("Seconds");
+
+        static readonly string k_FrameRateMenuLabel = L10n.Tr("Frame Rate/{0}");
+        static readonly string k_CustomFpsLabel = L10n.Tr("{0}: {1:f2} fps");
 
         float m_VerticalScrollBarSize, m_HorizontalScrollBarSize;
 
@@ -390,17 +395,16 @@ namespace UnityEditor.Timeline
                     TimeAreaContextMenu.AddTimeAreaMenuItems(menu, state);
 
                     menu.AddSeparator("");
+                    bool isCustom = !FrameRateDisplayUtility.GetStandardFromFrameRate(state.editSequence.frameRate, out StandardFrameRates option);
+                    var frameRatesLabels = FrameRateDisplayUtility.GetDefaultFrameRatesLabels(option);
+                    if (isCustom)
+                        frameRatesLabels[frameRatesLabels.Length - 1] = String.Format(k_CustomFpsLabel, frameRatesLabels.Last(), state.editSequence.frameRate);
 
-                    bool standardFrameRate = false;
-                    for (int i = 0; i < TimelineProjectSettings.framerateValues.Length; i++)
+                    for(var i = 0;i < frameRatesLabels.Length;i++)
                     {
-                        standardFrameRate |= AddStandardFrameRateMenu(menu, "Frame Rate/" + TimelineProjectSettings.framerateLabels[i], TimelineProjectSettings.framerateValues[i]);
+                        var currentStandard = (StandardFrameRates) i;
+                        AddStandardFrameRateMenu(menu,  currentStandard,  frameRatesLabels[i], currentStandard == option);
                     }
-
-                    if (standardFrameRate)
-                        menu.AddDisabledItem(L10n.TextContent("Frame Rate/Custom"));
-                    else
-                        menu.AddItem(L10n.TextContent("Frame Rate/Custom (" + state.editSequence.frameRate + ")"), true, () => {});
 
                     if (Unsupported.IsDeveloperMode())
                     {
@@ -423,21 +427,25 @@ namespace UnityEditor.Timeline
             }
         }
 
-        bool AddStandardFrameRateMenu(GenericMenu menu, string name, float value)
+        void AddStandardFrameRateMenu(GenericMenu menu, StandardFrameRates option, string label, bool on)
         {
-            bool on = state.editSequence.frameRate.Equals(value);
+            var gui = EditorGUIUtility.TextContent(String.Format(k_FrameRateMenuLabel, label));
             if (state.editSequence.isReadOnly)
             {
-                menu.AddDisabledItem(EditorGUIUtility.TextContent(name), on);
+                menu.AddDisabledItem(gui, on);
+                return;
             }
+
+            FrameRate value = TimeUtility.ToFrameRate(option);
+            if (!value.IsValid())
+                menu.AddItem(gui, true, () => { });
             else
             {
-                menu.AddItem(EditorGUIUtility.TextContent(name), on, r =>
+                menu.AddItem(gui, on, r =>
                 {
-                    state.editSequence.frameRate = value;
+                    state.editSequence.frameRate = (float)value.rate;
                 }, value);
             }
-            return on;
         }
 
         public void AddUserOverlay(IMarker marker, Rect rect, MarkerEditor editor, bool collapsed, bool selected)

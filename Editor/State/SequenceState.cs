@@ -105,21 +105,21 @@ namespace UnityEditor.Timeline
             set { time = TimeUtility.FromFrames(Mathf.Max(0, value), frameRate); }
         }
 
-        public float frameRate
+        public double frameRate
         {
             get
             {
                 if (asset != null)
-                    return asset.editorSettings.fps;
+                    return asset.editorSettings.frameRate;
 
-                return TimelineAsset.EditorSettings.kDefaultFps;
+                return TimelineAsset.EditorSettings.kDefaultFrameRate;
             }
             set
             {
-                TimelineAsset.EditorSettings settings = asset.editorSettings;
-                if (Math.Abs(settings.fps - value) > TimeUtility.kFrameRateEpsilon)
+                var settings = asset.editorSettings;
+                if (Math.Abs(settings.frameRate - value) > TimeUtility.kFrameRateEpsilon)
                 {
-                    settings.fps = Mathf.Max(value, (float)TimeUtility.kFrameRateEpsilon);
+                    settings.frameRate = Math.Max(value, TimeUtility.kFrameRateEpsilon);
                     EditorUtility.SetDirty(asset);
                 }
             }

@@ -229,7 +229,7 @@ namespace UnityEditor.Timeline
             const string timeFieldHint = "TimelineWindow-TimeCodeGUI";
 
             EditorGUI.BeginChangeCheck();
-            var currentTime = state.editSequence.asset != null ? TimeReferenceUtility.ToTimeString(state.editSequence.time, "f4") : "0";
+            var currentTime = state.editSequence.asset != null ? TimeReferenceUtility.ToTimeString(state.editSequence.time, "0.####") : "0";
             var r = EditorGUILayout.GetControlRect(false, EditorGUI.kSingleLineHeight, EditorStyles.toolbarTextField, GUILayout.Width(WindowConstants.timeCodeWidth));
             var id = GUIUtility.GetControlID(timeFieldHint.GetHashCode(), FocusType.Keyboard, r);
             var newCurrentTime = EditorGUI.DelayedTextFieldInternal(r, id, GUIContent.none, currentTime, null, EditorStyles.toolbarTextField);

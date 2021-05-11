@@ -257,8 +257,8 @@ namespace UnityEditor.Timeline
                         name = "Constant Curves",
                         hideFlags = HideFlags.HideAndDontSave,
                         frameRate = m_OriginalOwner.targetTrack.timelineAsset == null
-                            ? TimelineAsset.EditorSettings.kDefaultFps
-                            : m_OriginalOwner.targetTrack.timelineAsset.editorSettings.fps
+                            ? (float)TimelineAsset.EditorSettings.kDefaultFrameRate
+                            : (float)m_OriginalOwner.targetTrack.timelineAsset.editorSettings.frameRate
                     };
                 }
                 else

@@ -231,7 +231,7 @@ namespace UnityEditor
             m_CurveEditor.InvalidateSelectionBounds();
 
             m_CurveEditor.state = new CurveEditorState() {timeFormat = state.timeFormat.ToTimeAreaFormat()};
-            m_CurveEditor.invSnap = state.referenceSequence.frameRate;
+            m_CurveEditor.invSnap = (float)state.referenceSequence.frameRate;
         }
 
         public void DrawCurveEditor(Rect rect, WindowState state, Vector2 clipRange, bool loop, bool selected)
@@ -247,8 +247,8 @@ namespace UnityEditor
 
             if (m_LastFrameRate != state.referenceSequence.frameRate)
             {
-                m_CurveEditor.hTicks.SetTickModulosForFrameRate(state.referenceSequence.frameRate);
-                m_LastFrameRate = state.referenceSequence.frameRate;
+                m_CurveEditor.hTicks.SetTickModulosForFrameRate((float)state.referenceSequence.frameRate);
+                m_LastFrameRate = (float)state.referenceSequence.frameRate;
             }
 
             foreach (var cw in m_CurveEditor.animationCurves)

@@ -89,8 +89,8 @@ namespace UnityEngine.Timeline
                 name = name,
 
                 frameRate = timelineAsset == null
-                    ? TimelineAsset.EditorSettings.kDefaultFps
-                    : timelineAsset.editorSettings.fps
+                    ? (float)TimelineAsset.EditorSettings.kDefaultFrameRate
+                    : (float)timelineAsset.editorSettings.frameRate
             };
 
             SaveAssetIntoObject(curves, timelineAsset);

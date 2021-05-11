@@ -197,6 +197,12 @@ namespace UnityEditor.Timeline
             return true;
         }
 
+        public static bool HasCustomEditor(TimelineClip clip)
+        {
+            var editor = CustomTimelineEditorCache.GetClipEditor(clip);
+            return editor != CustomTimelineEditorCache.GetDefaultClipEditor();
+        }
+
         public static IList<PlayableDirector> GetSubTimelines(TimelineClip clip, IExposedPropertyTable director)
         {
             var editor = CustomTimelineEditorCache.GetClipEditor(clip);
@@ -300,7 +306,7 @@ namespace UnityEditor.Timeline
         public static TimelineAsset CreateAndSaveTimelineAsset(string path)
         {
             var newAsset = ScriptableObject.CreateInstance<TimelineAsset>();
-            newAsset.editorSettings.fps = TimelineProjectSettings.instance.assetDefaultFramerate;
+            newAsset.editorSettings.frameRate = TimelineProjectSettings.instance.defaultFrameRate;
             AssetDatabase.CreateAsset(newAsset, path);
             return newAsset;
         }

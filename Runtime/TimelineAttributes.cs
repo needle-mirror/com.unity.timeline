@@ -150,6 +150,8 @@ namespace UnityEngine.Timeline
         }
     }
 
+    class FrameRateFieldAttribute : PropertyAttribute {}
+
     /// <summary>
     /// Use this attribute to hide a class from Timeline menus.
     /// </summary>

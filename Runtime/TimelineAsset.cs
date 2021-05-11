@@ -33,25 +33,60 @@ namespace UnityEngine.Timeline
         [Serializable]
         public class EditorSettings
         {
-            internal static readonly float kMinFps = (float)TimeUtility.kFrameRateEpsilon;
-            internal static readonly float kMaxFps = 1000.0f;
-            internal static readonly float kDefaultFps = 60.0f;
-            [HideInInspector, SerializeField] float m_Framerate = kDefaultFps;
+            internal static readonly double kMinFrameRate = TimeUtility.kFrameRateEpsilon;
+            internal static readonly double kMaxFrameRate = 1000.0;
+            internal static readonly double kDefaultFrameRate = 60.0;
+            [HideInInspector, SerializeField, FrameRateField] double m_Framerate = kDefaultFrameRate;
             [HideInInspector, SerializeField] bool m_ScenePreview = true;
 
             /// <summary>
             /// The frames per second used for snapping and time ruler display
             /// </summary>
+            [Obsolete("EditorSettings.fps has been deprecated. Use editorSettings.frameRate instead.", false)]
             public float fps
             {
                 get
                 {
-                    return m_Framerate;
+                    return (float)m_Framerate;
                 }
                 set
                 {
-                    m_Framerate = GetValidFramerate(value);
+                    m_Framerate = Mathf.Clamp(value, (float)kMinFrameRate, (float)kMaxFrameRate);
                 }
+            }
+
+            /// <summary>
+            /// The frames per second used for framelocked preview, frame snapping and time ruler display,
+            /// </summary>
+            /// <remarks>
+            /// If frameRate is set to a non-standard custom frame rate, Timeline playback
+            /// may give incorrect results when playbackLockedToFrame is true.
+            /// </remarks>
+            /// <seealso cref="UnityEngine.Timeline.TimelineAsset"/>
+            public double frameRate
+            {
+                get { return m_Framerate; }
+                set { m_Framerate = GetValidFrameRate(value); }
+            }
+
+            /// <summary>
+            /// Sets the EditorSetting frameRate to one of the provided standard frame rates.
+            /// </summary>
+            /// <param name="enumValue"> StandardFrameRates value, used to set the current EditorSettings frameRate value.</param>
+            /// <remarks>
+            /// When specifying drop frame values, it is recommended to select one of the provided standard frame rates.
+            /// Specifying a non-standard custom frame rate may give incorrect results when playbackLockedToFrame
+            /// is enabled during Timeline playback.
+            /// </remarks>
+            /// <exception cref="ArgumentException">Thrown when the enumValue is not a valid member of StandardFrameRates.</exception>
+            /// <seealso cref="UnityEngine.Timeline.TimelineAsset"/>
+            public void SetStandardFrameRate(StandardFrameRates enumValue)
+            {
+                FrameRate rate = TimeUtility.ToFrameRate(enumValue);
+                if (rate.IsValid())
+                    throw new ArgumentException(String.Format("StandardFrameRates {0}, is not defined",
+                        enumValue.ToString()));
+                m_Framerate = rate.rate;
             }
 
             /// <summary>
@@ -204,12 +239,7 @@ namespace UnityEngine.Timeline
 
         void OnValidate()
         {
-            editorSettings.fps = GetValidFramerate(editorSettings.fps);
-        }
-
-        internal static float GetValidFramerate(float framerate)
-        {
-            return Mathf.Clamp(framerate, EditorSettings.kMinFps, EditorSettings.kMaxFps);
+            editorSettings.frameRate = GetValidFrameRate(editorSettings.frameRate);
         }
 
         /// <summary>
@@ -259,6 +289,11 @@ namespace UnityEngine.Timeline
         {
             UpdateOutputTrackCache();
             return m_CacheOutputTracks;
+        }
+
+        static double GetValidFrameRate(double frameRate)
+        {
+            return Math.Min(Math.Max(frameRate, EditorSettings.kMinFrameRate), EditorSettings.kMaxFrameRate);
         }
 
         void UpdateRootTrackCache()

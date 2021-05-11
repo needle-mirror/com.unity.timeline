@@ -402,9 +402,9 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedAsset == null)
                 return false;
-            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.fps);
+            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.frameRate);
             inspectedFrame = Mathf.Max(0, inspectedFrame - 1);
-            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.fps);
+            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.frameRate);
             return true;
         }
     }
@@ -419,9 +419,9 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedAsset == null)
                 return false;
-            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.fps);
+            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.frameRate);
             inspectedFrame++;
-            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.fps);
+            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.frameRate);
             return true;
         }
     }
@@ -612,7 +612,7 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedAsset == null)
                 return false;
-            var keyTraverser = new Utilities.KeyTraverser(TimelineEditor.inspectedAsset, 0.01f / TimelineEditor.inspectedAsset.editorSettings.fps);
+            var keyTraverser = new Utilities.KeyTraverser(TimelineEditor.inspectedAsset, 0.01f / (float)TimelineEditor.inspectedAsset.editorSettings.frameRate);
             var time = keyTraverser.GetPrevKey((float)TimelineEditor.inspectedSequenceTime, TimelineWindow.instance.state.dirtyStamp);
             if (time != TimelineEditor.inspectedSequenceTime)
             {
@@ -633,7 +633,7 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedAsset == null)
                 return false;
-            var keyTraverser = new Utilities.KeyTraverser(TimelineEditor.inspectedAsset, 0.01f / TimelineEditor.inspectedAsset.editorSettings.fps);
+            var keyTraverser = new Utilities.KeyTraverser(TimelineEditor.inspectedAsset, 0.01f / (float)TimelineEditor.inspectedAsset.editorSettings.frameRate);
             var time = keyTraverser.GetNextKey((float)TimelineEditor.inspectedSequenceTime, TimelineWindow.instance.state.dirtyStamp);
             if (time != TimelineEditor.inspectedSequenceTime)
             {
@@ -700,27 +700,40 @@ namespace UnityEditor.Timeline
         }
     }
 
-    [Shortcut(Shortcuts.Timeline.collapseGroup)]
+    [Shortcut(Shortcuts.Timeline.navigateLeft)]
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
-    class CollapseGroup : TimelineAction
+    class NavigateLeft : TimelineAction
     {
         public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
 
         public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.CollapseGroup(actionContext.tracks);
+            return KeyboardNavigation.NavigateLeft(actionContext.tracks);
         }
     }
 
-    [Shortcut(Shortcuts.Timeline.unCollapseGroup)]
+
+    [Shortcut(Shortcuts.Timeline.navigateRight)]
     [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
-    class UnCollapseGroup : TimelineAction
+    class NavigateRight : TimelineAction
     {
         public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
 
         public override bool Execute(ActionContext actionContext)
         {
-            return KeyboardNavigation.UnCollapseGroup(actionContext.tracks);
+            return KeyboardNavigation.NavigateRight(actionContext.tracks);
+        }
+    }
+
+    [Shortcut(Shortcuts.Timeline.toggleCollapseTrack)]
+    [ActiveInMode(TimelineModes.Default | TimelineModes.ReadOnly)]
+    class ToggleCollapseGroup : TimelineAction
+    {
+        public override ActionValidity Validate(ActionContext context) => ActionValidity.Valid;
+
+        public override bool Execute(ActionContext actionContext)
+        {
+            return KeyboardNavigation.ToggleCollapseGroup(actionContext.tracks);
         }
     }
 

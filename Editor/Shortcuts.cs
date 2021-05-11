@@ -44,8 +44,9 @@ namespace UnityEditor.Timeline
             public const string goToEnd = "Timeline/GotoEnd";
             public const string zoomIn = "Timeline/ZoomIn";
             public const string zoomOut = "Timeline/ZoomOut";
-            public const string collapseGroup = "Timeline/CollapseGroup";
-            public const string unCollapseGroup = "Timeline/UnCollapseGroup";
+            public const string navigateLeft = "Timeline/NavigateLeft";
+            public const string navigateRight = "Timeline/NavigateRight";
+            public const string toggleCollapseTrack = "Timeline/Toggle Collapse Track";
             public const string selectLeftItem = "Timeline/SelectLeftItem";
             public const string selectRightItem = "Timeline/SelectRightItem";
             public const string selectUpItem = "Timeline/SelectUpItem";
@@ -60,7 +61,8 @@ namespace UnityEditor.Timeline
             public const string matchContent = "Timeline/MatchContent";
             public const string toggleLock = "Timeline/ToggleLock";
             public const string toggleMute = "Timeline/ToggleMute";
-
+            public const string collapseTrack = "Timeline/Collapse Track";
+            public const string expandTrack = "Timeline/Expand Track";
             public const string moveLeft = "Timeline/MoveLeft";
             public const string moveRight = "Timeline/MoveRight";
             public const string moveUp = "Timeline/MoveUp";
@@ -145,7 +147,7 @@ namespace UnityEditor.Timeline
                 }
                 else if (KeyboardNavigation.TrackHeadActive())
                 {
-                    SendEventToInvokeShortcut(collapseGroup, args.context);
+                    SendEventToInvokeShortcut(navigateLeft, args.context);
                 }
             }
 
@@ -159,7 +161,7 @@ namespace UnityEditor.Timeline
                 }
                 else if (KeyboardNavigation.TrackHeadActive())
                 {
-                    SendEventToInvokeShortcut(unCollapseGroup, args.context);
+                    SendEventToInvokeShortcut(navigateRight, args.context);
                 }
             }
 
@@ -245,6 +247,20 @@ namespace UnityEditor.Timeline
             static void Mute(ShortcutManagement.ShortcutArguments args)
             {
                 SendEventToInvokeShortcut(toggleMute, args.context);
+            }
+
+            [UsedImplicitly]
+            [ShortcutManagement.Shortcut(collapseTrack, typeof(TimelineWindow))]
+            static void CollapseGroup(ShortcutManagement.ShortcutArguments args)
+            {
+                SendEventToInvokeShortcut(collapseTrack, args.context);
+            }
+
+            [UsedImplicitly]
+            [ShortcutManagement.Shortcut(expandTrack, typeof(TimelineWindow))]
+            static void ExpandGroup(ShortcutManagement.ShortcutArguments args)
+            {
+                SendEventToInvokeShortcut(expandTrack, args.context);
             }
         }
 

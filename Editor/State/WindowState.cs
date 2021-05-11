@@ -19,7 +19,19 @@ namespace UnityEditor.Timeline
 {
     delegate bool PendingUpdateDelegate(WindowState state, Event currentEvent);
 
-    class WindowState
+    /// <summary>
+    /// Interface for faking purposes
+    /// </summary>
+    interface IWindowState
+    {
+        ISequenceState masterSequence { get; }
+        ISequenceState editSequence { get; }
+        IEnumerable<ISequenceState> allSequences { get; }
+        void SetCurrentSequence(TimelineAsset timelineAsset, PlayableDirector director, TimelineClip hostClip);
+        void PopSequencesUntilCount(int count);
+        IEnumerable<SequenceContext> GetSubSequences();
+    }
+    class WindowState : IWindowState
     {
         const int k_TimeCodeTextFieldId = 3790;
 
@@ -116,6 +128,11 @@ namespace UnityEditor.Timeline
         public ISequenceState referenceSequence
         {
             get { return timeReferenceMode == TimeReferenceMode.Local ? editSequence : masterSequence; }
+        }
+
+        public IEnumerable<ISequenceState> allSequences
+        {
+            get { return m_SequenceHierarchy.allSequences; }
         }
 
         public bool rebuildGraph
@@ -432,6 +449,19 @@ namespace UnityEditor.Timeline
             return m_SequenceHierarchy.allSequences;
         }
 
+        public IEnumerable<SequenceContext> GetSubSequences()
+        {
+            var contexts =
+                editSequence.asset?.flattenedTracks
+                    .SelectMany(x => x.clips)
+                    .Where((TimelineUtility.HasCustomEditor))
+                    .SelectMany((clip =>
+                        TimelineUtility.GetSubTimelines(clip, TimelineEditor.inspectedDirector)
+                            .Select(director => new SequenceContext(director, clip))));
+
+            return contexts;
+        }
+
         public void Reset()
         {
             recording = false;
@@ -466,6 +496,8 @@ namespace UnityEditor.Timeline
                 changeStateCallback.Invoke();
             }
         }
+
+        public TimelineWindowAnalytics analytics = new TimelineWindowAnalytics();
 
         public void SetTimeAreaTransform(Vector2 newTranslation, Vector2 newScale)
         {
@@ -641,8 +673,19 @@ namespace UnityEditor.Timeline
             {
                 if (masterSequence.time > masterSequence.duration)
                     masterSequence.time = 0;
-
+#if TIMELINE_FRAMEACCURATE
+                if (TimelinePreferences.instance.playbackLockedToFrame)
+                {
+                    FrameRate frameRate = FrameRate.DoubleToFrameRate(masterSequence.asset.editorSettings.frameRate);
+                    masterSequence.director.Play(frameRate);
+                }
+                else
+                {
+                    masterSequence.director.Play();
+                }
+#else
                 masterSequence.director.Play();
+#endif
                 masterSequence.director.ProcessPendingGraphChanges();
                 PlayableDirector.ResetFrameTiming();
                 InvokePlayStateChangeCallback(true);
@@ -671,6 +714,8 @@ namespace UnityEditor.Timeline
             {
                 Pause();
             }
+
+            analytics.SendPlayEvent(start);
         }
 
         public void Stop()
@@ -1066,7 +1111,7 @@ namespace UnityEditor.Timeline
             if (range == TimelineAssetViewModel.NoPlayRangeSet)
                 return range;
 
-            float minimumPlayRangeTime = 0.01f / Mathf.Max(1.0f, referenceSequence.frameRate);
+            float minimumPlayRangeTime = (float)(0.01 / Math.Max(1.0, referenceSequence.frameRate));
 
             // Validate min
             if (range.y - range.x < minimumPlayRangeTime)

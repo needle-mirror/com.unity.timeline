@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.6.0-pre.4",
+  "version": "1.6.0-pre.5",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,15 +18,15 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.6.0-pre.4"
+    "com.unity.timeline.tests": "1.6.0-pre.5"
   },
   "upmCi": {
-    "footprint": "52506fabbfd226c7b0a4b119eb22c5b31ca0b071"
+    "footprint": "f3d61c958f92b021c4a0b96906a4d365c1d63b11"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "48e14020da1e348bf2d4b1ce5b5190163e793e0d"
+    "revision": "9a9ceeb041fdb50dffef5c7350776bb3b258b16b"
   },
   "samples": [
     {

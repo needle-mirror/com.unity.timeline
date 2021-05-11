@@ -43,25 +43,32 @@ namespace UnityEditor.Timeline
             m_FoldoutWidth = DirectorStyles.Instance.foldout.fixedWidth;
         }
 
-        void ItemDoubleClickedCallback(int id)
+        internal void ItemDoubleClickedCallback(int id)
         {
-            var trackGUI = m_TreeView.FindItem(id) as TimelineTrackGUI;
-            if (trackGUI == null)
-                return;
-
-            if (trackGUI.track == null || trackGUI.track.lockedInHierarchy)
-                return;
-
-            var selection = SelectionManager.SelectedItems().ToList();
-            var items = ItemsUtils.GetItems(trackGUI.track).ToList();
-            var addToSelection = !selection.SequenceEqual(items);
-
-            foreach (var i in items)
+            var gui = m_TreeView.FindItem(id);
+            var trackGUI = gui as TimelineTrackGUI;
+            if (trackGUI != null)
             {
-                if (addToSelection)
-                    SelectionManager.Add(i);
-                else
-                    SelectionManager.Remove(i);
+                if (trackGUI.track == null || trackGUI.track.lockedInHierarchy)
+                    return;
+                var selection = SelectionManager.SelectedItems().ToList();
+                var items = ItemsUtils.GetItems(trackGUI.track).ToList();
+                var addToSelection = !selection.SequenceEqual(items);
+
+                foreach (var i in items)
+                {
+                    if (addToSelection)
+                        SelectionManager.Add(i);
+                    else
+                        SelectionManager.Remove(i);
+                }
+
+                return;
+            }
+
+            if (gui is TimelineGroupGUI groupGUI)
+            {
+                KeyboardNavigation.ToggleCollapseGroup(new[] {groupGUI.track});
             }
         }
 

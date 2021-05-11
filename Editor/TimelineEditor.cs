@@ -253,6 +253,14 @@ namespace UnityEditor.Timeline
                 return inspectedTime;
             return editSequence.ToGlobalTime(inspectedTime);
         }
+
+        internal static void RefreshPreviewPlay()
+        {
+            if (state == null || !state.playing)
+                return;
+            state.Pause();
+            state.Play();
+        }
     }
 
     /// <summary>

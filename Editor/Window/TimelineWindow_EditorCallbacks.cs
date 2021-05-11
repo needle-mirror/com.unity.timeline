@@ -41,6 +41,9 @@ namespace UnityEditor.Timeline
             PrefabUtility.prefabInstanceUpdated += OnPrefabApplied;
             EditorApplication.pauseStateChanged += OnPlayModePause;
             EditorApplication.globalEventHandler += GlobalEventHandler;
+#if TIMELINE_FRAMEACCURATE
+            TimelinePlayable.playableLooped += OnPlayableLooped;
+#endif
         }
 
         // This callback is needed because the Animation window registers "Animation/Key Selected" as a global hotkey
@@ -85,6 +88,9 @@ namespace UnityEditor.Timeline
             PrefabUtility.prefabInstanceUpdated -= OnPrefabApplied;
             EditorApplication.pauseStateChanged -= OnPlayModePause;
             EditorApplication.globalEventHandler -= GlobalEventHandler;
+#if TIMELINE_FRAMEACCURATE
+            TimelinePlayable.playableLooped -= OnPlayableLooped;
+#endif
         }
 
         void OnPlayModePause(PauseState state)
@@ -323,5 +329,18 @@ namespace UnityEditor.Timeline
                 }
             }
         }
+#if TIMELINE_FRAMEACCURATE
+        void OnPlayableLooped(Playable timelinePlayable)
+        {
+            if (state == null || !state.playing || state.masterSequence == null || state.masterSequence.director == null
+                || !state.masterSequence.director.playableGraph.IsValid())
+                return;
+            var masterPlayable = state.masterSequence.director.playableGraph.GetRootPlayable(0);
+            if (!masterPlayable.Equals(Playable.Null)
+                && masterPlayable.Equals(timelinePlayable)
+                && timelinePlayable.GetGraph().IsMatchFrameRateEnabled())
+                timelinePlayable.SetTime(0);
+        }
+#endif
     }
 }

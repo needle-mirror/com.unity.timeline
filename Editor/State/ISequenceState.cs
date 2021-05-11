@@ -19,7 +19,7 @@ namespace UnityEditor.Timeline
         TimelineAssetViewModel viewModel { get; }
         double time { get; set; }
         int frame { get; set; }
-        float frameRate { get; set; }
+        double frameRate { get; set; }
 
         Range GetEvaluableRange();
         double ToGlobalTime(double t);
@@ -74,9 +74,9 @@ namespace UnityEditor.Timeline
             set { /* NO-OP*/ }
         }
 
-        public float frameRate
+        public double frameRate
         {
-            get { return TimelineAsset.EditorSettings.kDefaultFps; }
+            get { return TimelineAsset.EditorSettings.kDefaultFrameRate; }
             set { /* NO-OP*/ }
         }
 

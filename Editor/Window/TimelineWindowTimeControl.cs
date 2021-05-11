@@ -95,7 +95,7 @@ namespace UnityEditor.Timeline
                 if (state == null)
                     return AnimationKeyTime.Time(0.0f, 0.0f);
 
-                return AnimationKeyTime.Time(ToAnimationClipTime(state.editSequence.time), state.referenceSequence.frameRate);
+                return AnimationKeyTime.Time(ToAnimationClipTime(state.editSequence.time), (float)state.referenceSequence.frameRate);
             }
         }
 

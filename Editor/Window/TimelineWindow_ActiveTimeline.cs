@@ -79,6 +79,8 @@ namespace UnityEditor.Timeline
             {
                 AnimationClipCurveCache.Instance.Clear();
                 TimelineAnimationUtilities.UnlinkAnimationWindow();
+
+                state.analytics.SendAfterSequenceChangeEvent(); // Changing timelines resets analytics that are aggregated in the Timeline Window
             }
         }
     }

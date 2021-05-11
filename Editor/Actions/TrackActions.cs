@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -452,6 +451,52 @@ namespace UnityEditor.Timeline
                 TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
 
             return anyRemoved;
+        }
+    }
+
+    [Shortcut(Shortcuts.Timeline.collapseTrack)]
+    [UsedImplicitly]
+    class CollapseTrackAction : TrackAction
+    {
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
+        {
+            var collapsibleTracks = tracks.Where(track => track.subTracksObjects.Any());
+
+            if (!collapsibleTracks.Any())
+                return ActionValidity.NotApplicable;
+
+            if (collapsibleTracks.All(track => track.IsCollapsed()))
+                return ActionValidity.NotApplicable;
+
+            return ActionValidity.Valid;
+        }
+
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
+        {
+            return KeyboardNavigation.TryCollapse(tracks.Where(track => track.subTracksObjects.Any() && !track.IsCollapsed()));
+        }
+    }
+
+    [Shortcut(Shortcuts.Timeline.expandTrack)]
+    [UsedImplicitly]
+    class ExpandTrackAction : TrackAction
+    {
+        public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
+        {
+            var collapsibleTracks = tracks.Where(track => track.subTracksObjects.Any());
+
+            if (!collapsibleTracks.Any())
+                return ActionValidity.NotApplicable;
+
+            if (collapsibleTracks.All(track => !track.IsCollapsed()))
+                return ActionValidity.NotApplicable;
+
+            return ActionValidity.Valid;
+        }
+
+        public override bool Execute(IEnumerable<TrackAsset> tracks)
+        {
+            return KeyboardNavigation.TryExpand(tracks.Where(track => track.subTracksObjects.Any() && track.IsCollapsed()));
         }
     }
 }

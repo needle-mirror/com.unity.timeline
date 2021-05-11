@@ -1,9 +1,52 @@
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+#if TIMELINE_FRAMEACCURATE
+using UnityEngine.Playables;
+#endif
 
 namespace UnityEngine.Timeline
 {
+    /// <summary>
+    /// The standard frame rates supported when locking Timeline playback to frames.
+    /// The frame rate is expressed in frames per second (fps).
+    /// </summary>
+    public enum StandardFrameRates
+    {
+        /// <summary>
+        /// Represents a frame rate of 24 fps. This is the common frame rate for film.
+        /// </summary>
+        Fps24,
+        /// <summary>
+        /// Represents a drop frame rate of 23.97 fps. This is the common frame rate for NTSC film broadcast.
+        /// </summary>
+        Fps23_97,
+        /// <summary>
+        /// Represents a frame rate of 25 fps. This is commonly used for non-interlaced PAL television broadcast.
+        /// </summary>
+        Fps25,
+        /// <summary>
+        /// Represents a frame rate of 30 fps. This is commonly used for HD footage.
+        /// </summary>
+        Fps30,
+        /// <summary>
+        /// Represents a drop frame rate of 29.97 fps. This is commonly used for NTSC television broadcast.
+        /// </summary>
+        Fps29_97,
+        /// <summary>
+        /// Represents a frame rate of 50 fps. This is commonly used for interlaced PAL television broadcast.
+        /// </summary>
+        Fps50,
+        /// <summary>
+        /// Represents a frame rate of 60 fps. This is commonly used for games.
+        /// </summary>
+        Fps60,
+        /// <summary>
+        /// Represents a drop frame rate of 59.94 fps. This is commonly used for interlaced NTSC television broadcast.
+        /// </summary>
+        Fps59_94
+    }
+
     // Sequence specific utilities for time manipulation
     static class TimeUtility
     {
@@ -11,6 +54,8 @@ namespace UnityEngine.Timeline
         public static readonly double kTimeEpsilon = 1e-14;
         public static readonly double kFrameRateEpsilon = 1e-6;
         public static readonly double k_MaxTimelineDurationInSeconds = 9e6; //104 days of running time
+        public static readonly double kFrameRateRounding = 1e-2;
+
 
         static void ValidateFrameRate(double frameRate)
         {
@@ -247,6 +292,64 @@ namespace UnityEngine.Timeline
                     src[dstIdx++] = src[i];
             }
             return new string(src, 0, dstIdx);
+        }
+
+        public static FrameRate GetClosestFrameRate(double frameRate)
+        {
+            ValidateFrameRate(frameRate);
+            var actualFrameRate = FrameRate.DoubleToFrameRate(frameRate);
+            return Math.Abs(frameRate - actualFrameRate.rate) < kFrameRateRounding ? actualFrameRate : new FrameRate();
+        }
+
+        public static FrameRate ToFrameRate(StandardFrameRates enumValue)
+        {
+            switch (enumValue)
+            {
+                case StandardFrameRates.Fps23_97:
+                    return FrameRate.k_23_976Fps;
+                case StandardFrameRates.Fps24:
+                    return FrameRate.k_24Fps;
+                case StandardFrameRates.Fps25:
+                    return FrameRate.k_25Fps;
+                case StandardFrameRates.Fps29_97:
+                    return FrameRate.k_29_97Fps;
+                case StandardFrameRates.Fps30:
+                    return FrameRate.k_30Fps;
+                case StandardFrameRates.Fps50:
+                    return FrameRate.k_50Fps;
+                case StandardFrameRates.Fps59_94:
+                    return FrameRate.k_59_94Fps;
+                case StandardFrameRates.Fps60:
+                    return FrameRate.k_60Fps;
+                default:
+                    return new FrameRate();
+            };
+        }
+
+        internal static bool ToStandardFrameRate(FrameRate rate, out StandardFrameRates standard)
+        {
+            if (rate == FrameRate.k_23_976Fps)
+                standard = StandardFrameRates.Fps23_97;
+            else if (rate == FrameRate.k_24Fps)
+                standard = StandardFrameRates.Fps24;
+            else if (rate == FrameRate.k_25Fps)
+                standard = StandardFrameRates.Fps25;
+            else if (rate == FrameRate.k_30Fps)
+                standard = StandardFrameRates.Fps30;
+            else if (rate == FrameRate.k_29_97Fps)
+                standard = StandardFrameRates.Fps29_97;
+            else if (rate == FrameRate.k_50Fps)
+                standard = StandardFrameRates.Fps50;
+            else if (rate == FrameRate.k_59_94Fps)
+                standard = StandardFrameRates.Fps59_94;
+            else if (rate == FrameRate.k_60Fps)
+                standard = StandardFrameRates.Fps60;
+            else
+            {
+                standard = (StandardFrameRates) Enum.GetValues(typeof(StandardFrameRates)).Length;
+                return false;
+            }
+            return true;
         }
     }
 }

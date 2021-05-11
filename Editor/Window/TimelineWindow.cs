@@ -10,8 +10,13 @@ using Object = UnityEngine.Object;
 
 namespace UnityEditor.Timeline
 {
+    internal interface IWindowStateProvider
+    {
+        IWindowState windowState { get; }
+    }
+
     [EditorWindowTitle(title = "Timeline", useTypeNameAsIconName = true)]
-    partial class TimelineWindow : TimelineEditorWindow, IHasCustomMenu
+    partial class TimelineWindow : TimelineEditorWindow, IHasCustomMenu, IWindowStateProvider
     {
         [Serializable]
         public class TimelineWindowPreferences
@@ -51,6 +56,8 @@ namespace UnityEditor.Timeline
         }
 
         public WindowState state { get; private set; }
+
+        IWindowState IWindowStateProvider.windowState => state;
 
         public override bool locked
         {
@@ -254,7 +261,10 @@ namespace UnityEditor.Timeline
             if (Event.current.type == EventType.Repaint)
             {
                 hierarchyChangedThisFrame = false;
+            }
 
+            if (Event.current.type == EventType.Layout)
+            {
                 UpdateTitle();
             }
         }

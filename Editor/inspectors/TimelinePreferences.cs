@@ -63,6 +63,36 @@ public class TimelinePreferences : ScriptableSingleton<TimelinePreferences>
     /// </summary>
     [SerializeField]
     public bool snapToFrame = true;
+
+#if TIMELINE_FRAMEACCURATE
+    [SerializeField] bool m_PlaybackLockedToFrame;
+#endif
+    /// <summary>
+    /// Enable Timelines to be evaluated on frame during editor preview.
+    /// </summary>
+    public bool playbackLockedToFrame
+    {
+        get
+        {
+#if TIMELINE_FRAMEACCURATE
+            return m_PlaybackLockedToFrame;
+#else
+            Debug.LogWarning($"PlaybackLockedToFrame is not available for this Unity version");
+            return false;
+#endif
+        }
+        set
+        {
+#if TIMELINE_FRAMEACCURATE
+            m_PlaybackLockedToFrame = value;
+            TimelineEditor.RefreshPreviewPlay();
+#else
+            Debug.LogWarning($"PlaybackLockedToFrame is not available for this Unity version");
+#endif
+        }
+    }
+
+
     /// <summary>
     /// Enable the ability to snap clips on the edge of another clip.
     /// </summary>
@@ -101,8 +131,9 @@ class TimelinePreferencesProvider : SettingsProvider
     SerializedProperty m_SnapToFrame;
     SerializedProperty m_EdgeSnap;
     SerializedProperty m_PlaybackScrollMode;
+    SerializedProperty m_PlaybackLockedToFrame;
 
-    private class Styles
+    internal class Styles
     {
         public static readonly GUIContent TimeUnitLabel = L10n.TextContent("Time Unit", "Define the time unit for the timeline window (Frames, Timecode or Seconds).");
         public static readonly GUIContent ShowAudioWaveformLabel = L10n.TextContent("Show Audio Waveforms", "Draw the waveforms for all audio clips.");
@@ -111,6 +142,9 @@ class TimelinePreferencesProvider : SettingsProvider
         public static readonly GUIContent EdgeSnapLabel = L10n.TextContent("Edge Snap", "Enable the ability to snap clips on the edge of another clip.");
         public static readonly GUIContent PlaybackScrollModeLabel = L10n.TextContent("Playback Scrolling Mode", "Define scrolling behavior during playback.");
         public static readonly GUIContent EditorSettingLabel = L10n.TextContent("Timeline Editor Settings", "");
+#if TIMELINE_FRAMEACCURATE
+        public static readonly GUIContent PlaybackLockedToFrame = L10n.TextContent("Playback Locked To Frame", "Enable Frame Accurate Preview.");
+#endif
     }
 
     public TimelinePreferencesProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
@@ -127,6 +161,9 @@ class TimelinePreferencesProvider : SettingsProvider
         m_SnapToFrame = m_SerializedObject.FindProperty("snapToFrame");
         m_EdgeSnap = m_SerializedObject.FindProperty("edgeSnap");
         m_PlaybackScrollMode = m_SerializedObject.FindProperty("playbackScrollMode");
+#if TIMELINE_FRAMEACCURATE
+        m_PlaybackLockedToFrame = m_SerializedObject.FindProperty("m_PlaybackLockedToFrame");
+#endif
     }
 
     public override void OnGUI(string searchContext)
@@ -142,12 +179,16 @@ class TimelinePreferencesProvider : SettingsProvider
             TimelinePreferences.instance.audioScrubbing = EditorGUILayout.Toggle(Styles.AudioScrubbingLabel, TimelinePreferences.instance.audioScrubbing);
             m_SnapToFrame.boolValue = EditorGUILayout.Toggle(Styles.SnapToFrameLabel, m_SnapToFrame.boolValue);
             m_EdgeSnap.boolValue = EditorGUILayout.Toggle(Styles.EdgeSnapLabel, m_EdgeSnap.boolValue);
+#if TIMELINE_FRAMEACCURATE
+            m_PlaybackLockedToFrame.boolValue = EditorGUILayout.Toggle(Styles.PlaybackLockedToFrame, m_PlaybackLockedToFrame.boolValue);
+#endif
         }
         if (EditorGUI.EndChangeCheck())
         {
             m_SerializedObject.ApplyModifiedProperties();
             TimelinePreferences.instance.Save();
             TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
+            TimelineEditor.RefreshPreviewPlay();
         }
     }
 

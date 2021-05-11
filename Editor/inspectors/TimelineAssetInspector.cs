@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -11,7 +10,7 @@ namespace UnityEditor.Timeline
     {
         const int k_MinWidth = 140;
 
-        static class Styles
+        internal static class Styles
         {
             public static readonly GUIContent FrameRate = L10n.TextContent("Frame Rate", "The frame rate at which this sequence updates");
             public static readonly GUIContent DurationMode = L10n.TextContent("Duration Mode", "Specified how the duration of the sequence is calculated");
@@ -61,9 +60,19 @@ namespace UnityEditor.Timeline
             serializedObject.Update();
 
             EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(m_FrameRateProperty, Styles.FrameRate);
+#if TIMELINE_FRAMEACCURATE
+            if (EditorGUI.EndChangeCheck())
+            {
+                ResetFrameLockedPlayback(targets);
+            }
+#else
+            EditorGUI.EndChangeCheck();
+#endif
 
-            EditorGUILayout.PropertyField(m_FrameRateProperty, Styles.FrameRate, GUILayout.MinWidth(k_MinWidth));
             var frameRate = m_FrameRateProperty.doubleValue;
+
+            EditorGUI.BeginChangeCheck();
 
             EditorGUILayout.PropertyField(m_DurationModeProperty, Styles.DurationMode, GUILayout.MinWidth(k_MinWidth));
 
@@ -112,5 +121,18 @@ namespace UnityEditor.Timeline
         {
             return asset != null && asset.Any(tl => tl == TimelineWindow.instance.state.masterSequence.asset);
         }
+
+#if TIMELINE_FRAMEACCURATE
+        static void ResetFrameLockedPlayback(Object[] asset)
+        {
+            if (TimelineWindow.instance != null
+                && TimelineWindow.instance.state != null
+                && TimelinePreferences.instance.playbackLockedToFrame
+                && ContainsMasterAsset(asset))
+            {
+                TimelineEditor.RefreshPreviewPlay();
+            }
+        }
+#endif
     }
 }

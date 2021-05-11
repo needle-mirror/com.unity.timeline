@@ -34,7 +34,7 @@ namespace UnityEditor.Timeline
             }
 
             if (!state.IsEditingAnEmptyTimeline())
-                m_TimeArea.DrawMajorTicks(sequenceContentRect, state.referenceSequence.frameRate);
+                m_TimeArea.DrawMajorTicks(sequenceContentRect, (float)state.referenceSequence.frameRate);
 
             GUILayout.BeginVertical();
             {

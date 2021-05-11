@@ -61,6 +61,7 @@ namespace UnityEngine.Timeline
 
 #if UNITY_EDITOR
         private IntervalTreeRebalancer m_Rebalancer;
+        internal static event Action<Playable> playableLooped;
 #endif
         /// <summary>
         /// Creates an instance of a Timeline
@@ -236,6 +237,10 @@ namespace UnityEngine.Timeline
 #if UNITY_EDITOR
             if (m_Rebalancer != null)
                 m_Rebalancer.Rebalance();
+            // avoids loop creating a time offset during framelocked playback
+            // if the timeline duration does not fall on a frame boundary.
+            if (playableLooped != null && info.timeLooped)
+                playableLooped.Invoke(playable);
 #endif
 
             // force seek if we are being evaluated

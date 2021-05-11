@@ -2,6 +2,31 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.0-pre.5] - 2021-05-11
+
+### Added
+
+- Double click now toggles the collapsed state of group tracks.
+- A keyboard shortcut can now be mapped to expand or collapse group tracks.
+- Added `displayClipName` property to ClipDrawOption. Use `displayClipName` to display (true) or hide (false) the clip name.
+- New API added to `TimelineEditorWindow`: `TimelineNavigator`.
+  - Enables navigation between timelines and nested timelines through code for automation purposes.
+  - Gives access to Timeline window breadcrumbs.
+- _(Unity 2021.2+ only)_ Added `Framelocked preview` option in Timeline preferences.
+- Added framerate display with standard framerates.
+- `TimelineAsset` framerate can be set with a `StandardFramerate` value. (`TimelineAsset.SetStandardFramerate`)
+
+### Changed
+
+- Timeline settings menu has been modified to use standard framerates in framerate submenu.
+- `TimelineAsset.fps` is obsolete and is replaced by `TimelineAsset.frameRate`.
+- `TimelineProjectSettings.assetDefaultFramerate` is obsolete and is replaced by `TimelineProjectSettings.defaultFramerate`.
+
+### Fixed
+
+- Fixed issue where the "Navigate Right" (default key: `Right Arrow` ▶) would not behave consistently. The correct order of operations should now always be, in order: expand group, select first track of group, then select first item of the track.
+- Fixed frame display not rounding up correctly. (1333009)
+
 ## [1.6.0-pre.4] - 2021-04-30
 
 ### Added

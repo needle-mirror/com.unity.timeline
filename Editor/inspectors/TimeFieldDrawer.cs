@@ -13,9 +13,9 @@ namespace UnityEditor.Timeline
             get { return TimelineWindow.instance != null ? TimelineWindow.instance.state : null; }
         }
 
-        static float currentFrameRate
+        static double currentFrameRate
         {
-            get { return state != null ? TimelineWindow.instance.state.referenceSequence.frameRate : 0.0f; }
+            get { return state != null ? TimelineWindow.instance.state.referenceSequence.frameRate : 0.0; }
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
