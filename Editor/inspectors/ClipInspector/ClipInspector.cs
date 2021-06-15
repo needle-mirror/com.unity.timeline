@@ -264,7 +264,7 @@ namespace UnityEditor.Timeline
             if (m_SelectionInfo.selectedAssetTypesAreHomogeneous)
             {
                 var selectedAssets = m_SelectionCache.Select(e => e.clip.asset).ToArray();
-                m_SelectedPlayableAssetsInspector = TimelineInspectorUtility.GetInspectorForObjects(selectedAssets);
+                m_SelectedPlayableAssetsInspector = TimelineInspectorUtility.GetInspectorForObjects(selectedAssets, m_SelectedPlayableAssetsInspector);
             }
 
             m_MultiselectionHeaderTitle = m_SelectionCache.Count + " " + Styles.MultipleSelectionTitle.text;
@@ -274,6 +274,7 @@ namespace UnityEditor.Timeline
         void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+            DestroyImmediate(m_SelectedPlayableAssetsInspector);
         }
 
         void DrawClipProperties()
@@ -646,7 +647,6 @@ namespace UnityEditor.Timeline
 
                 if (EditorGUI.EndChangeCheck())
                 {
-
                     MarkClipsDirty();
                     if (TimelineWindow.IsEditingTimelineAsset(m_TimelineAsset) && TimelineWindow.instance.state != null)
                     {
@@ -761,7 +761,7 @@ namespace UnityEditor.Timeline
                 blendMax = TimelineClip.kMaxTimeValue;
                 label = Styles.BlendInDurationName;
             }
-            if(blendMax > TimeUtility.kTimeEpsilon)
+            if (blendMax > TimeUtility.kTimeEpsilon)
                 TimelineInspectorUtility.TimeField(currentMixInProperty, label, useBlendIn, currentFrameRate, mixMinimum,
                     blendMax, ref inputEvent);
 
@@ -784,7 +784,6 @@ namespace UnityEditor.Timeline
             if (blendMax > TimeUtility.kTimeEpsilon)
                 TimelineInspectorUtility.TimeField(currentMixOutProperty, label, useBlendOut, currentFrameRate,
                     mixMinimum, blendMax, ref inputEvent);
-
         }
 
         void DrawClipInProperty()

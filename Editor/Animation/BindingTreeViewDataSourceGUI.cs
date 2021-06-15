@@ -12,7 +12,6 @@ namespace UnityEditor.Timeline
         const float k_CurveColorIndicatorIconSize = 11;
         const float k_ColorIndicatorTopMargin = 3;
 
-        static readonly float s_ColorIndicatorTopMargin = 3;
         static readonly Color s_KeyColorForNonCurves = new Color(0.7f, 0.7f, 0.7f, 0.5f);
         static readonly Color s_ChildrenCurveLabelColor = new Color(1.0f, 1.0f, 1.0f, 0.7f);
         static readonly Color s_PhantomPropertyLabelColor = new Color(0.0f, 0.8f, 0.8f, 1f);

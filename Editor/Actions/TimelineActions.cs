@@ -920,7 +920,7 @@ namespace UnityEditor.Timeline
         static IEnumerable<TrackAsset> GetKeyableTracks(WindowState state, ActionContext context)
         {
             if (!context.clips.Any() && !context.tracks.Any()) //no selection -> animate all recorded tracks
-                return state.editSequence.asset.flattenedTracks.Where(state.IsArmedForRecord);
+                return context.timeline.flattenedTracks.Where(state.IsArmedForRecord);
 
             List<TrackAsset> parentTracks = context.tracks.ToList();
             parentTracks.AddRange(context.clips.Select(clip => clip.GetParentTrack()).Distinct());
@@ -933,10 +933,13 @@ namespace UnityEditor.Timeline
 
         static bool CanExecute(WindowState state, ActionContext context)
         {
+            if (context.timeline == null)
+                return false;
+
             if (context.markers.Any())
                 return false;
 
-            if (context.tracks.ContainsTimelineMarkerTrack(state.editSequence.asset))
+            if (context.tracks.ContainsTimelineMarkerTrack(context.timeline))
                 return false;
 
             IClipCurveEditorOwner curveSelected = SelectionManager.GetCurrentInlineEditorCurve();

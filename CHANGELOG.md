@@ -2,6 +2,14 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.6] - 2021-06-15
+
+### Fixed
+
+- Fixed an issue where `TimelinePlayable` duration would not be initialized if the playable is not created from the PlayableDirector. ([1329151](https://issuetracker.unity3d.com/product/unity/issues/guid/1329151))
+- Fixed memory leak in custom playable inspectors. (1332377)
+- Fixed exception when using the Key All Animated shortcut with no Timeline selected. (1334339)
+
 ## [1.5.5] - 2021-04-30
 
 ### Fixed
