@@ -16,7 +16,7 @@ namespace UnityEditor.Timeline
             public TrackAsset track;
         }
 
-#if UNITY_2021_2
+#if UNITY_2021_2_OR_NEWER
         const AnimationWindowState.SnapMode k_SnapMode = AnimationWindowState.SnapMode.SnapToFrame;
 #else
         const AnimationWindowState.SnapMode k_SnapMode = AnimationWindowState.SnapMode.SnapToClipFrame;

@@ -115,7 +115,7 @@ namespace UnityEngine.Timeline
             if (director == null || !director.isActiveAndEnabled || director.playableAsset == null)
                 return;
 
-            if (m_SyncTime || DetectOutOfSync(playable) )
+            if (m_SyncTime || DetectOutOfSync(playable))
             {
                 UpdateTime(playable);
                 if (director.playableGraph.IsValid())
@@ -168,7 +168,7 @@ namespace UnityEngine.Timeline
                 if (director.state == PlayState.Playing)
                     return;
 #if TIMELINE_FRAMEACCURATE
-                if(graph.IsMatchFrameRateEnabled())
+                if (graph.IsMatchFrameRateEnabled())
                     director.Play(graph.GetFrameRate());
                 else
                     director.Play();

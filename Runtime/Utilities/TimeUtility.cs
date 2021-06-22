@@ -323,7 +323,8 @@ namespace UnityEngine.Timeline
                     return FrameRate.k_60Fps;
                 default:
                     return new FrameRate();
-            };
+            }
+            ;
         }
 
         internal static bool ToStandardFrameRate(FrameRate rate, out StandardFrameRates standard)
@@ -346,7 +347,7 @@ namespace UnityEngine.Timeline
                 standard = StandardFrameRates.Fps60;
             else
             {
-                standard = (StandardFrameRates) Enum.GetValues(typeof(StandardFrameRates)).Length;
+                standard = (StandardFrameRates)Enum.GetValues(typeof(StandardFrameRates)).Length;
                 return false;
             }
             return true;

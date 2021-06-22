@@ -11,7 +11,7 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// The public Breadcrumb navigation controller, accessible through TimelineEditorWindow
         /// </summary>
-        public override TimelineNavigator navigator => new TimelineNavigatorImpl(this);
+        public override TimelineNavigator navigator => new TimelineNavigator(this);
 
         /// <summary>
         /// Implementation of TimelineNavigator
@@ -21,7 +21,7 @@ namespace UnityEditor.Timeline
         ///
         /// The class acts as a handle on the TimelineWindow, and lets users navigate the breadcrumbs and dive into subtimelines
         /// </remarks>
-        internal class TimelineNavigatorImpl : TimelineNavigator
+        internal class TimelineNavigatorImpl
         {
             /// <summary>
             ///
@@ -39,7 +39,7 @@ namespace UnityEditor.Timeline
             /// Creates a SequenceContext from the top of the breadcrumb stack
             /// </summary>
             /// <returns></returns>
-            public override SequenceContext GetCurrentContext()
+            public SequenceContext GetCurrentContext()
             {
                 return GetBreadcrumbs().LastOrDefault();
             }
@@ -48,7 +48,7 @@ namespace UnityEditor.Timeline
             /// Creates a SequenceContext from the second to last breadcrumb in the list
             /// </summary>
             /// <returns>Valid context if there is a parent, Invalid context otherwise</returns>
-            public override SequenceContext GetParentContext()
+            public SequenceContext GetParentContext()
             {
                 //If the edit sequence is the master sequence, there is no parent context
                 if (windowState.editSequence == windowState.masterSequence)
@@ -62,7 +62,7 @@ namespace UnityEditor.Timeline
             /// Creates a SequenceContext from the top of the breadcrumb stack
             /// </summary>
             /// <returns>Always returns a valid SequenceContext</returns>
-            public override SequenceContext GetRootContext()
+            public SequenceContext GetRootContext()
             {
                 return GetBreadcrumbs().FirstOrDefault();
             }
@@ -71,7 +71,7 @@ namespace UnityEditor.Timeline
             /// Creates SequenceContexts for all the child Timelines
             /// </summary>
             /// <returns>Collection of SequenceContexts. Can be empty if there are no valid child contexts</returns>
-            public override IEnumerable<SequenceContext> GetChildContexts()
+            public IEnumerable<SequenceContext> GetChildContexts()
             {
                 return windowState.GetSubSequences();
             }
@@ -80,7 +80,7 @@ namespace UnityEditor.Timeline
             /// Creates SequenceContexts from the breadcrumb stack, from top to bottom
             /// </summary>
             /// <returns>Collection of SequenceContexts. Should never be empty</returns>
-            public override IEnumerable<SequenceContext> GetBreadcrumbs()
+            public IEnumerable<SequenceContext> GetBreadcrumbs()
             {
                 return CollectBreadcrumbContexts();
             }
@@ -95,7 +95,7 @@ namespace UnityEditor.Timeline
             /// <param name="context">A valid SequenceContext. <paramref name="context"/> should always be found in the breadcrumbs</param>
             /// <exception cref="System.ArgumentException"> The context is not valid</exception>
             /// <exception cref="System.InvalidOperationException"> The context is not a valid navigation destination.</exception>
-            public override void NavigateTo(SequenceContext context)
+            public void NavigateTo(SequenceContext context)
             {
                 if (!context.IsValid())
                     throw new ArgumentException(

@@ -68,7 +68,7 @@ public class TimelineProjectSettings : ScriptableSingleton<TimelineProjectSettin
     private void OnValidate()
     {
 #pragma warning disable 0618
-        assetDefaultFramerate = (float) m_DefaultFrameRate;
+        assetDefaultFramerate = (float)m_DefaultFrameRate;
 #pragma warning restore 0618
     }
 }

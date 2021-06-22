@@ -9,22 +9,34 @@ namespace UnityEditor.Timeline
     /// TimelineNavigator gives you access to the Timeline window breadcrumbs functionality. Use it to programmatically
     /// dig into SubTimelines, navigate to parent Timelines or navigate Timeline Window breadcrumbs.
     /// </remarks>
-    public abstract class TimelineNavigator
+    public sealed class TimelineNavigator
     {
+        TimelineWindow.TimelineNavigatorImpl m_Impl;
+        internal TimelineNavigator(IWindowStateProvider windowState)
+        {
+            m_Impl = new TimelineWindow.TimelineNavigatorImpl(windowState);
+        }
+
         /// <summary>
         /// Gets the SequenceContext associated with the Timeline currently shown in the Timeline window.
         /// </summary>
         /// <returns>The SequenceContext associated with the Timeline currently shown in the Timeline window.</returns>
         /// <remarks>Equivalent to <c>TimelineNavigator.GetBreadCrumbs().Last()</c></remarks>
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
-        public abstract SequenceContext GetCurrentContext();
+        public SequenceContext GetCurrentContext()
+        {
+            return m_Impl.GetCurrentContext();
+        }
 
         /// <summary>
         /// Gets the parent SequenceContext for the Timeline currently shown in the Timeline window.
         /// </summary>
         /// <returns>The parent SequenceContext for the Timeline currently shown in the Timeline window if there is one; an invalid SequenceContext otherwise. <seealso cref="SequenceContext.Invalid"/></returns>
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
-        public abstract SequenceContext GetParentContext();
+        public SequenceContext GetParentContext()
+        {
+            return m_Impl.GetParentContext();
+        }
 
         /// <summary>
         /// Gets the first SequenceContext in the breadcrumbs.
@@ -32,14 +44,20 @@ namespace UnityEditor.Timeline
         /// <returns>The first SequenceContext in the breadcrumbs.</returns>
         /// <remarks>Equivalent to <c>TimelineNavigator.GetBreadCrumbs().First()</c></remarks>
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
-        public abstract SequenceContext GetRootContext();
+        public SequenceContext GetRootContext()
+        {
+            return m_Impl.GetRootContext();
+        }
 
         /// <summary>
         /// Gets the collection of child contexts that can be navigated to from the current context.
         /// </summary>
         /// <returns>The collection of child contexts that can be navigated to from the current context.</returns>
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
-        public abstract IEnumerable<SequenceContext> GetChildContexts();
+        public IEnumerable<SequenceContext> GetChildContexts()
+        {
+            return m_Impl.GetChildContexts();
+        }
 
         /// <summary>
         /// Gets the collection of SequenceContexts associated with the breadcrumbs shown in the TimelineEditorWindow.
@@ -47,7 +65,10 @@ namespace UnityEditor.Timeline
         /// <remarks>This operation can be expensive. Consider caching the results instead of calling the method multiple times.</remarks>
         /// <returns>The collection of SequenceContexts associated with the breadcrumbs shown in the TimelineEditorWindow, from the root context to the current context.</returns>
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
-        public abstract IEnumerable<SequenceContext> GetBreadcrumbs();
+        public IEnumerable<SequenceContext> GetBreadcrumbs()
+        {
+            return m_Impl.GetBreadcrumbs();
+        }
 
         /// <summary>
         /// Navigates to a new SequenceContext.
@@ -68,6 +89,9 @@ namespace UnityEditor.Timeline
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
         /// <exception cref="System.ArgumentException"> The context is not valid.</exception>
         /// <exception cref="System.InvalidOperationException"> The context is not a valid navigation destination.</exception>
-        public abstract void NavigateTo(SequenceContext context);
+        public void NavigateTo(SequenceContext context)
+        {
+            m_Impl.NavigateTo(context);
+        }
     }
 }

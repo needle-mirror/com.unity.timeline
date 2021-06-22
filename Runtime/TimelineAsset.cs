@@ -407,6 +407,7 @@ namespace UnityEngine.Timeline
             // only create outputs if we are not nested
             bool createOutputs = graph.GetPlayableCount() == 0;
             var timeline = TimelinePlayable.Create(graph, GetOutputTracks(), go, autoRebalanceTree, createOutputs);
+            timeline.SetDuration(this.duration);
             timeline.SetPropagateSetTime(true);
             return timeline.IsValid() ? timeline : Playable.Null;
         }

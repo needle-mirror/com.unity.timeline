@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -15,12 +15,14 @@ namespace UnityEditor.Timeline
             FrameRate frameRateObj = TimeUtility.GetClosestFrameRate(RoundFrameRate(frameRate));
             return TimeUtility.ToStandardFrameRate(frameRateObj, out standard);
         }
+
         public static double RoundFrameRate(double frameRate)
         {
-            double trunc = Math.Truncate(frameRate * (1/TimeUtility.kFrameRateRounding)) * TimeUtility.kFrameRateRounding;
+            double trunc = Math.Truncate(frameRate * (1 / TimeUtility.kFrameRateRounding)) * TimeUtility.kFrameRateRounding;
             return Math.Min(Math.Max(TimelineAsset.EditorSettings.kMinFrameRate, trunc),
                 TimelineAsset.EditorSettings.kMaxFrameRate);
         }
+
         public static string[] GetDefaultFrameRatesLabels(StandardFrameRates option)
         {
             string[] labels;

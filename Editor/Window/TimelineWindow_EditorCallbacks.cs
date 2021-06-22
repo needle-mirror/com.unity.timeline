@@ -329,6 +329,7 @@ namespace UnityEditor.Timeline
                 }
             }
         }
+
 #if TIMELINE_FRAMEACCURATE
         void OnPlayableLooped(Playable timelinePlayable)
         {
@@ -341,6 +342,7 @@ namespace UnityEditor.Timeline
                 && timelinePlayable.GetGraph().IsMatchFrameRateEnabled())
                 timelinePlayable.SetTime(0);
         }
+
 #endif
     }
 }

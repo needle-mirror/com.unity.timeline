@@ -69,7 +69,7 @@ namespace UnityEditor.Timeline
 
         public void SendManipulationEndedEvent()
         {
-            analyticsStats.editModeSamples[(int) EditMode.editType]++;
+            analyticsStats.editModeSamples[(int)EditMode.editType]++;
         }
 
         internal static bool GenerateTimelineAssetStats(out timeline_asset_stats data)
@@ -87,9 +87,9 @@ namespace UnityEditor.Timeline
                 asset_guid = guid, duration = timeline.duration, frame_rate = timeline.editorSettings.frameRate,
                 track_stats = GetTrackAssetStats(timeline),
                 display_format = TimelinePreferences.instance.timeFormat.ConvertToString(),
-                mix_samples_count = analyticsStats.editModeSamples[(int) EditMode.EditType.Mix],
-                ripple_samples_count = analyticsStats.editModeSamples[(int) EditMode.EditType.Ripple],
-                replace_samples_count = analyticsStats.editModeSamples[(int) EditMode.EditType.Replace],
+                mix_samples_count = analyticsStats.editModeSamples[(int)EditMode.EditType.Mix],
+                ripple_samples_count = analyticsStats.editModeSamples[(int)EditMode.EditType.Ripple],
+                replace_samples_count = analyticsStats.editModeSamples[(int)EditMode.EditType.Replace],
             };
 
             return true;
@@ -101,10 +101,10 @@ namespace UnityEditor.Timeline
             foreach (var track in timeline.flattenedTracks)
             {
                 ret.Add(new track_asset_stats
-                    {
-                        track_type = track.GetType().FullName, clip_count = track.GetClips().Count(),
-                        marker_count = track.GetMarkers().Count()
-                    }
+                {
+                    track_type = track.GetType().FullName, clip_count = track.GetClips().Count(),
+                    marker_count = track.GetMarkers().Count()
+                }
                 );
             }
             return ret;

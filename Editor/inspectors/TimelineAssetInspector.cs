@@ -133,6 +133,7 @@ namespace UnityEditor.Timeline
                 TimelineEditor.RefreshPreviewPlay();
             }
         }
+
 #endif
     }
 }

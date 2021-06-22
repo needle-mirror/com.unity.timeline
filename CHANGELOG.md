@@ -2,10 +2,14 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.6.0-pre.5] - 2021-05-11
+## [1.6.1] - 2021-06-22
 
 ### Added
 
+- `ClipDrawOptions.hideScaleIndicator` can now be used to disable the clip scale indicator.
+- Added an asterisk to the Timeline Window when the currently edited Timeline Asset is dirty (has unsaved changes). (1024230)
+- Added the `IInspectorChangeHandler` interface to change what happens when a UI component in the inspector is modified. (1283486)
+- (_Unity 2020.2+ only_) The Timeline window title displays an asterisk when there are unsaved changes.
 - Double click now toggles the collapsed state of group tracks.
 - A keyboard shortcut can now be mapped to expand or collapse group tracks.
 - Added `displayClipName` property to ClipDrawOption. Use `displayClipName` to display (true) or hide (false) the clip name.
@@ -18,45 +22,21 @@ All notable changes to this package will be documented in this file. The format 
 
 ### Changed
 
+- Removed non-working PlayRange options (Loop/Hold) as both were actually mapping to Loop behaviour and always have been.
 - Timeline settings menu has been modified to use standard framerates in framerate submenu.
 - `TimelineAsset.fps` is obsolete and is replaced by `TimelineAsset.frameRate`.
 - `TimelineProjectSettings.assetDefaultFramerate` is obsolete and is replaced by `TimelineProjectSettings.defaultFramerate`.
 
 ### Fixed
 
+- Removed GC allocations in `PlayableDirector.duration` when a timeline asset is assigned. ([1298818](https://issuetracker.unity3d.com/product/unity/issues/guid/1298818))
+- Removed warnings with AnimationWindowState snap mode. (1306205)
 - Fixed issue where the "Navigate Right" (default key: `Right Arrow` ▶) would not behave consistently. The correct order of operations should now always be, in order: expand group, select first track of group, then select first item of the track.
 - Fixed frame display not rounding up correctly. (1333009)
-
-## [1.6.0-pre.4] - 2021-04-30
-
-### Added
-
-- (_Unity 2020.2+ only_) The Timeline window title displays an asterisk when there are unsaved changes.
-
-## [1.6.0-pre.3] - 2021-03-10
-
-### Added
-
-- Added an asterisk to the Timeline Window when the currently edited Timeline Asset is dirty (has unsaved changes). (1024230)
-- Added the `IInspectorChangeHandler` interface to change what happens when a UI component in the inspector is modified. (1283486)
-
-### Changed
-
-- Removed non-working PlayRange options (Loop/Hold) as both were actually mapping to Loop behaviour and always have been.
-
-### Fixed
-
-- Removed warnings with AnimationWindowState snap mode. (1306205)
-
-## [1.6.0-pre.1] - 2021-01-08
-
-### Added
-
-- `ClipDrawOptions.hideScaleIndicator` can now be used to disable the clip scale indicator.
-
-### Fixed
-
-- Removed GC allocations in `PlayableDirector.duration` when a timeline asset is assigned. ([1298818](https://issuetracker.unity3d.com/product/unity/issues/guid/1298818))
+- Fixed an issue where `TimelinePlayable` duration would not be initialized if the playable is not created from the PlayableDirector. ([1329151](https://issuetracker.unity3d.com/product/unity/issues/guid/1329151))
+- Fixed memory leak in custom playable inspectors. (1332377)
+- Fixed exception when using the Key All Animated shortcut with no Timeline selected. (1334339)
+- Fixed issue where a warning would appear regarding obsolete `AnimationWindowState.SnapMode` values.
 
 ## [1.5.5] - 2021-04-30
 

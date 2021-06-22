@@ -149,7 +149,7 @@ namespace UnityEditor.Timeline
 
         float currentFrameRate
         {
-            get { return m_TimelineAsset != null ? (float)m_TimelineAsset.editorSettings.frameRate:(float)TimelineAsset.EditorSettings.kDefaultFrameRate; }
+            get { return m_TimelineAsset != null ? (float)m_TimelineAsset.editorSettings.frameRate : (float)TimelineAsset.EditorSettings.kDefaultFrameRate; }
         }
 
         bool selectionHasIncompatibleCapabilities
@@ -263,7 +263,7 @@ namespace UnityEditor.Timeline
             if (m_SelectionInfo.selectedAssetTypesAreHomogeneous)
             {
                 var selectedAssets = m_SelectionCache.Select(e => e.clip.asset).ToArray();
-                m_SelectedPlayableAssetsInspector = TimelineInspectorUtility.GetInspectorForObjects(selectedAssets);
+                m_SelectedPlayableAssetsInspector = TimelineInspectorUtility.GetInspectorForObjects(selectedAssets, m_SelectedPlayableAssetsInspector);
             }
 
             m_MultiselectionHeaderTitle = m_SelectionCache.Count + " " + Styles.MultipleSelectionTitle.text;
@@ -273,6 +273,7 @@ namespace UnityEditor.Timeline
         void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+            DestroyImmediate(m_SelectedPlayableAssetsInspector);
         }
 
         void DrawClipProperties()

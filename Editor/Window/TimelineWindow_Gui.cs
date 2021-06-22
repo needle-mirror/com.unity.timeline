@@ -400,9 +400,9 @@ namespace UnityEditor.Timeline
                     if (isCustom)
                         frameRatesLabels[frameRatesLabels.Length - 1] = String.Format(k_CustomFpsLabel, frameRatesLabels.Last(), state.editSequence.frameRate);
 
-                    for(var i = 0;i < frameRatesLabels.Length;i++)
+                    for (var i = 0; i < frameRatesLabels.Length; i++)
                     {
-                        var currentStandard = (StandardFrameRates) i;
+                        var currentStandard = (StandardFrameRates)i;
                         AddStandardFrameRateMenu(menu,  currentStandard,  frameRatesLabels[i], currentStandard == option);
                     }
 
@@ -438,7 +438,7 @@ namespace UnityEditor.Timeline
 
             FrameRate value = TimeUtility.ToFrameRate(option);
             if (!value.IsValid())
-                menu.AddItem(gui, true, () => { });
+                menu.AddItem(gui, true, () => {});
             else
             {
                 menu.AddItem(gui, on, r =>

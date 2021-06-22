@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.Timeline;
 using TimelineEditorSettings = UnityEngine.Timeline.TimelineAsset.EditorSettings;
@@ -35,11 +35,11 @@ namespace UnityEditor.Timeline
             TimeUtility.ToStandardFrameRate(frameRateObj, out StandardFrameRates option);
 
             position = EditorGUI.PrefixLabel(position, label);
-            Rect posPopup = new Rect(position.x, position.y, position.width/2, position.height);
-            Rect posFloatField = new Rect(posPopup.xMax, position.y, position.width/2, position.height);
+            Rect posPopup = new Rect(position.x, position.y, position.width / 2, position.height);
+            Rect posFloatField = new Rect(posPopup.xMax, position.y, position.width / 2, position.height);
             using (var checkOption = new EditorGUI.ChangeCheckScope())
             {
-                option = (StandardFrameRates) EditorGUI.Popup(posPopup, (int) option,
+                option = (StandardFrameRates)EditorGUI.Popup(posPopup, (int)option,
                     FrameRateDisplayUtility.GetDefaultFrameRatesLabels(option));
 
                 if (checkOption.changed)

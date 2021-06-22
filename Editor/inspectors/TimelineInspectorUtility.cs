@@ -326,7 +326,7 @@ namespace UnityEditor.Timeline
             return val;
         }
 
-        public static Editor GetInspectorForObjects(UnityEngine.Object[] objects)
+        public static Editor GetInspectorForObjects(UnityEngine.Object[] objects, Editor previousEditor)
         {
             // create cached editor throws on assembly reload...
             try
@@ -334,7 +334,8 @@ namespace UnityEditor.Timeline
                 if (objects.Any(x => x != null))
                 {
                     var director = TimelineWindow.instance.state.editSequence.director;
-                    return Editor.CreateEditorWithContext(objects, director, null);
+                    Editor.CreateCachedEditorWithContext(objects, director, null, ref previousEditor);
+                    return previousEditor;
                 }
             }
             catch (Exception)
