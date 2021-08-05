@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
@@ -8,22 +9,21 @@ using Object = UnityEngine.Object;
 namespace UnityEditor.Timeline
 {
     /// <summary>
-    /// Use this class to record the state of a timeline or its components prior to modification.
+    /// Provides methods that record the state of a timeline, and its components, prior to modification.
     /// </summary>
     /// <remarks>
-    /// These methods do not need to be used when adding or deleting tracks, clips or markers.
-    /// Methods in the UnityEngine.Timeline namespace, such as <see cref="UnityEngine.Timeline.TimelineAsset.CreateTrack"/>
-    /// or <see cref="UnityEngine.Timeline.TrackAsset.CreateDefaultClip"/> will apply the appropriate
-    /// Undo calls when called in Editor.
+    /// The methods in this class are not required when adding or deleting tracks, clips, or markers.
+    /// Use methods in the UnityEngine.Timeline namespace, such as <see cref="UnityEngine.Timeline.TimelineAsset.CreateTrack"/>
+    /// or <see cref="UnityEngine.Timeline.TrackAsset.CreateDefaultClip"/>, to apply the appropriate
+    /// Undo calls when using the Editor.
     /// </remarks>
     public static class UndoExtensions
     {
         /// <summary>
-        /// Records all items contained in an action context. Use this method to record all objects
-        /// inside the context.
+        /// Records changes to all items contained in an action context.
         /// </summary>
         /// <param name="context">The action context to record into the Undo system.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterContext(ActionContext context, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -35,11 +35,11 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the timeline after being called. This only applies
-        /// to the timeline asset properties itself, and not any of the tracks or clips on the timeline
+        /// Records changes to timeline asset properties.
+        /// This method does not record changes to tracks or clips.
         /// </summary>
         /// <param name="asset">The timeline asset being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterTimeline(TimelineAsset asset, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -47,11 +47,10 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the timeline after being called, including any changes
-        ///  to any clips, tracks and markers that occur on the timeline.
+        /// Records all timeline changes including changes to tracks, clips, and markers.
         /// </summary>
         /// <param name="asset">The timeline asset being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterCompleteTimeline(TimelineAsset asset, string undoTitle)
         {
             if (asset == null)
@@ -70,11 +69,10 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the track after being called, including any changes
-        ///  to clips on the track, but not on markers or PlayableAssets attached to the clips.
+        /// Records changes to tracks and clips but not to markers nor PlayableAssets attached to clips.
         /// </summary>
         /// <param name="asset">The timeline track being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterTrack(TrackAsset asset, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -82,11 +80,11 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the tracks after being called, including any changes
-        ///  to clips on the tracks, but not on markers or PlayableAssets attached to the clips.
+        /// Records changes to tracks. This includes changes
+        /// to clips on these tracks, but not changes to markers nor PlayableAssets attached to clips.
         /// </summary>
         /// <param name="tracks">The timeline track being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterTracks(IEnumerable<TrackAsset> tracks, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -94,11 +92,11 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the clip after being called.
+        /// Records changes to a clip.
         /// </summary>
         /// <param name="clip">The timeline clip being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
-        /// <param name="includePlayableAsset">Set this value to true to also record changes on the attached playable asset.</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
+        /// <param name="includePlayableAsset">Set this value to true to record changes to the attached playable asset.</param>
         public static void RegisterClip(TimelineClip clip, string undoTitle, bool includePlayableAsset = true)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -108,10 +106,10 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the PlayableAsset after being called.
+        /// Records changes to a PlayableAsset.
         /// </summary>
-        /// <param name="asset">The timeline track being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="asset">The PlayableAsset being modified.</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterPlayableAsset(PlayableAsset asset, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -119,11 +117,11 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the clips after being called.
+        /// Records changes to clips.
         /// </summary>
         /// <param name="clips">The timeline clips being modified.</param>
-        /// <param name="name">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
-        /// <param name="includePlayableAssets">Set this value to true to also record changes on the attached playable assets.</param>
+        /// <param name="name">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
+        /// <param name="includePlayableAssets">Set this value to true to also record changes to attached playable assets.</param>
         public static void RegisterClips(IEnumerable<TimelineClip> clips, string name, bool includePlayableAssets = true)
         {
             using (var undo = new UndoScope(name))
@@ -131,10 +129,10 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the Timeline Marker after being called.
+        /// Records changes to a timeline marker.
         /// </summary>
-        /// <param name="marker">The timeline clip being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="marker">The timeline marker being modified.</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterMarker(IMarker marker, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
@@ -147,14 +145,54 @@ namespace UnityEditor.Timeline
         }
 
         /// <summary>
-        /// Records any changes done on the Timeline Markers after being called.
+        /// Records changes to timeline markers.
         /// </summary>
-        /// <param name="markers">The timeline clip being modified.</param>
-        /// <param name="undoTitle">The title of the action to appear in the undo history (i.e. visible in the undo menu).</param>
+        /// <param name="markers">The timeline markers being modified.</param>
+        /// <param name="undoTitle">The title of the action that appears in the undo history. For example, this title is shown in the Undo menu.</param>
         public static void RegisterMarkers(IEnumerable<IMarker> markers, string undoTitle)
         {
             using (var undo = new UndoScope(undoTitle))
                 undo.Add(markers);
+        }
+
+        /// <summary>
+        /// This class provides an object which prevents the creation of undos for all Timeline operations. Undos are restored when the object is disposed.
+        /// </summary>
+        /// <remarks>
+        /// Use this class to procedurally create or modify TimelineAssets when undos are not needed.
+        /// If multiple DisableTimelineUndoScope instances are created, undos are only restored after all instances are disposed.
+        ///
+        /// It is recommended to use this object within a using scope.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// var timelineAsset = new TimelineAsset();
+        /// using (new DisableTimelineUndoScope())
+        /// {
+        ///     //Creates a track without generating an undo
+        ///     timelineAsset.CreateTrack<ActivationTrack>();
+        /// }
+        /// </code>
+        /// </example>
+        internal sealed class DisableTimelineUndoScope : IDisposable
+        {
+            TimelineUndo.DisableUndoScope m_DisableScope;
+
+            /// <summary>
+            /// Creates a new DisableTimelineUndoScope object which prevents undos from being created by Timeline operations.
+            /// </summary>
+            public DisableTimelineUndoScope()
+            {
+                m_DisableScope = new TimelineUndo.DisableUndoScope();
+            }
+
+            /// <summary>
+            /// Disposes the DisableTimelineUndoScope object.
+            /// </summary>
+            public void Dispose()
+            {
+                m_DisableScope.Dispose();
+            }
         }
     }
 }

@@ -84,11 +84,11 @@ namespace UnityEditor.Timeline
                 }
 
                 var playRangeTime = state.playRange;
-                if (playRangeTime.y > playRangeTime.x)
+                if (playRangeTime.start > playRangeTime.end)
                 {
                     menu.AddItem(kSelectedTimeGuiContents, false, () =>
-                        Gaps.Insert(state.editSequence.asset, playRangeTime.x, playRangeTime.y - playRangeTime.x,
-                            TimeUtility.GetEpsilon(playRangeTime.x, state.referenceSequence.frameRate))
+                        Gaps.Insert(state.editSequence.asset, playRangeTime.start, playRangeTime.end - playRangeTime.start,
+                            TimeUtility.GetEpsilon(playRangeTime.start, state.referenceSequence.frameRate))
                     );
                 }
             }

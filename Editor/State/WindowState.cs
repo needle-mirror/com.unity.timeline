@@ -27,9 +27,11 @@ namespace UnityEditor.Timeline
         ISequenceState masterSequence { get; }
         ISequenceState editSequence { get; }
         IEnumerable<ISequenceState> allSequences { get; }
+        PlayRange playRange { get; set; }
         void SetCurrentSequence(TimelineAsset timelineAsset, PlayableDirector director, TimelineClip hostClip);
         void PopSequencesUntilCount(int count);
         IEnumerable<SequenceContext> GetSubSequences();
+        void SetPlaying(bool start);
     }
     class WindowState : IWindowState
     {
@@ -341,10 +343,10 @@ namespace UnityEditor.Timeline
             set { TimelinePreferences.instance.showAudioWaveform = value; }
         }
 
-        public Vector2 playRange
+        public PlayRange playRange
         {
             get { return masterSequence.viewModel.timeAreaPlayRange; }
-            set { masterSequence.viewModel.timeAreaPlayRange = ValidatePlayRange(value); }
+            set { masterSequence.viewModel.timeAreaPlayRange = ValidatePlayRange(value, masterSequence); }
         }
 
         public bool showMarkerHeader
@@ -1106,26 +1108,26 @@ namespace UnityEditor.Timeline
                 OnTimeChange.Invoke();
         }
 
-        Vector2 ValidatePlayRange(Vector2 range)
+        PlayRange ValidatePlayRange(PlayRange range, ISequenceState sequenceState)
         {
             if (range == TimelineAssetViewModel.NoPlayRangeSet)
                 return range;
 
-            float minimumPlayRangeTime = (float)(0.01 / Math.Max(1.0, referenceSequence.frameRate));
+            double minimumPlayRangeTime = (0.01 / Math.Max(1.0, sequenceState.frameRate));
 
             // Validate min
-            if (range.y - range.x < minimumPlayRangeTime)
-                range.x = range.y - minimumPlayRangeTime;
+            if (range.end - range.start < minimumPlayRangeTime)
+                range.start = range.end - minimumPlayRangeTime;
 
-            if (range.x < 0.0f)
-                range.x = 0.0f;
+            if (range.start < 0.0)
+                range.start = 0.0;
 
             // Validate max
-            if (range.y > editSequence.duration)
-                range.y = (float)editSequence.duration;
+            if (range.end > sequenceState.duration)
+                range.end = sequenceState.duration;
 
-            if (range.y - range.x < minimumPlayRangeTime)
-                range.y = Mathf.Min(range.x + minimumPlayRangeTime, (float)editSequence.duration);
+            if (range.end - range.start < minimumPlayRangeTime)
+                range.end = Math.Min(range.start + minimumPlayRangeTime, sequenceState.duration);
 
             return range;
         }

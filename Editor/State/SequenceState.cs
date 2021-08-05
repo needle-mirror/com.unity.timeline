@@ -137,6 +137,16 @@ namespace UnityEditor.Timeline
 
             start = hostClip == null ? 0.0 : hostClip.start;
             timeScale = hostClip == null ? 1.0 : hostClip.timeScale * parentSequence.timeScale;
+
+            if (asset != null)
+            {
+                asset.AssetModifiedOnDisk += AssetOnAssetModifiedOnDisk;
+            }
+        }
+
+        void AssetOnAssetModifiedOnDisk()
+        {
+            m_WindowState?.Refresh();
         }
 
         public Range GetEvaluableRange()
@@ -222,6 +232,11 @@ namespace UnityEditor.Timeline
 
         public void Dispose()
         {
+            if (asset != null)
+            {
+                asset.AssetModifiedOnDisk -= AssetOnAssetModifiedOnDisk;
+            }
+
             TimelineWindowViewPrefs.SaveViewModel(asset);
         }
     }

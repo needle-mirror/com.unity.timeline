@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -49,29 +50,29 @@ namespace UnityEditor.Timeline
             // The first time a user enable the play range, we put the play range 75% around the current time...
             if (state.playRange == TimelineAssetViewModel.NoPlayRangeSet)
             {
-                float minimumPlayRangeTime = 0.01f;
-                float t0 = Mathf.Max(0.0f, state.PixelToTime(state.timeAreaRect.xMin));
-                float t1 = Mathf.Min((float)state.masterSequence.duration, state.PixelToTime(state.timeAreaRect.xMax));
+                double minimumPlayRangeTime = 0.01;
+                double t0 = Math.Max(0.0f, state.PixelToTime(state.timeAreaRect.xMin));
+                double t1 = Math.Min(state.masterSequence.duration, state.PixelToTime(state.timeAreaRect.xMax));
 
-                if (Mathf.Abs(t1 - t0) <= minimumPlayRangeTime)
+                if (Math.Abs(t1 - t0) <= minimumPlayRangeTime)
                 {
-                    state.playRange = new Vector2(t0, t1);
+                    state.playRange = new PlayRange(t0, t1);
                     return;
                 }
 
-                float deltaT = (t1 - t0) * 0.25f / 2.0f;
+                double deltaT = (t1 - t0) * 0.25 / 2.0;
 
                 t0 += deltaT;
                 t1 -= deltaT;
 
                 if (t1 < t0)
                 {
-                    float temp = t0;
+                    double temp = t0;
                     t0 = t1;
                     t1 = temp;
                 }
 
-                if (Mathf.Abs(t1 - t0) < minimumPlayRangeTime)
+                if (Math.Abs(t1 - t0) < minimumPlayRangeTime)
                 {
                     if (t0 - minimumPlayRangeTime > 0.0f)
                         t0 -= minimumPlayRangeTime;
@@ -79,7 +80,7 @@ namespace UnityEditor.Timeline
                         t1 += minimumPlayRangeTime;
                 }
 
-                state.playRange = new Vector2(t0, t1);
+                state.playRange = new PlayRange(t0, t1);
             }
 
             // Draw the head or the lines according to the parameters..
@@ -90,17 +91,17 @@ namespace UnityEditor.Timeline
             m_PlayRangeEnd.drawLine = drawLines;
 
             var playRangeTime = state.playRange;
-            m_PlayRangeStart.Draw(sequenceContentRect, state, playRangeTime.x);
-            m_PlayRangeEnd.Draw(sequenceContentRect, state, playRangeTime.y);
+            m_PlayRangeStart.Draw(sequenceContentRect, state, playRangeTime.start);
+            m_PlayRangeEnd.Draw(sequenceContentRect, state, playRangeTime.end);
 
             // Draw Time Range Box from Start to End...
             if (state.playRangeEnabled && m_PlayHead != null)
             {
                 Rect rect =
                     Rect.MinMaxRect(
-                        Mathf.Clamp(state.TimeToPixel(playRangeTime.x), state.timeAreaRect.xMin, state.timeAreaRect.xMax),
+                        Mathf.Clamp(state.TimeToPixel(playRangeTime.start), state.timeAreaRect.xMin, state.timeAreaRect.xMax),
                         m_PlayHead.bounds.yMax,
-                        Mathf.Clamp(state.TimeToPixel(playRangeTime.y), state.timeAreaRect.xMin, state.timeAreaRect.xMax),
+                        Mathf.Clamp(state.TimeToPixel(playRangeTime.end), state.timeAreaRect.xMin, state.timeAreaRect.xMax),
                         sequenceContentRect.height + state.timeAreaRect.height + timeCursorRect.y
                     );
 
@@ -114,16 +115,16 @@ namespace UnityEditor.Timeline
 
         void OnTrackHeadMinSelectDrag(double newTime)
         {
-            Vector2 range = state.playRange;
-            range.x = (float)newTime;
+            PlayRange range = state.playRange;
+            range.start = newTime;
             state.playRange = range;
             m_PlayRangeStart.showTooltip = true;
         }
 
         void OnTrackHeadMaxSelectDrag(double newTime)
         {
-            Vector2 range = state.playRange;
-            range.y = (float)newTime;
+            PlayRange range = state.playRange;
+            range.end = newTime;
             state.playRange = range;
             m_PlayRangeEnd.showTooltip = true;
         }

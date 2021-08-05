@@ -104,6 +104,26 @@ namespace UnityEngine.Timeline
             return Math.Max(Math.Abs(time), 1) * frameRate * kTimeEpsilon;
         }
 
+        public static int PreviousFrame(double time, double frameRate)
+        {
+            return Math.Max(0, ToFrames(time, frameRate) - 1);
+        }
+
+        public static int NextFrame(double time, double frameRate)
+        {
+            return ToFrames(time, frameRate) + 1;
+        }
+
+        public static double PreviousFrameTime(double time, double frameRate)
+        {
+            return FromFrames(PreviousFrame(time, frameRate), frameRate);
+        }
+
+        public static double NextFrameTime(double time, double frameRate)
+        {
+            return FromFrames(NextFrame(time, frameRate), frameRate);
+        }
+
         public static bool OnFrameBoundary(double time, double frameRate, double epsilon)
         {
             ValidateFrameRate(frameRate);

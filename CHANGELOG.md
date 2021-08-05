@@ -2,8 +2,33 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [1.6.3] - 2021-10-20
+## [1.7.0-pre.1] - 2021-08-05
+
+### Added
+
+- Added TimelinePlaybackControls Editor API:
+    - The Playback controls API lets you drive the Timeline Window playback controls from code. From this API, you can
+        - Change the current Time/Frame
+        - Query the current Time/Frame
+        - Start/Stop playback of the currently shown Timeline
+        - Go to First or Last frame
+        - Go to previous or next frame.
+    - Use it to accelerate your workflow, or build your own workflows on top of Timeline.
+
+### Changed
+
+- License file header changed from "Timeline copyright © 2021 Unity Technologies ApS" to "Timeline copyright © 2021 Unity Technologies"
+
 ### Fixed
+
+- Fixed issue where a warning would appear in 2022.1 regarding `AnimationWindowState.SnapMode`.
+- [Requires Unity 2021.2] Fixed an issue where the last frame of a Timeline was not guaranteed to be executed when the Playable Director had Wrap Mode `None`.
+- Fixed an issue where the Timeline Window's UI would not update until the user clicked in the window if the TimelineAsset's file contents were changed on disk, such as during a version control operation [1357110](https://issuetracker.unity3d.com/product/unity/issues/guid/1357110/)
+
+## [1.6.3] - 2021-10-20
+
+### Fixed
+
 - Fixed an issue where the Timeline Window would not work correctly with read-only source controlled files.
 - Fixed an issue where the a MissingReferenceException would be thrown when an IAnimationWindowPreview component previewed by Timeline would be destroyed. (https://issuetracker.unity3d.com/issues/missingreferenceexception-is-thrown-when-using-rigbuilder-inside-a-prefab)
 - Fixed an issue where the "Match Content" action would not apply on all selected clips. (1368028)

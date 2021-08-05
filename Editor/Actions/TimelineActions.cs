@@ -402,9 +402,7 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedAsset == null)
                 return false;
-            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.frameRate);
-            inspectedFrame = Mathf.Max(0, inspectedFrame - 1);
-            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.frameRate);
+            TimelineEditor.inspectedSequenceTime = TimeUtility.PreviousFrameTime(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.frameRate);
             return true;
         }
     }
@@ -419,9 +417,7 @@ namespace UnityEditor.Timeline
         {
             if (TimelineEditor.inspectedAsset == null)
                 return false;
-            var inspectedFrame = TimeUtility.ToFrames(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.frameRate);
-            inspectedFrame++;
-            TimelineEditor.inspectedSequenceTime = TimeUtility.FromFrames(inspectedFrame, TimelineEditor.inspectedAsset.editorSettings.frameRate);
+            TimelineEditor.inspectedSequenceTime = TimeUtility.NextFrameTime(TimelineEditor.inspectedSequenceTime, TimelineEditor.inspectedAsset.editorSettings.frameRate);
             return true;
         }
     }

@@ -71,9 +71,9 @@ namespace UnityEditor.Timeline
         {
             var playRangeTime = state.playRange;
             var time = state.masterSequence.time;
-            if (Math.Abs(time - playRangeTime.y) < TimeUtility.kFrameRateEpsilon || time > playRangeTime.y || time < playRangeTime.x)
+            if (Math.Abs(time - playRangeTime.end) < TimeUtility.kFrameRateEpsilon || time > playRangeTime.end || time < playRangeTime.start)
             {
-                state.masterSequence.time = playRangeTime.x;
+                state.masterSequence.time = playRangeTime.start;
                 // case 1215926 : Special case to make the director mode to play if the wrap mode is None.
                 // In that mode, the engine stop the graph before we can ensure play range is respected.
                 if (!state.playing && state.masterSequence.director.extrapolationMode == DirectorWrapMode.None)

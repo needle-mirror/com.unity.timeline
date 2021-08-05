@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Timeline;
 using UnityObject = UnityEngine.Object;
 
@@ -55,23 +56,31 @@ namespace UnityEditor.Timeline
     }
 
     [Serializable]
-    class TimelineAssetViewModel : ScriptableObject, ISerializationCallbackReceiver
+    partial class TimelineAssetViewModel : ScriptableObject, ISerializationCallbackReceiver
     {
         public const float DefaultTrackScale = 1.0f;
         public const float DefaultVerticalScroll = 0;
-
         public static readonly Vector2 TimeAreaDefaultRange = new Vector2(-WindowConstants.timeAreaShownRangePadding, 5.0f); // in seconds. Hack: using negative value to force the UI to have a left margin at 0.
-        public static readonly Vector2 NoPlayRangeSet = new Vector2(float.MaxValue, float.MaxValue);
+        public static readonly PlayRange NoPlayRangeSet = new PlayRange(double.MaxValue, double.MaxValue);
+
 
         public Vector2 timeAreaShownRange = TimeAreaDefaultRange;
         public float trackScale = DefaultTrackScale;
         public bool playRangeEnabled;
-        public Vector2 timeAreaPlayRange = NoPlayRangeSet;
+
+        public PlayRange timeAreaPlayRange
+        {
+            get { return m_TimeAreaPlayRange; }
+            set { m_TimeAreaPlayRange = value; }
+        }
+
         public double windowTime;
         public float verticalScroll = DefaultVerticalScroll;
         public float sequencerHeaderWidth = WindowConstants.defaultHeaderWidth;
 
         public Dictionary<TrackAsset, TrackViewModelData> tracksViewModelData = new Dictionary<TrackAsset, TrackViewModelData>();
+
+        [SerializeField] PlayRange m_TimeAreaPlayRange;
 
         // Used only for serialization of the dictionary
         [SerializeField] List<TrackAsset> m_Keys = new List<TrackAsset>();
@@ -83,7 +92,7 @@ namespace UnityEditor.Timeline
             m_Vals.Clear();
             foreach (var data in tracksViewModelData)
             {
-                // Assets that don't save, will create nulls when deserializeds
+                // Assets that don't save, will create nulls when deserialized
                 if (data.Key != null && data.Value != null && (data.Key.hideFlags & HideFlags.DontSave) == 0)
                 {
                     m_Keys.Add(data.Key);
@@ -94,6 +103,8 @@ namespace UnityEditor.Timeline
 
         public void OnAfterDeserialize()
         {
+            UpgradeIfNecessary();
+            m_Version = (int)Versions.Current;
         }
 
         public void OnEnable()

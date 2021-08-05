@@ -9,31 +9,36 @@ namespace UnityEditor.Timeline
     public abstract class TimelineEditorWindow : EditorWindow
     {
         /// <summary>
-        /// Interface used to navigate between Timelines and SubTimelines. (RO)
+        /// Use this interface to navigate between Timelines and Sub-Timelines. (RO)
         /// </summary>
         public abstract TimelineNavigator navigator { get; }
+
         /// <summary>
-        /// Allows retrieving and and setting the Timeline Window lock state. When the lock is off, the window focus follows the Unity selection.
+        /// Use this interface to control the playback behaviour of the Timeline window. (RO)
         /// </summary>
-        /// <remarks>When lock transitions from true to false, the focused timeline will be synchronized with the Unity selection.</remarks>>
+        public abstract TimelinePlaybackControls playbackControls { get; }
+        /// <summary>
+        /// Retrieves and sets the Timeline Window lock state. When disabled (false), the window focus follows the Unity selection.
+        /// </summary>
+        /// <remarks>When the lock state transitions from true to false, the focused timeline is synchronized with the Unity selection.</remarks>>
         public abstract bool locked { get; set; }
         /// <summary>
-        /// Allows setting which TimelineAsset is shown in the TimelineWindow.
+        /// Sets which TimelineAsset is shown in the TimelineWindow.
         /// </summary>
-        /// <param name="sequence">The asset to show.</param>
-        /// <remarks>Calling this method will put the window in asset edit mode and certain features might be missing (eg: timeline cannot be evaluated, bindings will not be available, etc).
-        /// Ignores window lock mode. Calling with null, will clear the displayed timeline.</remarks>
+        /// <param name="sequence">The TimelineAsset to show. Specify a null to clear the TimelineWindow.</param>
+        /// <remarks>When you call this method, the TimelineWindow is placed in asset edit mode. This mode does not support all features. For example, bindings are not available and the timeline cannot be evaluated.
+        /// You can use this method when the TimelineWindow is locked.</remarks>
         public abstract void SetTimeline(TimelineAsset sequence);
         /// <summary>
-        /// Allows setting which TimelineAsset is shown in the TimelineWindow and which PlayableDirector is used to evaluate it.
+        /// Sets which TimelineAsset is shown in the TimelineWindow based on the PlayableDirector.
         /// </summary>
-        /// <param name="director">The PlayableDirector who's timeline should be shown.</param>
-        /// <remarks>Ignores window lock mode. Calling with null, will clear the displayed timeline.</remarks>
+        /// <param name="director">The PlayableDirector associated with the TimelineAsset to show in the TimelineWindow. Specify a null to clear the TimelineWindow.</param>
+        /// <remarks>You can use this method when the TimelineWindow is locked.</remarks>
         public abstract void SetTimeline(PlayableDirector director);
         /// <summary>
-        /// Allows clearing the TimelineAsset that is shown in the TimelineWindow.
+        /// Clears the TimelineAsset that is shown in the TimelineWindow.
         /// </summary>
-        /// <remarks>Ignores window lock mode.</remarks>>
+        /// <remarks>You can use this method when the TimelineWindow is locked.</remarks>>
         public abstract void ClearTimeline();
     }
 }

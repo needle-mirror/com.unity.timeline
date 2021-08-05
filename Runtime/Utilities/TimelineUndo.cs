@@ -11,10 +11,22 @@ namespace UnityEngine.Timeline
 {
     static class TimelineUndo
     {
+        internal static bool undoEnabled
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return DisableUndoGuard.enableUndo && DisableUndoScope.enableUndo;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static void PushDestroyUndo(TimelineAsset timeline, Object thingToDirty, Object objectToDestroy)
         {
 #if UNITY_EDITOR
-            if (objectToDestroy == null || !DisableUndoGuard.enableUndo)
+            if (objectToDestroy == null || !undoEnabled)
                 return;
 
             if (thingToDirty != null)
@@ -34,7 +46,7 @@ namespace UnityEngine.Timeline
         public static void PushUndo(Object[] thingsToDirty, string operation)
         {
 #if UNITY_EDITOR
-            if (thingsToDirty == null || !DisableUndoGuard.enableUndo)
+            if (thingsToDirty == null || !undoEnabled)
                 return;
 
             for (var i = 0; i < thingsToDirty.Length; i++)
@@ -51,7 +63,7 @@ namespace UnityEngine.Timeline
         public static void PushUndo(Object thingToDirty, string operation)
         {
 #if UNITY_EDITOR
-            if (thingToDirty != null && DisableUndoGuard.enableUndo)
+            if (thingToDirty != null && undoEnabled)
             {
                 var track = thingToDirty as TrackAsset;
                 if (track != null)
@@ -67,31 +79,34 @@ namespace UnityEngine.Timeline
         public static void RegisterCreatedObjectUndo(Object thingCreated, string operation)
         {
 #if UNITY_EDITOR
-            if (DisableUndoGuard.enableUndo)
+            if (undoEnabled)
             {
                 Undo.RegisterCreatedObjectUndo(thingCreated, UndoName(operation));
             }
 #endif
         }
 
-        private static string UndoName(string name) => "Timeline " + name;
+        internal static string UndoName(string name) => "Timeline " + name;
 
 #if UNITY_EDITOR
+        /// <summary>
+        /// Provides stack management of the undo state.
+        /// </summary>
         internal struct DisableUndoGuard : IDisposable
         {
             internal static bool enableUndo = true;
             static readonly Stack<bool> m_UndoStateStack = new Stack<bool>();
-            bool m_Disposed;
+            bool m_MustDispose;
             public DisableUndoGuard(bool disable)
             {
-                m_Disposed = false;
+                m_MustDispose = true;
                 m_UndoStateStack.Push(enableUndo);
                 enableUndo = !disable;
             }
 
             public void Dispose()
             {
-                if (!m_Disposed)
+                if (m_MustDispose)
                 {
                     if (m_UndoStateStack.Count == 0)
                     {
@@ -100,7 +115,36 @@ namespace UnityEngine.Timeline
                         return;
                     }
                     enableUndo = m_UndoStateStack.Pop();
-                    m_Disposed = true;
+                    m_MustDispose = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Provides an undo state switch.
+        /// </summary>
+        internal class DisableUndoScope : IDisposable
+        {
+            internal static bool enableUndo => m_Depth == 0;
+            static int m_Depth;
+            bool m_MustDispose;
+            public DisableUndoScope()
+            {
+                m_MustDispose = true;
+                m_Depth++;
+            }
+
+            public void Dispose()
+            {
+                if (m_MustDispose)
+                {
+                    if (m_Depth == 0)
+                    {
+                        Debug.LogError("UnMatched DisableUndoScope calls");
+                        return;
+                    }
+                    m_Depth--;
+                    m_MustDispose = false;
                 }
             }
         }
