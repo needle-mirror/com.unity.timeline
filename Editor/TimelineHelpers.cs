@@ -38,7 +38,7 @@ namespace UnityEditor.Timeline
             SerializedProperty prop = cloneObject.GetIterator();
             while (prop.Next(true))
             {
-                if (prop.propertyType == SerializedPropertyType.ExposedReference)
+                if (prop.propertyType == SerializedPropertyType.ExposedReference && prop.isArray == false)
                 {
                     var exposedNameProp = prop.FindPropertyRelative("exposedName");
                     var sourceKey = exposedNameProp.stringValue;

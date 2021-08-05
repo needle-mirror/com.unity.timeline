@@ -12,6 +12,7 @@ namespace UnityEditor.Timeline
     {
         const string vendorKey = "unity.timeline";
         const string eventName = "timeline_editor_info";
+        const int version = 2;
         const int maxEventsPerHour = 1000;
         const int maxNumberOfElements = 1000;
 
@@ -48,7 +49,7 @@ namespace UnityEditor.Timeline
                 return;
             }
 
-            EditorAnalytics.RegisterEventWithLimit(eventName, maxEventsPerHour, maxNumberOfElements, vendorKey);
+            EditorAnalytics.RegisterEventWithLimit(eventName, maxEventsPerHour, maxNumberOfElements, vendorKey, version);
 
             var ret = GenerateTimelineAssetStats(out var data);
             if (!ret)
@@ -58,7 +59,7 @@ namespace UnityEditor.Timeline
 #if ANALITICS_DEBUG
             Debug.Log(JsonUtility.ToJson(data, true));
 #endif
-            EditorAnalytics.SendEventWithLimit(eventName, data);
+            EditorAnalytics.SendEventWithLimit(eventName, data, version);
             SendAfterSequenceChangeEvent();
         }
 

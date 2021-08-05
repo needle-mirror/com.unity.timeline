@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.2] - 2021-08-05
+
+### Fixed
+
+- Fixed an issue where copy-pasting Timeline Clips that contain Generic Lists of ExposedReferences would cause a NullReferenceException (1332377)
+
 ## [1.6.1] - 2021-06-22
 
 ### Added
