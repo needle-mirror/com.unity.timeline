@@ -39,7 +39,7 @@ namespace UnityEditor.Timeline
             get
             {
                 if (!m_IsReadOnly.HasValue)
-                    m_IsReadOnly = FileUtil.IsReadOnly(asset);
+                    m_IsReadOnly = FileUtility.IsReadOnly(asset);
                 return m_IsReadOnly.Value;
             }
         }

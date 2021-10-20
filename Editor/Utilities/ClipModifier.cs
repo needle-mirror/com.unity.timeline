@@ -254,7 +254,7 @@ namespace UnityEditor.Timeline
             var result = false;
 
             foreach (var clip in clips)
-                result = result || MatchContent(clip);
+                result |= MatchContent(clip);
 
             return result;
         }

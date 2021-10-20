@@ -720,8 +720,10 @@ namespace UnityEngine.Timeline
         int GetTimeRangeHash()
         {
             double start = double.MaxValue, end = double.MinValue;
-            foreach (var marker in GetMarkers())
+            int count = m_Markers.Count;
+            for (int i = 0; i < m_Markers.Count; i++)
             {
+                var marker = m_Markers[i];
                 if (!(marker is INotification))
                 {
                     continue;
@@ -1192,8 +1194,10 @@ namespace UnityEngine.Timeline
             }
 
             var maxTime = 0.0;
-            foreach (var marker in GetMarkers())
+            int count = m_Markers.Count;
+            for (int i = 0; i < count; i++)
             {
+                var marker = m_Markers[i];
                 if (!(marker is INotification))
                 {
                     continue;

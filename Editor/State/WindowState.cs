@@ -43,7 +43,9 @@ namespace UnityEditor.Timeline
 
         static AnimationModeDriver s_PreviewDriver;
         List<Animator> m_PreviewedAnimators;
-        List<IAnimationWindowPreview> m_PreviewedComponents;
+        List<Component> m_PreviewedComponents;
+        IEnumerable<IAnimationWindowPreview> previewedComponents =>
+            m_PreviewedComponents.Where(component => component != null).Cast<IAnimationWindowPreview>();
 
         public static double kTimeEpsilon { get { return TimeUtility.kTimeEpsilon; } }
         public static readonly float kMaxShownTime = (float)TimeUtility.k_MaxTimelineDurationInSeconds;
@@ -979,12 +981,12 @@ namespace UnityEditor.Timeline
 
             m_PreviewedAnimators = TimelineUtility.GetBindingsFromDirectors<Animator>(previewedDirectors).ToList();
 
-            m_PreviewedComponents = new List<IAnimationWindowPreview>();
-            foreach (var animator in m_PreviewedAnimators)
-            {
-                m_PreviewedComponents.AddRange(animator.GetComponents<IAnimationWindowPreview>());
-            }
-            foreach (var previewedComponent in m_PreviewedComponents)
+            m_PreviewedComponents = m_PreviewedAnimators
+                .SelectMany(animator => animator.GetComponents<IAnimationWindowPreview>()
+                    .Cast<Component>())
+                .ToList();
+
+            foreach (var previewedComponent in previewedComponents)
             {
                 previewedComponent.StartPreview();
             }
@@ -994,13 +996,11 @@ namespace UnityEditor.Timeline
         {
             if (m_PreviewedComponents != null)
             {
-                foreach (var previewComponent in m_PreviewedComponents)
+                foreach (var previewComponent in previewedComponents)
                 {
-                    if (previewComponent != null)
-                    {
-                        previewComponent.StopPreview();
-                    }
+                    previewComponent.StopPreview();
                 }
+
                 m_PreviewedComponents = null;
             }
 

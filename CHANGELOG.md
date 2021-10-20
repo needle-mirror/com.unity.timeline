@@ -2,6 +2,15 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.5.7] - 2021-10-20
+
+### Fixed
+- Fixed an issue where the Timeline Window would not work correctly with read-only source controlled files.
+- Fixed an issue where copy-pasting Timeline Clips that contain Generic Lists of ExposedReferences. (1332377)
+- Removed GC allocations in PlayableDirector.duration when a timeline asset is assigned. (1299818)
+- Fixed an issue where the a MissingReferenceException would be thrown when an IAnimationWindowPreview component previewed by Timeline would be destroyed. (1367640)
+- Fixed an issue where the "Match Content" action would not apply on all selected clips.
+
 ## [1.5.6] - 2021-06-15
 
 ### Fixed
