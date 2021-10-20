@@ -13,7 +13,7 @@ namespace DocCodeExamples
         #region declare-sampleTrackBindingAttr
 
         [TrackBindingType(typeof(Light), TrackBindingFlags.AllowCreateComponent)]
-        public class LightTrack : TrackAsset {}
+        public class LightTrack : TrackAsset { }
 
         #endregion
 
@@ -110,14 +110,14 @@ namespace DocCodeExamples
         #region declare-customStyleMarkerAttr
 
         [CustomStyle("MyStyle")]
-        public class MyMarker : UnityEngine.Timeline.Marker {}
+        public class MyMarker : UnityEngine.Timeline.Marker { }
 
         #endregion
 
         #region declare-customTimelineEditorAttr
 
         [CustomTimelineEditor(typeof(MyCustomClip))]
-        class MyCustomClipEditor : ClipEditor {}
+        class MyCustomClipEditor : ClipEditor { }
 
         #endregion
 

@@ -182,7 +182,7 @@ namespace UnityEngine.Timeline
             int count = end - start + 1;
             if (count < kMinNodeSize)
             {
-                intervalTreeNode = new IntervalTreeNode() {center = kCenterUnknown, first = start, last = end, left = kInvalidNode, right = kInvalidNode};
+                intervalTreeNode = new IntervalTreeNode() { center = kCenterUnknown, first = start, last = end, left = kInvalidNode, right = kInvalidNode };
                 m_Nodes.Add(intervalTreeNode);
                 return m_Nodes.Count - 1;
             }

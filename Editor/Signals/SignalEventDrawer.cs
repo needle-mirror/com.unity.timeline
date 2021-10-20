@@ -28,7 +28,7 @@ namespace UnityEditor.Timeline.Signals
             }
         }
 
-        protected override void DrawEventHeader(Rect headerRect) {}
+        protected override void DrawEventHeader(Rect headerRect) { }
 
         protected override void SetupReorderableList(ReorderableList list)
         {

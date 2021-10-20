@@ -86,7 +86,7 @@ class TimelineProjectSettingsProvider : SettingsProvider
     }
 
     public TimelineProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
-        : base(path, scopes, keywords) {}
+        : base(path, scopes, keywords) { }
 
     public override void OnActivate(string searchContext, VisualElement rootElement)
     {

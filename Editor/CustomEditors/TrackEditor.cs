@@ -22,12 +22,12 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// The highlight color of the track.
         /// </summary>
-        public Color  trackColor { get; set; }
+        public Color trackColor { get; set; }
 
         /// <summary>
         /// The minimum height of the track.
         /// </summary>
-        public float  minimumHeight { get; set; }
+        public float minimumHeight { get; set; }
 
         /// <summary>
         /// The icon displayed on the track header.
@@ -83,7 +83,7 @@ namespace UnityEditor.Timeline
         /// <param name="options1">The first object.</param>
         /// <param name="options2">The second object.</param>
         /// <returns>Returns true if they are equal.</returns>
-        public static bool operator==(TrackDrawOptions options1, TrackDrawOptions options2)
+        public static bool operator ==(TrackDrawOptions options1, TrackDrawOptions options2)
         {
             return options1.Equals(options2);
         }
@@ -94,7 +94,7 @@ namespace UnityEditor.Timeline
         /// <param name="options1">The first object.</param>
         /// <param name="options2">The second object.</param>
         /// <returns>Returns true if they are not equal.</returns>
-        public static bool operator!=(TrackDrawOptions options1, TrackDrawOptions options2)
+        public static bool operator !=(TrackDrawOptions options1, TrackDrawOptions options2)
         {
             return !options1.Equals(options2);
         }
@@ -114,27 +114,27 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// The bound GameObject is disabled.
         /// </summary>
-        BoundGameObjectDisabled  = 1 << 0,
+        BoundGameObjectDisabled = 1 << 0,
 
         /// <summary>
         /// The bound GameObject does not have a valid component.
         /// </summary>
-        NoValidComponent         = 1 << 1,
+        NoValidComponent = 1 << 1,
 
         /// <summary>
         /// The bound Object is a disabled Behaviour.
         /// </summary>
-        BehaviourIsDisabled      = 1 << 2,
+        BehaviourIsDisabled = 1 << 2,
 
         /// <summary>
         /// The bound Object is not of the correct type.
         /// </summary>
-        InvalidBinding           = 1 << 3,
+        InvalidBinding = 1 << 3,
 
         /// <summary>
         /// The bound Object is part of a prefab, and not an instance.
         /// </summary>
-        PrefabBound              = 1 << 4,
+        PrefabBound = 1 << 4,
 
         /// <summary>
         /// Select all errors.

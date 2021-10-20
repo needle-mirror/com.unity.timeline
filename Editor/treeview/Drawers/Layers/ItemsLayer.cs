@@ -32,7 +32,7 @@ namespace UnityEditor.Timeline
             return m_Layer.CompareTo(other.m_Layer);
         }
 
-        public static LayerZOrder operator++(LayerZOrder x)
+        public static LayerZOrder operator ++(LayerZOrder x)
         {
             return new LayerZOrder(x.m_Layer, x.m_ZOrder + 1);
         }

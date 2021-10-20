@@ -230,7 +230,7 @@ namespace UnityEditor
 
             m_CurveEditor.InvalidateSelectionBounds();
 
-            m_CurveEditor.state = new CurveEditorState() {timeFormat = state.timeFormat.ToTimeAreaFormat()};
+            m_CurveEditor.state = new CurveEditorState() { timeFormat = state.timeFormat.ToTimeAreaFormat() };
             m_CurveEditor.invSnap = (float)state.referenceSequence.frameRate;
         }
 

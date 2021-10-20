@@ -57,14 +57,14 @@ namespace UnityEngine.Timeline
             }
             else
             {
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
                     m_Instance = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(prefabGameObject, parentTransform);
                     UnityEditor.PrefabUtility.prefabInstanceUpdated += OnPrefabUpdated;
                 }
                 else
-                #endif
+#endif
                 {
                     m_Instance = Object.Instantiate(prefabGameObject, parentTransform, false);
                 }

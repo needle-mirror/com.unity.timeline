@@ -120,10 +120,10 @@ namespace UnityEngine.Timeline
         public Color colorInlineCurvesBackground;
 
         [SerializeField]
-        public Color markerDrawerBackgroundColor = new Color(0.4f, 0.4f, 0.4f , 1.0f);
+        public Color markerDrawerBackgroundColor = new Color(0.4f, 0.4f, 0.4f, 1.0f);
 
         [SerializeField]
-        public Color markerHeaderDrawerBackgroundColor = new Color(0.5f, 0.5f, 0.5f , 1.0f);
+        public Color markerHeaderDrawerBackgroundColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
         [SerializeField]
         public Color colorControl = new Color(0.2313f, 0.6353f, 0.5843f, 1.0f);

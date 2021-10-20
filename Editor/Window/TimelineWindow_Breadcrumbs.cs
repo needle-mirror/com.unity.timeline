@@ -99,7 +99,7 @@ namespace UnityEditor.Timeline
             }
 
             var sequenceMenu = new GenericMenu();
-            foreach (var(timelineName, playableDirector) in namesAndDirectors.OrderBy(i => i.Item1))
+            foreach (var (timelineName, playableDirector) in namesAndDirectors.OrderBy(i => i.Item1))
             {
                 var isCurrent = state.masterSequence.director == playableDirector;
                 sequenceMenu.AddItem(new GUIContent(timelineName), isCurrent, OnSequenceSelected, playableDirector);

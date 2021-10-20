@@ -16,10 +16,10 @@ namespace UnityEditor.Timeline
                 return false;
 
             if (!TimelineWindow.instance.state.editSequence.isReadOnly && (guiClip.clip.curves != null || guiClip.clip.animationClip != null))
-                Invoker.Invoke<EditClipInAnimationWindow>(new[] {guiClip.clip});
+                Invoker.Invoke<EditClipInAnimationWindow>(new[] { guiClip.clip });
 
             if (guiClip.supportsSubTimelines)
-                Invoker.Invoke<EditSubTimeline>(new[] {guiClip.clip});
+                Invoker.Invoke<EditSubTimeline>(new[] { guiClip.clip });
 
             return true;
         }

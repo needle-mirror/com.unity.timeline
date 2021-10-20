@@ -339,7 +339,7 @@ namespace UnityEditor.Timeline
                 }
             }
             catch (Exception)
-            {}
+            { }
 
             return null;
         }

@@ -456,7 +456,7 @@ namespace UnityEditor.Timeline
         //  Note: This will modify the list, removing any elements that match
         static UndoPropertyModification[] GatherRelatedModifications(UndoPropertyModification toMatch, List<UndoPropertyModification> list)
         {
-            var matching = new List<UndoPropertyModification> {toMatch};
+            var matching = new List<UndoPropertyModification> { toMatch };
 
             for (var i = list.Count - 1; i >= 0; i--)
             {

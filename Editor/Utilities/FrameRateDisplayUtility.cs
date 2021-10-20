@@ -39,7 +39,7 @@ namespace UnityEditor.Timeline
 
             if (!Enum.IsDefined(typeof(StandardFrameRates), option))
             {
-                Array.Resize(ref labels,  (int)option + 1);
+                Array.Resize(ref labels, (int)option + 1);
                 labels[(int)option] = GetLabelForStandardFrameRate(option);
             }
             return labels;

@@ -130,7 +130,7 @@ namespace UnityEngine.Timeline
             if (m_Events.signals[idx] == newKey)
                 return;
             var alreadyUsed = m_Events.signals.Contains(newKey);
-            if (newKey == null || m_Events.signals[idx]  == null || !alreadyUsed)
+            if (newKey == null || m_Events.signals[idx] == null || !alreadyUsed)
                 m_Events.signals[idx] = newKey;
 
             if (newKey != null && alreadyUsed)

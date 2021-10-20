@@ -29,7 +29,7 @@ namespace UnityEditor.Timeline.Analytics
         public int maxDuration = int.MinValue;
         public int minNumTracks = int.MaxValue;
         public int maxNumTracks = int.MinValue;
-        public int numRecorded  = 0;
+        public int numRecorded = 0;
     }
 
     [Serializable]
@@ -88,7 +88,7 @@ namespace UnityEditor.Timeline.Analytics
 
         class TimelineAnalyticsPreProcess : IPreprocessBuildWithReport
         {
-            public int callbackOrder { get { return 0; }  }
+            public int callbackOrder { get { return 0; } }
             public void OnPreprocessBuild(BuildReport report)
             {
                 _timelineSceneInfo = new TimelineSceneInfo();
@@ -156,7 +156,7 @@ namespace UnityEditor.Timeline.Analytics
 
         class TimelineAnalyticsPostProcess : IPostprocessBuildWithReport
         {
-            public int callbackOrder {get { return 0; }}
+            public int callbackOrder { get { return 0; } }
             public void OnPostprocessBuild(BuildReport report)
             {
                 if (_timelineSceneInfo.uniqueDirectors.Count > 0)

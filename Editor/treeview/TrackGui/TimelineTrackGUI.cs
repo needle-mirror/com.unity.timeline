@@ -13,14 +13,14 @@ namespace UnityEditor.Timeline
     {
         struct TrackDrawData
         {
-            public bool                 m_AllowsRecording;
-            public bool                 m_ShowTrackBindings;
-            public bool                 m_HasBinding;
-            public bool                 m_IsSubTrack;
-            public PlayableBinding      m_Binding;
-            public Object               m_TrackBinding;
-            public Texture              m_TrackIcon;
-            public bool                 m_HasMarkers;
+            public bool m_AllowsRecording;
+            public bool m_ShowTrackBindings;
+            public bool m_HasBinding;
+            public bool m_IsSubTrack;
+            public PlayableBinding m_Binding;
+            public Object m_TrackBinding;
+            public Texture m_TrackIcon;
+            public bool m_HasMarkers;
         }
 
         static class Styles
@@ -42,14 +42,14 @@ namespace UnityEditor.Timeline
         static GUIContent s_ArmForRecordContentOff;
         static GUIContent s_ArmForRecordDisabled;
 
-        readonly InfiniteTrackDrawer    m_InfiniteTrackDrawer;
-        readonly TrackEditor            m_TrackEditor;
-        readonly GUIContent             m_DefaultTrackIcon;
-        readonly TrackResizeHandle      m_ResizeHandle;
+        readonly InfiniteTrackDrawer m_InfiniteTrackDrawer;
+        readonly TrackEditor m_TrackEditor;
+        readonly GUIContent m_DefaultTrackIcon;
+        readonly TrackResizeHandle m_ResizeHandle;
 
-        TrackItemsDrawer                m_ItemsDrawer;
-        TrackDrawData                   m_TrackDrawData;
-        TrackDrawOptions                m_TrackDrawOptions;
+        TrackItemsDrawer m_ItemsDrawer;
+        TrackDrawData m_TrackDrawData;
+        TrackDrawOptions m_TrackDrawOptions;
 
         bool m_InlineCurvesSkipped;
         int m_TrackHash = -1;
@@ -821,6 +821,6 @@ namespace UnityEditor.Timeline
             SelectionManager.SelectInlineCurveEditor(this);
         }
 
-        public void ValidateCurvesSelection() {}
+        public void ValidateCurvesSelection() { }
     }
 }

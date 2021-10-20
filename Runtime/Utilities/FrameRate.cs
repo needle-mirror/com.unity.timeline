@@ -21,8 +21,8 @@ namespace UnityEngine.Timeline
         public bool Equals(FrameRate other) => Math.Abs(rate - other.rate) < TimeUtility.kFrameRateEpsilon;
         public override bool Equals(object obj) => obj is FrameRate other && Equals(other);
         public override int GetHashCode() => rate.GetHashCode();
-        public static bool operator==(FrameRate a, FrameRate b) => a.Equals(b);
-        public static bool operator!=(FrameRate a, FrameRate b) => !a.Equals(b);
+        public static bool operator ==(FrameRate a, FrameRate b) => a.Equals(b);
+        public static bool operator !=(FrameRate a, FrameRate b) => !a.Equals(b);
 
         public static FrameRate DoubleToFrameRate(double rate) => new FrameRate(Math.Ceiling(rate) - rate < TimeUtility.kFrameRateEpsilon ? rate : Math.Ceiling(rate) * 1000.0 / 1001.0);
     }

@@ -484,7 +484,7 @@ namespace UnityEditor.Timeline
         void DrawExtrapolationOptions()
         {
             // PreExtrapolation
-            var preExtrapolationTime =  m_PreExtrapolationTimeProperty.doubleValue;
+            var preExtrapolationTime = m_PreExtrapolationTimeProperty.doubleValue;
             bool hasPreExtrap = preExtrapolationTime > 0.0;
             if (hasPreExtrap)
             {

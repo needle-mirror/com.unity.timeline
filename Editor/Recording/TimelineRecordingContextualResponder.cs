@@ -22,7 +22,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public void AddCandidateKeys() {}
+        public void AddCandidateKeys() { }
 
         public void AddAnimatedKeys()
         {

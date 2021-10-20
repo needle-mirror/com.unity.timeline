@@ -12,14 +12,14 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly string addItemFromAssetTemplate       = L10n.Tr("Add {0} From {1}");
+            public static readonly string addItemFromAssetTemplate = L10n.Tr("Add {0} From {1}");
             public static readonly string addSingleItemFromAssetTemplate = L10n.Tr("Add From {1}");
-            public static readonly string addItemTemplate                = L10n.Tr("Add {0}");
-            public static readonly string typeSelectorTemplate           = L10n.Tr("Select {0}");
-            public static readonly string trackGroup                     = L10n.Tr("Track Group");
-            public static readonly string trackSubGroup                  = L10n.Tr("Track Sub-Group");
-            public static readonly string addTrackLayer                  = L10n.Tr("Add Layer");
-            public static readonly string layerName                      = L10n.Tr("Layer {0}");
+            public static readonly string addItemTemplate = L10n.Tr("Add {0}");
+            public static readonly string typeSelectorTemplate = L10n.Tr("Select {0}");
+            public static readonly string trackGroup = L10n.Tr("Track Group");
+            public static readonly string trackSubGroup = L10n.Tr("Track Sub-Group");
+            public static readonly string addTrackLayer = L10n.Tr("Add Layer");
+            public static readonly string layerName = L10n.Tr("Layer {0}");
         }
 
         public static void ShowNewTracksContextMenu(ICollection<TrackAsset> tracks, WindowState state)

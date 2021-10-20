@@ -19,7 +19,7 @@ namespace UnityEditor.Timeline
                 var oldClipGUI = ItemToItemGui.GetGuiForClip(clip);
                 var isInvalid = oldClipGUI != null && oldClipGUI.isInvalid;  // HACK Make sure to carry invalidy state when refereshing the cache.
 
-                var currentClipGUI = new TimelineClipGUI(clip, parent, this) {isInvalid = isInvalid};
+                var currentClipGUI = new TimelineClipGUI(clip, parent, this) { isInvalid = isInvalid };
                 if (previousClipGUI != null) previousClipGUI.nextClip = currentClipGUI;
                 currentClipGUI.previousClip = previousClipGUI;
                 AddItem(currentClipGUI);

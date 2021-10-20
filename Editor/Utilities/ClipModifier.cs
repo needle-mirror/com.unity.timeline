@@ -19,7 +19,7 @@ namespace UnityEditor.Timeline
                 return false;
 
             var clipsByTracks = clips.GroupBy(x => x.GetParentTrack())
-                .Select(track => new {track.Key, Items = track.OrderBy(c => c.start)});
+                .Select(track => new { track.Key, Items = track.OrderBy(c => c.start) });
 
             foreach (var track in clipsByTracks)
             {
@@ -254,7 +254,7 @@ namespace UnityEditor.Timeline
             var result = false;
 
             foreach (var clip in clips)
-                result = result || MatchContent(clip);
+                result |= MatchContent(clip);
 
             return result;
         }

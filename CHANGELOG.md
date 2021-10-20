@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.3] - 2021-10-20
+### Fixed
+- Fixed an issue where the Timeline Window would not work correctly with read-only source controlled files.
+- Fixed an issue where the a MissingReferenceException would be thrown when an IAnimationWindowPreview component previewed by Timeline would be destroyed. (https://issuetracker.unity3d.com/issues/missingreferenceexception-is-thrown-when-using-rigbuilder-inside-a-prefab)
+- Fixed an issue where the "Match Content" action would not apply on all selected clips. (1368028)
+
 ## [1.6.2] - 2021-08-05
 
 ### Fixed

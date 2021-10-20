@@ -21,7 +21,7 @@ namespace UnityEditor.Timeline
         public TrackAsset parentTrack
         {
             get { return m_Marker.parent; }
-            set {}
+            set { }
         }
 
         public double start

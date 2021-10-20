@@ -43,7 +43,7 @@ namespace UnityEditor.Timeline
                     }
                 }
 
-                var includingItems = orderedItems.Where(c => c.start<from && c.end> to);
+                var includingItems = orderedItems.Where(c => c.start < from && c.end > to);
                 foreach (var includingItem in includingItems)
                 {
                     var newItem = includingItem.CloneTo(track, includingItem.start) as ITrimmable;

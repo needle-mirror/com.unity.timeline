@@ -11,7 +11,7 @@ namespace UnityEditor.Timeline.Signals
             return new SignalReceiverTreeView(state, header, target, so);
         }
 
-        public static  SignalReceiverHeader CreateHeader(MultiColumnHeaderState state, int columnHeight)
+        public static SignalReceiverHeader CreateHeader(MultiColumnHeaderState state, int columnHeight)
         {
             var header = new SignalReceiverHeader(state) { height = columnHeight };
             header.ResizeToFit();

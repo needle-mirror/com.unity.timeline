@@ -328,7 +328,10 @@ namespace UnityEditor.Timeline
         {
             if (state != null)
             {
-                state.editSequence.ResetIsReadOnly();   //Force reset readonly for asset flag for each frame.
+                foreach (var sequenceState in state.allSequences)
+                {
+                    sequenceState.ResetIsReadOnly();
+                }
                 // detect if the sequence was removed under our feet
                 if (m_LastFrameHadSequence && state.editSequence.asset == null)
                 {

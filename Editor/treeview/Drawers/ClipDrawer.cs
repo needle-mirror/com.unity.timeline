@@ -130,7 +130,7 @@ namespace UnityEditor.Timeline
         const float k_ClipInlineWidth = 1.0f;
 
         static readonly GUIContent s_TitleContent = new GUIContent();
-        static readonly IconData[] k_ClipErrorIcons =  { new IconData {icon = Styles.iconWarn, tint = DirectorStyles.kClipErrorColor} };
+        static readonly IconData[] k_ClipErrorIcons = { new IconData { icon = Styles.iconWarn, tint = DirectorStyles.kClipErrorColor } };
         static readonly Dictionary<int, string> s_LoopStringCache = new Dictionary<int, string>(100);
 
         // caches the loopstring to avoid allocation from string concats
@@ -324,8 +324,8 @@ namespace UnityEditor.Timeline
         {
             var assetDuration = TimelineHelpers.GetClipAssetEndTime(clip);
 
-            bool drawClipOut = assetDuration<double.MaxValue &&
-                                             assetDuration - clip.end> TimeUtility.kTimeEpsilon;
+            bool drawClipOut = assetDuration < double.MaxValue &&
+                                             assetDuration - clip.end > TimeUtility.kTimeEpsilon;
 
             bool drawClipIn = clip.clipIn > 0.0;
 
@@ -435,9 +435,9 @@ namespace UnityEditor.Timeline
 
                 var iconRect =
                     new Rect(0.0f, 0.0f, iconData.width, iconData.height)
-                {
-                    center = new Vector2(positionX + offset * (int)side, positionY)
-                };
+                    {
+                        center = new Vector2(positionX + offset * (int)side, positionY)
+                    };
 
                 DrawIcon(iconRect, iconData.tint, iconData.icon);
 

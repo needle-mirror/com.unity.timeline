@@ -87,7 +87,7 @@ namespace UnityEditor.Timeline
         float m_LastMouseMoveX = -1;
         bool m_WheelUsedLast;
 
-        TimelineZoomManipulator() {}
+        TimelineZoomManipulator() { }
 
         public static readonly TimelineZoomManipulator Instance = new TimelineZoomManipulator();
 
@@ -107,14 +107,14 @@ namespace UnityEditor.Timeline
                 return;
 
             var t = Mathf.Max(focalTime, refRange.x);
-            var x =(refRange.x + t * (zoomFactor - 1)) / zoomFactor;
+            var x = (refRange.x + t * (zoomFactor - 1)) / zoomFactor;
             var y = (refRange.y + t * (zoomFactor - 1)) / zoomFactor;
 
-            var newRange = Mathf.Abs(x - y) < kMinRange? refRange:new Vector2(
+            var newRange = Mathf.Abs(x - y) < kMinRange ? refRange : new Vector2(
                 Mathf.Max(x, -WindowConstants.timeAreaShownRangePadding),
                 Mathf.Min(y, WindowState.kMaxShownTime));
 
-            if(newRange != refRange)
+            if (newRange != refRange)
                 // Zoomable area does not protect 100% against crazy values
                 TimelineEditor.visibleTimeRange = newRange;
         }
@@ -174,7 +174,7 @@ namespace UnityEditor.Timeline
         static float PixelToZoom(float x)
         {
             const float pixel2Zoom = 1 / 300.0f;
-            x *=  pixel2Zoom;
+            x *= pixel2Zoom;
             if (x < -0.75)
             {
                 // Rational function that behaves like 1+x on [-0.75,inf) and asymptotically reaches zero on (-inf,-0.75]

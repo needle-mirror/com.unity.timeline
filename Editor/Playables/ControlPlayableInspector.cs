@@ -34,7 +34,7 @@ namespace UnityEditor.Timeline
         SerializedProperty m_UseActivation;
         SerializedProperty m_PostPlayback;
         SerializedProperty m_RandomSeed;
-        bool               m_CycleReference;
+        bool m_CycleReference;
 
 
         GUIContent m_SourceObjectLabel = new GUIContent();

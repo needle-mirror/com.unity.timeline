@@ -244,7 +244,7 @@ namespace UnityEngine.Timeline
             }
         }
 
-        static void Trigger_internal(Playable playable, PlayableOutput output,  ref NotificationEntry e)
+        static void Trigger_internal(Playable playable, PlayableOutput output, ref NotificationEntry e)
         {
             output.PushNotification(playable, e.payload);
             e.notificationFired = true;

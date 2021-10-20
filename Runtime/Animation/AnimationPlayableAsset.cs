@@ -36,7 +36,7 @@ namespace UnityEngine.Timeline
 
 
         [SerializeField] private AnimationClip m_Clip;
-        [SerializeField] private Vector3 m_Position =  Vector3.zero;
+        [SerializeField] private Vector3 m_Position = Vector3.zero;
         [SerializeField] private Vector3 m_EulerAngles = Vector3.zero;
         [SerializeField] private bool m_UseTrackMatchFields = true;
         [SerializeField] private MatchTargetFields m_MatchTargetFields = MatchTargetFieldConstants.All;

@@ -12,10 +12,10 @@ namespace UnityEngine.Timeline
         //fields that are used for upgrading should be put here, ideally as read-only
 
         void UpgradeToLatestVersion()
-        {}
+        { }
 
         //upgrade code should go into this class
         static class TimelineAssetUpgrade
-        {}
+        { }
     }
 }

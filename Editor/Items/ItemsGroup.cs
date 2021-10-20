@@ -34,7 +34,7 @@ namespace UnityEditor.Timeline
 
         public ITimelineItem leftMostItem
         {
-            get { return m_LeftMostItem;  }
+            get { return m_LeftMostItem; }
         }
 
         public ITimelineItem rightMostItem

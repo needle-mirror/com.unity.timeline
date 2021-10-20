@@ -48,7 +48,7 @@ namespace UnityEditor.Timeline
         public double timeScale { get { return 1.0; } }
         public double duration { get { return 0.0; } }
         public bool isReadOnly { get { return false; } }
-        public bool isAssetOnly { get { return false; } set {} }
+        public bool isAssetOnly { get { return false; } set { } }
 
         TimelineAssetViewModel m_ViewModel;
 

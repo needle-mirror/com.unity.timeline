@@ -52,7 +52,7 @@ namespace UnityEditor.Timeline
         {
             rootTimeline = CreateTimeline();
 
-            EditorApplication.playModeStateChanged  += OnPlayModeChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
         public void CopyItems(IEnumerable<ITimelineItem> items)
@@ -103,7 +103,7 @@ namespace UnityEditor.Timeline
                 {
                     var newTrack = track.Duplicate(TimelineEditor.inspectedDirector, TimelineEditor.clipboard.exposedPropertyTable, rootTimeline);
                     var bind = TimelineEditor.inspectedDirector != null ? TimelineEditor.inspectedDirector.GetGenericBinding(track) : null;
-                    m_trackData.Add(new ClipboardTrackEntry {item = newTrack, parent = track.parent as TrackAsset, binding = bind});
+                    m_trackData.Add(new ClipboardTrackEntry { item = newTrack, parent = track.parent as TrackAsset, binding = bind });
                 }
             }
         }

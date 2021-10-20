@@ -17,7 +17,7 @@ namespace UnityEditor.Timeline
         protected virtual bool ValidateCommand(Event evt, WindowState state) { return false; }
         protected virtual bool ExecuteCommand(Event evt, WindowState state) { return false; }
 
-        public virtual void Overlay(Event evt, WindowState state) {}
+        public virtual void Overlay(Event evt, WindowState state) { }
 
         public bool HandleEvent(WindowState state)
         {
@@ -35,7 +35,7 @@ namespace UnityEditor.Timeline
         bool HandleEvent(EventType type, Event evt, WindowState state)
         {
             if (m_Id == 0)
-                m_Id =  GUIUtility.GetPermanentControlID();
+                m_Id = GUIUtility.GetPermanentControlID();
 
             bool isHandled = false;
 

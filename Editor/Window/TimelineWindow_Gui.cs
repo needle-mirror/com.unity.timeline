@@ -18,9 +18,9 @@ namespace UnityEditor.Timeline
         struct MarkerOverlay
         {
             public IMarker marker;
-            public Rect    rect;
-            public bool    isSelected;
-            public bool    isCollapsed;
+            public Rect rect;
+            public bool isSelected;
+            public bool isCollapsed;
             public MarkerEditor editor;
         }
 
@@ -403,7 +403,7 @@ namespace UnityEditor.Timeline
                     for (var i = 0; i < frameRatesLabels.Length; i++)
                     {
                         var currentStandard = (StandardFrameRates)i;
-                        AddStandardFrameRateMenu(menu,  currentStandard,  frameRatesLabels[i], currentStandard == option);
+                        AddStandardFrameRateMenu(menu, currentStandard, frameRatesLabels[i], currentStandard == option);
                     }
 
                     if (Unsupported.IsDeveloperMode())
@@ -438,7 +438,7 @@ namespace UnityEditor.Timeline
 
             FrameRate value = TimeUtility.ToFrameRate(option);
             if (!value.IsValid())
-                menu.AddItem(gui, true, () => {});
+                menu.AddItem(gui, true, () => { });
             else
             {
                 menu.AddItem(gui, on, r =>

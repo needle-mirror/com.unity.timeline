@@ -12,7 +12,7 @@ namespace UnityEditor.Timeline
 
         public static void Insert(TimelineAsset asset, double at, double amount, double tolerance)
         {
-            var tracks =  asset.flattenedTracks.Where(x => x.lockedInHierarchy == false).ToList();
+            var tracks = asset.flattenedTracks.Where(x => x.lockedInHierarchy == false).ToList();
             // gather all clips
             var clips = tracks.SelectMany(x => x.clips).Where(x => (x.start - at) >= -tolerance).ToList();
             var markers = tracks.SelectMany(x => x.GetMarkers()).Where(x => (x.time - at) >= -tolerance).ToList();
@@ -40,7 +40,7 @@ namespace UnityEditor.Timeline
     class PlayheadContextMenu : Manipulator
     {
         readonly TimeAreaItem m_TimeAreaItem;
-        static readonly int[] kFrameInsertionValues = {5, 10, 25, 100};
+        static readonly int[] kFrameInsertionValues = { 5, 10, 25, 100 };
         static readonly GUIContent[] kFrameInsertionValuesGuiContents =
         {
             L10n.TextContent("Insert/Frame/5 Frames"),
@@ -270,13 +270,13 @@ namespace UnityEditor.Timeline
 
     class TimeAreaItem : Control
     {
-        public Color        headColor   { get; set; }
-        public Color        lineColor   { get; set; }
-        public bool         drawLine    { get; set; }
-        public bool         drawHead    { get; set; }
-        public bool         canMoveHead { get; set; }
-        public string       tooltip     { get; set; }
-        public Vector2      boundOffset { get; set; }
+        public Color headColor { get; set; }
+        public Color lineColor { get; set; }
+        public bool drawLine { get; set; }
+        public bool drawHead { get; set; }
+        public bool canMoveHead { get; set; }
+        public string tooltip { get; set; }
+        public Vector2 boundOffset { get; set; }
 
         readonly GUIContent m_HeaderContent = new GUIContent();
         readonly GUIStyle m_Style;
@@ -301,7 +301,7 @@ namespace UnityEditor.Timeline
 
         public GUIStyle style
         {
-            get { return m_Style;  }
+            get { return m_Style; }
         }
 
 

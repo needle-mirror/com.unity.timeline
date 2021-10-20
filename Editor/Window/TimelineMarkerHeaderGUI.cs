@@ -208,7 +208,7 @@ namespace UnityEditor.Timeline
         {
             bool muted = GUI.Toggle(rect, data.isMuted, string.Empty, TimelineWindow.styles.trackMuteButton);
             if (muted != data.isMuted)
-                new[] {TimelineEditor.inspectedAsset.markerTrack}.Invoke<MuteTrack>();
+                new[] { TimelineEditor.inspectedAsset.markerTrack }.Invoke<MuteTrack>();
         }
 
         bool IsSelected()

@@ -51,13 +51,13 @@ namespace UnityEditor.Timeline
         public abstract void Draw(Rect rect, bool rectChanged, WindowState state);
         public abstract Rect RectToTimeline(Rect trackRect, WindowState state);
 
-        public virtual void Select() {}
+        public virtual void Select() { }
         public virtual bool IsSelected() { return false; }
-        public virtual void Deselect() {}
+        public virtual void Deselect() { }
         public virtual bool CanSelect(Event evt) { return true; }
 
-        public virtual void StartDrag() {}
-        public virtual void StopDrag() {}
+        public virtual void StartDrag() { }
+        public virtual void StopDrag() { }
 
         public LayerZOrder zOrder { get; set; }
 

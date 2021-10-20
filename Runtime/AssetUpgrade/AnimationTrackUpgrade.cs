@@ -6,7 +6,7 @@ namespace UnityEngine.Timeline
     partial class AnimationTrack
     {
         // 649 is value is only assigned to. they can be updated from old files being serialized
- #pragma warning disable 649
+#pragma warning disable 649
         //fields that are used for upgrading should be put here, ideally as read-only
         [SerializeField, Obsolete("Use m_InfiniteClipOffsetEulerAngles Instead", false), HideInInspector]
         Quaternion m_OpenClipOffsetRotation = Quaternion.identity;
@@ -16,7 +16,7 @@ namespace UnityEngine.Timeline
 
         [SerializeField, Obsolete("Use m_RootTransformOffsetMode", false), HideInInspector]
         bool m_ApplyOffsets;
- #pragma warning restore 649
+#pragma warning restore 649
 
         /// <summary>
         /// Translation offset of a track in infinite mode.
@@ -88,8 +88,8 @@ namespace UnityEngine.Timeline
                 AnimationTrackUpgrade.ConvertInfiniteTrack(this);
         }
 
-// 612 is Property is Obsolete
-// 618 is Field is Obsolete
+        // 612 is Property is Obsolete
+        // 618 is Field is Obsolete
 #pragma warning disable 612, 618
         static class AnimationTrackUpgrade
         {

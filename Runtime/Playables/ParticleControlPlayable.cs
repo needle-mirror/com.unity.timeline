@@ -47,13 +47,13 @@ namespace UnityEngine.Timeline
             particleSystem = ps;
             SetRandomSeed(particleSystem, m_RandomSeed);
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (!Application.isPlaying && UnityEditor.PrefabUtility.IsPartOfPrefabInstance(ps))
                 UnityEditor.PrefabUtility.prefabInstanceUpdated += OnPrefabUpdated;
-            #endif
+#endif
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// This function is called when the Playable that owns the PlayableBehaviour is destroyed.
         /// </summary>
@@ -71,7 +71,7 @@ namespace UnityEngine.Timeline
                 m_LastPlayableTime = kUnsetTime;
         }
 
-        #endif
+#endif
 
         static void SetRandomSeed(ParticleSystem particleSystem, uint randomSeed)
         {

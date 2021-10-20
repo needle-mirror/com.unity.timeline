@@ -103,7 +103,7 @@ namespace UnityEditor.Timeline
                     else if (nodeBindings.Count > 1)
                     {
                         var childBindings = nodeBindings.OrderBy(BindingSort).ToArray();
-                        var parent = new CurveTreeViewNode(key.GetHashCode(), groupingNode, key.groupDisplayName, childBindings) {children = new List<TreeViewItem>()};
+                        var parent = new CurveTreeViewNode(key.GetHashCode(), groupingNode, key.groupDisplayName, childBindings) { children = new List<TreeViewItem>() };
                         groupingNode.children.Add(parent);
                         foreach (var b in childBindings)
                             parent.children.Add(CreateLeafNode(b, parent, PropertyName(b, false)));
@@ -146,7 +146,7 @@ namespace UnityEditor.Timeline
             if (binding.isPhantom)
                 propertyName = string.Format(s_DefaultValue, propertyName);
             if (prependPathName && !string.IsNullOrEmpty(binding.path))
-                propertyName =  $"{binding.path} : {propertyName}";
+                propertyName = $"{binding.path} : {propertyName}";
             return propertyName;
         }
 

@@ -49,7 +49,7 @@ namespace UnityEditor.Timeline
                 {
                     var offset = (TrackOffset)index;
                     var name = ObjectNames.NicifyVariableName(L10n.Tr(offset.ToString()));
-                    var memInfo =  typeof(TrackOffset).GetMember(offset.ToString());
+                    var memInfo = typeof(TrackOffset).GetMember(offset.ToString());
                     var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
                     if (attributes.Length > 0)
                     {
@@ -75,10 +75,10 @@ namespace UnityEditor.Timeline
         SerializedProperty m_RecordedOffsetEulerProperty;
         SerializedProperty m_RecordedApplyFootIK;
 
-        Vector3            m_lastPosition;
-        Vector3            m_lastRotation;
+        Vector3 m_lastPosition;
+        Vector3 m_lastRotation;
 
-        GUIContent         m_TempContent = new GUIContent();
+        GUIContent m_TempContent = new GUIContent();
 
 
         void Evaluate()

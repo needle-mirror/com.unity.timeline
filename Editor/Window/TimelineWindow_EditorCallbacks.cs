@@ -50,7 +50,7 @@ namespace UnityEditor.Timeline
         // and we want  to also react to the key.
         void GlobalEventHandler()
         {
-            if (instance == null  || !state.previewMode)
+            if (instance == null || !state.previewMode)
             {
                 return;
             }

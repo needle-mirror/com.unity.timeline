@@ -51,8 +51,8 @@ namespace UnityEditor.Timeline
 
         public static IEnumerable<ITimelineItem> GetItems(this TrackAsset track)
         {
-            var list = track.clips.Select(clip => (ITimelineItem) new ClipItem(clip)).ToList();
-            list.AddRange(track.GetMarkers().Select(marker => (ITimelineItem) new MarkerItem(marker)));
+            var list = track.clips.Select(clip => (ITimelineItem)new ClipItem(clip)).ToList();
+            list.AddRange(track.GetMarkers().Select(marker => (ITimelineItem)new MarkerItem(marker)));
 
             list = list.OrderBy(x => x.start).ThenBy(x => x.end).ToList();
             return list;

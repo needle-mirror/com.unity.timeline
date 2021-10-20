@@ -26,7 +26,7 @@ namespace UnityEngine.Timeline
         // the amount of time to give the clip to load prior to it's start time
         internal float bufferingTime
         {
-            get { return m_bufferingTime;  }
+            get { return m_bufferingTime; }
             set { m_bufferingTime = value; }
         }
 

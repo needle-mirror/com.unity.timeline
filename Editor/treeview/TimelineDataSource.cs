@@ -44,7 +44,7 @@ namespace UnityEditor.Timeline
             var track = item as TimelineTrackBaseGUI;
 
             if (track != null)
-                expandable =  track.expandable;
+                expandable = track.expandable;
 
             return expandable && item.hasChildren;
         }

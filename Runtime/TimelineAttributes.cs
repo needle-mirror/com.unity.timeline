@@ -132,7 +132,7 @@ namespace UnityEngine.Timeline
 
     // indicates that the type should not be put on a PlayableTrack
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    class IgnoreOnPlayableTrackAttribute : System.Attribute {}
+    class IgnoreOnPlayableTrackAttribute : System.Attribute { }
 
     // used to flag properties as using a time field (second/frames) display
     class TimeFieldAttribute : PropertyAttribute
@@ -150,13 +150,13 @@ namespace UnityEngine.Timeline
         }
     }
 
-    class FrameRateFieldAttribute : PropertyAttribute {}
+    class FrameRateFieldAttribute : PropertyAttribute { }
 
     /// <summary>
     /// Use this attribute to hide a class from Timeline menus.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class HideInMenuAttribute : Attribute {}
+    public class HideInMenuAttribute : Attribute { }
 
     ///<summary>
     /// Use this attribute to customize the appearance of a Marker.

@@ -76,7 +76,7 @@ namespace UnityEditor
             DragAndDrop.PrepareStartDrag();
             var tvItems = SelectionManager.SelectedTrackGUI().Cast<TreeViewItem>().ToList();
             DragAndDrop.SetGenericData(k_GenericDragId, new TimelineDragData(tvItems));
-            DragAndDrop.objectReferences = new UnityObject[] {};  // this IS required for dragging to work
+            DragAndDrop.objectReferences = new UnityObject[] { };  // this IS required for dragging to work
 
             string title = draggedItemIDs.Count + (draggedItemIDs.Count > 1 ? "s" : ""); // title is only shown on OSX (at the cursor)
 
@@ -451,7 +451,7 @@ namespace UnityEditor
             {
                 if (!allowMenu) // If we already popped a menu, and are presented with an ambiguous choice, take the first entry
                 {
-                    flatAssetTypes = new[] {flatAssetTypes.First()};
+                    flatAssetTypes = new[] { flatAssetTypes.First() };
                 }
 
                 typeResolver(flatAssetTypes, onCreateItem, k_SelectClip);
@@ -498,7 +498,7 @@ namespace UnityEditor
                 supportedTypes = Enumerable.Empty<Type>();
                 var trackAssetTypes = TypeUtility.GetPlayableAssetsHandledByTrack(targetTrack.GetType());
                 if (trackAssetTypes.Intersect(assetTypes).Any())
-                    supportedTypes = new[] {targetTrack.GetType()};
+                    supportedTypes = new[] { targetTrack.GetType() };
             }
 
             if (!supportedTypes.Any())

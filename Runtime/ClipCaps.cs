@@ -11,22 +11,22 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// No features are supported.
         /// </summary>
-        None            = 0 ,
+        None = 0,
 
         /// <summary>
         /// The clip supports loops.
         /// </summary>
-        Looping         = 1 << 0,
+        Looping = 1 << 0,
 
         /// <summary>
         /// The clip supports clip extrapolation.
         /// </summary>
-        Extrapolation   = 1 << 1,
+        Extrapolation = 1 << 1,
 
         /// <summary>
         /// The clip supports initial local times greater than zero.
         /// </summary>
-        ClipIn          = 1 << 2,
+        ClipIn = 1 << 2,
 
         /// <summary>
         /// The clip supports time scaling.
@@ -36,13 +36,13 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// The clip supports blending between clips.
         /// </summary>
-        Blending        = 1 << 4,
+        Blending = 1 << 4,
 
         /// <summary>
         /// The clip supports time scaling, and sets the default trim mode in the editor to scale the clip
         /// (speed multiplier) when the start/end of the clip is trimmed.
         /// </summary>
-        AutoScale       = 1 << 5 | SpeedMultiplier,
+        AutoScale = 1 << 5 | SpeedMultiplier,
 
         /// <summary>
         /// All features are supported.

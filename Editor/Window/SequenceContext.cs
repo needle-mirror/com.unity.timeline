@@ -62,7 +62,7 @@ namespace UnityEditor.Timeline
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns><see langword="true" /> if operands are equal, <see langword="false" /> otherwise.</returns>
-        public static bool operator==(SequenceContext left, SequenceContext right) => left.Equals(right);
+        public static bool operator ==(SequenceContext left, SequenceContext right) => left.Equals(right);
 
         /// <summary>
         /// Inequality operator overload.
@@ -70,7 +70,7 @@ namespace UnityEditor.Timeline
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns><see langword="true" /> if operands are not equal, <see langword="false" /> otherwise.</returns>
-        public static bool operator!=(SequenceContext left, SequenceContext right) => !left.Equals(right);
+        public static bool operator !=(SequenceContext left, SequenceContext right) => !left.Equals(right);
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>

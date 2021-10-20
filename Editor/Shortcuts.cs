@@ -93,21 +93,21 @@ namespace UnityEditor.Timeline
                 SendEventToInvokeShortcut(frameAll, args.context);
             }
 
-            #if UNITY_EDITOR_OSX
+#if UNITY_EDITOR_OSX
             [UsedImplicitly, ShortcutManagement.Shortcut(previousKey, typeof(TimelineWindow), KeyCode.Comma, ShortcutModifiers.Action | ShortcutModifiers.Shift)]
-            #else
+#else
             [UsedImplicitly, ShortcutManagement.Shortcut(previousKey, typeof(TimelineWindow), KeyCode.Comma, ShortcutModifiers.Action)]
-            #endif
+#endif
             static void PrevKey(ShortcutManagement.ShortcutArguments args)
             {
                 SendEventToInvokeShortcut(previousKey, args.context);
             }
 
-            #if UNITY_EDITOR_OSX
+#if UNITY_EDITOR_OSX
             [UsedImplicitly, ShortcutManagement.Shortcut(nextKey, typeof(TimelineWindow), KeyCode.Period, ShortcutModifiers.Action | ShortcutModifiers.Shift)]
-            #else
+#else
             [UsedImplicitly, ShortcutManagement.Shortcut(nextKey, typeof(TimelineWindow), KeyCode.Period, ShortcutModifiers.Action)]
-            #endif
+#endif
             static void NextKey(ShortcutManagement.ShortcutArguments args)
             {
                 SendEventToInvokeShortcut(nextKey, args.context);
@@ -213,7 +213,7 @@ namespace UnityEditor.Timeline
                 SendEventToInvokeShortcut(multiSelectRight, args.context);
             }
 
-            [UsedImplicitly, ShortcutManagement.Shortcut(multiSelectUp , typeof(TimelineWindow), KeyCode.UpArrow, ShortcutModifiers.Shift)]
+            [UsedImplicitly, ShortcutManagement.Shortcut(multiSelectUp, typeof(TimelineWindow), KeyCode.UpArrow, ShortcutModifiers.Shift)]
             static void MultiSelectUp(ShortcutManagement.ShortcutArguments args)
             {
                 SendEventToInvokeShortcut(multiSelectUp, args.context);

@@ -35,7 +35,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public virtual void DrawTrackHeaderButton(Rect rect, WindowState state) {}
+        public virtual void DrawTrackHeaderButton(Rect rect, WindowState state) { }
 
         public virtual bool DrawTrack(Rect trackRect, TrackAsset trackAsset, Vector2 visibleTime, WindowState state)
         {

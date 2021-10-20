@@ -85,7 +85,9 @@ namespace UnityEditor.Timeline
 
             data = new timeline_asset_stats
             {
-                asset_guid = guid, duration = timeline.duration, frame_rate = timeline.editorSettings.frameRate,
+                asset_guid = guid,
+                duration = timeline.duration,
+                frame_rate = timeline.editorSettings.frameRate,
                 track_stats = GetTrackAssetStats(timeline),
                 display_format = TimelinePreferences.instance.timeFormat.ConvertToString(),
                 mix_samples_count = analyticsStats.editModeSamples[(int)EditMode.EditType.Mix],
@@ -103,7 +105,8 @@ namespace UnityEditor.Timeline
             {
                 ret.Add(new track_asset_stats
                 {
-                    track_type = track.GetType().FullName, clip_count = track.GetClips().Count(),
+                    track_type = track.GetType().FullName,
+                    clip_count = track.GetClips().Count(),
                     marker_count = track.GetMarkers().Count()
                 }
                 );

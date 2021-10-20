@@ -43,7 +43,7 @@ namespace UnityEditor.Timeline
             return PickedItemsSortedByZOrderOfType<T>().FirstOrDefault(predicate);
         }
 
-        static IEnumerable<T> PickedItemsSortedByZOrderOfType<T>() where T: class, ILayerable
+        static IEnumerable<T> PickedItemsSortedByZOrderOfType<T>() where T : class, ILayerable
         {
             return pickedElements.OfType<T>().OrderByDescending(x => x.zOrder);
         }

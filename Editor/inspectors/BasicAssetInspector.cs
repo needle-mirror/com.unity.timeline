@@ -43,5 +43,5 @@ namespace UnityEditor.Timeline
     }
 
     [CustomEditor(typeof(ActivationPlayableAsset))]
-    class ActivationPlayableAssetInspector : BasicAssetInspector {}
+    class ActivationPlayableAssetInspector : BasicAssetInspector { }
 }

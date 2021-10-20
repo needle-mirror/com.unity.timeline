@@ -132,9 +132,9 @@ namespace UnityEditor.Timeline
             ChangeFrame(frame);
         }
 
-        public override void StartScrubTime() {}
+        public override void StartScrubTime() { }
 
-        public override void EndScrubTime() {}
+        public override void EndScrubTime() { }
 
         public override void ScrubTime(float newTime)
         {
@@ -283,9 +283,9 @@ namespace UnityEditor.Timeline
                 state.UnarmForRecord(track);
         }
 
-        public override void OnSelectionChanged() {}
+        public override void OnSelectionChanged() { }
 
-        public override void ResampleAnimation() {}
+        public override void ResampleAnimation() { }
 
         public override bool StartPreview()
         {
@@ -300,8 +300,8 @@ namespace UnityEditor.Timeline
                 state.previewMode = false;
         }
 
-        public override void ProcessCandidates() {}
-        public override void ClearCandidates() {}
+        public override void ProcessCandidates() { }
+        public override void ClearCandidates() { }
 
         double ToGlobalTime(float localTime)
         {

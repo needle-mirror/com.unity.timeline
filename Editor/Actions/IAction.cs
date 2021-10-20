@@ -8,7 +8,7 @@ using UnityEngine;
 namespace UnityEditor.Timeline.Actions
 {
     /// interface indicating an Action class
-    interface IAction {}
+    interface IAction { }
 
     /// extension methods for IActions
     static class ActionExtensions

@@ -25,7 +25,7 @@ namespace UnityEditor.Timeline
         CurveEditor m_CurveEditor;
         ReorderableList m_DopeLines;
 
-        string[] m_StringList = {};
+        string[] m_StringList = { };
         int[] m_Selection;
         bool m_PartOfSelection;
         public BindingSelector(EditorWindow window, CurveEditor curveEditor, TreeViewState trackGlobalTreeViewState)

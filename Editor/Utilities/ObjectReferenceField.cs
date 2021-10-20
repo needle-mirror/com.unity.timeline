@@ -69,7 +69,7 @@ namespace UnityEditor.Timeline
                     {
                         bool isSceneRef = prop.propertyType == SerializedPropertyType.ExposedReference;
                         list.Add(
-                            new ObjectReferenceField() {propertyPath = prop.propertyPath, isSceneReference = isSceneRef, type = exposedType}
+                            new ObjectReferenceField() { propertyPath = prop.propertyPath, isSceneReference = isSceneRef, type = exposedType }
                         );
                     }
                 }
@@ -88,7 +88,7 @@ namespace UnityEditor.Timeline
 
             System.Type parentType = baseType;
             FieldInfo field = null;
-            var pathTo = path.Split(new char[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+            var pathTo = path.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             var flags = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic |
                 BindingFlags.Instance;
             foreach (string s in pathTo)

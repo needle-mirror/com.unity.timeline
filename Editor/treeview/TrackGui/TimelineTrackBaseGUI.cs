@@ -57,7 +57,7 @@ namespace UnityEditor.Timeline
         public bool visibleRow { get; set; }        // is the header row visible
         public bool visibleExpanded { get; set; }   // is the expanded area (group) visible
         public bool drawInsertionMarkerBefore { get; set; }
-        public bool drawInsertionMarkerAfter  { get; set; }
+        public bool drawInsertionMarkerAfter { get; set; }
 
         public abstract Rect boundingRect { get; }
         public abstract bool expandable { get; }

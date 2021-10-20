@@ -44,7 +44,7 @@ namespace UnityEngine.Timeline
                 EditorUtility.SetDirty(thingsToDirty[i]);
             }
             Undo.RegisterCompleteObjectUndo(thingsToDirty, UndoName(operation));
- #endif
+#endif
         }
 
         [Conditional("UNITY_EDITOR")]

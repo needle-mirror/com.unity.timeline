@@ -7,13 +7,13 @@ namespace UnityEditor.Timeline
             headerState = new HeaderState()
             {
                 breadCrumb = TimelineModeGUIState.Enabled,
-                options =  TimelineModeGUIState.Enabled,
+                options = TimelineModeGUIState.Enabled,
                 sequenceSelector = TimelineModeGUIState.Enabled,
             };
 
             trackOptionsState = new TrackOptionsState()
             {
-                newButton =  TimelineModeGUIState.Disabled,
+                newButton = TimelineModeGUIState.Disabled,
                 editAsAssetButton = TimelineModeGUIState.Disabled,
             };
             mode = TimelineModes.ReadOnly;

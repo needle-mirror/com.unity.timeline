@@ -105,7 +105,7 @@ namespace UnityEngine.Timeline
         [SerializeField] double m_Start;
         [SerializeField] double m_ClipIn;
         [SerializeField] Object m_Asset;
-        [SerializeField][FormerlySerializedAs("m_HackDuration")] double m_Duration;
+        [SerializeField] [FormerlySerializedAs("m_HackDuration")] double m_Duration;
         [SerializeField] double m_TimeScale = 1.0;
         [SerializeField] TrackAsset m_ParentTrack;
 
@@ -294,17 +294,17 @@ namespace UnityEngine.Timeline
         public Object underlyingAsset
         {
             get { return null; }
-            set {}
+            set { }
         }
 
         /// <summary>
         /// Returns the TrackAsset to which this clip is attached.
         /// </summary>
-        [Obsolete("parentTrack is deprecated and will be removed in a future release. Use " + nameof(GetParentTrack) + "() and " + nameof(TimelineClipExtensions) + "::"  +  nameof(TimelineClipExtensions.MoveToTrack) + "() or " + nameof(TimelineClipExtensions) + "::"  +  nameof(TimelineClipExtensions.TryMoveToTrack) + "() instead.", false)]
+        [Obsolete("parentTrack is deprecated and will be removed in a future release. Use " + nameof(GetParentTrack) + "() and " + nameof(TimelineClipExtensions) + "::" + nameof(TimelineClipExtensions.MoveToTrack) + "() or " + nameof(TimelineClipExtensions) + "::" + nameof(TimelineClipExtensions.TryMoveToTrack) + "() instead.", false)]
         public TrackAsset parentTrack
         {
             get { return m_ParentTrack; }
-            set { SetParentTrack_Internal(value);}
+            set { SetParentTrack_Internal(value); }
         }
 
         /// <summary>
@@ -895,7 +895,7 @@ namespace UnityEngine.Timeline
         }
 
 #else
-        void UpdateDirty(double oldValue, double newValue) {}
+        void UpdateDirty(double oldValue, double newValue) { }
 #endif
     };
 }

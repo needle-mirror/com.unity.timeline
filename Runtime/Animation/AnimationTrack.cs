@@ -160,7 +160,7 @@ namespace UnityEngine.Timeline
 
 
         [SerializeField] AvatarMask m_AvatarMask;
-        [SerializeField] bool       m_ApplyAvatarMask  = true;
+        [SerializeField] bool m_ApplyAvatarMask = true;
 
         [SerializeField] TrackOffset m_TrackOffset = TrackOffset.ApplyTransformOffsets;
 
@@ -218,7 +218,7 @@ namespace UnityEngine.Timeline
         public bool applyOffsets
         {
             get { return false; }
-            set {}
+            set { }
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace UnityEngine.Timeline
 
         internal bool infiniteClipApplyFootIK
         {
-            get { return m_InfiniteClipApplyFootIK;  }
+            get { return m_InfiniteClipApplyFootIK; }
             set { m_InfiniteClipApplyFootIK = value; }
         }
 
@@ -817,7 +817,7 @@ namespace UnityEngine.Timeline
 
             // offsets don't apply in scene offset, or if there is no root transform (globally or on this track)
             if (mode == AppliedOffsetMode.SceneOffsetLegacy ||
-                mode == AppliedOffsetMode.SceneOffset     ||
+                mode == AppliedOffsetMode.SceneOffset ||
                 mode == AppliedOffsetMode.NoRootTransform
             )
                 return root;

@@ -246,7 +246,7 @@ namespace UnityEditor.Timeline
             if (m_Binding != null)
                 return m_Binding.transform;
 
-            if (m_TimelineWindow != null &&  m_TimelineWindow.state != null &&
+            if (m_TimelineWindow != null && m_TimelineWindow.state != null &&
                 m_TimelineWindow.state.editSequence.director != null &&
                 m_EditorClip != null && m_EditorClip.clip != null)
             {

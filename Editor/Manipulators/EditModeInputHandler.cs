@@ -189,7 +189,7 @@ namespace UnityEditor.Timeline
                 var handler = new MoveItemHandler(state);
                 foreach (var item in items)
                 {
-                    handler.Grab(new[] {item}, item.parentTrack);
+                    handler.Grab(new[] { item }, item.parentTrack);
                     handler.OnAttractedEdge(null, ManipulateEdges.Both, edge, value);
                     handler.Drop();
                 }

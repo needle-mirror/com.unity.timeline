@@ -112,7 +112,7 @@ namespace UnityEditor.Timeline
         // for the inline curve editor, only show loops if we recorded the asset
         bool IClipCurveEditorOwner.showLoops
         {
-            get { return clip.SupportsLooping() && (clip.asset is AnimationPlayableAsset);  }
+            get { return clip.SupportsLooping() && (clip.asset is AnimationPlayableAsset); }
         }
 
         TrackAsset IClipCurveEditorOwner.owner

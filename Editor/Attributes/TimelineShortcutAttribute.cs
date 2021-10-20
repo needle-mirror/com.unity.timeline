@@ -19,6 +19,6 @@ namespace UnityEditor.Timeline.Actions
         /// <param name="defaultKeyCode">Optional key code for default binding.</param>
         /// <param name="defaultShortcutModifiers">Optional shortcut modifiers for default binding.</param>
         public TimelineShortcutAttribute(string id, KeyCode defaultKeyCode, ShortcutModifiers defaultShortcutModifiers = ShortcutModifiers.None)
-            : base("Timeline/" + id, typeof(TimelineWindow), defaultKeyCode, defaultShortcutModifiers) {}
+            : base("Timeline/" + id, typeof(TimelineWindow), defaultKeyCode, defaultShortcutModifiers) { }
     }
 }

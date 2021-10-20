@@ -29,7 +29,7 @@ namespace UnityEditor.Timeline
             void Reset();
         }
 
-        class SubEditMode<TMoveMode, TTrimMode, TAddDeleteMode>: ISubEditMode
+        class SubEditMode<TMoveMode, TTrimMode, TAddDeleteMode> : ISubEditMode
             where TMoveMode : class, IMoveItemMode, IMoveItemDrawer, new()
             where TTrimMode : class, ITrimItemMode, ITrimItemDrawer, new()
             where TAddDeleteMode : class, IAddDeleteItemMode, new()
@@ -52,11 +52,11 @@ namespace UnityEditor.Timeline
             TTrimMode m_TrimItemMode;
             TAddDeleteMode m_AddDeleteItemMode;
 
-            public IMoveItemMode moveItemMode            { get { return m_MoveItemMode; } }
-            public IMoveItemDrawer moveItemDrawer        { get { return m_MoveItemMode; } }
-            public ITrimItemMode trimItemMode            { get { return m_TrimItemMode; } }
-            public ITrimItemDrawer trimItemDrawer        { get { return m_TrimItemMode; } }
-            public IAddDeleteItemMode addDeleteItemMode  { get { return m_AddDeleteItemMode; } }
+            public IMoveItemMode moveItemMode { get { return m_MoveItemMode; } }
+            public IMoveItemDrawer moveItemDrawer { get { return m_MoveItemMode; } }
+            public ITrimItemMode trimItemMode { get { return m_TrimItemMode; } }
+            public ITrimItemDrawer trimItemDrawer { get { return m_TrimItemMode; } }
+            public IAddDeleteItemMode addDeleteItemMode { get { return m_AddDeleteItemMode; } }
             public Color color { get; }
             public KeyCode clutchKey { get; }
         }

@@ -20,7 +20,7 @@ namespace UnityEngine.Timeline
             get
             {
                 return this == timelineAsset.markerTrack ?
-                    new List<PlayableBinding> {ScriptPlayableBinding.Create(name, null, typeof(GameObject))} :
+                    new List<PlayableBinding> { ScriptPlayableBinding.Create(name, null, typeof(GameObject)) } :
                     base.outputs;
             }
         }

@@ -63,7 +63,7 @@ namespace UnityEditor.Timeline
             Rect iconRect = new Rect(headerRect.xMin + styles.trackSwatchStyle.fixedWidth, headerRect.yMin + 0.5f * (headerRect.height - errorIcon.height), errorIcon.width, errorIcon.height);
             if (iconRect.width > 0 && iconRect.height > 0)
             {
-                GUI.DrawTexture(iconRect, errorIcon, ScaleMode.ScaleAndCrop, true, 0,  DirectorStyles.kClipErrorColor, 0, 0);
+                GUI.DrawTexture(iconRect, errorIcon, ScaleMode.ScaleAndCrop, true, 0, DirectorStyles.kClipErrorColor, 0, 0);
             }
 
             // Draw the name
@@ -180,6 +180,6 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public override void OnGraphRebuilt() {}
+        public override void OnGraphRebuilt() { }
     }
 }

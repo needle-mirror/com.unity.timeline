@@ -61,7 +61,7 @@ namespace UnityEditor.Timeline
             return TrackEditor.DefaultTrackHeight;
         }
 
-        public override void OnGraphRebuilt() {}
+        public override void OnGraphRebuilt() { }
 
         static int CalculateGroupDepth(TreeViewItem parent)
         {

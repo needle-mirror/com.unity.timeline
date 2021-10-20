@@ -30,15 +30,15 @@ namespace UnityEditor.Timeline
             }
         }
 
-        const string k_CursorAssetRoot         = "Cursors/";
-        const string k_CursorAssetsNamespace   = "Timeline.";
-        const string k_CursorAssetExtension    = ".png";
+        const string k_CursorAssetRoot = "Cursors/";
+        const string k_CursorAssetsNamespace = "Timeline.";
+        const string k_CursorAssetExtension = ".png";
 
-        const string k_MixBothCursorAssetName  = k_CursorAssetsNamespace + "MixBoth"  + k_CursorAssetExtension;
-        const string k_MixLeftCursorAssetName  = k_CursorAssetsNamespace + "MixLeft"  + k_CursorAssetExtension;
+        const string k_MixBothCursorAssetName = k_CursorAssetsNamespace + "MixBoth" + k_CursorAssetExtension;
+        const string k_MixLeftCursorAssetName = k_CursorAssetsNamespace + "MixLeft" + k_CursorAssetExtension;
         const string k_MixRightCursorAssetName = k_CursorAssetsNamespace + "MixRight" + k_CursorAssetExtension;
-        const string k_ReplaceCursorAssetName  = k_CursorAssetsNamespace + "Replace"  + k_CursorAssetExtension;
-        const string k_RippleCursorAssetName   = k_CursorAssetsNamespace + "Ripple"   + k_CursorAssetExtension;
+        const string k_ReplaceCursorAssetName = k_CursorAssetsNamespace + "Replace" + k_CursorAssetExtension;
+        const string k_RippleCursorAssetName = k_CursorAssetsNamespace + "Ripple" + k_CursorAssetExtension;
 
         static readonly string s_PlatformPath = (Application.platform == RuntimePlatform.WindowsEditor) ? "Windows/" : "macOS/";
         static readonly string s_CursorAssetDirectory = k_CursorAssetRoot + s_PlatformPath;

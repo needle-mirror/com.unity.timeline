@@ -23,7 +23,7 @@ namespace UnityEditor.Timeline
             if (animationClip == null)
                 return null;
 
-            var info =  AnimationClipCurveCache.Instance.GetCurveInfo(animationClip);
+            var info = AnimationClipCurveCache.Instance.GetCurveInfo(animationClip);
             return info.keyTimes.Select(TransformKeyTime).ToArray();
         }
 

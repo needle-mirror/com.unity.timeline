@@ -30,7 +30,7 @@ namespace UnityEditor.Timeline.Signals
             {
                 if (s_FoldoutStyle == null)
                 {
-                    s_FoldoutStyle = new GUIStyle(EditorStyles.foldout) {fontStyle = FontStyle.Bold};
+                    s_FoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
                 }
 
                 return s_FoldoutStyle;
@@ -160,7 +160,7 @@ namespace UnityEditor.Timeline.Signals
                 return ret;
             }
 
-            ret = CreateEditorWithContext(new Object[] {c}, target);
+            ret = CreateEditorWithContext(new Object[] { c }, target);
             m_Editors[c] = ret;
             if (!m_Foldouts.ContainsKey(c))
             {

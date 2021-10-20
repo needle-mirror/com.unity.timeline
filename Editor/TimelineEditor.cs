@@ -278,21 +278,21 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Use this flag when a change to the Timeline requires that the Timeline window be redrawn.
         /// </summary>
-        WindowNeedsRedraw        = 1 << 0,
+        WindowNeedsRedraw = 1 << 0,
 
         /// <summary>
         /// Use this flag when a change to the Timeline requires that the Scene be updated.
         /// </summary>
-        SceneNeedsUpdate         = 1 << 1,
+        SceneNeedsUpdate = 1 << 1,
 
         /// <summary>
         /// Use this flag when a Timeline element was modified.
         /// </summary>
-        ContentsModified         = 1 << 2,
+        ContentsModified = 1 << 2,
 
         /// <summary>
         /// Use this flag when an element was added to or removed from the Timeline.
         /// </summary>
-        ContentsAddedOrRemoved   = 1 << 3
+        ContentsAddedOrRemoved = 1 << 3
     }
 }

@@ -12,11 +12,11 @@ namespace UnityEditor.Timeline
     {
         static class Styles
         {
-            public static readonly GUIContent GroupSubTrackHeaderName     = L10n.TextContent("Name");
-            public static readonly GUIContent GroupSubTrackHeaderType     = L10n.TextContent("Type");
+            public static readonly GUIContent GroupSubTrackHeaderName = L10n.TextContent("Name");
+            public static readonly GUIContent GroupSubTrackHeaderType = L10n.TextContent("Type");
             public static readonly GUIContent GroupSubTrackHeaderDuration = L10n.TextContent("Duration");
-            public static readonly GUIContent GroupSubTrackHeaderFrames   = L10n.TextContent("Frames");
-            public static readonly GUIContent GroupInvalidTrack           = L10n.TextContent("Invalid Track");
+            public static readonly GUIContent GroupSubTrackHeaderFrames = L10n.TextContent("Frames");
+            public static readonly GUIContent GroupInvalidTrack = L10n.TextContent("Invalid Track");
         }
 
         ReorderableList m_SubTracks;
@@ -47,7 +47,7 @@ namespace UnityEditor.Timeline
         {
             base.OnEnable();
 
-            m_SubTracks = new ReorderableList(new string[] {}, typeof(string), false, true, false, false)
+            m_SubTracks = new ReorderableList(new string[] { }, typeof(string), false, true, false, false)
             {
                 drawElementCallback = OnDrawSubTrack,
                 drawHeaderCallback = OnDrawHeader,

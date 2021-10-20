@@ -16,7 +16,7 @@ namespace UnityEditor.Timeline
         {
             m_Item = item;
 
-            var sortedItems = ItemsUtils.GetItemsExcept(item.parentTrack, new[] {item})
+            var sortedItems = ItemsUtils.GetItemsExcept(item.parentTrack, new[] { item })
                 .OfType<ITrimmable>()
                 .OrderBy(c => c.start);
 

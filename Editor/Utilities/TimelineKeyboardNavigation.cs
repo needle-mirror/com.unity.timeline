@@ -54,7 +54,7 @@ namespace UnityEditor.Timeline
         {
             var uiOrderTracks = GetVisibleTracks().Select(t => t.track).ToList();
             var selIdx = uiOrderTracks.IndexOf(track);
-            return selIdx < uiOrderTracks.Count - 1  && selIdx != -1 ? uiOrderTracks[selIdx + 1] : null;
+            return selIdx < uiOrderTracks.Count - 1 && selIdx != -1 ? uiOrderTracks[selIdx + 1] : null;
         }
 
         static ITimelineItem PreviousItem(this ITimelineItem item, bool clipOnly)
@@ -66,7 +66,7 @@ namespace UnityEditor.Timeline
             }
             else
             {
-                items =  items.Where(x => x is MarkerItem).ToArray();
+                items = items.Where(x => x is MarkerItem).ToArray();
             }
 
             var idx = Array.IndexOf(items, item);
@@ -82,7 +82,7 @@ namespace UnityEditor.Timeline
             }
             else
             {
-                items =  items.Where(x => x is MarkerItem).ToArray();
+                items = items.Where(x => x is MarkerItem).ToArray();
             }
 
             var idx = Array.IndexOf(items, item);
@@ -113,7 +113,7 @@ namespace UnityEditor.Timeline
             }
             else
             {
-                items =  items.Where(x => x is MarkerItem).ToList();
+                items = items.Where(x => x is MarkerItem).ToList();
             }
 
             if (!items.Any())
@@ -253,7 +253,7 @@ namespace UnityEditor.Timeline
                     }
                     else
                         SelectionManager.SelectOnly(prev);
-                    TimelineHelpers.FrameItems(new[] {prev});
+                    TimelineHelpers.FrameItems(new[] { prev });
                 }
                 else if (item != null && !shift && item.parentTrack != TimelineEditor.inspectedAsset.markerTrack)
                     SelectionManager.SelectOnly(item.parentTrack);
@@ -281,7 +281,7 @@ namespace UnityEditor.Timeline
                     }
                     else
                         SelectionManager.SelectOnly(next);
-                    TimelineHelpers.FrameItems(new[] {next});
+                    TimelineHelpers.FrameItems(new[] { next });
                     return true;
                 }
             }
@@ -353,7 +353,7 @@ namespace UnityEditor.Timeline
 
                 var firstClip = track.clips.First();
                 SelectionManager.SelectOnly(firstClip);
-                TimelineHelpers.FrameItems(new ITimelineItem[] {firstClip.ToItem()});
+                TimelineHelpers.FrameItems(new ITimelineItem[] { firstClip.ToItem() });
 
                 return true;
             }
@@ -399,7 +399,7 @@ namespace UnityEditor.Timeline
                     }
 
                     SelectionManager.SelectOnly(selectionItem);
-                    TimelineHelpers.FrameItems(new[] {selectionItem});
+                    TimelineHelpers.FrameItems(new[] { selectionItem });
                     FrameTrackHeader(GetVisibleTracks().First(x => x.track == selectionItem.parentTrack));
                     break;
                 }
@@ -449,7 +449,7 @@ namespace UnityEditor.Timeline
                     }
 
                     SelectionManager.SelectOnly(selectionItem);
-                    TimelineHelpers.FrameItems(new[] {selectionItem});
+                    TimelineHelpers.FrameItems(new[] { selectionItem });
                     FrameTrackHeader(GetVisibleTracks().First(x => x.track == selectionItem.parentTrack));
                     break;
                 }

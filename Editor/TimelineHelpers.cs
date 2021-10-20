@@ -187,7 +187,7 @@ namespace UnityEditor.Timeline
                     aTrack.ConvertToClipMode();
 
                 var duplicatedItems = DuplicateItems(items, targetParent, sourceTable, destTable, undoOperation);
-                FinalizeInsertItemsUsingCurrentEditMode(new[] {duplicatedItems}, candidateTime);
+                FinalizeInsertItemsUsingCurrentEditMode(new[] { duplicatedItems }, candidateTime);
                 return duplicatedItems.items;
             }
 
@@ -368,7 +368,7 @@ namespace UnityEditor.Timeline
             if (assetA == null || assetB == null)
                 return false;
 
-            if ((assetA.hideFlags & HideFlags.DontSave) != 0  && (assetB.hideFlags & HideFlags.DontSave) != 0)
+            if ((assetA.hideFlags & HideFlags.DontSave) != 0 && (assetB.hideFlags & HideFlags.DontSave) != 0)
                 return true;
 
             return AssetDatabase.GetAssetPath(assetA) == AssetDatabase.GetAssetPath(assetB);
@@ -487,13 +487,13 @@ namespace UnityEditor.Timeline
         public static double[] GetLoopTimes(TimelineClip clip)
         {
             if (!HasUsableAssetDuration(clip))
-                return new[] {-clip.clipIn / clip.timeScale};
+                return new[] { -clip.clipIn / clip.timeScale };
 
             var times = new List<double>();
             double loopDuration = GetLoopDuration(clip);
 
             if (loopDuration <= TimeUtility.kTimeEpsilon)
-                return new double[] {};
+                return new double[] { };
 
 
             double start = -clip.clipIn / clip.timeScale;
@@ -609,7 +609,7 @@ namespace UnityEditor.Timeline
                 {
                     newClip = parentTrack.CreateClipOfType(playableAssetType);
                 }
-                catch (InvalidOperationException) {}    // expected on a mismatch
+                catch (InvalidOperationException) { }    // expected on a mismatch
             }
 
             if (newClip == null)
@@ -684,7 +684,7 @@ namespace UnityEditor.Timeline
                 mList[i].start += delta;
             }
 
-            FinalizeInsertItemsUsingCurrentEditMode(new[] {new ItemsPerTrack(targetTrack, mList)}, candidateTime);
+            FinalizeInsertItemsUsingCurrentEditMode(new[] { new ItemsPerTrack(targetTrack, mList) }, candidateTime);
             state.Refresh();
         }
 
@@ -864,7 +864,7 @@ namespace UnityEditor.Timeline
                     newClip.duration = Math.Min(Math.Max(candidateDuration, TimelineClip.kMinDuration), TimelineClip.kMaxTimeValue);
             }
 
-            var newClipsByTracks = new[] { new ItemsPerTrack(parentTrack, new[] {newClip.ToItem()}) };
+            var newClipsByTracks = new[] { new ItemsPerTrack(parentTrack, new[] { newClip.ToItem() }) };
 
             FinalizeInsertItemsUsingCurrentEditMode(newClipsByTracks, candidateTime);
 

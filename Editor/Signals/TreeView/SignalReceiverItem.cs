@@ -160,7 +160,7 @@ namespace UnityEditor.Timeline.Signals
         IEnumerable<SignalAsset> ISignalAssetProvider.AvailableSignalAssets()
         {
             var ret = SignalManager.assets.Except(m_CurrentReceiver.GetRegisteredSignals());
-            return signalAsset == null ? ret : ret.Union(new List<SignalAsset> {signalAsset}).ToList();
+            return signalAsset == null ? ret : ret.Union(new List<SignalAsset> { signalAsset }).ToList();
         }
 
         void ISignalAssetProvider.CreateNewSignalAsset(string path)

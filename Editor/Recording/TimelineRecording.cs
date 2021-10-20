@@ -189,8 +189,8 @@ namespace UnityEditor.Timeline
 
             if (displayBackground != null)
             {
-                startTime =  displayBackground.start;
-                timeScale =  displayBackground.timeScale;
+                startTime = displayBackground.start;
+                timeScale = displayBackground.timeScale;
             }
 
             return animClip;
@@ -506,7 +506,8 @@ namespace UnityEditor.Timeline
                 var compo = GetTargetFromEditorBinding(go, bindings[i]);
                 allKeyedProperties.Add(new PropertyModification
                 {
-                    target = compo, value = val.ToString(EditorGUI.kFloatFieldFormatString),
+                    target = compo,
+                    value = val.ToString(EditorGUI.kFloatFieldFormatString),
                     propertyPath = bindings[i].propertyName
                 });
             }
@@ -533,7 +534,8 @@ namespace UnityEditor.Timeline
                     AnimationUtility.GetFloatValue(go, readBinding, out var val);
                     allKeyedProperties.Add(new PropertyModification
                     {
-                        target = compo, value = val.ToString(EditorGUI.kFloatFieldFormatString),
+                        target = compo,
+                        value = val.ToString(EditorGUI.kFloatFieldFormatString),
                         propertyPath = binding.propertyName
                     });
                 }

@@ -68,7 +68,7 @@ namespace UnityEditor.Timeline
 
             if (gui is TimelineGroupGUI groupGUI)
             {
-                KeyboardNavigation.ToggleCollapseGroup(new[] {groupGUI.track});
+                KeyboardNavigation.ToggleCollapseGroup(new[] { groupGUI.track });
             }
         }
 
@@ -82,7 +82,7 @@ namespace UnityEditor.Timeline
         {
             // may not occur if another menu is active
             if (!m_TreeView.IsSelected(id))
-                SelectionChangedCallback(new[] {id});
+                SelectionChangedCallback(new[] { id });
 
             SequencerContextMenu.ShowTrackContextMenu(Event.current.mousePosition);
 
@@ -108,7 +108,7 @@ namespace UnityEditor.Timeline
             m_State.GetWindow().Repaint();
         }
 
-        public void OnInitialize() {}
+        public void OnInitialize() { }
 
         public Rect GetRectForFraming(int row)
         {
@@ -247,10 +247,10 @@ namespace UnityEditor.Timeline
             return rowRect;
         }
 
-        public void BeginPingItem(TreeViewItem item, float topPixelOfRow, float availableWidth) {}
-        public void EndPingItem() {}
+        public void BeginPingItem(TreeViewItem item, float topPixelOfRow, float availableWidth) { }
+        public void EndPingItem() { }
 
-        public Rect GetRowRect(int row,  float rowWidth)
+        public Rect GetRowRect(int row, float rowWidth)
         {
             return GetRowRect(row);
         }
@@ -349,7 +349,7 @@ namespace UnityEditor.Timeline
             return false;
         }
 
-        public virtual void EndRename() {}
+        public virtual void EndRename() { }
 
         protected virtual float GetFoldoutIndent(TreeViewItem item)
         {

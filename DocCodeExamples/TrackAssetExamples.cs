@@ -10,7 +10,7 @@ namespace DocCodeExamples
         [TrackColor(1, 0, 0)]
         [TrackBindingType(typeof(Animator))]
         [TrackClipType(typeof(AnimationClip))]
-        public class CustomAnimationTrack : TrackAsset {}
+        public class CustomAnimationTrack : TrackAsset { }
 
         #endregion
     }

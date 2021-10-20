@@ -85,7 +85,7 @@ namespace UnityEditor.Timeline
         /// <param name="region1">The first object.</param>
         /// <param name="region2">The second object.</param>
         /// <returns>Returns true if they are equal.</returns>
-        public static bool operator==(ClipBackgroundRegion region1, ClipBackgroundRegion region2)
+        public static bool operator ==(ClipBackgroundRegion region1, ClipBackgroundRegion region2)
         {
             return region1.Equals(region2);
         }
@@ -96,7 +96,7 @@ namespace UnityEditor.Timeline
         /// <param name="region1">The first object.</param>
         /// <param name="region2">The second object.</param>
         /// <returns>Returns true if they are not equal.</returns>
-        public static bool operator!=(ClipBackgroundRegion region1, ClipBackgroundRegion region2)
+        public static bool operator !=(ClipBackgroundRegion region1, ClipBackgroundRegion region2)
         {
             return !region1.Equals(region2);
         }
@@ -157,7 +157,7 @@ namespace UnityEditor.Timeline
         public IEnumerable<Texture2D> icons
         {
             get { return m_Icons ?? System.Linq.Enumerable.Empty<Texture2D>(); }
-            set { m_Icons = value;}
+            set { m_Icons = value; }
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace UnityEditor.Timeline
         /// <param name="options1">The first object.</param>
         /// <param name="options2">The second object.</param>
         /// <returns>Returns true if they are equal.</returns>
-        public static bool operator==(ClipDrawOptions options1, ClipDrawOptions options2)
+        public static bool operator ==(ClipDrawOptions options1, ClipDrawOptions options2)
         {
             return options1.Equals(options2);
         }
@@ -217,7 +217,7 @@ namespace UnityEditor.Timeline
         /// <param name="options1">The first object.</param>
         /// <param name="options2">The second object.</param>
         /// <returns>Returns true if they are not equal.</returns>
-        public static bool operator!=(ClipDrawOptions options1, ClipDrawOptions options2)
+        public static bool operator !=(ClipDrawOptions options1, ClipDrawOptions options2)
         {
             return !options1.Equals(options2);
         }

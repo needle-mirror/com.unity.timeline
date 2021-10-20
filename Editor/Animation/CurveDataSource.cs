@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
                 if (c.curve.length > 0)
                     AnimationUtility.SetEditorCurve(animationClip, c.binding, c.curve);
                 else
-                    RemoveCurves(new[] {c.binding});
+                    RemoveCurves(new[] { c.binding });
                 c.changed = false;
             }
         }

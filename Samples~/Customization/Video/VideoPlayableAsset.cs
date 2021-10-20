@@ -101,7 +101,7 @@ namespace Timeline.Samples
             if (videoClip == null)
                 return null;
 
-            GameObject gameObject = new GameObject(videoClip.name) {hideFlags = HideFlags.HideAndDontSave};
+            GameObject gameObject = new GameObject(videoClip.name) { hideFlags = HideFlags.HideAndDontSave };
             VideoPlayer videoPlayer = gameObject.AddComponent<VideoPlayer>();
             videoPlayer.playOnAwake = false;
             videoPlayer.source = VideoSource.VideoClip;

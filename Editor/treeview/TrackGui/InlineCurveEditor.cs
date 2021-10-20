@@ -64,7 +64,7 @@ namespace UnityEditor.Timeline
 
         public IClipCurveEditorOwner currentCurveEditor
         {
-            get { return m_LastSelectionWasClip ? (IClipCurveEditorOwner)m_LastSelectedClipGUI : (IClipCurveEditorOwner)m_TrackGUI;  }
+            get { return m_LastSelectionWasClip ? (IClipCurveEditorOwner)m_LastSelectedClipGUI : (IClipCurveEditorOwner)m_TrackGUI; }
         }
 
         public InlineCurveEditor(TimelineTrackGUI trackGUI)

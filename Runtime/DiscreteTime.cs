@@ -146,42 +146,42 @@ namespace UnityEngine.Timeline
             return new DiscreteTime(time);
         }
 
-        public static bool operator==(DiscreteTime lhs, DiscreteTime rhs)
+        public static bool operator ==(DiscreteTime lhs, DiscreteTime rhs)
         {
             return lhs.m_DiscreteTime == rhs.m_DiscreteTime;
         }
 
-        public static bool operator!=(DiscreteTime lhs, DiscreteTime rhs)
+        public static bool operator !=(DiscreteTime lhs, DiscreteTime rhs)
         {
             return !(lhs == rhs);
         }
 
-        public static bool operator>(DiscreteTime lhs, DiscreteTime rhs)
+        public static bool operator >(DiscreteTime lhs, DiscreteTime rhs)
         {
             return lhs.m_DiscreteTime > rhs.m_DiscreteTime;
         }
 
-        public static bool operator<(DiscreteTime lhs, DiscreteTime rhs)
+        public static bool operator <(DiscreteTime lhs, DiscreteTime rhs)
         {
             return lhs.m_DiscreteTime < rhs.m_DiscreteTime;
         }
 
-        public static bool operator<=(DiscreteTime lhs, DiscreteTime rhs)
+        public static bool operator <=(DiscreteTime lhs, DiscreteTime rhs)
         {
             return lhs.m_DiscreteTime <= rhs.m_DiscreteTime;
         }
 
-        public static bool operator>=(DiscreteTime lhs, DiscreteTime rhs)
+        public static bool operator >=(DiscreteTime lhs, DiscreteTime rhs)
         {
             return lhs.m_DiscreteTime >= rhs.m_DiscreteTime;
         }
 
-        public static DiscreteTime operator+(DiscreteTime lhs, DiscreteTime rhs)
+        public static DiscreteTime operator +(DiscreteTime lhs, DiscreteTime rhs)
         {
             return new DiscreteTime(lhs.m_DiscreteTime + rhs.m_DiscreteTime);
         }
 
-        public static DiscreteTime operator-(DiscreteTime lhs, DiscreteTime rhs)
+        public static DiscreteTime operator -(DiscreteTime lhs, DiscreteTime rhs)
         {
             return new DiscreteTime(lhs.m_DiscreteTime - rhs.m_DiscreteTime);
         }

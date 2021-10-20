@@ -21,7 +21,7 @@ namespace UnityEditor.Timeline
 
         public static void Bind(PlayableDirector director, TrackAsset bindTo, Object objectToBind)
         {
-            if (director == null || bindTo == null  || TimelineWindow.instance == null)
+            if (director == null || bindTo == null || TimelineWindow.instance == null)
                 return;
 
             if (director.GetGenericBinding(bindTo) == objectToBind)
@@ -123,7 +123,7 @@ namespace UnityEditor.Timeline
                 null);
 
             bindMenu.AddSeparator("");
-            bindMenu.AddItem(EditorGUIUtility.TrTextContent("Cancel"), false, userData => {}, null);
+            bindMenu.AddItem(EditorGUIUtility.TrTextContent("Cancel"), false, userData => { }, null);
             bindMenu.ShowAsContext();
         }
     }

@@ -12,7 +12,7 @@ namespace UnityEditor.Timeline.Actions
         static bool s_ShowActionTriggeredByShortcut = false;
 
         public static readonly IReadOnlyList<TimelineAction> TimelineActions = InstantiateClassesOfType<TimelineAction>();
-        public static readonly IReadOnlyList<ClipAction> ClipActions =  InstantiateClassesOfType<ClipAction>();
+        public static readonly IReadOnlyList<ClipAction> ClipActions = InstantiateClassesOfType<ClipAction>();
         public static readonly IReadOnlyList<TrackAction> TrackActions = InstantiateClassesOfType<TrackAction>();
         public static readonly IReadOnlyList<MarkerAction> MarkerActions = InstantiateClassesOfType<MarkerAction>();
 
@@ -122,7 +122,7 @@ namespace UnityEditor.Timeline.Actions
 
         static void BuildMenu(MarkerAction action, IEnumerable<IMarker> markers, List<MenuActionItem> menuItems)
         {
-            BuildMenu(action,  action.Validate(markers), () => ExecuteMarkerAction(action, markers), menuItems);
+            BuildMenu(action, action.Validate(markers), () => ExecuteMarkerAction(action, markers), menuItems);
         }
 
         static void BuildMenu(IAction action, ActionValidity validity, GenericMenu.MenuFunction executeFunction, List<MenuActionItem> menuItems)

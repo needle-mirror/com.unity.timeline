@@ -17,7 +17,7 @@ namespace UnityEditor.Timeline.Signals
 
         SignalEmitter signalEmitterContext
         {
-            get { return m_Context as SignalEmitter;}
+            get { return m_Context as SignalEmitter; }
         }
 
         void OnEnable()

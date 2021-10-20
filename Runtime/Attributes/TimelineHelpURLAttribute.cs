@@ -40,7 +40,7 @@ namespace UnityEngine.Timeline
     [Conditional("UNITY_EDITOR")]
     class TimelineHelpURLAttribute : Attribute
     {
-        public TimelineHelpURLAttribute(Type type) {}
+        public TimelineHelpURLAttribute(Type type) { }
     }
 #endif
 }

@@ -113,10 +113,10 @@ namespace UnityEditor.Timeline
             if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null)) return false;
             if (ReferenceEquals(lhs, rhs)) return true;
 
-            return lhs.trackInstanceID  == rhs.trackInstanceID &&
-                lhs.trackHash        == rhs.trackHash &&
-                lhs.clipIndex        == rhs.clipIndex &&
-                lhs.clipHash         == rhs.clipHash &&
+            return lhs.trackInstanceID == rhs.trackInstanceID &&
+                lhs.trackHash == rhs.trackHash &&
+                lhs.clipIndex == rhs.clipIndex &&
+                lhs.clipHash == rhs.clipHash &&
                 lhs.subDirectorIndex == rhs.subDirectorIndex;
         }
 

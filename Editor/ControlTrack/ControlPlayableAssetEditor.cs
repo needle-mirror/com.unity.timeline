@@ -8,7 +8,7 @@ namespace UnityEditor.Timeline
     [CustomTimelineEditor(typeof(ControlPlayableAsset))]
     class ControlPlayableAssetEditor : ClipEditor
     {
-        static readonly Texture2D[] s_ParticleSystemIcon = {AssetPreview.GetMiniTypeThumbnail(typeof(ParticleSystem))};
+        static readonly Texture2D[] s_ParticleSystemIcon = { AssetPreview.GetMiniTypeThumbnail(typeof(ParticleSystem)) };
 
         public override ClipDrawOptions GetClipOptions(TimelineClip clip)
         {

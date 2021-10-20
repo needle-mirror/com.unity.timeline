@@ -24,14 +24,14 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Called before a track is serialized.
         /// </summary>
-        protected virtual void OnBeforeTrackSerialize() {}
+        protected virtual void OnBeforeTrackSerialize() { }
 
         /// <summary>
         /// Called after a track has been deserialized.
         /// </summary>
-        protected virtual void OnAfterTrackDeserialize() {}
+        protected virtual void OnAfterTrackDeserialize() { }
 
-        internal virtual void OnUpgradeFromVersion(int oldVersion) {}
+        internal virtual void OnUpgradeFromVersion(int oldVersion) { }
 
         /// <summary>
         /// Called before Unity serializes this object.
@@ -80,10 +80,10 @@ namespace UnityEngine.Timeline
 
         //fields that are used for upgrading should be put here, ideally as read-only
         void UpgradeToLatestVersion()
-        {}
+        { }
 
         //upgrade code should go into this class
         static class TrackAssetUpgrade
-        {}
+        { }
     }
 }

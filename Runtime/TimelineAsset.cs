@@ -340,7 +340,7 @@ namespace UnityEngine.Timeline
             {
                 if (m_CacheFlattenedTracks == null)
                 {
-                    var list =  new List<TrackAsset>(m_Tracks.Count * 2);
+                    var list = new List<TrackAsset>(m_Tracks.Count * 2);
                     UpdateRootTrackCache();
 
                     list.AddRange(m_CacheRootTracks);
@@ -400,9 +400,9 @@ namespace UnityEngine.Timeline
         public override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
             bool autoRebalanceTree = false;
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             autoRebalanceTree = true;
-            #endif
+#endif
 
             // only create outputs if we are not nested
             bool createOutputs = graph.GetPlayableCount() == 0;
@@ -438,12 +438,12 @@ namespace UnityEngine.Timeline
             if (m_Tracks == null)
                 m_Tracks = new List<ScriptableObject>();
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             // case 1280331 -- embedding the timeline asset inside a prefab will create a temporary non-persistent version of an asset
             // setting the track parents to this will change persistent tracks
             if (!UnityEditor.EditorUtility.IsPersistent(this))
                 return;
-            #endif
+#endif
 
             // validate the array. DON'T remove Unity null objects, just actual null objects
             for (int i = m_Tracks.Count - 1; i >= 0; i--)

@@ -94,9 +94,9 @@ namespace UnityEditor.Timeline
             m_TreeView.Frame(item.id, true, false, true);
         }
 
-        public TimelineDragging timelineDragging { get {return m_TreeView.dragging as TimelineDragging; }}
+        public TimelineDragging timelineDragging { get { return m_TreeView.dragging as TimelineDragging; } }
 
-        public TimelineTreeViewGUI(TimelineWindow sequencerWindow, TimelineAsset timeline,  Rect rect)
+        public TimelineTreeViewGUI(TimelineWindow sequencerWindow, TimelineAsset timeline, Rect rect)
         {
             m_Timeline = timeline;
             m_Window = sequencerWindow;

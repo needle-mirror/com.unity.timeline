@@ -72,7 +72,8 @@ namespace Samples.GameplaySequence
 
             m_BodyStyle = new GUIStyle(EditorStyles.label)
             {
-                wordWrap = true, fontSize = 14
+                wordWrap = true,
+                fontSize = 14
             };
 
             m_TitleStyle = new GUIStyle(m_BodyStyle)

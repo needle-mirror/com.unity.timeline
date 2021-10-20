@@ -85,7 +85,7 @@ namespace UnityEditor.Timeline
         /// <param name="options1">The first object.</param>
         /// <param name="options2">The second object.</param>
         /// <returns>Returns true if they are equal.</returns>
-        public static bool operator==(MarkerDrawOptions options1, MarkerDrawOptions options2)
+        public static bool operator ==(MarkerDrawOptions options1, MarkerDrawOptions options2)
         {
             return options1.Equals(options2);
         }
@@ -96,7 +96,7 @@ namespace UnityEditor.Timeline
         /// <param name="options1">The first object.</param>
         /// <param name="options2">The second object.</param>
         /// <returns>Returns true if they are not equal.</returns>
-        public static bool operator!=(MarkerDrawOptions options1, MarkerDrawOptions options2)
+        public static bool operator !=(MarkerDrawOptions options1, MarkerDrawOptions options2)
         {
             return !options1.Equals(options2);
         }
@@ -216,7 +216,7 @@ namespace UnityEditor.Timeline
         /// <param name="region1">The first object.</param>
         /// <param name="region2">The second object.</param>
         /// <returns>Returns true if they are equal.</returns>
-        public static bool operator==(MarkerOverlayRegion region1, MarkerOverlayRegion region2)
+        public static bool operator ==(MarkerOverlayRegion region1, MarkerOverlayRegion region2)
         {
             return region1.Equals(region2);
         }
@@ -227,7 +227,7 @@ namespace UnityEditor.Timeline
         /// <param name="region1">The first object.</param>
         /// <param name="region2">The second object.</param>
         /// <returns>Returns true if they are not equal.</returns>
-        public static bool operator!=(MarkerOverlayRegion region1, MarkerOverlayRegion region2)
+        public static bool operator !=(MarkerOverlayRegion region1, MarkerOverlayRegion region2)
         {
             return !region1.Equals(region2);
         }
