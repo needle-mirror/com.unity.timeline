@@ -24,8 +24,8 @@ namespace UnityEditor.Timeline
 
             var editor = ScriptableObject.CreateInstance<EditorClip>();
             editor.hideFlags |= HideFlags.HideInHierarchy | HideFlags.DontSaveInEditor;
-            editor.lastHash = -1;
             editor.clip = clip;
+            editor.lastHash = editor.GetHashCode();
             s_EditorCache[clip] = editor;
 
             return editor;

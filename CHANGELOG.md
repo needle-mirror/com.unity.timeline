@@ -2,6 +2,23 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.7.0-pre.2] - 2022-01-20
+
+### Changed
+
+- [Requires Unity 2021.2] Fixed an issue where the last frame of a Timeline was not guaranteed to be executed when the Playable Director had Wrap Mode `None`.
+
+### Fixed
+
+- Fixed an issue where unused `TrackAsset`s would be saved in the `TimelineAsset` file after removing tracks.
+- Fixed an issue where grouped markers at time zero would sometimes disappear after clicking on them (https://issuetracker.unity3d.com/issues/timeline-markers-disappear-when-double-clicking-on-stacked-markers-at-0-frames)
+- Fixed an issue where selecting a prefab in the project view could trigger an exception when parenting the prefab to a prefab sub-object. (1386125)
+- Fixed an issue where duplicated or pasted tracks that were part of group tracks would lose their associated bindings (https://issuetracker.unity3d.com/issues/duplicated-track-groups-lose-their-nester-tracks-game-object-assignments)
+- Fixed an issue where pasting a track after changing scenes would lose PlayableAsset references in clips (https://issuetracker.unity3d.com/issues/animation-tracks-copy-loses-its-properties-when-its-pasted-from-another-scene)
+- Fixed an issue where the Timeline Window play range would not be serialized and persisted.
+- Fixed an issue where clicking on a clip during Play Mode would evaluate the Timeline unnecessarily. (https://issuetracker.unity3d.com/issues/timeline-rebuilds-playable-graph-when-selecting-a-timeline-clip-during-play-mode)
+- Fixed an issue where control clips would behave inconsistently if the clip was set to hold, but the PlayableDirector was set to not extrapolate. (https://issuetracker.unity3d.com/product/unity/issues/guid/1375771)
+
 ## [1.7.0-pre.1] - 2021-08-05
 
 ### Added

@@ -2,6 +2,7 @@ using System;
 
 namespace UnityEditor.Timeline
 {
+    [Serializable]
     struct PlayRange : IEquatable<PlayRange>
     {
         public bool Equals(PlayRange other)

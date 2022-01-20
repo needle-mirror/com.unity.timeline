@@ -6,10 +6,9 @@ namespace UnityEngine.Timeline
 {
     static class NotificationUtilities
     {
-        public static ScriptPlayable<TimeNotificationBehaviour> CreateNotificationsPlayable(PlayableGraph graph, IEnumerable<IMarker> markers, GameObject go)
+        public static ScriptPlayable<TimeNotificationBehaviour> CreateNotificationsPlayable(PlayableGraph graph, IEnumerable<IMarker> markers, double duration, DirectorWrapMode extrapolationMode)
         {
             var notificationPlayable = ScriptPlayable<TimeNotificationBehaviour>.Null;
-            var director = go.GetComponent<PlayableDirector>();
             foreach (var e in markers)
             {
                 var notif = e as INotification;
@@ -19,11 +18,11 @@ namespace UnityEngine.Timeline
                 if (notificationPlayable.Equals(ScriptPlayable<TimeNotificationBehaviour>.Null))
                 {
                     notificationPlayable = TimeNotificationBehaviour.Create(graph,
-                        director.playableAsset.duration, director.extrapolationMode);
+                        duration, extrapolationMode);
                 }
 
                 var time = (DiscreteTime)e.time;
-                var tlDuration = (DiscreteTime)director.playableAsset.duration;
+                var tlDuration = (DiscreteTime)duration;
                 if (time >= tlDuration && time <= tlDuration.OneTickAfter() && tlDuration != 0)
                 {
                     time = tlDuration.OneTickBefore();

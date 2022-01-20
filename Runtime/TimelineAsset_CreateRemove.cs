@@ -33,10 +33,6 @@ namespace UnityEngine.Timeline
                     throw new InvalidOperationException("Cannot assign a child of type " + type.Name + " to a parent of type " + parent.GetType().Name);
             }
 
-
-            var actualParent = parent != null ? parent as PlayableAsset : this;
-            TimelineUndo.PushUndo(actualParent, "Create Track");
-
             var baseName = name;
             if (string.IsNullOrEmpty(baseName))
             {
@@ -53,11 +49,7 @@ namespace UnityEngine.Timeline
                 trackName = TimelineCreateUtilities.GenerateUniqueActorName(trackObjects, baseName);
 
             TrackAsset newTrack = AllocateTrack(parent, trackName, type);
-            if (newTrack != null)
-            {
-                newTrack.name = trackName;
-                TimelineCreateUtilities.SaveAssetIntoObject(newTrack, actualParent);
-            }
+
             return newTrack;
         }
 
@@ -205,7 +197,7 @@ namespace UnityEngine.Timeline
             }
         }
 
-        internal TrackAsset AllocateTrack(TrackAsset trackAssetParent, string trackName, Type trackType)
+        TrackAsset AllocateTrack(TrackAsset trackAssetParent, string trackName, Type trackType)
         {
             if (trackAssetParent != null && trackAssetParent.timelineAsset != this)
                 throw new InvalidOperationException("Addtrack cannot parent to a track not in the Timeline");
@@ -216,9 +208,16 @@ namespace UnityEngine.Timeline
             var asset = (TrackAsset)CreateInstance(trackType);
             asset.name = trackName;
 
+            const string createTrackUndoName = "Create Track";
+
+            PlayableAsset parent = trackAssetParent != null ? trackAssetParent as PlayableAsset : this;
+            TimelineCreateUtilities.SaveAssetIntoObject(asset, parent);
+            TimelineUndo.RegisterCreatedObjectUndo(asset, createTrackUndoName);
+            TimelineUndo.PushUndo(parent, createTrackUndoName);
+
             if (trackAssetParent != null)
                 trackAssetParent.AddChild(asset);
-            else
+            else //TimelineAsset is the parent
                 AddTrackInternal(asset);
 
             return asset;
