@@ -10,7 +10,7 @@ namespace UnityEditor.Timeline
     {
         public event System.Action onStartDrag;
 
-        int m_ProjectedClipHash;
+        int m_ProjectedClipHash = -1;
         int m_MarkerHash;
         bool m_Selectable;
 

@@ -97,6 +97,10 @@ namespace UnityEditor.Timeline
                 TimelineCreateUtilities.SaveAssetIntoObject(clone, containerAsset);
                 EditorUtility.SetDirty(containerAsset);
             }
+            else
+            {
+                clone.hideFlags |= newOwner.hideFlags & HideFlags.DontSave;
+            }
         }
 
         static AnimationClip CloneAnimationClip(AnimationClip clip, Object owner)

@@ -195,9 +195,15 @@ namespace UnityEditor.Timeline
             foreach (var track in trackData)
             {
                 var newTrack = track.item.Duplicate(TimelineEditor.clipboard.exposedPropertyTable, TimelineEditor.inspectedDirector, TimelineEditor.inspectedAsset);
-                if (track.binding != null)
+                var newTracks = newTrack.GetFlattenedChildTracks().Append(newTrack);
+
+                var bindingIt = track.bindings.GetEnumerator();
+                var newTrackIt = newTracks.GetEnumerator();
+
+                while (bindingIt.MoveNext() && newTrackIt.MoveNext())
                 {
-                    BindingUtility.Bind(TimelineEditor.inspectedDirector, newTrack, track.binding);
+                    if (bindingIt.Current != null)
+                        BindingUtility.Bind(TimelineEditor.inspectedDirector, newTrackIt.Current, bindingIt.Current);
                 }
 
                 SelectionManager.Add(newTrack);

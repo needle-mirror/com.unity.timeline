@@ -433,6 +433,9 @@ namespace UnityEngine.Timeline
             }
         }
 
+#if UNITY_EDITOR
+        internal event Action AssetModifiedOnDisk;
+#endif
         void __internalAwake()
         {
             if (m_Tracks == null)
@@ -460,6 +463,10 @@ namespace UnityEngine.Timeline
                 }
 #endif
             }
+
+#if UNITY_EDITOR
+            AssetModifiedOnDisk?.Invoke();
+#endif
         }
 
         /// <summary>

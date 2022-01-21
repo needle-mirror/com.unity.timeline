@@ -449,7 +449,7 @@ namespace UnityEditor.Timeline
 
         public void RebuildGraphIfNecessary(bool evaluate = true)
         {
-            if (state == null || state.editSequence.director == null || state.editSequence.asset == null)
+            if (state == null || currentMode.mode != TimelineModes.Active || state.editSequence.director == null || state.editSequence.asset == null)
                 return;
 
             if (state.rebuildGraph)

@@ -72,7 +72,10 @@ namespace UnityEngine.Timeline
                 DetectDiscontinuity(playable, info);
 
             SyncSpeed(info.effectiveSpeed);
-            SyncPlayState(playable.GetGraph(), playable.GetTime());
+            SyncStart(playable.GetGraph(), playable.GetTime());
+#if !UNITY_2021_2_OR_NEWER
+            SyncStop(playable.GetGraph(), playable.GetTime());
+#endif
         }
 
         /// <summary>
@@ -132,6 +135,9 @@ namespace UnityEngine.Timeline
             }
 
             m_SyncTime = false;
+#if UNITY_2021_2_OR_NEWER
+            SyncStop(playable.GetGraph(), playable.GetTime());
+#endif
         }
 
 #if UNITY_EDITOR
@@ -160,28 +166,30 @@ namespace UnityEngine.Timeline
             }
         }
 
-        void SyncPlayState(PlayableGraph graph, double playableTime)
+        void SyncStart(PlayableGraph graph, double time)
         {
-            bool expectedFinished = (playableTime >= m_AssetDuration) && director.extrapolationMode == DirectorWrapMode.None;
-            if (graph.IsPlaying() && !expectedFinished)
-            {
-                if (director.state == PlayState.Playing)
-                    return;
+            if (director.state == PlayState.Playing
+                || !graph.IsPlaying()
+                || (director.extrapolationMode == DirectorWrapMode.None && time > m_AssetDuration))
+                return;
 #if TIMELINE_FRAMEACCURATE
-                if (graph.IsMatchFrameRateEnabled())
-                    director.Play(graph.GetFrameRate());
-                else
-                    director.Play();
-#else
-                director.Play();
-#endif
-            }
+            if (graph.IsMatchFrameRateEnabled())
+                director.Play(graph.GetFrameRate());
             else
-            {
-                if (director.state == PlayState.Paused)
-                    return;
+                director.Play();
+#else
+            director.Play();
+#endif
+        }
+
+        void SyncStop(PlayableGraph graph, double time)
+        {
+            if (director.state == PlayState.Paused)
+                return;
+
+            bool expectedFinished = director.extrapolationMode == DirectorWrapMode.None && time > m_AssetDuration;
+            if (expectedFinished || !graph.IsPlaying())
                 director.Pause();
-            }
         }
 
         bool DetectDiscontinuity(Playable playable, FrameData info)
@@ -194,12 +202,18 @@ namespace UnityEngine.Timeline
             double expectedTime = playable.GetTime();
             if (playable.GetTime() >= m_AssetDuration)
             {
-                if (director.extrapolationMode == DirectorWrapMode.None)
-                    return false;
-                if (director.extrapolationMode == DirectorWrapMode.Hold)
-                    expectedTime = m_AssetDuration;
-                else if (m_AssetDuration > float.Epsilon) // loop
-                    expectedTime = expectedTime % m_AssetDuration;
+                switch (director.extrapolationMode)
+                {
+                    case DirectorWrapMode.None:
+                        expectedTime = m_AssetDuration;
+                        break;
+                    case DirectorWrapMode.Hold:
+                        expectedTime = m_AssetDuration;
+                        break;
+                    case DirectorWrapMode.Loop:
+                        expectedTime %= m_AssetDuration;
+                        break;
+                }
             }
 
             if (!Mathf.Approximately((float)expectedTime, (float)director.time))
@@ -227,7 +241,7 @@ namespace UnityEngine.Timeline
                     director.time = Math.Max(0, playable.GetTime() % duration);
                     break;
                 case DirectorWrapMode.None:
-                    director.time = playable.GetTime();
+                    director.time = Math.Min(duration, Math.Max(0, playable.GetTime()));
                     break;
             }
         }

@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -400,26 +401,50 @@ namespace UnityEditor.Timeline
             foreach (var track in TrackExtensions.FilterTracks(tracks))
             {
                 var newTrack = track.Duplicate(TimelineEditor.inspectedDirector, TimelineEditor.inspectedDirector);
+                //Add all duplicated tracks to selection
                 SelectionManager.Add(newTrack);
                 foreach (var childTrack in newTrack.GetFlattenedChildTracks())
                 {
                     SelectionManager.Add(childTrack);
                 }
 
+                //Duplicate bindings for tracks and subtracks
                 if (TimelineEditor.inspectedDirector != null)
                 {
-                    var binding = TimelineEditor.inspectedDirector.GetGenericBinding(track);
-                    if (binding != null)
-                    {
-                        TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, L10n.Tr("Duplicate"));
-                        TimelineEditor.inspectedDirector.SetGenericBinding(newTrack, binding);
-                    }
+                    DuplicateBindings(track, newTrack, TimelineEditor.inspectedDirector);
                 }
             }
 
             TimelineEditor.Refresh(RefreshReason.ContentsAddedOrRemoved);
 
             return true;
+        }
+
+        internal static void DuplicateBindings(TrackAsset track, TrackAsset newTrack, PlayableDirector director)
+        {
+            var originalTracks = track.GetFlattenedChildTracks().Append(track);
+            var newTracks = newTrack.GetFlattenedChildTracks().Append(newTrack);
+            var toBind = new List<Tuple<TrackAsset, Object>>();
+
+            // Collect all track bindings to duplicate
+            var originalIt = originalTracks.GetEnumerator();
+            var newIt = newTracks.GetEnumerator();
+            while (originalIt.MoveNext() && newIt.MoveNext())
+            {
+                var binding = director.GetGenericBinding(originalIt.Current);
+                if (binding != null)
+                    toBind.Add(new Tuple<TrackAsset, Object>(newIt.Current, binding));
+            }
+
+            //Only create Director undo if there are bindings to duplicate
+            if (toBind.Count > 0)
+                TimelineUndo.PushUndo(TimelineEditor.inspectedDirector, L10n.Tr("Duplicate"));
+
+            //Assign bindings for all tracks after undo.
+            foreach (var binding in toBind)
+            {
+                TimelineEditor.inspectedDirector.SetGenericBinding(binding.Item1, binding.Item2);
+            }
         }
     }
 

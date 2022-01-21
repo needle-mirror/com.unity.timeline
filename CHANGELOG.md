@@ -2,7 +2,24 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.4] - 2022-01-21
+
+### Fixed
+
+- [Requires Unity 2021.2] Fixed an issue where the last frame of a Timeline was not guaranteed to be executed when the Playable Director had Wrap Mode `None`.
+- Fixed an issue where the Timeline Window would not work correctly with read-only source controlled files.
+- Fixed an issue where unused `TrackAsset`s would be saved in the `TimelineAsset` file after removing tracks.
+- Fixed an issue where the a MissingReferenceException would be thrown when an IAnimationWindowPreview component previewed by Timeline would be destroyed. (1367640)
+- Fixed an issue where grouped markers at time zero would sometimes disappear after clicking on them (https://issuetracker.unity3d.com/issues/timeline-markers-disappear-when-double-clicking-on-stacked-markers-at-0-frames)
+- Fixed an issue where selecting a prefab in the project view could trigger an exception when parenting the prefab to a prefab sub-object. (1386125)
+- Fixed an issue where duplicated or pasted tracks that were part of group tracks would lose their associated bindings (https://issuetracker.unity3d.com/issues/duplicated-track-groups-lose-their-nester-tracks-game-object-assignments)
+- Fixed an issue where pasting a track after changing scenes would lose PlayableAsset references in clips (https://issuetracker.unity3d.com/issues/animation-tracks-copy-loses-its-properties-when-its-pasted-from-another-scene)
+- Fixed an issue where the "Match Content" action would not apply on all selected clips.
+- Fixed an issue where clicking on a clip during Play Mode would evaluate the Timeline unnecessarily. (https://issuetracker.unity3d.com/issues/timeline-rebuilds-playable-graph-when-selecting-a-timeline-clip-during-play-mode)
+- Fixed an issue where control clips would behave inconsistently if the clip was set to hold, but the PlayableDirector was set to not extrapolate. (https://issuetracker.unity3d.com/product/unity/issues/guid/1375771)
+
 ## [1.6.3] - 2021-10-20
+
 ### Fixed
 - Fixed an issue where the Timeline Window would not work correctly with read-only source controlled files.
 - Fixed an issue where the a MissingReferenceException would be thrown when an IAnimationWindowPreview component previewed by Timeline would be destroyed. (https://issuetracker.unity3d.com/issues/missingreferenceexception-is-thrown-when-using-rigbuilder-inside-a-prefab)

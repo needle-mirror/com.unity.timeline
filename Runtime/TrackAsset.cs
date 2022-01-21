@@ -751,7 +751,14 @@ namespace UnityEngine.Timeline
         {
             s_BuildData.markerList.Clear();
             GatherNotifications(s_BuildData.markerList);
-            var notificationPlayable = NotificationUtilities.CreateNotificationsPlayable(graph, s_BuildData.markerList, go);
+            DirectorWrapMode extrapolationMode = DirectorWrapMode.None;
+            if (go.TryGetComponent(out PlayableDirector director))
+            {
+                extrapolationMode = director.extrapolationMode;
+            }
+
+            var duration = timelineAsset.duration;
+            var notificationPlayable = NotificationUtilities.CreateNotificationsPlayable(graph, s_BuildData.markerList, duration, extrapolationMode);
             if (notificationPlayable.IsValid())
             {
                 notificationPlayable.GetBehaviour().timeSource = timelinePlayable;
