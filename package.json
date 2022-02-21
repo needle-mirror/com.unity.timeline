@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.7.0-pre.2",
+  "version": "1.7.0",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -17,16 +17,19 @@
     "com.unity.modules.audio": "1.0.0",
     "com.unity.modules.particlesystem": "1.0.0"
   },
+  "upm": {
+    "changelog": "### Added,- Added TimelinePlaybackControls Editor API:,    - The Playback controls API lets you drive the Timeline Window playback controls from code. From this API, you can,        - Change the current Time/Frame,        - Query the current Time/Frame,        - Start/Stop playback of the currently shown Timeline,        - Go to First or Last frame,        - Go to previous or next frame.,    - Use it to accelerate your workflow, or build your own workflows on top of Timeline.,### Changed,- [Requires Unity 2021.2] Fixed an issue where the last frame of a Timeline was not guaranteed to be executed when the Playable Director had Wrap Mode `None`.,- License file header changed from \"Timeline copyright © 2021 Unity Technologies ApS\" to \"Timeline copyright © 2021 Unity Technologies\",### Fixed,- Fixed an issue where unused `TrackAsset`s would be saved in the `TimelineAsset` file after removing tracks.,- Fixed an issue where grouped markers at time zero would sometimes disappear after clicking on them (https://issuetracker.unity3d.com/issues/timeline-markers-disappear-when-double-clicking-on-stacked-markers-at-0-frames),- Fixed an issue where selecting a prefab in the project view could trigger an exception when parenting the prefab to a prefab sub-object. (1386125),- Fixed an issue where duplicated or pasted tracks that were part of group tracks would lose their associated bindings (https://issuetracker.unity3d.com/issues/duplicated-track-groups-lose-their-nester-tracks-game-object-assignments),- Fixed an issue where pasting a track after changing scenes would lose PlayableAsset references in clips (https://issuetracker.unity3d.com/issues/animation-tracks-copy-loses-its-properties-when-its-pasted-from-another-scene),- Fixed an issue where the Timeline Window play range would not be serialized and persisted.,- Fixed an issue where clicking on a clip during Play Mode would evaluate the Timeline unnecessarily. (https://issuetracker.unity3d.com/issues/timeline-rebuilds-playable-graph-when-selecting-a-timeline-clip-during-play-mode),- Fixed an issue where control clips would behave inconsistently if the clip was set to hold, but the PlayableDirector was set to not extrapolate. (https://issuetracker.unity3d.com/product/unity/issues/guid/1375771),- Fixed issue where a warning would appear in 2022.1 regarding `AnimationWindowState.SnapMode`.,- [Requires Unity 2021.2] Fixed an issue where the last frame of a Timeline was not guaranteed to be executed when the Playable Director had Wrap Mode `None`.,- Fixed an issue where the Timeline Window's UI would not update until the user clicked in the window if the TimelineAsset's file contents were changed on disk, such as during a version control operation [1357110](https://issuetracker.unity3d.com/product/unity/issues/guid/1357110/)"
+  },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.7.0-pre.2"
+    "com.unity.timeline.tests": "1.7.0"
   },
   "upmCi": {
-    "footprint": "725b6e89cc5e7b8cdb3957b3bcb3206e9c04b2f1"
+    "footprint": "3222a8d6fd7317bee575c436c18b851bc6440902"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "5c87a8a9427d5e2632b8a972173a0939c9be3e67"
+    "revision": "18c34bd9eba2f8e47b611e9ff4269260059894ba"
   },
   "samples": [
     {

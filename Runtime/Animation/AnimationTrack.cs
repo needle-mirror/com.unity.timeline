@@ -781,7 +781,11 @@ namespace UnityEngine.Timeline
 
         static AnimationLayerMixerPlayable CreateGroupMixer(PlayableGraph graph, GameObject go, int inputCount)
         {
+#if UNITY_2022_2_OR_NEWER
+            return AnimationLayerMixerPlayable.Create(graph, inputCount, false);
+#else
             return AnimationLayerMixerPlayable.Create(graph, inputCount);
+#endif
         }
 
         Playable CreateInfiniteTrackPlayable(PlayableGraph graph, GameObject go, IntervalTree<RuntimeElement> tree, AppliedOffsetMode mode)
