@@ -14,6 +14,7 @@ using UnityEngine.Timeline;
 using UnityEngine.Experimental.Animations;
 #endif
 using UnityEngine.Animations;
+using Object = System.Object;
 
 namespace UnityEditor.Timeline
 {
@@ -54,7 +55,7 @@ namespace UnityEditor.Timeline
         readonly PropertyCollector m_PropertyCollector = new PropertyCollector();
 
         static AnimationModeDriver s_PreviewDriver;
-        List<Animator> m_PreviewedAnimators;
+        Dictionary<UnityEngine.Object, Animator> m_PreviewedAnimators;
         List<Component> m_PreviewedComponents;
         IEnumerable<IAnimationWindowPreview> previewedComponents =>
             m_PreviewedComponents.Where(component => component != null).Cast<IAnimationWindowPreview>();
@@ -1012,9 +1013,9 @@ namespace UnityEditor.Timeline
             if (previewedDirectors == null)
                 return;
 
-            m_PreviewedAnimators = TimelineUtility.GetBindingsFromDirectors<Animator>(previewedDirectors).ToList();
+            m_PreviewedAnimators = TimelineUtility.GetBindingPairsFromDirectors<Animator>(previewedDirectors);
 
-            m_PreviewedComponents = m_PreviewedAnimators
+            m_PreviewedComponents = m_PreviewedAnimators.Values
                 .SelectMany(animator => animator.GetComponents<IAnimationWindowPreview>()
                     .Cast<Component>())
                 .ToList();
@@ -1023,6 +1024,50 @@ namespace UnityEditor.Timeline
             {
                 previewedComponent.StartPreview();
             }
+#if UNITY_2022_2_OR_NEWER
+            PrefabUtility.allowRecordingPrefabPropertyOverridesFor += AllowRecordingPrefabPropertyOverridesFor;
+#endif //UNITY_2022_2_OR_NEWER
+        }
+
+        internal bool AllowRecordingPrefabPropertyOverridesFor(Object componentOrGameObject)
+        {
+            if (componentOrGameObject == null)
+                throw new ArgumentNullException(nameof(componentOrGameObject));
+
+            if (m_PreviewedAnimators == null || m_PreviewedAnimators.Count == 0)
+                return true;
+
+            GameObject inputGameObject = null;
+            if (componentOrGameObject is Component component)
+            {
+                inputGameObject = component.gameObject;
+            }
+            else if (componentOrGameObject is GameObject gameObject)
+            {
+                inputGameObject = gameObject;
+            }
+            else
+            {
+                return true;
+            }
+
+
+            //If the gameObject is a descendent of any of the armed Animators, disallow the creation of prefab overrides
+            var armedAnimators = m_PreviewedAnimators.
+                Where(pair =>
+                    pair.Key is TrackAsset trackAsset &&
+                    m_ArmedTracks.ContainsKey(trackAsset))
+                .Select(pair => pair.Value);
+
+            foreach (var animator in armedAnimators)
+            {
+                if (inputGameObject.transform.IsChildOf(animator.transform))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         void OnStopPreview()
@@ -1039,7 +1084,7 @@ namespace UnityEditor.Timeline
 
             if (m_PreviewedAnimators != null)
             {
-                foreach (var previewAnimator in m_PreviewedAnimators)
+                foreach (var previewAnimator in m_PreviewedAnimators.Values)
                 {
                     if (previewAnimator != null)
                     {
@@ -1048,6 +1093,10 @@ namespace UnityEditor.Timeline
                 }
                 m_PreviewedAnimators = null;
             }
+
+#if UNITY_2022_2_OR_NEWER
+            PrefabUtility.allowRecordingPrefabPropertyOverridesFor -= AllowRecordingPrefabPropertyOverridesFor;
+#endif //UNITY_2022_2_OR_NEWER
         }
 
         internal void ProcessStartFramePendingUpdates()

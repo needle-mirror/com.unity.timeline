@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -17,19 +17,16 @@
     "com.unity.modules.audio": "1.0.0",
     "com.unity.modules.particlesystem": "1.0.0"
   },
-  "upm": {
-    "changelog": "### Fixed,- Fixed warnings related to meta files related to missing folders."
-  },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.7.1"
+    "com.unity.timeline.tests": "1.7.2"
   },
   "upmCi": {
-    "footprint": "43ca2d9e4177be990f278d3c4abce3f2cd895a92"
+    "footprint": "d575bbdb32dbf73496b5bd2bfa0d19c31c8cda6f"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "9cec37f449d04026a6c454de9e1bf6f34672764e"
+    "revision": "40b193547031a6a97c1fc47f71900f6690c33c6b"
   },
   "samples": [
     {

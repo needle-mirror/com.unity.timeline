@@ -13,9 +13,9 @@ namespace UnityEditor.Timeline
 {
     static class TypeUtility
     {
-        private static Type[] s_AllTrackTypes;
-        private static Type[] s_AllClipTypes;
-        private static Type[] s_MarkerTypes;
+        private static List<Type> s_AllTrackTypes;
+        private static List<Type> s_AllClipTypes;
+        private static List<Type> s_MarkerTypes;
         private static Dictionary<Type, Type[]> s_TrackTypeToVisibleClipType = new Dictionary<Type, Type[]>();
         private static Dictionary<Type, Type[]> s_TrackTypeToAllClipType = new Dictionary<Type, Type[]>();
         private static Dictionary<Type, TrackBindingTypeAttribute> s_TrackToBindingCache = new Dictionary<Type, TrackBindingTypeAttribute>();
@@ -36,6 +36,33 @@ namespace UnityEditor.Timeline
                 && !typeof(TimelineAsset).IsAssignableFrom(t);
         }
 
+        class TimelineTypeComparer : IComparer<Type>
+        {
+            public static readonly TimelineTypeComparer Instance = new TimelineTypeComparer();
+
+            public int Compare(Type x, Type y)
+            {
+                if (ReferenceEquals(x, y))
+                    return 0;
+
+                if (ReferenceEquals(null, y))
+                    return 1;
+
+                if (ReferenceEquals(null, x))
+                    return -1;
+
+                if (IsBuiltIn(x) && !IsBuiltIn(y))
+                    return -1;
+
+                if (!IsBuiltIn(x) && IsBuiltIn(y))
+                    return 1;
+
+                return string.Compare(x.AssemblyQualifiedName, y.AssemblyQualifiedName, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            TimelineTypeComparer() { }
+        }
+
         /// <summary>
         /// List of all PlayableAssets
         /// </summary>
@@ -45,7 +72,8 @@ namespace UnityEditor.Timeline
             {
                 s_AllClipTypes = TypeCache.GetTypesDerivedFrom<IPlayableAsset>().
                     Where(t => IsConcreteAsset(t)).
-                    ToArray();
+                    ToList();
+                s_AllClipTypes.Sort(TimelineTypeComparer.Instance);
             }
             return s_AllClipTypes;
         }
@@ -56,7 +84,8 @@ namespace UnityEditor.Timeline
             {
                 s_AllTrackTypes = TypeCache.GetTypesDerivedFrom<TrackAsset>()
                     .Where(x => !x.IsAbstract)
-                    .ToArray();
+                    .ToList();
+                s_AllTrackTypes.Sort(TimelineTypeComparer.Instance);
             }
 
             return s_AllTrackTypes;
@@ -262,7 +291,9 @@ namespace UnityEditor.Timeline
                         && !x.IsAbstract
                         && !x.IsGenericType
                         && !x.IsInterface)
-                    .ToArray();
+                    .ToList();
+
+                s_MarkerTypes.Sort(TimelineTypeComparer.Instance);
             }
             return s_MarkerTypes;
         }
@@ -274,7 +305,7 @@ namespace UnityEditor.Timeline
 
         public static IEnumerable<Type> GetBuiltInMarkerTypes()
         {
-            return GetAllMarkerTypes().Where(TypeUtility.IsBuiltIn);
+            return GetAllMarkerTypes().Where(IsBuiltIn);
         }
 
         public static bool DoesTrackSupportMarkerType(TrackAsset track, Type type)

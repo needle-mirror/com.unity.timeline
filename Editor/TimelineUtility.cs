@@ -273,9 +273,9 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static IEnumerable<T> GetBindingsFromDirectors<T>(IEnumerable<PlayableDirector> directors) where T : Object
+        public static Dictionary<Object, T> GetBindingPairsFromDirectors<T>(IEnumerable<PlayableDirector> directors) where T : Object
         {
-            var bindings = new HashSet<T>();
+            var bindings = new Dictionary<Object, T>();
             foreach (var director in directors)
             {
                 if (director.playableAsset == null) continue;
@@ -283,7 +283,7 @@ namespace UnityEditor.Timeline
                 {
                     var binding = director.GetGenericBinding(output.sourceObject) as T;
                     if (binding != null)
-                        bindings.Add(binding);
+                        bindings.Add(output.sourceObject, binding);
                 }
             }
             return bindings;

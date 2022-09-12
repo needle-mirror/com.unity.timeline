@@ -59,7 +59,8 @@ namespace UnityEditor.Timeline
             bool hasDifferentRoot = m_WindowState.GetCurrentSequencePath().selectionRoot != m_SerializedPath.selectionRoot;
             if (m_WindowState.GetWindow().locked && hasDifferentRoot)
                 return;
-            m_WindowState.SetCurrentSequencePath(m_SerializedPath, true);
+
+            EditorApplication.delayCall += () => { m_WindowState.SetCurrentSequencePath(m_SerializedPath, true); };
         }
 
         public void Add(TimelineAsset asset, PlayableDirector director, TimelineClip hostClip)

@@ -498,7 +498,18 @@ namespace UnityEditor.Timeline
             // PostExtrapolation
             {
                 EditorGUILayout.BeginHorizontal();
+                EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(m_PostExtrapolationModeProperty, Styles.PostExtrapolateLabel);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    ApplyModifiedProperties();
+                    //recalculate Extrapolation times to update next clip pre-extrapolation
+                    foreach (var track in m_SelectionInfo.uniqueParentTracks)
+                        Extrapolation.CalculateExtrapolationTimes(track);
+
+                    TimelineEditor.Refresh(RefreshReason.WindowNeedsRedraw);
+                }
+
                 using (new GUIMixedValueScope(m_PostExtrapolationTimeProperty.hasMultipleDifferentValues))
                     EditorGUILayout.DoubleField(m_PostExtrapolationTimeProperty.doubleValue, EditorStyles.label);
                 EditorGUILayout.EndHorizontal();

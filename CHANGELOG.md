@@ -2,6 +2,17 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.7.2] - 2022-09-12
+
+### Fixed
+
+- Fix post-extrapolation mode change not recalculating previous clip pre-extrapolation time. ([ATL-1291])
+- Fixed an issue where prefab overrides would be created when keyframing a prefab instance in Timeline. ([TB-108])
+- Fixed an issue where a warning would be raised when using the undo history to undo multiple timeline interactions([TB-119])
+- Fixed an issue where in some cases a NullReferenceException would be thrown in the PlayableDirector inspector after a TimelineAsset would be unloaded in the Editor([TB-129])
+- Fixed an issue with the NoFoldOut attribute drawer, which was behaving incorrectly when used outside of the sample context. ([TB-132])
+
+
 ## [1.7.1] - 2022-03-07
 
 ### Fixed
