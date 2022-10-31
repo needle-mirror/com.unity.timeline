@@ -13,9 +13,29 @@ namespace UnityEngine.Timeline
     public class DirectorControlPlayable : PlayableBehaviour
     {
         /// <summary>
+        /// Represents the action taken when the DirectorControlPlayable is stopped.
+        /// </summary>
+        public enum PauseAction
+        {
+            /// <summary>
+            /// Stop the <see cref="PlayableDirector"/> on pause.
+            /// </summary>
+            StopDirector,
+
+            /// <summary>
+            /// Pause the <see cref="PlayableDirector"/> on pause.
+            /// </summary>
+            PauseDirector,
+        }
+        /// <summary>
         /// The PlayableDirector being controlled by this PlayableBehaviour
         /// </summary>
         public PlayableDirector director;
+
+        /// <summary>
+        /// Sets the action to perform when the playable is paused. <see cref="PauseAction"/>
+        /// </summary>
+        public PauseAction pauseAction = PauseAction.StopDirector;
 
         private bool m_SyncTime = false;
 
@@ -100,10 +120,15 @@ namespace UnityEngine.Timeline
         {
             if (director != null && director.playableAsset != null)
             {
-                if (info.effectivePlayState == PlayState.Playing) // graph was paused
+                if (info.effectivePlayState == PlayState.Playing ||
+                    info.effectivePlayState == PlayState.Paused && pauseAction == PauseAction.PauseDirector) // graph was paused
+                {
                     director.Pause();
+                }
                 else
+                {
                     director.Stop();
+                }
             }
         }
 

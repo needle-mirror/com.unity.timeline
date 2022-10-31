@@ -2,6 +2,16 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.0] - 2022-10-31
+
+### Added
+- Added field on DirectorControlPlayable: pauseAction. This property controls whether the director is paused or stopped when the playable is paused.
+- Added field on ControlPlayableAsset: directorOnClipEnd. This asset property is passed to DirectorControlPlayable.pauseAction when the DirectorControlPlayable is created.
+
+### Fixed
+
+- Fixed an issue where menu items related to track, marker and clip types in contextual menus would be in arbitrary order in some versions of Unity. Menu items related to types will now be sorted based on their full names, including the assembly name.
+
 ## [1.7.2] - 2022-09-12
 
 ### Fixed
