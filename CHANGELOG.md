@@ -2,10 +2,17 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.7.3] - 2023-01-31
+
+### Fixed
+
+- Fixed issue where modifying curves on an animation clip did not trigger an evaluation of the graph when the Timeline Window is hidden. (TB-117)
+
 ## [1.7.2] - 2022-09-12
 
 ### Fixed
 
+- Fixed an issue where menu items related to track, marker and clip types in contextual menus would be in arbitrary order in some versions of Unity. Menu items related to types will now be sorted based on their full names, including the assembly name.
 - Fix post-extrapolation mode change not recalculating previous clip pre-extrapolation time. ([ATL-1291])
 - Fixed an issue where prefab overrides would be created when keyframing a prefab instance in Timeline. ([TB-108])
 - Fixed an issue where a warning would be raised when using the undo history to undo multiple timeline interactions([TB-119])
