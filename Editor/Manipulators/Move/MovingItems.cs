@@ -84,8 +84,11 @@ namespace UnityEditor.Timeline
         {
             for (int i = 0; i < m_ItemsGroup.items.Length; ++i)
             {
-                var item = m_ItemsGroup.items[i];
-                var itemGUI = item.gui;
+                ITimelineItem item = m_ItemsGroup.items[i];
+                TimelineItemGUI itemGUI = item.gui;
+
+                if (itemGUI == null)
+                    continue;
 
                 if (item.parentTrack != null)
                 {

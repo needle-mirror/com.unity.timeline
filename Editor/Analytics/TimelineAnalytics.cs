@@ -104,7 +104,8 @@ namespace UnityEditor.Timeline.Analytics
 
             public void OnProcessScene(Scene scene, BuildReport report)
             {
-                var timelines = UnityEngine.Object.FindObjectsOfType<PlayableDirector>().Select(pd => pd.playableAsset).OfType<TimelineAsset>().Distinct();
+                PlayableDirector[] directorsInScene = GetAllDirectorsInScene();
+                IEnumerable<TimelineAsset> timelines = directorsInScene.Select(pd => pd.playableAsset).OfType<TimelineAsset>().Distinct();
 
                 foreach (var timeline in timelines)
                 {
@@ -152,6 +153,15 @@ namespace UnityEditor.Timeline.Analytics
                     }
                 }
             }
+        }
+
+        static PlayableDirector[] GetAllDirectorsInScene()
+        {
+#if UNITY_2023_1_OR_NEWER
+            return UnityEngine.Object.FindObjectsByType<PlayableDirector>(UnityEngine.FindObjectsSortMode.None);
+#else
+            return UnityEngine.Object.FindObjectsOfType<PlayableDirector>();
+#endif
         }
 
         class TimelineAnalyticsPostProcess : IPostprocessBuildWithReport

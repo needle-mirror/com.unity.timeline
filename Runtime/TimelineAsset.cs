@@ -504,6 +504,17 @@ namespace UnityEngine.Timeline
             }
         }
 
+        internal void RemoveMarkerTrack()
+        {
+            if (m_MarkerTrack != null)
+            {
+                MarkerTrack markerTrack = m_MarkerTrack;
+                m_MarkerTrack = null;
+                TimelineCreateUtilities.RemoveAssetFromObject(markerTrack, this);
+                Invalidate();
+            }
+        }
+
         // Invalidates the asset, call this if changing the asset data
         internal void Invalidate()
         {

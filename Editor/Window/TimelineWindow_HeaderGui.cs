@@ -192,9 +192,18 @@ namespace UnityEditor.Timeline
             else
             {
                 SelectionManager.Remove(asset.markerTrack);
+
+                if (asset.markerTrack != null && asset.markerTrack.isEmpty)
+                {
+                    TimelineUndo.PushUndo(asset, undoOperation);
+                    asset.RemoveMarkerTrack();
+                }
             }
 
-            asset.markerTrack.SetShowTrackMarkers(newValue);
+            if (asset.markerTrack != null)
+            {
+                asset.markerTrack.SetShowTrackMarkers(newValue);
+            }
         }
 
         static void EditModeToolbarGUI(TimelineMode mode)

@@ -2,6 +2,18 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.1] - 2023-02-07
+
+### Changed
+
+- Reduced the number of playable graph rebuilds when editing playable assets through the clip inspector.
+
+### Fixed
+
+- Fixed an issue where the clip inspector was not able to display custom playable asset inspectors rendered with UIToolkit.
+- Fixed issue where modifying curves on an animation clip did not trigger an evaluation of the graph when the Timeline Window is hidden. (TB-117)
+- Fixed an issue where the empty marker track that's automatically created when showing the markers in the Timeline Window would remain in the Timeline Asset when the markers are hidden. ([TB-120])
+
 ## [1.8.0] - 2022-10-31
 
 ### Added

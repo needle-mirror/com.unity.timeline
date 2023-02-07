@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,15 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.0"
+    "com.unity.timeline.tests": "1.8.1"
+  },
+  "_upm": {
+    "changelog": "### Changed\n\n- Reduced the number of playable graph rebuilds when editing playable assets through the clip inspector.\n\n### Fixed\n\n- Fixed an issue where the clip inspector was not able to display custom playable asset inspectors rendered with UIToolkit.\n- Fixed issue where modifying curves on an animation clip did not trigger an evaluation of the graph when the Timeline Window is hidden. (TB-117)\n- Fixed an issue where the empty marker track that's automatically created when showing the markers in the Timeline Window would remain in the Timeline Asset when the markers are hidden. ([TB-120])"
   },
   "upmCi": {
-    "footprint": "4b48a61702a6f5264a725c17dd66cafcd8e94a79"
+    "footprint": "4a2e7896faf6e99703537dfb527840b336ee3516"
   },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "f9c30883b6034793ede0a16c347882e2bced84a2"
+    "revision": "960cf7857d4ae70afde40b66ef19dc7ad2799d70"
   },
   "samples": [
     {
