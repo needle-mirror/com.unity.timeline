@@ -35,11 +35,10 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Sets the action to perform when the playable is paused. <see cref="PauseAction"/>
         /// </summary>
-        public PauseAction pauseAction = PauseAction.StopDirector;
+        public PauseAction pauseAction;
 
-        private bool m_SyncTime = false;
-
-        private double m_AssetDuration = double.MaxValue;
+        bool m_SyncTime = false;
+        double m_AssetDuration = double.MaxValue;
 
         /// <summary>
         /// Creates a Playable with a DirectorControlPlayable attached

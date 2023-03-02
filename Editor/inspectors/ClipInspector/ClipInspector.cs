@@ -79,6 +79,7 @@ namespace UnityEditor.Timeline
             const string k_Name = "clip-inspector-custom-properties";
             const string k_ClassName = "clip-inspector-custom-properties";
             const string k_FoldoutClassName = "clip-inspector-custom-properties__foldout";
+            const string k_InspectorElementClassName = "clip-inspector-custom-properties__inspector";
 
             public event Action OnPropertyChanged;
 
@@ -104,10 +105,15 @@ namespace UnityEditor.Timeline
 
 #if UNITY_2021_2_OR_NEWER
                 var inspectorElement = new InspectorElement(editor);
-                inspectorElement.TrackSerializedObjectValue(editor.serializedObject, _ =>
-                {
-                    OnPropertyChanged?.Invoke();
-                });
+                inspectorElement.AddToClassList(k_InspectorElementClassName);
+                inspectorElement.TrackSerializedObjectValue(editor.serializedObject, _ => OnPropertyChanged?.Invoke());
+
+                // when an ExposedReference is changed, its ID does not change and does not trigger a property change
+                // add a callback on the context object (which is usually the Playable Director) when the exposed reference property table is modified
+                using SerializedProperty property = TimelineInspectorUtility.FindExposedReferenceTableFrom(editor.m_Context);
+                if (property != null)
+                    this.TrackPropertyValue(property, _ => OnPropertyChanged?.Invoke());
+
                 m_Container.Add(inspectorElement);
 #else
                 m_Container.Add(new IMGUIContainer(() =>

@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.2] - 2023-03-02
+
+### Fixed
+
+- Fixed issue where previewing the Timeline would create prefab property modifications
+- Fixed issue where `ClipEditor.OnClipChanged` was not invoked when changing the object assigned to a `ExposedReference<UnityEngine.Object>`.
+
 ## [1.8.1] - 2023-02-07
 
 ### Changed

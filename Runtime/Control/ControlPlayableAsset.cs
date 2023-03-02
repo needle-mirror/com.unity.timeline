@@ -53,7 +53,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Indicates whether to search the entire hierarchy for controllable components.
         /// </summary>
-        [SerializeField] public bool searchHierarchy = false;
+        [SerializeField] public bool searchHierarchy;
 
         /// <summary>
         /// Indicate whether GameObject activation is controlled
@@ -70,7 +70,7 @@ namespace UnityEngine.Timeline
         /// Which action to apply to the <see cref="PlayableDirector"/> at the end of the control clip. <seealso cref="DirectorControlPlayable.PauseAction"/>
         /// </summary>
         [SerializeField]
-        public DirectorControlPlayable.PauseAction directorOnClipEnd = DirectorControlPlayable.PauseAction.StopDirector;
+        public DirectorControlPlayable.PauseAction directorOnClipEnd;
 
         PlayableAsset m_ControlDirectorAsset;
         double m_Duration = PlayableBinding.DefaultDuration;

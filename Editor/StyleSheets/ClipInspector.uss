@@ -8,6 +8,10 @@
     padding: var(--unity-metrics-default-border_radius);
 }
 
+.clip-inspector-custom-properties__inspector {
+    padding-left: 0;
+}
+
 .clip-inspector-custom-properties__foldout > Toggle :hover {
     background-color: var(--unity-colors-inspector_titlebar-background-hover);
 }
