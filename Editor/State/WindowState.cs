@@ -1034,7 +1034,10 @@ namespace UnityEditor.Timeline
             if (componentOrGameObject == null)
                 throw new ArgumentNullException(nameof(componentOrGameObject));
 
-            if (m_PreviewedAnimators == null || m_PreviewedAnimators.Count == 0)
+            if (previewMode == false)
+                return true;
+
+            if (m_ArmedTracks.Count == 0)
                 return true;
 
             GameObject inputGameObject = null;
@@ -1046,24 +1049,19 @@ namespace UnityEditor.Timeline
             {
                 inputGameObject = gameObject;
             }
-            else
-            {
+
+            if (inputGameObject == null)
                 return true;
-            }
 
-
-            //If the gameObject is a descendent of any of the armed Animators, disallow the creation of prefab overrides
-            var armedAnimators = m_PreviewedAnimators.
-                Where(pair =>
-                    pair.Key is TrackAsset trackAsset &&
-                    m_ArmedTracks.ContainsKey(trackAsset))
-                .Select(pair => pair.Value);
-
-            foreach (var animator in armedAnimators)
+            var armedTracks = m_ArmedTracks.Keys;
+            foreach (var track in armedTracks)
             {
-                if (inputGameObject.transform.IsChildOf(animator.transform))
+                if (m_PreviewedAnimators.TryGetValue(track, out Animator animator))
                 {
-                    return false;
+                    if (inputGameObject.transform.IsChildOf(animator.transform))
+                    {
+                        return false;
+                    }
                 }
             }
 

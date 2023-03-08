@@ -489,6 +489,10 @@ namespace UnityEditor.Timeline
             return flattenedChildTracks;
         }
 
+        internal static void ArmForRecord(this TrackAsset track)
+        {
+            TimelineWindow.instance.state.ArmForRecord(track);
+        }
         internal static void UnarmForRecord(this TrackAsset track)
         {
             TimelineWindow.instance.state.UnarmForRecord(track);
