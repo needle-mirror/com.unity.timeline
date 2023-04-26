@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,15 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.6.4"
+    "com.unity.timeline.tests": "1.6.5"
+  },
+  "_upm": {
+    "changelog": "### Fixed\n\n- Fixed issue where modifying curves on an animation clip did not trigger an evaluation of the graph when the Timeline Window is hidden. (TB-117)\n- Fixed an issue where the Timeline Window's UI would not update until the user clicked in the window if the TimelineAsset's file contents were changed on disk, such as during a version control operation (TB-46)"
   },
   "upmCi": {
-    "footprint": "dcac7462836a5fa5813cc1e2c6080df1da992327"
+    "footprint": "b8271968619d88d048088928de28cd1f186b121a"
   },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.6/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "d7e1eb6805737974459309b7d6e7db58635dd167"
+    "revision": "4ed67a7e62ce940db3d44dc5eca8fade1c664aed"
   },
   "samples": [
     {

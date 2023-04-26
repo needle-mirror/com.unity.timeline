@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.5] - 2023-04-26
+
+### Fixed
+
+- Fixed issue where modifying curves on an animation clip did not trigger an evaluation of the graph when the Timeline Window is hidden. (TB-117)
+- Fixed an issue where the Timeline Window's UI would not update until the user clicked in the window if the TimelineAsset's file contents were changed on disk, such as during a version control operation (TB-46)
+
 ## [1.6.4] - 2022-01-21
 
 ### Fixed
