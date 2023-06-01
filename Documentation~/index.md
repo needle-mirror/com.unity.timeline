@@ -1,44 +1,11 @@
-# About Timeline
+# Unity's Timeline
 
-![Unity's Timeline](images/timeline_splash.png)
+Use Unity's Timeline to create cinematic content, gameplay sequences, audio sequences, and complex particle effects.
 
-_Unity's Timeline_
+Each cut-scene, cinematic, or gameplay sequence that you create with Unity's Timeline consists of a Timeline asset and a Timeline instance. The [Timeline window](tl-window.md) creates and modifies Timeline assets and Timeline instances simultaneously.
 
-Use Unity's Timeline to create cinematic content, game-play sequences, audio sequences, and complex particle effects.
+The [Timeline assets and instances topic](tl-overview.md) provides details on the relationship between the Timeline window, Timeline assets, and Timeline instances.
 
-Each cut-scene, cinematic, or game-play sequence that you create with Unity's Timeline consists of a Timeline Asset and a Timeline instance. The [Timeline window](tl_window.md) creates and modifies Timeline Assets and Timeline instances simultaneously.
+The [Timeline Workflows section](wf-overview.md) provides basic steps on how to create Timeline assets and Timeline instances, record basic animation, animate humanoids, use Animation Override tracks, Sub-Timelines, and other Timeline features.
 
-The [Timeline Overview section](tl_about.md) includes details on the relationship between the Timeline window, Timeline Assets, and Timeline instances.
-
-The [Using Timeline section](wf_about.md) shows how to create Timeline Assets and Timeline instances, record basic animation, animate humanoids, and use other Timeline features.
-
-The [Samples section](smpl_about.md) includes a description of the samples offered by the Timeline package.
-
-# Installing Timeline
-
-Timeline is a Package and is installed through the Packages window in Unity. Consult the [Packages window documentation](https://docs.unity3d.com/Manual/upm-ui.html) for more information.
-
-# Technical details
-
-## Requirements
-
-This version of Timeline is compatible with the following versions of the Unity Editor:
-
-* 2019.1 and later (recommended)
-
-## Package contents
-
-The following table indicates the folder structure of the Timeline package:
-
-|Location|Description|
-|---|---|
-|`<Runtime>`|Root folder containing the source for the Timeline Runtime. This is the source for what is available in the Player. |
-|`<Editor>`|Root folder containing the source for the Timeline Editor used to edit Timeline files inside the Unity Editor.|
-
-## Document revision history
-
-|Date|Reason|
-|---|---|
-|October 23, 2020|Added documentation for customization samples.|
-|October 22, 2020|Added samples section|
-|October 10, 2018|Document created. Matches package version 0.0.0|
+The [Timeline Samples section](samp-overview.md) provides a description of the samples included in the Timeline package.

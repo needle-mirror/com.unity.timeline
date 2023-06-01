@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using UnityEditor.MemoryProfiler;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;

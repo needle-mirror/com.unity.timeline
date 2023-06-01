@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,19 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.2"
+    "com.unity.timeline.tests": "1.8.3"
   },
   "_upm": {
-    "changelog": "### Fixed\n\n- Fixed issue where previewing the Timeline would create prefab property modifications\n- Fixed issue where `ClipEditor.OnClipChanged` was not invoked when changing the object assigned to a `ExposedReference<UnityEngine.Object>`."
+    "changelog": "### Changed\n\n- Updated the Timeline package documentation to include previously undocumented features and new screen images.\n\n### Fixed\n\n- Enable Timeline Action menu entry for Delete when PlayableDirector component is disabled. (TB-177)\n- The `Text Track` sample has been updated to use the `com.unity.ugui` package.\n- Removed usage of deprecated API: `UnityEditor.MemoryProfiler`"
   },
   "upmCi": {
-    "footprint": "501011b8d2a52141598f6e349a8e6e12e25e7dc1"
+    "footprint": "62faa00a63b9a574379a231df0cf53950e54699d"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "a60d9f471eee76056ecbc8c94f5bec263478a9c0"
+    "revision": "ac29aa3e54a34ec93e0edcc2dd66bfb8abb416fc"
   },
   "samples": [
     {

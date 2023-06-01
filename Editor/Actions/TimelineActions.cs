@@ -293,7 +293,7 @@ namespace UnityEditor.Timeline
     [MenuEntry("Delete", MenuPriority.TimelineActionSection.delete)]
     [Shortcut("Main Menu/Edit/Delete", EventCommandNames.Delete)]
     [ShortcutPlatformOverride(RuntimePlatform.OSXEditor, KeyCode.Backspace, ShortcutModifiers.Action)]
-    [ActiveInMode(TimelineModes.Default)]
+    [ActiveInMode(TimelineModes.Disabled | TimelineModes.Default)]
     class DeleteAction : TimelineAction
     {
         public override ActionValidity Validate(ActionContext context)

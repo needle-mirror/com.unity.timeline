@@ -19,6 +19,11 @@
             "name": "com.unity.textmeshpro",
             "expression": "1.0.0",
             "define": "TEXT_TRACK_REQUIRES_TEXTMESH_PRO"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "2.0.0",
+            "define": "TEXT_TRACK_REQUIRES_TEXTMESH_PRO"
         }
     ],
     "noEngineReferences": false

@@ -2,6 +2,18 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.3] - 2023-06-01
+
+### Changed
+
+- Updated the Timeline package documentation to include previously undocumented features and new screen images.
+
+### Fixed
+
+- Enable Timeline Action menu entry for Delete when PlayableDirector component is disabled. (TB-177)
+- The `Text Track` sample has been updated to use the `com.unity.ugui` package.
+- Removed usage of deprecated API: `UnityEditor.MemoryProfiler`
+
 ## [1.8.2] - 2023-03-02
 
 ### Fixed
