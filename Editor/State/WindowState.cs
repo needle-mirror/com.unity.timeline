@@ -55,7 +55,7 @@ namespace UnityEditor.Timeline
         readonly PropertyCollector m_PropertyCollector = new PropertyCollector();
 
         static AnimationModeDriver s_PreviewDriver;
-        Dictionary<UnityEngine.Object, Animator> m_PreviewedAnimators;
+        PreviewedBindings<Animator> m_PreviewedAnimators;
         List<Component> m_PreviewedComponents;
         IEnumerable<IAnimationWindowPreview> previewedComponents =>
             m_PreviewedComponents.Where(component => component != null).Cast<IAnimationWindowPreview>();
@@ -1013,9 +1013,9 @@ namespace UnityEditor.Timeline
             if (previewedDirectors == null)
                 return;
 
-            m_PreviewedAnimators = TimelineUtility.GetBindingPairsFromDirectors<Animator>(previewedDirectors);
+            m_PreviewedAnimators = PreviewedBindings<Animator>.GetPreviewedBindings(previewedDirectors);
 
-            m_PreviewedComponents = m_PreviewedAnimators.Values
+            m_PreviewedComponents = m_PreviewedAnimators.GetUniqueBindings()
                 .SelectMany(animator => animator.GetComponents<IAnimationWindowPreview>()
                     .Cast<Component>())
                 .ToList();
@@ -1056,12 +1056,11 @@ namespace UnityEditor.Timeline
             var armedTracks = m_ArmedTracks.Keys;
             foreach (var track in armedTracks)
             {
-                if (m_PreviewedAnimators.TryGetValue(track, out Animator animator))
+                var animators = m_PreviewedAnimators.GetBindingsForObject(track);
+                foreach (var animator in animators)
                 {
                     if (inputGameObject.transform.IsChildOf(animator.transform))
-                    {
                         return false;
-                    }
                 }
             }
 
@@ -1080,17 +1079,12 @@ namespace UnityEditor.Timeline
                 m_PreviewedComponents = null;
             }
 
-            if (m_PreviewedAnimators != null)
+            foreach (var previewAnimator in m_PreviewedAnimators.GetUniqueBindings())
             {
-                foreach (var previewAnimator in m_PreviewedAnimators.Values)
-                {
-                    if (previewAnimator != null)
-                    {
-                        previewAnimator.UnbindAllHandles();
-                    }
-                }
-                m_PreviewedAnimators = null;
+                if (previewAnimator != null)
+                    previewAnimator.UnbindAllHandles();
             }
+            m_PreviewedAnimators = default;
 
 #if UNITY_2022_2_OR_NEWER
             PrefabUtility.allowRecordingPrefabPropertyOverridesFor -= AllowRecordingPrefabPropertyOverridesFor;

@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.4] - 2023-06-13
+
+### Fixed
+
+- Fixed issue where exceptions were thrown when different `ControlTrack`s are referencing the same `TimelineAsset` ([IN-21163](https://issuetracker.unity3d.com/product/unity/issues/guid/TB-165)).
+
 ## [1.8.3] - 2023-06-01
 
 ### Changed
