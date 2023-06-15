@@ -17,9 +17,8 @@ namespace UnityEngine.Timeline
         /// </summary>
         public PlayableDirector director;
 
-        private bool m_SyncTime = false;
-
-        private double m_AssetDuration = double.MaxValue;
+        bool m_SyncTime = false;
+        double m_AssetDuration = double.MaxValue;
 
         /// <summary>
         /// Creates a Playable with a DirectorControlPlayable attached

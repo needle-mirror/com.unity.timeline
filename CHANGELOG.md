@@ -2,6 +2,14 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.7.5] - 2023-06-15
+
+### Fixed
+
+- Fixed issue where exceptions were thrown when different `ControlTrack`s are referencing the same `TimelineAsset` ([IN-21163](https://issuetracker.unity3d.com/product/unity/issues/guid/TB-165)).
+- The `Text Track` sample has been updated to use the `com.unity.ugui` package.
+- Removed usage of deprecated API: `UnityEditor.MemoryProfiler`
+
 ## [1.7.4] - 2023-03-08
 
 ### Fixed

@@ -53,7 +53,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Indicates whether to search the entire hierarchy for controllable components.
         /// </summary>
-        [SerializeField] public bool searchHierarchy = false;
+        [SerializeField] public bool searchHierarchy;
 
         /// <summary>
         /// Indicate whether GameObject activation is controlled

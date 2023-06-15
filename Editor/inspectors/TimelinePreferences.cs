@@ -102,7 +102,7 @@ public class TimelinePreferences : ScriptableSingleton<TimelinePreferences>
     /// Behavior of the timeline window during playback.
     /// </summary>
     [SerializeField]
-    public PlaybackScrollMode playbackScrollMode = PlaybackScrollMode.None;
+    public PlaybackScrollMode playbackScrollMode;
 
     void OnDisable()
     {

@@ -273,22 +273,6 @@ namespace UnityEditor.Timeline
             }
         }
 
-        public static Dictionary<Object, T> GetBindingPairsFromDirectors<T>(IEnumerable<PlayableDirector> directors) where T : Object
-        {
-            var bindings = new Dictionary<Object, T>();
-            foreach (var director in directors)
-            {
-                if (director.playableAsset == null) continue;
-                foreach (var output in director.playableAsset.outputs)
-                {
-                    var binding = director.GetGenericBinding(output.sourceObject) as T;
-                    if (binding != null)
-                        bindings.Add(output.sourceObject, binding);
-                }
-            }
-            return bindings;
-        }
-
         public static bool IsLockedFromGroup(TrackAsset asset)
         {
             TrackAsset p = asset.parent as TrackAsset;
