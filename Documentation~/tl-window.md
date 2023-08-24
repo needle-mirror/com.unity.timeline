@@ -46,7 +46,7 @@ The Timeline window saves the track bindings to GameObjects in the Scene with th
 
 ## Create Sub-Timelines
 
-To create a Sub-Timeline, drag a GameObject associated with a Timeline instance into another Timeline instance. The Timeline instance you are dragging into becomes the parent or main Timeline instance. The Timeline instance associated with the GameObject becomes a Sub-Timeline instance.
+[To create a Sub-Timeline](wf-subtimeline.md), drag a GameObject associated with a Timeline instance into another Timeline instance. The Timeline instance you are dragging into becomes the parent or main Timeline instance. The Timeline instance associated with the GameObject becomes a Sub-Timeline instance.
 
 ![](images/tl-nesttl-main-timeline.png)
 

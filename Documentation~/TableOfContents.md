@@ -9,6 +9,8 @@
         * [Convert an Infinite clip to an Animation clip](wf-convert-infinite.md)
         * [Animate a humanoid](wf-anim-human.md)
         * [Override upper-body animation](wf-anim-override.md)
+        * [Add Timeline markers and signals](wf-signals.md)
+        * [Create a Sub-Timeline instance](wf-subtimeline.md)
 * [Timeline assets and instances](tl-overview.md)
 * [Timeline window](tl-window.md)
     * [Timeline Preview](tl-preview.md)

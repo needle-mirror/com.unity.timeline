@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,19 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.4"
+    "com.unity.timeline.tests": "1.8.5"
   },
   "_upm": {
-    "changelog": "### Fixed\n\n- Fixed issue where exceptions were thrown when different `ControlTrack`s are referencing the same `TimelineAsset` ([IN-21163](https://issuetracker.unity3d.com/product/unity/issues/guid/TB-165))."
+    "changelog": "### Added\n\n- Added two new workflows to the Timeline Workflows documentation:\n- The `Use markers and signals for footsteps` workflow demonstrates how to use Timeline markers, Signal assets, and Signal Receiver components to play audio sources for footsteps.\n- The `Create a Sub-Timeline instance` workflow demonstrates how to create a single cut-scene by nesting a Timeline instance within another Timeline instance.\n\n### Fixed\n\n- Fixed playback and recording when Timeline is linked with the Animation Window."
   },
   "upmCi": {
-    "footprint": "2b746b0bc59ddc38c112941f49910254e8460c04"
+    "footprint": "1a3ecab2efef5629f35dc81d52f8bc1ce7f739c0"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "4c195c129dbdf32b664cf5288c6222f2d6f6c6f6"
+    "revision": "adf26616812f0b35ad32a28597af1213199265c2"
   },
   "samples": [
     {

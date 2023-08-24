@@ -260,7 +260,7 @@ namespace UnityEditor.Timeline
 
         public override bool previewing
         {
-            get { return false; }
+            get { return true; }
         }
 
         public override bool StartRecording(Object targetObject)

@@ -8,6 +8,7 @@ To import the Customization Samples scene and open its Timeline instance, do the
 1. In the Project window, go to `Assets/Samples/Timeline/<version>/Customization Samples/Demo/Scenes`, where `<version>` is your installed Timeline package version.
 1. Double-click the scene named `Timeline_CustomTracks`.
 1. To open the Timeline instance, in the Hierarchy window, select the `Timeline` GameObject. The Timeline instance named `CustomTracks` displays in the Timeline window.
+1. If the Timeline window is not open, go to **Window** &gt; **Sequencing** &gt; **Timeline**.
 
 ![CustomTracks Timeline instance](images/tl-samp-ct-instance.png)
 

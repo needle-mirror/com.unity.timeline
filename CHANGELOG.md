@@ -2,6 +2,18 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.5] - 2023-08-24
+
+### Added
+
+- Added two new workflows to the Timeline Workflows documentation:
+- The `Use markers and signals for footsteps` workflow demonstrates how to use Timeline markers, Signal assets, and Signal Receiver components to play audio sources for footsteps.
+- The `Create a Sub-Timeline instance` workflow demonstrates how to create a single cut-scene by nesting a Timeline instance within another Timeline instance.
+
+### Fixed
+
+- Fixed playback and recording when Timeline is linked with the Animation Window.
+
 ## [1.8.4] - 2023-06-13
 
 ### Fixed

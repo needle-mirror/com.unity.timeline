@@ -8,6 +8,7 @@ To import the Gameplay Sequence Demo scene and open its Timeline instance, do th
 1. In the Project window, go to `Assets/Samples/Timeline/<version>/Gameplay Sequence Demo/Scenes`, where `<version>` is your installed Timeline package version.
 1. Double-click the scene named `GameplaySequence`.
 1. To open the Timeline instance, in the Hierarchy window, select the `Timeline` GameObject. The Timeline instance named `GameplaySequence` displays in the Timeline window.
+1. If the Timeline window is not open, go to **Window** &gt; **Sequencing** &gt; **Timeline**.
 
 ![GameplaySequence Timeline instance](images/tl-samp-gs-all.png)
 
@@ -122,5 +123,5 @@ The Props Track group contains the following tracks:
 |:---|:---|
 |`Table` Activation track|This track activates the `Table` GameObject.|
 |`StaticCan` Activation track|This track activates a static copy of the `Can` GameObject. The `StaticCan` GameObject is hidden when the table is bumped and the `Can` Sub-Timeline animation begins. |
-|`TableBase` Animation track|This track contains an Infinite clip that animates the table bump. The table bump also animates the `StaticCan` GameObject because the `StaticCan` is parented to the `TableBase`. This movement causes the can to fall off the table.|
+|`TableBase` Animation track|This track contains an Infinite clip that animates the table bump. The table bump also animates the `StaticCan` GameObject because the `StaticCan` is parented by the `TableBase`. This movement causes the can to fall off the table.|
 |`Can Sub-Timeline` Control track|This track includes a Control clip that contains the `Can` Sub-Timeline instance. The `Can` Sub-Timeline contains an Animation track for the can rolling off the table and bouncing on the ground, an Audio track for the sound effects of the bouncing can, and a Control track for the liquid particles splashing out of the can as it bounces. To view the `Can` Sub-Timeline and its additional three tracks, double-click the Control clip.|
