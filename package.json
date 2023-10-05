@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.5",
+  "version": "1.8.6",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,19 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.5"
+    "com.unity.timeline.tests": "1.8.6"
   },
   "_upm": {
-    "changelog": "### Added\n\n- Added two new workflows to the Timeline Workflows documentation:\n- The `Use markers and signals for footsteps` workflow demonstrates how to use Timeline markers, Signal assets, and Signal Receiver components to play audio sources for footsteps.\n- The `Create a Sub-Timeline instance` workflow demonstrates how to create a single cut-scene by nesting a Timeline instance within another Timeline instance.\n\n### Fixed\n\n- Fixed playback and recording when Timeline is linked with the Animation Window."
+    "changelog": "### Changed\n\n- In the `Create Asset` menu, the `Signal` and `Timeline` items have been moved to the `Timeline` submenu.\n\n### Fixed\n\n- Fixed issue where changing the name of a group track was not undoable ([TB-218](https://issuetracker.unity3d.com/issues/timeline-track-group-renaming-doesnt-go-into-the-undo-history)).\n- Fixed issue where a warning would be logged in the console for `TrackAsset` ([TB-229](https://issuetracker.unity3d.com/product/unity/issues/guid/TB-229)).\n- Fixed performance regression when rebuilding the playable graph.\n- Fixed a `MissingReferenceException` when editing a Timeline that is an instance of a prefab and a bound `Animator` is destroyed ([TB-222](https://issuetracker.unity3d.com/issues/timeline-missingreferenceexceptions-when-undoing-add-animator-from-timeline))\n- Removed warnings due to obsolete analytics API."
   },
   "upmCi": {
-    "footprint": "1a3ecab2efef5629f35dc81d52f8bc1ce7f739c0"
+    "footprint": "b096d5a4d05e8be45f78cb27e10ca26acff05620"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "adf26616812f0b35ad32a28597af1213199265c2"
+    "revision": "9b8cc7590b7d733181284f1a846a02406b5524d8"
   },
   "samples": [
     {

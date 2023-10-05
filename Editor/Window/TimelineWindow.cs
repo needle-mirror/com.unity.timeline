@@ -516,11 +516,11 @@ namespace UnityEditor.Timeline
             }
         }
 
-        [MenuItem("Assets/Create/Timeline", false, 450)]
+        [MenuItem("Assets/Create/Timeline/Timeline", false, -124)]
         public static void CreateNewTimeline()
         {
             var icon = EditorGUIUtility.IconContent("TimelineAsset Icon").image as Texture2D;
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, ScriptableObject.CreateInstance<DoCreateTimeline>(), "New Timeline.playable", icon, null);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<DoCreateTimeline>(), "New Timeline.playable", icon, null);
         }
 
         [MenuItem("Window/Sequencing/Timeline", false, 1)]

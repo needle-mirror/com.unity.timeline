@@ -52,7 +52,7 @@ namespace UnityEngine.Timeline
             for (var i = 0; i < thingsToDirty.Length; i++)
             {
                 if (thingsToDirty[i] is TrackAsset track)
-                    track.MarkDirty();
+                    track.MarkDirtyTrackAndClips();
                 EditorUtility.SetDirty(thingsToDirty[i]);
             }
             Undo.RegisterCompleteObjectUndo(thingsToDirty, UndoName(operation));
@@ -67,7 +67,7 @@ namespace UnityEngine.Timeline
             {
                 var track = thingToDirty as TrackAsset;
                 if (track != null)
-                    track.MarkDirty();
+                    track.MarkDirtyTrackAndClips();
 
                 EditorUtility.SetDirty(thingToDirty);
                 Undo.RegisterCompleteObjectUndo(thingToDirty, UndoName(operation));

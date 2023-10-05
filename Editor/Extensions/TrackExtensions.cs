@@ -524,5 +524,11 @@ namespace UnityEditor.Timeline
         {
             return tracks.Contains(asset.markerTrack);
         }
+
+        internal static void SetNameWithUndo(this TrackAsset track, string newName)
+        {
+            UndoExtensions.RegisterTrack(track, L10n.Tr("Rename Track"));
+            track.name = newName;
+        }
     }
 }

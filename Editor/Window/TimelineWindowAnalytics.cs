@@ -1,9 +1,10 @@
-//#define ANALITICS_DEBUG
+//#define ANALYTICS_DEBUG
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.Timeline;
 
 namespace UnityEditor.Timeline
@@ -18,6 +19,9 @@ namespace UnityEditor.Timeline
 
         [Serializable]
         internal struct timeline_asset_stats
+#if UNITY_2023_2_OR_NEWER
+            : IAnalytic.IData
+#endif
         {
             public string asset_guid;
             public double duration;
@@ -40,26 +44,58 @@ namespace UnityEditor.Timeline
             internal int[] editModeSamples = new int[3]; // EditModes
         }
 
+#if UNITY_2023_2_OR_NEWER
+        [AnalyticInfo(
+            eventName: eventName,
+            vendorKey: vendorKey,
+            version: version,
+            maxEventsPerHour: maxEventsPerHour,
+            maxNumberOfElements: maxNumberOfElements)]
+        class TimelineWindowAnalyticsEvent : IAnalytic
+        {
+            public timeline_asset_stats timelineStats { get; }
+            bool m_CanSendData;
+
+            public TimelineWindowAnalyticsEvent()
+            {
+                m_CanSendData = GenerateTimelineAssetStats(out timeline_asset_stats data);
+                timelineStats = data;
+            }
+
+            public void Send()
+            {
+                if (m_CanSendData)
+                    EditorAnalytics.SendAnalytic(this);
+            }
+
+            bool IAnalytic.TryGatherData(out IAnalytic.IData data, out Exception error)
+            {
+                error = null;
+                data = timelineStats;
+                return true;
+            }
+        }
+#endif
+
         static WindowAnalyticsStats analyticsStats = new WindowAnalyticsStats();
 
         public void SendPlayEvent(bool start)
         {
             if (!start || !EditorAnalytics.enabled)
-            {
                 return;
-            }
 
+#if UNITY_2023_2_OR_NEWER
+            var analyticsEvent = new TimelineWindowAnalyticsEvent();
+            LogAnalyticsData(analyticsEvent.timelineStats);
+            analyticsEvent.Send();
+#else
             EditorAnalytics.RegisterEventWithLimit(eventName, maxEventsPerHour, maxNumberOfElements, vendorKey, version);
-
             var ret = GenerateTimelineAssetStats(out var data);
             if (!ret)
-            {
                 return;
-            }
-#if ANALITICS_DEBUG
-            Debug.Log(JsonUtility.ToJson(data, true));
-#endif
+            LogAnalyticsData(data);
             EditorAnalytics.SendEventWithLimit(eventName, data, version);
+#endif
             SendAfterSequenceChangeEvent();
         }
 
@@ -112,6 +148,12 @@ namespace UnityEditor.Timeline
                 );
             }
             return ret;
+        }
+
+        [Conditional("ANALYTICS_DEBUG")]
+        static void LogAnalyticsData(timeline_asset_stats data)
+        {
+            UnityEngine.Debug.Log(UnityEngine.JsonUtility.ToJson(data, true));
         }
     }
 

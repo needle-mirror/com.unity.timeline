@@ -7,7 +7,7 @@ namespace UnityEditor.Timeline.Signals
     [CustomEditor(typeof(SignalAsset))]
     class SignalAssetInspector : Editor
     {
-        [MenuItem("Assets/Create/Signal", false, 451)]
+        [MenuItem("Assets/Create/Timeline/Signal", false, -124)]
         [UsedImplicitly]
         public static void CreateNewSignal()
         {

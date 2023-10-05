@@ -577,8 +577,7 @@ namespace UnityEditor.Timeline
 
             if (EditorGUI.EndChangeCheck())
             {
-                UndoExtensions.RegisterTrack(track, L10n.Tr("Rename Track"));
-                track.name = trackName;
+                track.SetNameWithUndo(trackName);
             }
         }
 

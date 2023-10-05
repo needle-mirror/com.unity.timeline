@@ -6,14 +6,34 @@ namespace UnityEngine.Timeline
 {
     static class NotificationUtilities
     {
-        public static ScriptPlayable<TimeNotificationBehaviour> CreateNotificationsPlayable(PlayableGraph graph, IEnumerable<IMarker> markers, double duration, DirectorWrapMode extrapolationMode)
+        public static ScriptPlayable<TimeNotificationBehaviour> CreateNotificationsPlayable(PlayableGraph graph, IEnumerable<IMarker> markers, PlayableDirector director)
         {
-            var notificationPlayable = ScriptPlayable<TimeNotificationBehaviour>.Null;
-            foreach (var e in markers)
+            return CreateNotificationsPlayable(graph, markers, null, director);
+        }
+
+        public static ScriptPlayable<TimeNotificationBehaviour> CreateNotificationsPlayable(PlayableGraph graph, IEnumerable<IMarker> markers, TimelineAsset timelineAsset)
+        {
+            return CreateNotificationsPlayable(graph, markers, timelineAsset, null);
+        }
+
+        static ScriptPlayable<TimeNotificationBehaviour> CreateNotificationsPlayable(PlayableGraph graph, IEnumerable<IMarker> markers, IPlayableAsset asset, PlayableDirector director)
+        {
+            ScriptPlayable<TimeNotificationBehaviour> notificationPlayable = ScriptPlayable<TimeNotificationBehaviour>.Null;
+            DirectorWrapMode extrapolationMode = director != null ? director.extrapolationMode : DirectorWrapMode.None;
+            bool didCalculateDuration = false;
+            var duration = 0d;
+
+            foreach (IMarker e in markers)
             {
-                var notif = e as INotification;
-                if (notif == null)
+                var notification = e as INotification;
+                if (notification == null)
                     continue;
+
+                if (!didCalculateDuration)
+                {
+                    duration = director != null ? director.playableAsset.duration : asset.duration;
+                    didCalculateDuration = true;
+                }
 
                 if (notificationPlayable.Equals(ScriptPlayable<TimeNotificationBehaviour>.Null))
                 {
@@ -24,19 +44,12 @@ namespace UnityEngine.Timeline
                 var time = (DiscreteTime)e.time;
                 var tlDuration = (DiscreteTime)duration;
                 if (time >= tlDuration && time <= tlDuration.OneTickAfter() && tlDuration != 0)
-                {
                     time = tlDuration.OneTickBefore();
-                }
 
-                var notificationOptionProvider = e as INotificationOptionProvider;
-                if (notificationOptionProvider != null)
-                {
-                    notificationPlayable.GetBehaviour().AddNotification((double)time, notif, notificationOptionProvider.flags);
-                }
+                if (e is INotificationOptionProvider notificationOptionProvider)
+                    notificationPlayable.GetBehaviour().AddNotification((double)time, notification, notificationOptionProvider.flags);
                 else
-                {
-                    notificationPlayable.GetBehaviour().AddNotification((double)time, notif);
-                }
+                    notificationPlayable.GetBehaviour().AddNotification((double)time, notification);
             }
 
             return notificationPlayable;
