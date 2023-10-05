@@ -216,7 +216,7 @@ namespace UnityEditor.Timeline
 
                 if (track != null)
                 {
-                    track.MarkDirty();
+                    track.MarkDirtyTrackAndClips();
                 }
                 else if (playableAsset != null)
                 {

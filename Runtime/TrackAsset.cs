@@ -83,7 +83,7 @@ namespace UnityEngine.Timeline
 
 #if UNITY_EDITOR
         internal int DirtyIndex { get; private set; }
-        internal void MarkDirty()
+        internal void MarkDirtyTrackAndClips()
         {
             DirtyIndex++;
             foreach (var clip in GetClips())
@@ -92,7 +92,6 @@ namespace UnityEngine.Timeline
                     clip.MarkDirty();
             }
         }
-
 #endif
 
         /// <summary>
@@ -751,14 +750,13 @@ namespace UnityEngine.Timeline
         {
             s_BuildData.markerList.Clear();
             GatherNotifications(s_BuildData.markerList);
-            DirectorWrapMode extrapolationMode = DirectorWrapMode.None;
-            if (go.TryGetComponent(out PlayableDirector director))
-            {
-                extrapolationMode = director.extrapolationMode;
-            }
 
-            var duration = timelineAsset.duration;
-            var notificationPlayable = NotificationUtilities.CreateNotificationsPlayable(graph, s_BuildData.markerList, duration, extrapolationMode);
+            ScriptPlayable<TimeNotificationBehaviour> notificationPlayable;
+            if (go.TryGetComponent(out PlayableDirector director))
+                notificationPlayable = NotificationUtilities.CreateNotificationsPlayable(graph, s_BuildData.markerList, director);
+            else
+                notificationPlayable = NotificationUtilities.CreateNotificationsPlayable(graph, s_BuildData.markerList, timelineAsset);
+
             if (notificationPlayable.IsValid())
             {
                 notificationPlayable.GetBehaviour().timeSource = timelinePlayable;

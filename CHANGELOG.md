@@ -2,6 +2,14 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.7.6] - 2023-10-05
+
+### Fixed
+
+- Fixed issue where a warning would be logged in the console for `TrackAsset` ([TB-229](https://issuetracker.unity3d.com/product/unity/issues/guid/TB-229)).
+- Fixed issue where changing the name of a group track was not undoable ([TB-218](https://issuetracker.unity3d.com/issues/timeline-track-group-renaming-doesnt-go-into-the-undo-history)).
+- Fixed performance regression when rebuilding the playable graph.
+
 ## [1.7.5] - 2023-06-15
 
 ### Fixed

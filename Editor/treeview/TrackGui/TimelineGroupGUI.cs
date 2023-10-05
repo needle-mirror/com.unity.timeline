@@ -248,7 +248,7 @@ namespace UnityEditor.Timeline
 
                 if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
                 {
-                    track.name = newName;
+                    track.SetNameWithUndo(newName);
                     displayName = track.name;
                 }
             }
