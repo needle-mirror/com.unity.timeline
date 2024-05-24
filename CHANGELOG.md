@@ -2,6 +2,18 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.7] - 2024-05-24
+
+### Added
+
+- Released ronl-workflow-custom-marker.md Added a new workflow to the Timeline Workflows documentation:
+- Released ronl-workflow-custom-marker.md The `Create a custom Notes marker` workflow demonstrates how to create a custom marker for adding notes to Timeline instances. This workflow also demonstrates how to change the default appearance of a custom marker with scripting and a Unity Style Sheet (USS).
+
+### Fixed
+
+- Fixed bug where using , and . (<>) to step frames in the Animation Window while the Timeline Window was linked would sometimes not work. [IN-56667](https://unity3d.atlassian.net/servicedesk/customer/portal/2/IN-56667)
+- When the Timeline and Animation windows are linked and the Timeline Window is active, moving the playhead in the Timeline Window will cause the animation window to repaint immediately.
+
 ## [1.8.6] - 2023-10-05
 
 ### Changed

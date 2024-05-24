@@ -1,7 +1,7 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.6",
+  "version": "1.8.7",
   "unity": "2019.3",
   "keywords": [
     "unity",
@@ -18,19 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.6"
+    "com.unity.timeline.tests": "1.8.7"
   },
   "_upm": {
-    "changelog": "### Changed\n\n- In the `Create Asset` menu, the `Signal` and `Timeline` items have been moved to the `Timeline` submenu.\n\n### Fixed\n\n- Fixed issue where changing the name of a group track was not undoable ([TB-218](https://issuetracker.unity3d.com/issues/timeline-track-group-renaming-doesnt-go-into-the-undo-history)).\n- Fixed issue where a warning would be logged in the console for `TrackAsset` ([TB-229](https://issuetracker.unity3d.com/product/unity/issues/guid/TB-229)).\n- Fixed performance regression when rebuilding the playable graph.\n- Fixed a `MissingReferenceException` when editing a Timeline that is an instance of a prefab and a bound `Animator` is destroyed ([TB-222](https://issuetracker.unity3d.com/issues/timeline-missingreferenceexceptions-when-undoing-add-animator-from-timeline))\n- Removed warnings due to obsolete analytics API."
+    "changelog": "### Added\n\n- Released ronl-workflow-custom-marker.md Added a new workflow to the Timeline Workflows documentation:\n- Released ronl-workflow-custom-marker.md The `Create a custom Notes marker` workflow demonstrates how to create a custom marker for adding notes to Timeline instances. This workflow also demonstrates how to change the default appearance of a custom marker with scripting and a Unity Style Sheet (USS).\n\n### Fixed\n\n- Fixed bug where using , and . (<>) to step frames in the Animation Window while the Timeline Window was linked would sometimes not work. [IN-56667](https://unity3d.atlassian.net/servicedesk/customer/portal/2/IN-56667)\n- When the Timeline and Animation windows are linked and the Timeline Window is active, moving the playhead in the Timeline Window will cause the animation window to repaint immediately."
   },
   "upmCi": {
-    "footprint": "b096d5a4d05e8be45f78cb27e10ca26acff05620"
+    "footprint": "48ee43890bac91d31a36af71d304183cb3070b5f"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "9b8cc7590b7d733181284f1a846a02406b5524d8"
+    "revision": "d6432ca638481c3d0e4c01f87f9cdbe3c4b1d529"
   },
   "samples": [
     {

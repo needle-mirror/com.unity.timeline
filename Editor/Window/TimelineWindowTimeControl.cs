@@ -58,7 +58,7 @@ namespace UnityEditor.Timeline
 
         void OnStateChange()
         {
-            if (state != null && state.dirtyStamp > 0 && m_AnimWindowState != null)
+            if (m_AnimWindowState != null)
                 m_AnimWindowState.Repaint();
         }
 
@@ -99,7 +99,7 @@ namespace UnityEditor.Timeline
             }
         }
 
-        void ChangeTime(float newTime)
+        void ChangeTime(double newTime)
         {
             if (state != null && state.editSequence.director != null)
             {
@@ -113,12 +113,14 @@ namespace UnityEditor.Timeline
             }
         }
 
-        static void ChangeFrame(int frame)
+        void ChangeFrame(int frame)
         {
-            if (state != null)
+            frame = Math.Max(0, frame);
+
+            if (state != null && state.referenceSequence != null)
             {
-                state.editSequence.frame = frame;
-                window.Repaint();
+                double frameTime = TimeUtility.FromFrames(frame, state.referenceSequence.frameRate);
+                ChangeTime(frameTime);
             }
         }
 
@@ -303,7 +305,7 @@ namespace UnityEditor.Timeline
         public override void ProcessCandidates() { }
         public override void ClearCandidates() { }
 
-        double ToGlobalTime(float localTime)
+        double ToGlobalTime(double localTime)
         {
             if (m_Clip != null)
                 return Math.Max(0, m_Clip.FromLocalTimeUnbound(localTime));
