@@ -174,13 +174,16 @@ namespace UnityEngine.Timeline
             get { return m_Start; }
             set
             {
-                UpdateDirty(value, m_Start);
                 var newValue = Math.Max(SanitizeTimeValue(value, m_Start), 0);
-                if (m_ParentTrack != null && m_Start != newValue)
+                if (Math.Abs(m_Start - newValue) > double.Epsilon)
                 {
-                    m_ParentTrack.OnClipMove();
+                    UpdateDirty(m_Start, newValue);
+                    m_Start = newValue;
+                    if (m_ParentTrack != null)
+                    {
+                        m_ParentTrack.OnClipMove(asset as ITimelineClipAsset);
+                    }
                 }
-                m_Start = newValue;
             }
         }
 
@@ -192,8 +195,14 @@ namespace UnityEngine.Timeline
             get { return m_Duration; }
             set
             {
-                UpdateDirty(m_Duration, value);
-                m_Duration = Math.Max(SanitizeTimeValue(value, m_Duration), double.Epsilon);
+                var newValue = Math.Max(SanitizeTimeValue(value, m_Duration), double.Epsilon);
+                if (Math.Abs(m_Duration - newValue) > double.Epsilon)
+                {
+                    UpdateDirty(m_Duration, newValue);
+                    m_Duration = newValue;
+                    if (clipCaps.HasAny(ClipCaps.Blending) && m_ParentTrack != null)
+                        m_ParentTrack.blendsValid = false;
+                }
             }
         }
 

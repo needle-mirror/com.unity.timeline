@@ -1,8 +1,8 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.7",
-  "unity": "2019.3",
+  "version": "1.8.8",
+  "unity": "2021.3",
   "keywords": [
     "unity",
     "animation",
@@ -18,19 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.7"
+    "com.unity.timeline.tests": "1.8.8"
   },
   "_upm": {
-    "changelog": "### Added\n\n- Released ronl-workflow-custom-marker.md Added a new workflow to the Timeline Workflows documentation:\n- Released ronl-workflow-custom-marker.md The `Create a custom Notes marker` workflow demonstrates how to create a custom marker for adding notes to Timeline instances. This workflow also demonstrates how to change the default appearance of a custom marker with scripting and a Unity Style Sheet (USS).\n\n### Fixed\n\n- Fixed bug where using , and . (<>) to step frames in the Animation Window while the Timeline Window was linked would sometimes not work. [IN-56667](https://unity3d.atlassian.net/servicedesk/customer/portal/2/IN-56667)\n- When the Timeline and Animation windows are linked and the Timeline Window is active, moving the playhead in the Timeline Window will cause the animation window to repaint immediately."
+    "changelog": "### Fixed\n\n- Fixed bug where the first property, when it is a collection of objects, of a TrackAsset would not be properly displayed in the inspector.\n- TimelineAsset.EditorSettings.SetStandardFrameRate would incorrectly throw an ArgumentException if given a valid StandardFrameRates, this has been corrected.\n- Clip blends will now be computed when using the API to add clips to tracks - IN-66759\n- Improved performance when evaluating Timeline Playables with a large number of clip based Animation Tracks (TB-259)\n- Updated the Gameplay Sequence sample to show materials when using the Universal and HD Render Pipelines."
   },
   "upmCi": {
-    "footprint": "48ee43890bac91d31a36af71d304183cb3070b5f"
+    "footprint": "2fde19afc1f3a164420b2363c147b8d2ba71ffe0"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "d6432ca638481c3d0e4c01f87f9cdbe3c4b1d529"
+    "revision": "b01f8fc6766a468476830dec57fdf694f16104e6"
   },
   "samples": [
     {

@@ -8,4 +8,4 @@ The Timeline package also contains sample projects that demonstrate many Timelin
 
 This version of Timeline is compatible with the following versions of the Unity Editor:
 
-* 2019.4 and later
+* 2021.3 and later

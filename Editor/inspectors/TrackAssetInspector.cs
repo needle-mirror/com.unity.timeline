@@ -185,6 +185,8 @@ namespace UnityEditor.Timeline
             var expanded = true;
             while (property.NextVisible(expanded))
             {
+                expanded = false;
+
                 if ("m_Script" == property.propertyPath)
                 {
                     // Don't draw script field for built-in types
@@ -193,14 +195,13 @@ namespace UnityEditor.Timeline
 
                     // Disable the script field, as it will break your Timeline if you change it.
                     EditorGUI.BeginDisabled(true);
-                    EditorGUILayout.PropertyField(property, !expanded);
+                    EditorGUILayout.PropertyField(property, false);
                     EditorGUI.EndDisabled();
                     continue;
                 }
 
+                EditorGUILayout.PropertyField(property, true);
 
-                EditorGUILayout.PropertyField(property, !expanded);
-                expanded = false;
             }
         }
 

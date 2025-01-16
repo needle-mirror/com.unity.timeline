@@ -2,6 +2,18 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.8] - 2025-01-16
+
+### Fixed
+
+- Fixed bug where the first property, when it is a collection of objects, of a TrackAsset would not be properly displayed in the inspector.
+- TimelineAsset.EditorSettings.SetStandardFrameRate would incorrectly throw an ArgumentException if given a valid StandardFrameRates, this has been corrected.
+- Clip blends will now be computed when using the API to add clips to tracks - IN-66759
+- Improved performance when evaluating Timeline Playables with a large number of clip based Animation Tracks (TB-259)
+- Updated the Gameplay Sequence sample to show materials when using the Universal and HD Render Pipelines.
+
+## [1.8.8] - 2024-08-30
+
 ## [1.8.7] - 2024-05-24
 
 ### Added

@@ -70,6 +70,7 @@ namespace UnityEngine.Timeline
         DiscreteTime m_Start;
         DiscreteTime m_End;
         bool m_CacheSorted;
+        bool m_BlendsValid = true;
         bool? m_SupportsNotifications;
 
         static TrackAsset[] s_EmptyCache = new TrackAsset[0];
@@ -227,6 +228,8 @@ namespace UnityEngine.Timeline
                 return m_ClipsCache;
             }
         }
+
+        internal bool blendsValid { get => m_BlendsValid; set => m_BlendsValid = value; }
 
         /// <summary>
         /// Whether this track is considered empty.
@@ -743,6 +746,9 @@ namespace UnityEngine.Timeline
             {
                 m_Clips.Add(newClip);
                 m_ClipsCache = null;
+
+                if (newClip.SupportsBlending())
+                    blendsValid = false;
             }
         }
 
@@ -928,9 +934,12 @@ namespace UnityEngine.Timeline
         }
 
         // called by an owned clip when it moves
-        internal void OnClipMove()
+        internal void OnClipMove(ITimelineClipAsset clip)
         {
             m_CacheSorted = false;
+
+            if (clip != null && clip.clipCaps.HasAny(ClipCaps.Blending))
+                m_BlendsValid = false;
         }
 
         internal TimelineClip CreateNewClipContainerInternal()
@@ -1003,6 +1012,8 @@ namespace UnityEngine.Timeline
         {
             m_Clips.Remove(clip);
             m_ClipsCache = null;
+            if (clip.SupportsBlending())
+                blendsValid = false;
         }
 
         // Is this track compilable for the sequence

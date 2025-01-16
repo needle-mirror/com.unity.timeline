@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Timeline;
-using UnityEngine.Playables;
 
 namespace UnityEngine.Timeline
 {
@@ -70,6 +68,15 @@ namespace UnityEngine.Timeline
             {
                 TimelineUndo.PushUndo(group, undoString);
                 group.AddChild(asset);
+            }
+        }
+
+        internal static void ComputeBlendsFromOverlaps(this TrackAsset asset, bool force = false)
+        {
+            if (!asset.blendsValid || force)
+            {
+                BlendUtility.ComputeBlendsFromOverlaps(asset.clips);
+                asset.blendsValid = true;
             }
         }
     }

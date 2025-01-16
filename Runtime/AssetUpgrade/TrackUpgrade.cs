@@ -52,6 +52,8 @@ namespace UnityEngine.Timeline
             }
 
             OnBeforeTrackSerialize();
+
+            this.ComputeBlendsFromOverlaps(); // perform after virtual method in case overrides update clips
         }
 
         /// <summary>

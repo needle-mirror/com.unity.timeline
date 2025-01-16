@@ -1,0 +1,11 @@
+{
+  "SharedAssetDependencies": [],
+  "SharedPackageDependencies": [],
+  "SampleEntries": [
+    {
+      "Path": "GameplaySequenceDemo",
+      "AssetDependencies": [  ],
+      "PackageDependencies": ["com.unity.shadergraph"]
+    }
+  ]
+}
