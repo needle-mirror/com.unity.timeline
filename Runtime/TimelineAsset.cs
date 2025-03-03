@@ -83,7 +83,7 @@ namespace UnityEngine.Timeline
             public void SetStandardFrameRate(StandardFrameRates enumValue)
             {
                 FrameRate rate = TimeUtility.ToFrameRate(enumValue);
-                if (rate.IsValid())
+                if (!rate.IsValid())
                     throw new ArgumentException(String.Format("StandardFrameRates {0}, is not defined",
                         enumValue.ToString()));
                 m_Framerate = rate.rate;

@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.7.7] - 2025-03-03
+
+### Fixed
+
+- TimelineAsset.EditorSettings.SetStandardFrameRate would incorrectly throw an ArgumentException if given a valid StandardFrameRates, this has been corrected.
+
 ## [1.7.6] - 2023-10-05
 
 ### Fixed
