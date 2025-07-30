@@ -12,7 +12,7 @@ namespace UnityEngine.Timeline
         Color m_Color;
 
         /// <summary>
-        ///
+        /// Track color
         /// </summary>
         public Color color
         {

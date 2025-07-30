@@ -47,7 +47,7 @@ namespace UnityEditor.Timeline
             var outputTracks = state.editSequence.asset.flattenedTracks;
             foreach (var track in outputTracks)
             {
-                if (track.GetType() != typeof(AnimationTrack))
+                if (track is not AnimationTrack)
                     continue;
                 if (!state.IsTrackRecordable(track))
                     continue;
@@ -589,7 +589,7 @@ namespace UnityEditor.Timeline
             var outputTracks = state.editSequence.asset.GetOutputTracks();
             foreach (var track in outputTracks)
             {
-                if (track.GetType() != typeof(AnimationTrack))
+                if (track is not AnimationTrack)
                     continue;
                 if (!state.IsTrackRecordable(track) && !track.GetChildTracks().Any(state.IsTrackRecordable))
                     continue;

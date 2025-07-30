@@ -2,6 +2,22 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.9] - 2025-07-30
+
+### Added
+
+- Added profiler markers for Timeline graph creation and evaluation. (ATL-2108)
+
+### Fixed
+
+- Fix custom implementation of AnimationTrack not being able to record and not having access to AnimationTrack actions through the context menu. (TB-333)
+- Fix an issue where custom Tracks and Clips Editors code is marked as unused in Rider even when they are associated with a specific Clip or Track Asset. (TB-334)
+- Fix and issue where a clip Inspector with an embedded playable asset inspector can leak when selection changes with 2 inspector windows opened. (TB-324)
+- Fix Editing Track label while Track is selected makes text lose the white color. (TB-336)
+- Maximizing and Restoring the Timeline Window will now keep editing the previous Timeline (TB-289)
+- Added a warning when trying to add a custom track whose class name would not match the file name. (TB-329)
+- Fixed an issue where timeline duration incorrectly included tracks muted via hierarchy. (TB-326)
+
 ## [1.8.8] - 2025-01-16
 
 ### Fixed

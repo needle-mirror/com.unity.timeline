@@ -59,16 +59,16 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Equality operator overload.
         /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="left">The first object to compare</param>
+        /// <param name="right">The second object to compare</param>
         /// <returns><see langword="true" /> if operands are equal, <see langword="false" /> otherwise.</returns>
         public static bool operator ==(SequenceContext left, SequenceContext right) => left.Equals(right);
 
         /// <summary>
         /// Inequality operator overload.
         /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="left">The first object to compare</param>
+        /// <param name="right">The second object to compare</param>
         /// <returns><see langword="true" /> if operands are not equal, <see langword="false" /> otherwise.</returns>
         public static bool operator !=(SequenceContext left, SequenceContext right) => !left.Equals(right);
 

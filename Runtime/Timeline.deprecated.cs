@@ -74,7 +74,7 @@ namespace UnityEngine.Timeline
         /// Constructs a MediaType attribute.
         /// <see cref="UnityEngine.Timeline.TrackMediaType"/> is obsolete; it will have no effect.
         /// </summary>
-        /// <param name="mt"><inheritdoc cref="m_MediaType"/></param>
+        /// <param name="mt">MediaType of a track.</param>
         public TrackMediaType(TimelineAsset.MediaType mt)
         {
             m_MediaType = mt;

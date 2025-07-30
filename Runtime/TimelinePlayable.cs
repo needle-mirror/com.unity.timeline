@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Audio;
@@ -48,6 +49,13 @@ namespace UnityEngine.Timeline
     /// </summary>
     public partial class TimelinePlayable : PlayableBehaviour
     {
+        private static ProfilerMarker k_CreateTimelineGraphMarker = new ProfilerMarker(ProfilerCategory.Scripts, "Timeline.CreatePlayableGraph");
+        private static ProfilerMarker k_CreateTimelineTrackMarker = new ProfilerMarker(ProfilerCategory.Scripts, "Timeline.CreateTrackPlayable");
+        private static ProfilerMarker k_CreateTimelineTrackOutputsMarker = new ProfilerMarker(ProfilerCategory.Scripts, "Timeline.CreateTrackPlayableOutputs");
+
+        private static ProfilerMarker m_findActiveClipsMarker = new ProfilerMarker(ProfilerCategory.Scripts, "TimelinePlayable.GetActiveClips");
+        private static ProfilerMarker m_SetClipsLocalTimeMarker = new ProfilerMarker(ProfilerCategory.Scripts, "TimelinePlayable.SetActiveClipsTime");
+
         private IntervalTree<RuntimeElement> m_IntervalTree = new IntervalTree<RuntimeElement>();
         private List<RuntimeElement> m_ActiveClips = new List<RuntimeElement>();
         private List<RuntimeElement> m_CurrentListOfActiveClips;
@@ -79,10 +87,12 @@ namespace UnityEngine.Timeline
             if (go == null)
                 throw new ArgumentNullException("GameObject parameter is null", "go");
 
+            k_CreateTimelineGraphMarker.Begin(go);
             var playable = ScriptPlayable<TimelinePlayable>.Create(graph);
             playable.SetTraversalMode(PlayableTraversalMode.Passthrough);
             var sequence = playable.GetBehaviour();
             sequence.Compile(graph, playable, tracks, go, autoRebalance, createOutputs);
+            k_CreateTimelineGraphMarker.End();
             return playable;
         }
 
@@ -90,7 +100,7 @@ namespace UnityEngine.Timeline
         /// Compiles the subgraph of this timeline
         /// </summary>
         /// <param name="graph">The playable graph to inject the timeline.</param>
-        /// <param name="timelinePlayable"></param>
+        /// <param name="timelinePlayable">The timeline playable injected into the graph</param>
         /// <param name="tracks">The list of tracks to compile</param>
         /// <param name="go">The GameObject that initiated the compilation</param>
         /// <param name="autoRebalance">In the editor, whether the graph should account for the possibility of changing clip times</param>
@@ -131,9 +141,11 @@ namespace UnityEngine.Timeline
 
                 if (!m_PlayableCache.ContainsKey(track))
                 {
+                    k_CreateTimelineTrackMarker.Begin(track);
                     track.SortClips();
                     track.ComputeBlendsFromOverlaps();
                     CreateTrackPlayable(graph, timelinePlayable, track, go, createOutputs);
+                    k_CreateTimelineTrackMarker.End();
                 }
             }
         }
@@ -143,6 +155,7 @@ namespace UnityEngine.Timeline
             if (track.isSubTrack)
                 return;
 
+            k_CreateTimelineTrackOutputsMarker.Begin(track);
             var bindings = track.outputs;
             foreach (var binding in bindings)
             {
@@ -171,6 +184,7 @@ namespace UnityEngine.Timeline
                     }
                 }
             }
+            k_CreateTimelineTrackOutputsMarker.End();
         }
 
         Playable CreateTrackPlayable(PlayableGraph graph, Playable timelinePlayable, TrackAsset track, GameObject go, bool createOutputs)
@@ -242,6 +256,8 @@ namespace UnityEngine.Timeline
             if (m_IntervalTree == null)
                 return;
 
+            m_findActiveClipsMarker.Begin();
+
             double localTime = playable.GetTime();
             m_ActiveBit = m_ActiveBit == 0 ? 1 : 0;
 
@@ -262,7 +278,8 @@ namespace UnityEngine.Timeline
                 if (c.intervalBit != m_ActiveBit)
                     c.DisableAt(localTime, timelineEnd, frameData);
             }
-
+            m_findActiveClipsMarker.End();
+            m_SetClipsLocalTimeMarker.Begin();
             m_ActiveClips.Clear();
             // case 998642 - don't use m_ActiveClips.AddRange, as in 4.6 .Net scripting it causes GC allocs
             for (var a = 0; a < m_CurrentListOfActiveClips.Count; a++)
@@ -272,6 +289,7 @@ namespace UnityEngine.Timeline
             }
 
             InvokeOutputCallbacks(m_CurrentListOfActiveClips);
+            m_SetClipsLocalTimeMarker.End();
         }
 
         void CacheTrack(TrackAsset track, Playable playable)

@@ -20,7 +20,7 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Retrieves and sets the Timeline Window lock state. When disabled (false), the window focus follows the Unity selection.
         /// </summary>
-        /// <remarks>When the lock state transitions from true to false, the focused timeline is synchronized with the Unity selection.</remarks>>
+        /// <remarks>When the lock state transitions from true to false, the focused timeline is synchronized with the Unity selection.</remarks>
         public abstract bool locked { get; set; }
         /// <summary>
         /// Sets which TimelineAsset is shown in the TimelineWindow.
@@ -38,7 +38,7 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Clears the TimelineAsset that is shown in the TimelineWindow.
         /// </summary>
-        /// <remarks>You can use this method when the TimelineWindow is locked.</remarks>>
+        /// <remarks>You can use this method when the TimelineWindow is locked.</remarks>
         public abstract void ClearTimeline();
     }
 }

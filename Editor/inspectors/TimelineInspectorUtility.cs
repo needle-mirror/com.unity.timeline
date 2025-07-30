@@ -326,7 +326,7 @@ namespace UnityEditor.Timeline
             return val;
         }
 
-        public static Editor GetInspectorForObjects(UnityEngine.Object[] objects, Editor previousEditor)
+        public static void GetInspectorForObjects(UnityEngine.Object[] objects, ref Editor previousEditor)
         {
             // create cached editor throws on assembly reload...
             try
@@ -335,13 +335,10 @@ namespace UnityEditor.Timeline
                 {
                     var director = TimelineWindow.instance.state.editSequence.director;
                     Editor.CreateCachedEditorWithContext(objects, director, null, ref previousEditor);
-                    return previousEditor;
                 }
             }
             catch (Exception)
             { }
-
-            return null;
         }
 
         public static SerializedProperty FindExposedReferenceTableFrom(UnityEngine.Object context)

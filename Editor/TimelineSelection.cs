@@ -34,7 +34,7 @@ namespace UnityEditor.Timeline
                 if (TimelineWindow.instance != null)
                     state = TimelineWindow.instance.state;
 
-                if (!Selection.instanceIDs.Any() && state != null && state.editSequence.director != null)
+                if (!SelectionUtility.selectionIds.Any() && state != null && state.editSequence.director != null)
                     Selection.SetActiveObjectWithContext(obj, TimelineWindow.instance.state.editSequence.director);
                 else
                     Selection.Add(obj);
@@ -58,7 +58,7 @@ namespace UnityEditor.Timeline
                     if (TimelineWindow.instance != null)
                         state = TimelineWindow.instance.state;
 
-                    if (!Selection.instanceIDs.Any() && state != null && state.editSequence.director != null)
+                    if (!SelectionUtility.selectionIds.Any() && state != null && state.editSequence.director != null)
                         Selection.SetActiveObjectWithContext(markerAsObject, TimelineWindow.instance.state.editSequence.director);
                     else
                         Selection.Add(markerAsObject);

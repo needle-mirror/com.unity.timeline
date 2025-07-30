@@ -396,24 +396,20 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Creates an AnimationClip that stores the data for an infinite track.
         /// </summary>
-        /// <remarks>
-        /// If an infiniteClip already exists, this method produces no result, even if you provide a different value
-        /// for infiniteClipName.
-        /// </remarks>
-        /// <remarks>
-        /// This method can't create an infinite clip for an AnimationTrack that contains one or more Timeline clips.
-        /// Use AnimationTrack.inClipMode to determine whether it is possible to create an infinite clip on an AnimationTrack.
-        /// </remarks>
-        /// <remarks>
-        /// When used from the editor, this method attempts to save the created infinite clip to the TimelineAsset.
-        /// The TimelineAsset must already exist in the AssetDatabase to save the infinite clip. If the TimelineAsset
-        /// does not exist, the infinite clip is still created but it is not saved.
-        /// </remarks>
         /// <param name="infiniteClipName">
         /// The name of the AnimationClip to create.
         /// This method does not ensure unique names. If you want a unique clip name, you must provide one.
         /// See ObjectNames.GetUniqueName for information on a method that creates unique names.
         /// </param>
+        /// <remarks>
+        /// If an infiniteClip already exists, this method produces no result, even if you provide a different value
+        /// for infiniteClipName.
+        /// This method can't create an infinite clip for an AnimationTrack that contains one or more Timeline clips.
+        /// Use AnimationTrack.inClipMode to determine whether it is possible to create an infinite clip on an AnimationTrack.
+        /// When used from the editor, this method attempts to save the created infinite clip to the TimelineAsset.
+        /// The TimelineAsset must already exist in the AssetDatabase to save the infinite clip. If the TimelineAsset
+        /// does not exist, the infinite clip is still created but it is not saved.
+        /// </remarks>
         public void CreateInfiniteClip(string infiniteClipName)
         {
             if (inClipMode)
@@ -505,6 +501,10 @@ namespace UnityEngine.Timeline
             clip.postExtrapolationMode = extrapolation;
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Overloads TrackAsset.CalculateItemsHash() and combines its returned value with the hash from the infinite clip.
+        /// </remarks>
         protected internal override int CalculateItemsHash()
         {
             return GetAnimationClipHash(m_InfiniteClip).CombineHash(base.CalculateItemsHash());

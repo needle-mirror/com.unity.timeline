@@ -227,7 +227,7 @@ namespace UnityEditor.Timeline
 
             if (m_SelectionInfo.selectedAssetTypesAreHomogeneous)
             {
-                m_SelectedPlayableAssetsInspector = TimelineInspectorUtility.GetInspectorForObjects(selectedAssets, null);
+                TimelineInspectorUtility.GetInspectorForObjects(selectedAssets, ref m_SelectedPlayableAssetsInspector);
                 if (CanShowPlayableAssetInspector())
                 {
                     string title = PlayableAssetSectionTitle();

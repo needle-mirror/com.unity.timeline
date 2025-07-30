@@ -151,7 +151,7 @@ namespace UnityEditor.Timeline
         {
             if (state != null)
             {
-                state.OnDestroy();
+                state.OnDestroy(instance == this);
             }
             m_HasBeenInitialized = false;
             RemoveEditorCallbacks();
@@ -533,7 +533,7 @@ namespace UnityEditor.Timeline
         [OnOpenAsset(1)]
         public static bool OnDoubleClick(int instanceID, int line)
         {
-            var assetDoubleClicked = EditorUtility.InstanceIDToObject(instanceID) as TimelineAsset;
+            var assetDoubleClicked = SelectionUtility.IdToObject(instanceID) as TimelineAsset;
             if (assetDoubleClicked == null)
                 return false;
 

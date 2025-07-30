@@ -6,7 +6,7 @@ namespace UnityEditor.Timeline.Actions
     /// <summary>
     /// Use this attribute to add a menu item to a context menu.
     /// Used to indicate path and priority that are auto added to the menu
-    /// (examples can be found on <see href="https://docs.unity3d.com/ScriptReference/MenuItem.html"/>).
+    /// (examples can be found on <a href="https://docs.unity3d.com/ScriptReference/MenuItem.html">this page</a>).
     /// </summary>
     /// <example>
     /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-menuEntryAttribute" title="menuEntryAttr"/>

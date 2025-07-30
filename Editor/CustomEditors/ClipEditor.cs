@@ -31,9 +31,9 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="_position"></param>
-        /// <param name="_startTime"></param>
-        /// <param name="_endTime"></param>
+        /// <param name="_position">The rectangle where the background of the clip is drawn.</param>
+        /// <param name="_startTime">The start of the clip background rectangle. This will be the higher value between the clip start time and the visible start time.</param>
+        /// <param name="_endTime">The end of the clip background rectangle. This will be the lower value between the clip end time and the visible end time.</param>
         public ClipBackgroundRegion(Rect _position, double _startTime, double _endTime)
         {
             position = _position;

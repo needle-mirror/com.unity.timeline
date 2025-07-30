@@ -15,8 +15,8 @@ namespace UnityEngine.Timeline
         /// Creates a Playable with a TimeControlPlayable behaviour attached
         /// </summary>
         /// <param name="graph">The PlayableGraph to inject the Playable into.</param>
-        /// <param name="timeControl"></param>
-        /// <returns></returns>
+        /// <param name="timeControl">Component that implements the ITimeControl interface.</param>
+        /// <returns>The playable created</returns>
         public static ScriptPlayable<TimeControlPlayable> Create(PlayableGraph graph, ITimeControl timeControl)
         {
             if (timeControl == null)

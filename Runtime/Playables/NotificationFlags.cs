@@ -5,7 +5,7 @@ namespace UnityEngine.Timeline
     /// <summary>
     /// Use these flags to specify the notification behaviour.
     /// </summary>
-    /// <see cref="UnityEngine.Playables.INotification"/>
+    /// <seealso cref="UnityEngine.Playables.INotification"/>
     [Flags]
     [Serializable]
     public enum NotificationFlags : short

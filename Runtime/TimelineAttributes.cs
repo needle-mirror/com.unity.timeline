@@ -19,8 +19,7 @@ namespace UnityEngine.Timeline
         /// </summary>
         public readonly bool allowAutoCreate; // true will make it show up in menus
 
-        /// <summary>
-        /// </summary>
+        /// <summary>Constructor</summary>
         /// <param name="clipClass">The type of the clip class to associate with this track. Must derive from PlayableAsset.</param>
         public TrackClipTypeAttribute(Type clipClass)
         {
@@ -28,8 +27,7 @@ namespace UnityEngine.Timeline
             allowAutoCreate = true;
         }
 
-        /// <summary>
-        /// </summary>
+        /// <summary>Constructor</summary>
         /// <param name="clipClass">The type of the clip class to associate with this track. Must derive from PlayableAsset.</param>
         /// <param name="allowAutoCreate">Whether to allow automatic creation of these types. Default value is true.</param>
         /// <remarks>Setting allowAutoCreate to false will cause Timeline to not show menu items for creating clips of this type.</remarks>
@@ -89,14 +87,14 @@ namespace UnityEngine.Timeline
         public readonly Type type;
 
         /// <summary>
-        /// Options for the the track binding
+        /// Options for the track binding.
         /// </summary>
         public readonly TrackBindingFlags flags;
 
         /// <summary>
         /// Creates a new TrackBindingTypeAttribute.
         /// </summary>
-        /// <param name="type"><inheritdoc cref="TrackBindingTypeAttribute.type"/></param>
+        /// <param name="type">The type of binding for the associate track.</param>
         public TrackBindingTypeAttribute(Type type)
         {
             this.type = type;
@@ -106,8 +104,8 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Creates a new TrackBindingTypeAttribute.
         /// </summary>
-        /// <param name="type"><inheritdoc cref="TrackBindingTypeAttribute.type"/></param>
-        /// <param name="flags"><inheritdoc cref="TrackBindingTypeAttribute.flags"/></param>
+        /// <param name="type">The type of binding for the associate track.</param>
+        /// <param name="flags">Options for the track binding.</param>
         public TrackBindingTypeAttribute(Type type, TrackBindingFlags flags)
         {
             this.type = type;
@@ -161,10 +159,12 @@ namespace UnityEngine.Timeline
     ///<summary>
     /// Use this attribute to customize the appearance of a Marker.
     /// </summary>
+    /// <remarks>
     /// Specify the style to use to draw a Marker.
+    /// </remarks>
     /// <example>
     /// <code source="../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-customStyleMarkerAttr" title="CustomStyleMarkerAttr"/>
-    /// </example>
+    /// <para>
     /// How to create a custom style rule:
     /// 1) Create a 'common.uss' USS file in an Editor folder in a StyleSheets/Extensions folder hierarchy.
     /// Example of valid folder paths:
@@ -174,7 +174,7 @@ namespace UnityEngine.Timeline
     /// Rules in 'dark.uss' are used if you use the Pro Skin and rules in 'light.uss' are used otherwise.
     ///
     /// 2)In the USS file, create a styling rule to customize the appearance of the marker.
-    /// <example>
+    /// </para>
     /// <code>
     /// MyStyle
     /// {
@@ -204,7 +204,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Creates a new CustomStyleAttribute.
         /// </summary>
-        /// <param name="ussStyle"><inheritdoc cref="CustomStyleAttribute.ussStyle"/></param>
+        /// <param name="ussStyle">The name of the USS style.</param>
         public CustomStyleAttribute(string ussStyle)
         {
             this.ussStyle = ussStyle;

@@ -252,7 +252,7 @@ namespace UnityEditor.Timeline
         /// Implement this method to override the default options for drawing a marker.
         /// </summary>
         /// <param name="marker">The marker to draw.</param>
-        /// <returns></returns>
+        /// <returns>The options for drawing a marker</returns>
         public virtual MarkerDrawOptions GetMarkerOptions(IMarker marker)
         {
             return new MarkerDrawOptions()

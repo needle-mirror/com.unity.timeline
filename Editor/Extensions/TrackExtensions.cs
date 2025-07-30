@@ -27,7 +27,7 @@ namespace UnityEditor.Timeline
         /// </summary>
         /// <param name="track">The track asset to collapsed state to modify.</param>
         /// <param name="collapsed">`true` to collapse children, false otherwise.</param>
-        /// <remarks> The track collapsed state is not serialized inside the asset and is lost from one checkout of the project to another. </remarks>>
+        /// <remarks> The track collapsed state is not serialized inside the asset and is lost from one checkout of the project to another. </remarks>
         public static void SetCollapsed(this TrackAsset track, bool collapsed)
         {
             TimelineWindowViewPrefs.SetTrackCollapsed(track, collapsed);

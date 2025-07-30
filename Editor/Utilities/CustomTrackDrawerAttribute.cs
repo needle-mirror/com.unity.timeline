@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 
 namespace UnityEditor.Timeline
 {
@@ -22,6 +23,7 @@ namespace UnityEditor.Timeline
     /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-customTimelineEditorAttr" title="customTimelineEditorAttr"/>
     /// </example>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [MeansImplicitUse]
     public sealed class CustomTimelineEditorAttribute : Attribute
     {
         /// <summary>

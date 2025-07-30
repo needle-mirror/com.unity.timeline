@@ -11,11 +11,11 @@ namespace UnityEngine.Timeline
     ///
     /// <remarks>
     /// Derive from TrackAsset to implement custom timeline tracks. TrackAsset derived classes support the following attributes:
-    /// <seealso cref="UnityEngine.Timeline.HideInMenuAttribute"/>
-    /// <seealso cref="UnityEngine.Timeline.TrackColorAttribute"/>
-    /// <seealso cref="UnityEngine.Timeline.TrackClipTypeAttribute"/>
-    /// <seealso cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
-    /// <seealso cref="System.ComponentModel.DisplayNameAttribute"/>
+    /// <see cref="UnityEngine.Timeline.HideInMenuAttribute"/>
+    /// <see cref="UnityEngine.Timeline.TrackColorAttribute"/>
+    /// <see cref="UnityEngine.Timeline.TrackClipTypeAttribute"/>
+    /// <see cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
+    /// <see cref="System.ComponentModel.DisplayNameAttribute"/>
     /// </remarks>
     ///
     /// <example>
@@ -78,6 +78,13 @@ namespace UnityEngine.Timeline
 
         static Dictionary<Type, TrackBindingTypeAttribute> s_TrackBindingTypeAttributeCache = new Dictionary<Type, TrackBindingTypeAttribute>();
 
+        /// <summary>
+        /// The List of TimelineClips in the track
+        /// </summary>
+        /// <remarks>
+        /// This list is not guaranteed to be sorted.
+        /// Do not add or remove items from this list directly. Use <see cref="TrackAsset.CreateClip"/> and <see cref="TrackAsset.DeleteClip"/>.
+        /// </remarks>
         [SerializeField, HideInInspector] protected internal List<TimelineClip> m_Clips = new List<TimelineClip>();
 
         [SerializeField, HideInInspector] MarkerList m_Markers = new MarkerList(0);
@@ -435,8 +442,6 @@ namespace UnityEngine.Timeline
         /// <remarks>
         /// If curves already exists for this track, this method produces no result regardless of
         /// the value specified for curvesClipName.
-        /// </remarks>
-        /// <remarks>
         /// When used from the editor, this method attempts to save the created curves clip to the TimelineAsset.
         /// The TimelineAsset must already exist in the AssetDatabase to save the curves clip. If the TimelineAsset
         /// does not exist, the curves clip is still created but it is not saved.
@@ -469,12 +474,10 @@ namespace UnityEngine.Timeline
             return Playable.Create(graph, inputCount);
         }
 
-        /// <summary>
+        /// <inheritdoc/>
+        /// <remarks>
         /// Overrides PlayableAsset.CreatePlayable(). Not used in Timeline.
-        /// </summary>
-        /// <param name="graph"><inheritdoc/></param>
-        /// <param name="go"><inheritdoc/></param>
-        /// <returns><inheritDoc/></returns>
+        /// </remarks>
         public sealed override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
             return Playable.Null;
@@ -515,9 +518,9 @@ namespace UnityEngine.Timeline
         /// <typeparam name="T">A PlayableAsset derived type</typeparam>
         /// <returns>Returns a TimelineClip whose asset is of type T</returns>
         /// <remarks>
-        /// Throws <exception cref="System.InvalidOperationException"/> if <typeparamref name="T"/> is not supported by the track.
         /// Supported types are determined by TrackClip attributes that decorate the TrackAsset derived class
         /// </remarks>
+        /// <exception cref="System.InvalidOperationException">if <typeparamref name="T"/> is not supported by the track.</exception>
         public TimelineClip CreateClip<T>() where T : ScriptableObject, IPlayableAsset
         {
             return CreateClip(typeof(T));
@@ -531,9 +534,7 @@ namespace UnityEngine.Timeline
         /// <remarks>
         /// This method will delete a clip and any assets owned by the clip.
         /// </remarks>
-        /// <exception>
-        /// Throws <exception cref="System.InvalidOperationException"/> if <paramref name="clip"/> is not a child of the TrackAsset.
-        /// </exception>
+        /// <exception cref="System.InvalidOperationException">if <paramref name="clip"/> is not a child of the TrackAsset.</exception>
         public bool DeleteClip(TimelineClip clip)
         {
             if (!m_Clips.Contains(clip))
@@ -551,8 +552,8 @@ namespace UnityEngine.Timeline
         /// <remarks>
         /// All markers that implement IMarker and inherit from <see cref="UnityEngine.ScriptableObject"/> are supported.
         /// Markers that implement the INotification interface cannot be added to tracks that do not support notifications.
-        /// CreateMarker will throw <exception cref="System.InvalidOperationException"/> with tracks that do not support notifications if <paramref name="type"/> implements the INotification interface.
         /// </remarks>
+        /// <exception cref="System.InvalidOperationException"> Tracks do not support notifications and <paramref name="type"/> implements the INotification interface.</exception>
         /// <seealso cref="UnityEngine.Timeline.Marker"/>
         /// <seealso cref="UnityEngine.Timeline.TrackAsset.supportsNotifications"/>
         public IMarker CreateMarker(Type type, double time)
@@ -568,8 +569,8 @@ namespace UnityEngine.Timeline
         /// <returns>Returns the instance of the created marker.</returns>
         /// <remarks>
         /// All markers that implement IMarker and inherit from <see cref="UnityEngine.ScriptableObject"/> are supported.
-        /// CreateMarker will throw <exception cref="System.InvalidOperationException"/> with tracks that do not support notifications if <typeparamref name="T"/> implements the INotification interface.
         /// </remarks>
+        /// <exception cref="System.InvalidOperationException"> Tracks do not support notifications and <typeparamref name="T"/> implements the INotification interface.</exception>
         /// <seealso cref="UnityEngine.Timeline.Marker"/>
         /// <seealso cref="UnityEngine.Timeline.TrackAsset.supportsNotifications"/>
         public T CreateMarker<T>(double time) where T : ScriptableObject, IMarker
@@ -1155,6 +1156,10 @@ namespace UnityEngine.Timeline
             this.CalculateExtrapolationTimes();
         }
 
+        /// <summary>
+        /// Returns a hash which is combination of hashes from clips, animation clips and marker times.
+        /// </summary>
+        /// <returns>The hash value.</returns>
         protected internal virtual int CalculateItemsHash()
         {
             return HashUtility.CombineHash(GetClipsHash(), GetAnimationClipHash(m_Curves), GetTimeRangeHash());
@@ -1166,7 +1171,7 @@ namespace UnityEngine.Timeline
         /// <param name="graph">PlayableGraph that will own the playable.</param>
         /// <param name="gameObject">The GameObject that builds the PlayableGraph.</param>
         /// <param name="clip">The TimelineClip to construct a playable for.</param>
-        /// <returns>A playable that will be set as an input to the Track Mixer playable, or Playable.Null if the clip does not have a valid PlayableAsset</returns>
+        /// <returns>A playable that will be set as an input to the Track Mixer playable, or Playable.Null if the clip does not have a valid PlayableAsset.</returns>
         /// <exception cref="ArgumentException">Thrown if the specified PlayableGraph is not valid.</exception>
         /// <exception cref="ArgumentNullException">Thrown if the specified TimelineClip is not valid.</exception>
         /// <remarks>
@@ -1236,9 +1241,11 @@ namespace UnityEngine.Timeline
         /// Whether the track can create a mixer for its own contents.
         /// </summary>
         /// <returns>Returns true if the track's mixer should be included in the playable graph.</returns>
-        /// <remarks>A return value of true does not guarantee that the mixer will be included in the playable graph. GroupTracks and muted tracks are never included in the graph</remarks>
-        /// <remarks>A return value of false does not guarantee that the mixer will not be included in the playable graph. If a child track returns true for CanCreateTrackMixer, the parent track will generate the mixer but its own playables will not be included.</remarks>
-        /// <remarks>Override this method to change the conditions for a track to be included in the playable graph.</remarks>
+        /// <remarks>
+        /// A return value of true does not guarantee that the mixer will be included in the playable graph. GroupTracks and muted tracks are never included in the graph.
+        /// A return value of false does not guarantee that the mixer will not be included in the playable graph. If a child track returns true for CanCreateTrackMixer, the parent track will generate the mixer but its own playables will not be included.
+        /// Override this method to change the conditions for a track to be included in the playable graph.
+        /// </remarks>
         public virtual bool CanCreateTrackMixer()
         {
             return CanCompileClips();

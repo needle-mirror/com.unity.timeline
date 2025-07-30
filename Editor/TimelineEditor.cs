@@ -268,10 +268,10 @@ namespace UnityEditor.Timeline
     /// </summary>
     /// <remarks>
     /// Use the <c>|</c> operator to combine flags.
+    /// </remarks>
     /// <example>
     /// <code source="../DocCodeExamples/TimelineEditorExamples.cs" region="declare-refreshReason" title="refreshReason"/>
     /// </example>
-    /// </remarks>
     [Flags]
     public enum RefreshReason
     {

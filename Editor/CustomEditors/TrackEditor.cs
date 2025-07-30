@@ -258,7 +258,7 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Gets the color information of a track.
         /// </summary>
-        /// <param name="track"></param>
+        /// <param name="track">The track to get the color of</param>
         /// <returns>Returns the color for the specified track.</returns>
         public Color GetTrackColor(TrackAsset track)
         {
@@ -314,8 +314,8 @@ namespace UnityEditor.Timeline
         /// - <paramref name="candidate"/> is not part of a Prefab Asset or,
         /// - <paramref name="candidate"/> is a Component that can be bound to <paramref name="track"/>
         /// </summary>
-        /// <param name="candidate"></param>
-        /// <param name="track">TBD</param>
+        /// <param name="candidate">The source object from which a track binding should be determined.</param>
+        /// <param name="track">The candidate track to validate binding.</param>
         /// <returns>True if a binding can be determined from <paramref name="candidate"/>.</returns>
         /// <seealso cref="UnityEngine.Timeline.TrackBindingTypeAttribute"/>
         /// <seealso cref="UnityEngine.Timeline.TrackAsset"/>

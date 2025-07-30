@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Timeline;
-using UnityObject = UnityEngine.Object;
+
+#if UNITY_6000_2_OR_NEWER
+using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+#else
+using UnityEditor.IMGUI.Controls;
+#endif
 
 namespace UnityEditor.Timeline
 {

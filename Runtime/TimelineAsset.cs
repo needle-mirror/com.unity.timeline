@@ -358,7 +358,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Gets the marker track for this TimelineAsset.
         /// </summary>
-        /// <returns>Returns the marker track.</returns>
+        /// <value>The marker track.</value>
         /// <remarks>
         /// Use <see cref="TrackAsset.GetMarkers"/> to get a list of the markers on the returned track.
         /// </remarks>
@@ -487,8 +487,8 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Creates a marker track for the TimelineAsset.
         /// </summary>
-        /// In the editor, the marker track appears under the Timeline ruler.
         /// <remarks>
+        /// In the editor, the marker track appears under the Timeline ruler.
         /// This track is always bound to the GameObject that contains the PlayableDirector component for the current timeline.
         /// The marker track is created the first time this method is called. If the marker track is already created, this method does nothing.
         /// </remarks>
@@ -533,7 +533,7 @@ namespace UnityEngine.Timeline
             var discreteDuration = new DiscreteTime(0);
             foreach (var track in flattenedTracks)
             {
-                if (track.muted)
+                if (track.mutedInHierarchy)
                     continue;
 
                 discreteDuration = DiscreteTime.Max(discreteDuration, (DiscreteTime)track.end);

@@ -1,8 +1,15 @@
 using System.Linq;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+
+#if UNITY_6000_2_OR_NEWER
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+using TreeViewGUI = UnityEditor.IMGUI.Controls.TreeViewGUI<int>;
+#else
+using UnityEditor.IMGUI.Controls;
+#endif
 
 namespace UnityEditor.Timeline
 {

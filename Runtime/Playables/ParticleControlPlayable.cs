@@ -18,7 +18,7 @@ namespace UnityEngine.Timeline
         /// Creates a Playable with a ParticleControlPlayable behaviour attached
         /// </summary>
         /// <param name="graph">The PlayableGraph to inject the Playable into.</param>
-        /// <param name="component">The particle systtem to control</param>
+        /// <param name="component">The particle system to control</param>
         /// <param name="randomSeed">A random seed to use for particle simulation</param>
         /// <returns>Returns the created Playable.</returns>
         public static ScriptPlayable<ParticleControlPlayable> Create(PlayableGraph graph, ParticleSystem component, uint randomSeed)
@@ -39,8 +39,8 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Initializes the behaviour with a particle system and random seed.
         /// </summary>
-        /// <param name="ps"></param>
-        /// <param name="randomSeed"></param>
+        /// <param name="ps">The particle system to control</param>
+        /// <param name="randomSeed">A random seed to use for particle simulation</param>
         public void Initialize(ParticleSystem ps, uint randomSeed)
         {
             m_RandomSeed = Math.Max(1, randomSeed);

@@ -86,6 +86,27 @@ namespace UnityEditor.Timeline
                     .Where(x => !x.IsAbstract)
                     .ToList();
                 s_AllTrackTypes.Sort(TimelineTypeComparer.Instance);
+
+#if UNITY_EDITOR
+#if UNITY_2023_1_OR_NEWER
+                foreach (var trackType in s_AllTrackTypes)
+                {
+                    MonoScript script = MonoScript.FromType(trackType);
+#else
+                var allScripts = MonoImporter.GetAllRuntimeMonoScripts();
+
+                foreach (var trackType in s_AllTrackTypes)
+                {
+                    MonoScript script = allScripts.FirstOrDefault(s => s.GetClass() == trackType);
+#endif
+                    if (script == null || script.name != trackType.Name)
+                    {
+                        Debug.LogWarning($"Timeline Track type '{trackType.FullName}' appears to be invalid. " +
+                            $"Make sure to move the track in its own file named {trackType.Name}.cs, or unexpected " +
+                            $"errors may occur.");
+                    }
+                }
+#endif
             }
 
             return s_AllTrackTypes;

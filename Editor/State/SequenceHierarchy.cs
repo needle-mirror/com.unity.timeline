@@ -153,7 +153,7 @@ namespace UnityEditor.Timeline
 
             Clear_Internal();
 
-            var rootObject = EditorUtility.InstanceIDToObject(path.selectionRoot);
+            var rootObject = SelectionUtility.IdToObject(path.selectionRoot);
             if (rootObject == null)
             {
                 UpdateSerializedPath();

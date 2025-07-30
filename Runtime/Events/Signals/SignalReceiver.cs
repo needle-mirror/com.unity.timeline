@@ -9,8 +9,10 @@ namespace UnityEngine.Timeline
     /// <summary>
     /// Listens for emitted signals and reacts depending on its defined reactions.
     /// </summary>
+    /// <remarks>
     /// A SignalReceiver contains a list of reactions. Each reaction is bound to a SignalAsset.
     /// When a SignalEmitter emits a signal, the SignalReceiver invokes the corresponding reaction.
+    /// </remarks>
     /// <seealso cref="UnityEngine.Timeline.SignalEmitter"/>
     /// <seealso cref="UnityEngine.Timeline.SignalAsset"/>
     [TimelineHelpURL(typeof(SignalReceiver))]
@@ -109,7 +111,7 @@ namespace UnityEngine.Timeline
         /// <summary>
         /// Returns the count of registered SignalAssets.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The count of registered SignalAssets</returns>
         public int Count()
         {
             return m_Events.signals.Count;

@@ -178,7 +178,7 @@ namespace UnityEditor.Timeline
 
             var layeredType = tracks.First().GetType();
             // animation tracks have a special menu.
-            if (layeredType == typeof(AnimationTrack))
+            if (typeof(AnimationTrack).IsAssignableFrom(layeredType))
                 return;
 
             // must implement ILayerable

@@ -7,7 +7,7 @@ namespace UnityEditor.Timeline.Actions
     /// Use this attribute to make an action work with the shortcut system.
     /// </summary>
     /// <example>
-    /// TimelineShortcutAttribute needs to be added to a static method.
+    /// <para>TimelineShortcutAttribute needs to be added to a static method.</para>
     /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-timelineShortcutAttr" title="TimelineShortcutAttr"/>
     /// </example>
     public class TimelineShortcutAttribute : ShortcutManagement.ShortcutAttribute

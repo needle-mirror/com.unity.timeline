@@ -1,8 +1,11 @@
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine.Events;
 using UnityEngine.Timeline;
+
+#if UNITY_6000_2_OR_NEWER
+using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+#endif
 
 namespace UnityEditor.Timeline.Signals
 {

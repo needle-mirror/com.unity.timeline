@@ -86,9 +86,9 @@ namespace UnityEditor.Timeline
         /// <param name="context">
         /// Use Context with a Sub-Timeline to specify whether the specified time is relative to the Sub-Timeline or the main Timeline.
         /// If the Timeline is not a Sub-Timeline, the context uses local time regardless of the specified context.
-        /// </param>
         /// Use <see cref="Context.Local"/>, the default, to move the playhead relative to the Sub-Timeline or Timeline.
         /// Use <see cref="Context.Global"/> to move the playhead relative to the main Timeline.
+        /// </param>
         /// <exception cref="System.InvalidOperationException">The Window associated with this instance has been destroyed.</exception>
         /// <exception cref="System.ArgumentException">The context is invalid.</exception>
         public void SetCurrentTime(double time, Context context = Context.Local) { m_Impl.SetCurrentTime(time, context); }
@@ -100,9 +100,9 @@ namespace UnityEditor.Timeline
         /// <param name="context">
         /// Use Context with a Sub-Timeline to specify whether the specified frame is relative to the Sub-Timeline or the main Timeline.
         /// If the Timeline is not a Sub-Timeline, the context uses local time regardless of the specified context.
-        /// </param>
         /// Use <see cref="Context.Local"/>, the default, to move the playhead relative to the Sub-Timeine.
         /// Use <see cref="Context.Global"/> to move the playhead relative to the main Timeline.
+        /// </param>
         /// <exception cref="System.InvalidOperationException">The Window associated with this instance has been destroyed.</exception>
         /// <exception cref="System.ArgumentException">The context is invalid.</exception>
         public void SetCurrentFrame(int frame, Context context = Context.Local) { m_Impl.SetCurrentFrame(frame, context); }
@@ -113,9 +113,9 @@ namespace UnityEditor.Timeline
         /// <param name="context">
         /// Use Context with a Sub-Timeline to specify whether the returned value is relative to the Sub-Timeline or the main Timeline.
         /// If the Timeline is not a Sub-Timeline, the context uses local time regardless of the specified context.
-        /// </param>
         /// Use <see cref="Context.Local"/>, the default, to retrieve the playhead location relative to the Sub-Timeline.
         /// Use <see cref="Context.Global"/> to retrive the location relative to the main Timeline.
+        /// </param>
         /// <exception cref="System.InvalidOperationException">The Window associated with this instance has been destroyed.</exception>
         /// <exception cref="System.ArgumentException">The context is invalid.</exception>
         /// <returns>The playhead location in seconds.</returns>
@@ -130,9 +130,9 @@ namespace UnityEditor.Timeline
         /// <param name="context">
         /// Use Context with a Sub-Timeline to specify whether the returned value is relative to the Sub-Timeline or the main Timeline.
         /// If the Timeline is not a Sub-Timeline, the context uses local time regardless of the specified context.
-        /// </param>
         /// Use <see cref="Context.Local"/>, the default, to retrieve the playhead location relative to the Sub-Timeline.
         /// Use <see cref="Context.Global"/> to retrive the playhead location relative to the main Timeline.
+        /// </param>
         /// <exception cref="System.InvalidOperationException">The Window associated with this instance has been destroyed.</exception>
         /// <exception cref="System.ArgumentException">The context is invalid.</exception>
         /// <returns>The playhead location in frames.</returns>

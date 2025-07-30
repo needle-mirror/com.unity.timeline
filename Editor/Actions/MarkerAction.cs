@@ -8,14 +8,16 @@ namespace UnityEditor.Timeline.Actions
     /// Inherit from this class to make an action that would react on selected markers after a menu click and/or a key shortcut.
     /// </summary>
     /// <example>
-    /// Simple track Action example (with context menu and shortcut support).
+    /// <para>Simple track Action example (with context menu and shortcut support).</para>
     /// <code source="../../DocCodeExamples/ActionExamples.cs" region="declare-sampleMarkerAction" title="SampleMarkerAction"/>
     /// </example>
     /// <remarks>
+    /// <para>
     /// To add an action as a menu item in the Timeline context menu, add <see cref="MenuEntryAttribute"/> on the action class.
     /// To make an action to react to a shortcut, use the Shortcut Manager API with <see cref="TimelineShortcutAttribute"/>.
-    /// <seealso cref="UnityEditor.ShortcutManagement.ShortcutAttribute"/>
+    /// </para>
     /// </remarks>
+    /// <seealso cref="UnityEditor.ShortcutManagement.ShortcutAttribute"/>
     [ActiveInMode(TimelineModes.Default)]
     public abstract class MarkerAction : IAction
     {

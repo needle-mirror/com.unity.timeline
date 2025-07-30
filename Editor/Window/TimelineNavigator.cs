@@ -31,7 +31,7 @@ namespace UnityEditor.Timeline
         /// <summary>
         /// Gets the parent SequenceContext for the Timeline currently shown in the Timeline window.
         /// </summary>
-        /// <returns>The parent SequenceContext for the Timeline currently shown in the Timeline window if there is one; an invalid SequenceContext otherwise. <seealso cref="SequenceContext.Invalid"/></returns>
+        /// <returns>The parent SequenceContext for the Timeline currently shown in the Timeline window if there is one; an invalid SequenceContext otherwise.</returns>
         /// <exception cref="System.InvalidOperationException"> The Window associated to this instance has been destroyed.</exception>
         public SequenceContext GetParentContext()
         {

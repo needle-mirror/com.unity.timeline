@@ -43,7 +43,7 @@ namespace UnityEditor.Timeline
 
         public string ToString(string format)
         {
-            return UnityString.Format("({0}, {1})", start.ToString(format), end.ToString(format));
+            return String.Format("({0}, {1})", start.ToString(format), end.ToString(format));
         }
     }
 }

@@ -7,7 +7,9 @@ namespace UnityEngine.Timeline
     /// <summary>
     /// Marker that emits a signal to a SignalReceiver.
     /// </summary>
+    /// <remarks>
     /// A SignalEmitter emits a notification through the playable system. A SignalEmitter is used with a SignalReceiver and a SignalAsset.
+    /// </remarks>
     /// <seealso cref="UnityEngine.Timeline.SignalAsset"/>
     /// <seealso cref="UnityEngine.Timeline.SignalReceiver"/>
     /// <seealso cref="UnityEngine.Timeline.Marker"/>

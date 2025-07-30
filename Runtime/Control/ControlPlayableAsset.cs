@@ -67,8 +67,9 @@ namespace UnityEngine.Timeline
         public ActivationControlPlayable.PostPlaybackState postPlayback = ActivationControlPlayable.PostPlaybackState.Revert;
 
         /// <summary>
-        /// Which action to apply to the <see cref="PlayableDirector"/> at the end of the control clip. <seealso cref="DirectorControlPlayable.PauseAction"/>
+        /// Which action to apply to the <see cref="PlayableDirector"/> at the end of the control clip.
         /// </summary>
+        /// <seealso cref="DirectorControlPlayable.PauseAction"/>
         [SerializeField]
         public DirectorControlPlayable.PauseAction directorOnClipEnd;
 

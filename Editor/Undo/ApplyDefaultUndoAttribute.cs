@@ -11,12 +11,11 @@ namespace UnityEditor.Timeline.Actions
     ///
     /// By default, applying this attribute will record all objects passed to the Execute method with the Undo system,
     /// using the name of Action it is applied to.
-    ///
+    /// </summary>
     /// <example>
-    /// Simple track Action example (with context menu and shortcut support).
+    /// <para>Simple track Action example (with context menu and shortcut support).</para>
     /// <code source="../../DocCodeExamples/TimelineAttributesExamples.cs" region="declare-applyDefaultUndoAttr" title="ApplyDefaultUndoAttr"/>
     /// </example>
-    /// </summary>
     /// <seealso cref="TimelineAction"/>
     /// <seealso cref="TrackAction"/>
     /// <seealso cref="ClipAction"/>

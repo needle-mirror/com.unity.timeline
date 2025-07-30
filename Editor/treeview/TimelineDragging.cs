@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.IMGUI.Controls;
 using UnityEditor.Timeline;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.Playables;
 using UnityObject = UnityEngine.Object;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewDragging = UnityEditor.IMGUI.Controls.TreeViewDragging<int>;
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#else
+using UnityEditor.IMGUI.Controls;
+#endif
 
 namespace UnityEditor
 {

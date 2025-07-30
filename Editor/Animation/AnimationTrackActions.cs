@@ -14,7 +14,7 @@ namespace UnityEditor.Timeline
         {
             foreach (var animTrack in tracks.OfType<AnimationTrack>())
             {
-                TimelineHelpers.CreateTrack(typeof(AnimationTrack), animTrack, "Override " + animTrack.GetChildTracks().Count());
+                TimelineHelpers.CreateTrack(animTrack.GetType(), animTrack, "Override " + animTrack.GetChildTracks().Count());
             }
 
             return true;
@@ -22,7 +22,7 @@ namespace UnityEditor.Timeline
 
         public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(t => t.isSubTrack || !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
+            if (tracks.Any(t => t.isSubTrack || !typeof(AnimationTrack).IsAssignableFrom(t.GetType())))
                 return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
@@ -47,7 +47,7 @@ namespace UnityEditor.Timeline
 
         public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(t => !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
+            if (tracks.Any(t => !typeof(AnimationTrack).IsAssignableFrom(t.GetType())))
                 return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
@@ -75,7 +75,7 @@ namespace UnityEditor.Timeline
 
         public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(t => !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
+            if (tracks.Any(t => !typeof(AnimationTrack).IsAssignableFrom(t.GetType())))
                 return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
@@ -94,7 +94,7 @@ namespace UnityEditor.Timeline
 
         public override ActionValidity Validate(IEnumerable<TrackAsset> tracks)
         {
-            if (tracks.Any(t => !t.GetType().IsAssignableFrom(typeof(AnimationTrack))))
+            if (tracks.Any(t => !typeof(AnimationTrack).IsAssignableFrom(t.GetType())))
                 return ActionValidity.NotApplicable;
 
             if (tracks.Any(t => t.lockedInHierarchy))
