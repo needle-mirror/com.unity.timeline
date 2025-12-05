@@ -4,7 +4,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
 
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #else
@@ -47,7 +50,7 @@ namespace UnityEditor.Timeline
         // the drop rectangle as set by the tree gui when targetted by a drag and drop
         public Rect dropRect { get; set; }
 
-        public TimelineGroupGUI(TreeViewController treeview, TimelineTreeViewGUI treeviewGUI, int id, int depth, TreeViewItem parent, string displayName, TrackAsset trackAsset, bool isRoot)
+        public TimelineGroupGUI(TreeViewController treeview, TimelineTreeViewGUI treeviewGUI, ObjectId id, int depth, TreeViewItem parent, string displayName, TrackAsset trackAsset, bool isRoot)
             : base(id, depth, parent, displayName, trackAsset, treeview, treeviewGUI)
         {
             m_Styles = DirectorStyles.Instance;
@@ -249,7 +252,7 @@ namespace UnityEditor.Timeline
                 EditorGUI.BeginChangeCheck();
                 using (new StyleNormalColorOverride(m_Styles.groupFont, textColor))
                 {
-                    newName = EditorGUI.DelayedTextField(labelRect, GUIContent.none, track.GetInstanceID(), track.name, m_Styles.groupFont);
+                    newName = EditorGUI.DelayedTextField(labelRect, GUIContent.none, track.GetObjectId().GetHashCode(), track.name, m_Styles.groupFont);
                 }
 
                 if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))

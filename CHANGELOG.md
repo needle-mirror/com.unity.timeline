@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.8.10] - 2025-12-05
+
+### Fixed
+
+- Fix compilation error for version 2023.2 of the editor (TB-352)
+- Fixed an issue where it was possible for 2 clips to have a micro overlap that was not detected as a blend, resulting in both clips playing at the same time with a weight of one. (TB-345)
+
 ## [1.8.9] - 2025-07-30
 
 ### Added

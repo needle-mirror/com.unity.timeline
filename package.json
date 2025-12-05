@@ -1,8 +1,8 @@
 {
   "name": "com.unity.timeline",
   "displayName": "Timeline",
-  "version": "1.8.9",
-  "unity": "2021.3",
+  "version": "1.8.10",
+  "unity": "2022.3",
   "keywords": [
     "unity",
     "animation",
@@ -18,19 +18,19 @@
     "com.unity.modules.particlesystem": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.timeline.tests": "1.8.9"
+    "com.unity.timeline.tests": "1.8.10"
   },
   "_upm": {
-    "changelog": "### Added\n\n- Added profiler markers for Timeline graph creation and evaluation. (ATL-2108)\n\n### Fixed\n\n- Fix custom implementation of AnimationTrack not being able to record and not having access to AnimationTrack actions through the context menu. (TB-333)\n- Fix an issue where custom Tracks and Clips Editors code is marked as unused in Rider even when they are associated with a specific Clip or Track Asset. (TB-334)\n- Fix and issue where a clip Inspector with an embedded playable asset inspector can leak when selection changes with 2 inspector windows opened. (TB-324)\n- Fix Editing Track label while Track is selected makes text lose the white color. (TB-336)\n- Maximizing and Restoring the Timeline Window will now keep editing the previous Timeline (TB-289)\n- Added a warning when trying to add a custom track whose class name would not match the file name. (TB-329)\n- Fixed an issue where timeline duration incorrectly included tracks muted via hierarchy. (TB-326)"
+    "changelog": "### Fixed\n\n- Fix compilation error for version 2023.2 of the editor (TB-352)\n- Fixed an issue where it was possible for 2 clips to have a micro overlap that was not detected as a blend, resulting in both clips playing at the same time with a weight of one. (TB-345)"
   },
   "upmCi": {
-    "footprint": "dbc58e05900ee7a9a9d5c4607915fef7c163e398"
+    "footprint": "a6f178f50d471675fca1bbd8e13b3f592cd5fc8b"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.timeline.git",
     "type": "git",
-    "revision": "5d309c1b02350ecb7093a4001d66afb1a238fc50"
+    "revision": "a83681b24217526a0f539d70ddca4abf270a5ada"
   },
   "samples": [
     {

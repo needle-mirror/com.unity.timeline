@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Timeline;
 
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+using ITreeViewGUI = UnityEditor.IMGUI.Controls.ITreeViewGUI<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 using ITreeViewGUI = UnityEditor.IMGUI.Controls.ITreeViewGUI<int>;
@@ -50,7 +55,11 @@ namespace UnityEditor.Timeline
             m_FoldoutWidth = DirectorStyles.Instance.foldout.fixedWidth;
         }
 
+#if UNITY_6000_3_OR_NEWER
+        internal void ItemDoubleClickedCallback(ObjectId id)
+#else
         internal void ItemDoubleClickedCallback(int id)
+#endif
         {
             var gui = m_TreeView.FindItem(id);
             var trackGUI = gui as TimelineTrackGUI;
@@ -85,7 +94,11 @@ namespace UnityEditor.Timeline
             Event.current.Use();
         }
 
+#if UNITY_6000_3_OR_NEWER
+        void ContextClickItemCallback(ObjectId id)
+#else
         void ContextClickItemCallback(int id)
+#endif
         {
             // may not occur if another menu is active
             if (!m_TreeView.IsSelected(id))
@@ -96,7 +109,11 @@ namespace UnityEditor.Timeline
             Event.current.Use();
         }
 
+#if UNITY_6000_3_OR_NEWER
+        void SelectionChangedCallback(ObjectId[] ids)
+#else
         void SelectionChangedCallback(int[] ids)
+#endif
         {
             if (Event.current.button == 1 && PickerUtils.TopmostPickedItem() is ISelectable)
                 return;

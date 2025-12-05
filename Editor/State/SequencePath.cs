@@ -10,9 +10,9 @@ namespace UnityEditor.Timeline
     [Serializable]
     class SequencePath
     {
-        [SerializeField] int m_SelectionRoot;
+        [SerializeField] ObjectId m_SelectionRoot;
 
-        public int selectionRoot
+        public ObjectId selectionRoot
         {
             get { return m_SelectionRoot; }
         }
@@ -24,9 +24,9 @@ namespace UnityEditor.Timeline
             get { return m_SubElements ?? (m_SubElements = new List<SequencePathSubElement>()); }
         }
 
-        public void SetSelectionRoot(int instanceID)
+        public void SetSelectionRoot(ObjectId id)
         {
-            m_SelectionRoot = instanceID;
+            m_SelectionRoot = id;
             subElements.Clear();
         }
 
@@ -37,7 +37,7 @@ namespace UnityEditor.Timeline
 
         public void Clear()
         {
-            m_SelectionRoot = 0;
+            m_SelectionRoot = ObjectId.DefaultId;
             subElements.Clear();
         }
 
@@ -81,7 +81,7 @@ namespace UnityEditor.Timeline
     [Serializable]
     class SequencePathSubElement
     {
-        public int trackInstanceID;
+        public ObjectId trackInstanceID;
         public int trackHash;
         public int clipIndex;
         public int clipHash;
@@ -99,7 +99,7 @@ namespace UnityEditor.Timeline
 
             return new SequencePathSubElement
             {
-                trackInstanceID = track.GetInstanceID(),
+                trackInstanceID = track.GetObjectId(),
                 trackHash = track.Hash(),
                 clipIndex = Array.IndexOf(track.clips, clip),
                 clipHash = clip.Hash(),

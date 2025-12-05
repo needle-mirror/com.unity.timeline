@@ -398,7 +398,7 @@ namespace UnityEditor.Timeline
 
         void RefreshLastSelectionIfRequired()
         {
-            // case 1088918 - workaround for the instanceID to object cache being update during Awake.
+            // case 1088918 - workaround for the ID to object cache being update during Awake.
             // This corrects any playableDirector ptrs with the correct cached version
             // This can happen when going from edit to playmode
             if (m_ForceRefreshLastSelection)
@@ -509,7 +509,7 @@ namespace UnityEditor.Timeline
 
         internal class DoCreateTimeline : ProjectWindowCallback.EndNameEditAction
         {
-            public override void Action(int instanceId, string pathName, string resourceFile)
+            public override void Action(int id, string pathName, string resourceFile)
             {
                 var timeline = TimelineUtility.CreateAndSaveTimelineAsset(pathName);
                 ProjectWindowUtil.ShowCreatedAsset(timeline);
@@ -533,7 +533,7 @@ namespace UnityEditor.Timeline
         [OnOpenAsset(1)]
         public static bool OnDoubleClick(int instanceID, int line)
         {
-            var assetDoubleClicked = SelectionUtility.IdToObject(instanceID) as TimelineAsset;
+            var assetDoubleClicked = new ObjectId(instanceID).IdToObject() as TimelineAsset;
             if (assetDoubleClicked == null)
                 return false;
 

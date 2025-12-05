@@ -3,7 +3,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Timeline;
 
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+using ITreeViewDataSource = UnityEditor.IMGUI.Controls.ITreeViewDataSource<UnityEngine.Timeline.ObjectId>;
+using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<UnityEngine.Timeline.ObjectId>;
+using ITreeViewGUI = UnityEditor.IMGUI.Controls.ITreeViewGUI<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 using ITreeViewDataSource = UnityEditor.IMGUI.Controls.ITreeViewDataSource<int>;

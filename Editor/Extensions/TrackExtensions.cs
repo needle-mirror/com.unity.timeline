@@ -305,7 +305,7 @@ namespace UnityEditor.Timeline
             // this belongs to a parent track
             if (parentTrack != null)
             {
-                int index = parentTrack.subTracksObjects.FindIndex(t => t.GetInstanceID() == track.GetInstanceID());
+                int index = parentTrack.subTracksObjects.FindIndex(t => t.GetObjectId() == track.GetObjectId());
                 if (index >= 0)
                 {
                     UndoExtensions.RegisterTrack(parentTrack, L10n.Tr("Remove Track"));
@@ -317,7 +317,7 @@ namespace UnityEditor.Timeline
             }
             else if (parentTimeline != null)
             {
-                int index = parentTimeline.trackObjects.FindIndex(t => t.GetInstanceID() == track.GetInstanceID());
+                int index = parentTimeline.trackObjects.FindIndex(t => t.GetObjectId() == track.GetObjectId());
                 if (index >= 0)
                 {
                     UndoExtensions.RegisterPlayableAsset(parentTimeline, L10n.Tr("Remove Track"));

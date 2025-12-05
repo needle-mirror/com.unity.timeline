@@ -1,8 +1,5 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
 using UnityEditor;
 
 namespace UnityEngine.Timeline
@@ -17,7 +14,7 @@ namespace UnityEngine.Timeline
 
         struct AnimatorEntry
         {
-            public int animatorID;
+            public ObjectId animatorID;
             public bool applyRootMotion;
             public bool humanoid;
         }
@@ -25,7 +22,7 @@ namespace UnityEngine.Timeline
         class AnimatorEntryComparer : IEqualityComparer<AnimatorEntry>
         {
             public bool Equals(AnimatorEntry x, AnimatorEntry y) { return x.animatorID == y.animatorID && x.applyRootMotion == y.applyRootMotion && x.humanoid == y.humanoid; }
-            public int GetHashCode(AnimatorEntry obj) { return HashUtility.CombineHash(obj.animatorID, obj.applyRootMotion.GetHashCode(), obj.humanoid.GetHashCode()); }
+            public int GetHashCode(AnimatorEntry obj) { return HashUtility.CombineHash(obj.animatorID.GetHashCode(), obj.applyRootMotion.GetHashCode(), obj.humanoid.GetHashCode()); }
             public static readonly AnimatorEntryComparer Instance = new AnimatorEntryComparer();
         }
 
@@ -48,10 +45,9 @@ namespace UnityEngine.Timeline
             Animator animator = gameObject.GetComponent<Animator>();
             if (animator == null)
                 return kEmptyArray;
-
             AnimatorEntry entry = new AnimatorEntry()
             {
-                animatorID = animator.GetInstanceID(),
+                animatorID = animator.GetObjectId(),
                 applyRootMotion = animator.applyRootMotion,
                 humanoid = animator.isHuman
             };

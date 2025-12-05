@@ -113,7 +113,7 @@ namespace UnityEditor.Timeline
         {
             var timeline = TimelineEditor.inspectedAsset;
             if (timeline == null ||
-                !AssetDatabase.TryGetGUIDAndLocalFileIdentifier(timeline, out var guid, out long _))
+                !AssetDatabase.TryGetGUIDAndLocalFileIdentifier(timeline, out string guid, out long _))
             {
                 data = new timeline_asset_stats();
                 return false;

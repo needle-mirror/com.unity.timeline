@@ -828,7 +828,7 @@ namespace UnityEditor.Timeline
             if (k_TimeCodeTextFieldId == GUIUtility.keyboardControl)
                 return true;
 
-            return editSequence.asset.flattenedTracks.Count(t => t.GetInstanceID() == GUIUtility.keyboardControl) != 0;
+            return editSequence.asset.flattenedTracks.Count(t => t.GetObjectId().GetHashCode() == GUIUtility.keyboardControl) != 0;
         }
 
         public float TimeToTimeAreaPixel(double t) // TimeToTimeAreaPixel

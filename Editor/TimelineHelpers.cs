@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using Component = UnityEngine.Component;
 using Object = UnityEngine.Object;
+using SystemGUID = System.Guid;
 
 namespace UnityEditor.Timeline
 {
@@ -22,13 +22,12 @@ namespace UnityEditor.Timeline
             if (string.IsNullOrEmpty(name))
                 return false;
 
-            GUID guid;
-            return !GUID.TryParse(name, out guid);
+            return !SystemGUID.TryParse(name, out _);
         }
 
         static string GenerateExposedReferenceName()
         {
-            return UnityEditor.GUID.Generate().ToString();
+            return GUID.Generate().ToString();
         }
 
         public static void CloneExposedReferences(ScriptableObject clone, IExposedPropertyTable sourceTable, IExposedPropertyTable destTable)

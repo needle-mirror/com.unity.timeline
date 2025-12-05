@@ -4,8 +4,6 @@ namespace UnityEngine.Timeline
 {
     static class BlendUtility
     {
-        static readonly double kMinOverlapTime = TimeUtility.kTimeEpsilon * 1000;
-
         static bool Overlaps(TimelineClip blendOut, TimelineClip blendIn)
         {
             if (blendIn == blendOut)
@@ -58,7 +56,6 @@ namespace UnityEngine.Timeline
                 return;
 
             double duration = Math.Max(0, blendOutClip.start + blendOutClip.duration - blendInClip.start);
-            duration = duration <= kMinOverlapTime ? 0 : duration;
             blendOutClip.blendOutDuration = duration;
             blendInClip.blendInDuration = duration;
 

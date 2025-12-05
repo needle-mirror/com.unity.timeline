@@ -6,7 +6,10 @@ using UnityEngine.Timeline;
 using UnityEngine.Playables;
 using Object = UnityEngine.Object;
 
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #else
@@ -152,7 +155,7 @@ namespace UnityEditor.Timeline
 
         float minimumHeight => m_TrackDrawOptions.minimumHeight <= 0.0f ? TrackEditor.DefaultTrackHeight : m_TrackDrawOptions.minimumHeight;
 
-        public TimelineTrackGUI(TreeViewController tv, TimelineTreeViewGUI w, int id, int depth, TreeViewItem parent, string displayName, TrackAsset sequenceActor)
+        public TimelineTrackGUI(TreeViewController tv, TimelineTreeViewGUI w, ObjectId id, int depth, TreeViewItem parent, string displayName, TrackAsset sequenceActor)
             : base(tv, w, id, depth, parent, displayName, sequenceActor, false)
         {
             var animationTrack = sequenceActor as AnimationTrack;
@@ -582,10 +585,10 @@ namespace UnityEditor.Timeline
             rect.width = m_Styles.trackHeaderFont.CalcSize(new GUIContent(trackName)).x;
 
             // if we are editing, supply the entire width of the header
-            if (GUIUtility.keyboardControl == track.GetInstanceID())
+            if (GUIUtility.keyboardControl == track.GetObjectId().GetHashCode())
                 rect.width = (headerRect.xMax - rect.xMin) - (5 * WindowConstants.trackHeaderButtonSize);
 
-            trackName = EditorGUI.DelayedTextField(rect, GUIContent.none, track.GetInstanceID(), track.name, textStyle);
+            trackName = EditorGUI.DelayedTextField(rect, GUIContent.none, track.GetObjectId().GetHashCode(), track.name, textStyle);
 
             if (EditorGUI.EndChangeCheck())
             {

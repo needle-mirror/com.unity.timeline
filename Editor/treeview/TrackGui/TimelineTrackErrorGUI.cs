@@ -1,8 +1,12 @@
 using System;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #else
@@ -28,7 +32,7 @@ namespace UnityEditor.Timeline
         PlayableAsset m_Owner;
         static GUIContent s_GUIContent = new GUIContent();
 
-        public TimelineTrackErrorGUI(TreeViewController treeview, TimelineTreeViewGUI treeviewGUI, int id, int depth, TreeViewItem parent, string displayName, ScriptableObject track, PlayableAsset owner)
+        public TimelineTrackErrorGUI(TreeViewController treeview, TimelineTreeViewGUI treeviewGUI, ObjectId id, int depth, TreeViewItem parent, string displayName, ScriptableObject track, PlayableAsset owner)
             : base(id, depth, parent, displayName, null, treeview, treeviewGUI)
         {
             m_ScriptableObject = track;

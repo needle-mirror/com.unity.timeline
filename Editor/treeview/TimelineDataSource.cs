@@ -5,7 +5,12 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using UnityEditor.IMGUI.Controls;
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+using TreeViewDataSource = UnityEditor.IMGUI.Controls.TreeViewDataSource<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 using TreeViewDataSource = UnityEditor.IMGUI.Controls.TreeViewDataSource<int>;
@@ -56,10 +61,22 @@ namespace UnityEditor.Timeline
             return expandable && item.hasChildren;
         }
 
+#if UNITY_6000_3_OR_NEWER
+        public override List<ObjectId> GetNewSelection(TreeViewItem clickedItem, TreeViewSelectState<ObjectId> selectState)
+        {
+            IList<TreeViewItem<ObjectId>> rows = GetRows();
+            var allInstanceIDs = new List<ObjectId>(rows.Count);
+            allInstanceIDs.AddRange(rows.Select(t => t.id));
+
+            return ObjectIdExtension.GetNewSelection(clickedItem.id, allInstanceIDs, selectState.selectedIDs, lastClickedId:selectState.lastClickedID,
+                selectState.keepMultiSelection, selectState.useShiftAsActionKey, allowMultiSelection:CanBeMultiSelected(clickedItem));
+        }
+#endif
+
         public sealed override void FetchData()
         {
             // create root item
-            m_RootItem = new TimelineGroupGUI(m_TreeView, m_ParentGUI, 1, 0, null, "root", null, true);
+            m_RootItem = new TimelineGroupGUI(m_TreeView, m_ParentGUI, new ObjectId(1), 0, null, "root", null, true);
 
             var tree = new Dictionary<TrackAsset, TimelineTrackBaseGUI>();
 
@@ -111,15 +128,15 @@ namespace UnityEditor.Timeline
                 if (parentItem != null && parentItem.track != null)
                     parent = parentItem.track;
 
-                newItem = new TimelineTrackErrorGUI(m_TreeView, m_ParentGUI, 0, theDepth, parentItem, "ERROR", scriptableObject, parent);
+                newItem = new TimelineTrackErrorGUI(m_TreeView, m_ParentGUI, ObjectId.DefaultId, theDepth, parentItem, "ERROR", scriptableObject, parent);
             }
             else if (trackAsset.GetType() != typeof(GroupTrack))
             {
-                newItem = new TimelineTrackGUI(m_TreeView, m_ParentGUI, trackAsset.GetInstanceID(), theDepth, parentItem, trackAsset.name, trackAsset);
+                newItem = new TimelineTrackGUI(m_TreeView, m_ParentGUI, trackAsset.GetObjectId(), theDepth, parentItem, trackAsset.name, trackAsset);
             }
             else
             {
-                newItem = new TimelineGroupGUI(m_TreeView, m_ParentGUI, trackAsset.GetInstanceID(), theDepth, parentItem, trackAsset.name, trackAsset, false);
+                newItem = new TimelineGroupGUI(m_TreeView, m_ParentGUI, trackAsset.GetObjectId(), theDepth, parentItem, trackAsset.name, trackAsset, false);
             }
 
             allTrackGuis.Add(newItem);

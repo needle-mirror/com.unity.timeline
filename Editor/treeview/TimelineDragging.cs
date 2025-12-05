@@ -6,7 +6,11 @@ using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.Playables;
 using UnityObject = UnityEngine.Object;
-#if UNITY_6000_2_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
+using TreeViewDragging = UnityEditor.IMGUI.Controls.TreeViewDragging<UnityEngine.Timeline.ObjectId>;
+using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<UnityEngine.Timeline.ObjectId>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.Timeline.ObjectId>;
+#elif UNITY_6000_2_OR_NEWER
 using TreeViewDragging = UnityEditor.IMGUI.Controls.TreeViewDragging<int>;
 using TreeViewController = UnityEditor.IMGUI.Controls.TreeViewController<int>;
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
@@ -47,7 +51,12 @@ namespace UnityEditor
             m_Window = window;
         }
 
+
+#if UNITY_6000_3_OR_NEWER
+        public override bool CanStartDrag(TreeViewItem targetItem, List<ObjectId> draggedItemIDs, Vector2 mouseDownPosition)
+#else
         public override bool CanStartDrag(TreeViewItem targetItem, List<int> draggedItemIDs, Vector2 mouseDownPosition)
+#endif
         {
             if (Event.current.modifiers != EventModifiers.None)
                 return false;
@@ -76,8 +85,11 @@ namespace UnityEditor
 
             return true;
         }
-
+#if UNITY_6000_3_OR_NEWER
+        public override void StartDrag(TreeViewItem draggedNode, List<ObjectId> draggedItemIDs)
+#else
         public override void StartDrag(TreeViewItem draggedNode, List<int> draggedItemIDs)
+#endif
         {
             DragAndDrop.PrepareStartDrag();
             var tvItems = SelectionManager.SelectedTrackGUI().Cast<TreeViewItem>().ToList();

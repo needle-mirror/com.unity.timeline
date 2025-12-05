@@ -119,11 +119,11 @@ namespace UnityEditor.Timeline
                 return path;
 
             var rootSequence = m_Sequences[0];
-            var root = 0;
+            var root = ObjectId.InvalidId;
             if (rootSequence.director != null && rootSequence.director.gameObject != null)
-                root = rootSequence.director.gameObject.GetInstanceID();
+                root = rootSequence.director.gameObject.GetObjectId();
             else if (rootSequence.asset != null)
-                root = rootSequence.asset.GetInstanceID();
+                root = rootSequence.asset.GetObjectId();
 
             path.SetSelectionRoot(root);
 
@@ -153,7 +153,7 @@ namespace UnityEditor.Timeline
 
             Clear_Internal();
 
-            var rootObject = SelectionUtility.IdToObject(path.selectionRoot);
+            var rootObject = path.selectionRoot.IdToObject();
             if (rootObject == null)
             {
                 UpdateSerializedPath();
@@ -241,7 +241,7 @@ namespace UnityEditor.Timeline
                 if (timeline.trackObjects == null)
                     return false;
 
-                var track = timeline.GetOutputTracks().FirstOrDefault(t => t.GetInstanceID() == element.trackInstanceID);
+                var track = timeline.GetOutputTracks().FirstOrDefault(t => t.GetObjectId() == element.trackInstanceID);
                 if (track == null)
                     return false;
                 if (track.Hash() != element.trackHash)

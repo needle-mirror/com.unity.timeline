@@ -88,7 +88,7 @@ namespace UnityEditor.Timeline
                 s_AllTrackTypes.Sort(TimelineTypeComparer.Instance);
 
 #if UNITY_EDITOR
-#if UNITY_2023_1_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
                 foreach (var trackType in s_AllTrackTypes)
                 {
                     MonoScript script = MonoScript.FromType(trackType);
